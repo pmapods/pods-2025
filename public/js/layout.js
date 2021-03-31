@@ -1,0 +1,67 @@
+$(document).ready(function(){
+    $('.sidebar .active').removeClass('active');
+
+    var a = location.pathname.split("/");
+    $('.sidebar a[href$="/'+a[1]+'"]').addClass('active');
+    if($('.sidebar a[href$="/'+a[1]+'"]').parents('li').hasClass('has-treeview')==true){
+        $('.sidebar a[href$="/'+a[1]+'"]').parents('ul').prev().addClass('active')
+        $('.sidebar a[href$="/'+a[1]+'"]').parents('ul').css('display','block');
+        $('.sidebar a[href$="/'+a[1]+'"]').parents('li').addClass('menu-open');
+    }
+
+    // rupiah formatter
+    new AutoNumeric.multiple('.rupiah', {
+        currencySymbol: "Rp ",
+        decimalCharacter: ",",
+        digitGroupSeparator: ".",
+    });
+
+    $("form[method='post']").on('submit', function(){
+        $('button').prop('disabled',true);
+        $(this).find('button[type = "submit"]').append('<i class="fad ml-2 fa-spinner-third fa-spin"></i>');
+    });
+});
+
+function setRupiah(amount) {
+    amount = amount.toFixed(2);
+    var isNegative = false;
+    if(Number(amount) < 0) {
+        isNegative = true;
+        amount *= -1;
+    }
+    var truncated = Math.trunc(amount);
+    var reversed = truncated.toString().split("").reverse().join("");
+    var ctr = 0;
+    var addedDots = "";
+    for(var i=0; i<reversed.length; i++){
+        addedDots += reversed.charAt(i);
+        ctr++;
+        if(ctr == 3 && i != reversed.length - 1){
+            addedDots += "."
+            ctr = 0;
+        }
+    }
+    var corrected = addedDots.split("").reverse().join("");
+
+
+    var floatAmount =  Number((amount-truncated).toFixed(3));
+    var finalString = "";
+    if(isNegative == true) {
+        finalString += "- ";
+    }
+    if(floatAmount == 0) {
+        finalString += "Rp " + corrected + ",00";
+    }
+    else {
+        var float_part = amount.toString().split(".");
+        if(float_part[1].length == 1) {
+            finalString +=  "Rp " + corrected + "," + float_part[1].charAt(0) + "0";
+
+        }
+        else {
+
+            finalString +=  "Rp " + corrected + "," + float_part[1].charAt(0) + float_part[1].charAt(1);
+        }
+    }
+    return finalString;
+}

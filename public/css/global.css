@@ -1,0 +1,109 @@
+/*
+orange #EA683C
+grey #5F6064
+inverted grey #a09f9b
+blue #38AADA
+darkblue #3C4892
+red #E43038
+green #32C12C
+greendark #03A678
+*/
+
+body {
+    background-color: #F4F6F9;
+}
+
+.a-custom-link {
+    color: #38AADA !important;
+    cursor: pointer;
+}
+
+.a-custom-link:link,
+.a-custom-link:visited,
+.a-custom-link:hover,
+.a-custom-link:active {
+    color:rgb(52, 152, 196) !important;
+    cursor: pointer;
+}
+
+.btn-custom-primary{
+    background-color:#38AADA;
+    color: #FFF;
+}
+
+.btn-custom-primary:hover, .btn-custom-primary:focus, .btn-custom-primary:active, .btn-custom-primary.active, .open .dropdown-toggle.btn-custom-primary {
+
+    background-color:rgb(52, 152, 196);
+    color: #FFF;
+}
+
+.btn-custom-danger{
+    background-color:#E43038;
+    color: #FFF;
+}
+
+.btn-custom-danger:hover, .btn-custom-danger:focus, .btn-custom-danger:active, .btn-custom-danger.active, .open .dropdown-toggle.btn-custom-danger {
+
+    background-color:#cf2b34;
+    color: #FFF;
+}
+
+.btn-custom-outline-primary{
+    border-color:#38AADA;
+    color: #38AADA;
+}
+
+.btn-custom-outline-primary:hover, .btn-custom-outline-primary:focus, .btn-custom-outline-primary:active, .btn-custom-outline-primary.active, .open .dropdown-toggle.btn-custom-outline-primary {
+
+    background-color: #38AADA;
+    color: #FFF;
+}
+
+.btn-custom-outline-danger{
+    border-color:#E43038;
+    color: #E43038;
+}
+
+.btn-custom-outline-danger:hover, .btn-custom-outline-danger:focus, .btn-custom-outline-danger:active, .btn-custom-outline-danger.active, .open .dropdown-toggle.btn-custom-outline-danger {
+    background-color: #E43038;
+    color: #FFF;
+}
+
+.btn-custom-outline-secondary{
+    border-color:#5F6064;
+    color: #5F6064;
+}
+
+.btn-custom-outline-secondary:hover, .btn-custom-outline-secondary:focus, .btn-custom-outline-secondary:active, .btn-custom-outline-secondary.active, .open .dropdown-toggle.btn-custom-outline-secondary {
+    background-color: #5F6064;
+    color: #FFF;
+}
+
+
+
+.btn-custom-secondary{
+    background-color:#3C4892;
+    color: #FFF;
+}
+
+.btn-custom-secondary:hover, .btn-custom-secondary:focus, .btn-custom-secondary:active, .btn-custom-secondary.active, .open .dropdown-toggle.btn-custom-secondary {
+
+    background-color: rgb(42, 50, 102);
+    color: #FFF;
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #3C4892;
+    border-color: #3C4892;
+}
+
+/* unvisited link */
+.remove_link_decor,
+.remove_link_decor:link,
+.remove_link_decor:visited,
+.remove_link_decor:hover,
+.remove_link_decor:active{
+    color: #343A40;
+}
