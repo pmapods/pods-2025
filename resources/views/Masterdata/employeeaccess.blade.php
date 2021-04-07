@@ -9,25 +9,26 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Karyawan</h1>
+                <h1 class="m-0 text-dark">Akses Karyawan</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Masterdata</li>
-                    <li class="breadcrumb-item active">Karyawan</li>
+                    <li class="breadcrumb-item active">Akses Karyawan</li>
                 </ol>
             </div>
         </div>
-        <div class="d-flex justify-content-end mt-4">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEmployeeModal">
-                Tambah Karyawan
-            </button>
+        <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <strong>Pilih karyawan untuk memberikan hak akses</strong>
         </div>
     </div>
 </div>
 <div class="content-body px-4">
     <div class="table-responsive">
-        <table id="employeeDT" class="table table-bordered table-striped dataTable" role="grid">
+        <table id="employeeaccessDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
                     <th>
@@ -40,13 +41,7 @@
                         Nama
                     </th>
                     <th>
-                        Email
-                    </th>
-                    <th>
                         Jabatan
-                    </th>
-                    <th>
-                        Status
                     </th>
                 </tr>
             </thead>
@@ -55,17 +50,7 @@
                     <td>1</td>
                     <td>EMP-00001</td>
                     <td>Fahmi</td>
-                    <td>fahmi@pinusmerahabadi.co.id</td>
                     <td>Manager</td>
-                    <td>Aktif</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>EMP-00001</td>
-                    <td>Fahmi</td>
-                    <td>fahmi@pinusmerahabadi.co.id</td>
-                    <td>Manager</td>
-                    <td>Aktif</td>
                 </tr>
             </tbody>
         </table>
@@ -76,9 +61,9 @@
 @section('local-js')
 <script>
     $(document).ready(function(){
-        var table = $('#employeeDT').DataTable(datatable_settings);
-        $('#employeeDT tbody').on('click', 'tr', function () {
-
+        var table = $('#employeeaccessDT').DataTable(datatable_settings);
+        $('#employeeaccessDT tbody').on('click', 'tr', function () {
+            window.location.href ='/employeeaccess/EMP-0001/'
         });
     })
 </script>

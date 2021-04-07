@@ -23,11 +23,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
   {{-- Custom CSS --}}
   <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-  {{-- Select 2 CSS --}}
-  {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> --}}
-  {{-- <link rel="stylesheet" href="/css/bootstrap.min.css"> --}}
-  {{-- <link rel="stylesheet" href="/scss/custom.scss"> --}}
-  {{-- Local CSS --}}
+  {{-- datatable CSS --}}
+  <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.css">
   @yield('local-css')
 </head>
 <body class="hold-transition">
@@ -140,22 +137,34 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <a href="#" class="nav-link">
                   <i class="nav-icon fas fa-database"></i>
                   <p>
-                  {{__('Data Master')}}
+                    Masterdata
                     <i class="right fas fa-angle-left"></i>
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
+                      <a href="/employeeposition" class="nav-link">
+                        <i class="fad fa-user-cowboy nav-icon"></i>
+                        <p>Jabatan</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
                       <a href="/employee" class="nav-link">
                         <i class="fad fa-users nav-icon"></i>
-                        <p>{{__('Employee')}}</p>
+                        <p>Karyawan</p>
                       </a>
                     </li>
                     <li class="nav-item">
                       <a href="/salespoint" class="nav-link">
                         <i class="fad fa-globe-asia nav-icon"></i>
-                        <p>{{__('Sales Point')}}</p>
+                        <p>Sales Point</p>
                       </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/employeeaccess" class="nav-link">
+                          <i class="fad fa-user-unlock nav-icon"></i>
+                          <p>Akses Karyawan</p>
+                        </a>
                     </li>
                 </ul>
             </li>
@@ -210,6 +219,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 {{-- Autonumeric --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.1.0/autoNumeric.min.js"></script>
+{{-- Datatable --}}
+<script src="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.js"></script>
 
 <script src="{{ asset('/js/layout.js') }}"></script>
 

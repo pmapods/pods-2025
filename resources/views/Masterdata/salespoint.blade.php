@@ -13,7 +13,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item">Data Master</li>
+                    <li class="breadcrumb-item">Masterdata</li>
                     <li class="breadcrumb-item active">Sales Point</li>
                 </ol>
             </div>
@@ -27,42 +27,40 @@
 </div>
 <div class="content-body px-4">
     <div class="table-responsive">
-        <table id="employeeDatatable" class="table table-bordered table-striped dataTable" role="grid">
+        <table id="salespointDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
                     <th>
                         #
                     </th>
                     <th>
-                        {{__('Nama')}}
+                        {{__('Kode Sales Point')}}
                     </th>
                     <th>
-                        {{__('Email')}}
+                        {{__('Nama Area')}}
                     </th>
                     <th>
-                        {{__('Jabatan')}}
+                        {{__('Region')}}
                     </th>
                     <th>
                         {{__('Status')}}
                     </th>
+                    <th>
+                        {{__('GROM')}}
+                    </th>
                 </tr>
             </thead>
             <tbody>
-            </tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Fahmi</td>
-                    <td>fahmi@pinusmerahabadi.co.id</td>
-                    <td>Manager</td>
-                    <td>Aktif</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Kevin</td>
-                    <td>kevin@pinusmerahabadi.co.id</td>
-                    <td>Manager</td>
-                    <td>Non Aktif</td>
-                </tr>
+                @foreach ($salespoints as $key => $salespoint)
+                    <tr>
+                        <td>{{$key+1}}</td>
+                        <td>{{$salespoint->code}}</td>
+                        <td>{{$salespoint->name}}</td>
+                        <td>{{$salespoint->region_name()}}</td>
+                        <td>{{$salespoint->status_name()}}</td>
+                        <td>{{$salespoint->grom}}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -70,5 +68,13 @@
 
 @endsection
 @section('local-js')
+<script>
+    $(document).ready(function(){
+        var table = $('#salespointDT').DataTable(datatable_settings);
+        $('#salespointDT tbody').on('click', 'tr', function () {
 
+        });
+    })
+
+</script>
 @endsection

@@ -13,12 +13,13 @@ class EmployeeMigration extends Migration
      */
     public function up()
     {
-        //
+        //daftar karyawan
         Schema::create('employee', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('code')->unique();
             $table->string('name');
+            $table->string('username')->unique();
             $table->string('email')->unique();
-            $table->string('username');
             $table->string('phone');
             $table->string('position');
             $table->tinyInteger('status');
@@ -27,13 +28,15 @@ class EmployeeMigration extends Migration
             $table->timestamps();
         });
 
-        Schema::create('employee_access',function (Blueprint $table){
+        // daftar akses tiap karyawan bisa di salespoint mana  aja
+        Schema::create('employee_location_access',function (Blueprint $table){
             $table->bigIncrements('id');
             $table->integer('employee_id')->unsigned();
+            $table->integer('salespoint_id')->unsigned();
             $table->integer('location_access');
-            $table->integer('menu_access');
             $table->timestamps();
             $table->foreign('employee_id')->references('id')->on('employee');
+            $table->foreign('salespoint_id')->references('id')->on('salespoint');
         });
     }
 

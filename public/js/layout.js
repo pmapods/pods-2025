@@ -65,3 +65,32 @@ function setRupiah(amount) {
     }
     return finalString;
 }
+
+// Datatable Settings
+var datatable_settings = {
+    "language": language_setting,
+    "aria": {
+        "sortAscending": ": aktifkan untuk mengurutkan keatas",
+        "sortDescending": ": aktifkan untuk mengurutkan kebawah"
+    }
+};
+var language_setting = {
+    "decimal": "",
+    "emptyTable": "Tidak ada data",
+    "info": "Menunjukan _START_ sampai _END_ dari _TOTAL_ data lainnya",
+    "infoEmpty": "Tidak terdapat data",
+    "infoFiltered": "(dipilih dari _MAX_ total data)",
+    "infoPostFix": "",
+    "thousands": ",",
+    "lengthMenu": "Menunjukkan _MENU_ data",
+    "loadingRecords": "Mengunduh data...",
+    "processing": "Memproses data...",
+    "search": "Cari:",
+    "zeroRecords": "Tidak ditemukan data yang sesuai",
+    "paginate": {
+        "first": "Awal",
+        "last": "Akhir",
+        "next": "Selanjutnya",
+        "previous": "Sebelumnya"
+    }
+};

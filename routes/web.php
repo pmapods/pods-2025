@@ -9,9 +9,8 @@ use App\Http\Controllers\Dashboard\DashboardController;
 
 // Masterdata
 use App\Http\Controllers\Masterdata\EmployeeController;
-
-// SalesPoint
 use App\Http\Controllers\Masterdata\SalesPointController;
+use App\Http\Controllers\Masterdata\EmployeeAccessController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -24,8 +23,13 @@ Route::post('/doLogin',[LoginController::class, 'doLogin']);
 Route::get('/dashboard',[DashboardController::class, 'dashboardView']);
 // MASTERDATA
 // ++++++++++++++
+// Employee Postion
+Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
+
 // Employee
 Route::get('/employee',[EmployeeController::class, 'employeeView']);
 
-// Salespoint
+// Employee Access
+Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
+Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
 Route::get('/salespoint',[SalesPointController::class, 'salespointView']);

@@ -17,4 +17,7 @@ class EmployeeController extends Controller
     public function employeeView(){
         return view('Masterdata.employee');
     }
+    public function employeepostitionView(){
+        return view('Masterdata.employeeposition');
+    }
 }
