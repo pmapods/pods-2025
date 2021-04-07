@@ -13,9 +13,10 @@ class LocationMigration extends Migration
      */
     public function up()
     {
+
         Schema::create('salespoint', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('code');
+            $table->string('code')->unique();
             $table->string('name');
             $table->tinyInteger('region');
             //  0 MT CENTRAL 1
@@ -40,6 +41,7 @@ class LocationMigration extends Migration
             // 1 cabang
             // 2 cellpoint
             // 3 subdist
+            // 4 nasional
             $table->tinyInteger('trade_type');
             // 0 MT Modern Trade
             // 1 GT General Trade

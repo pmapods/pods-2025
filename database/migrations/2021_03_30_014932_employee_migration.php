@@ -15,7 +15,7 @@ class EmployeeMigration extends Migration
     {
         //daftar karyawan
         Schema::create('employee', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('code')->unique();
             $table->string('name');
             $table->string('username')->unique();

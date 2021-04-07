@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="d-flex justify-content-end mt-4">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEmployeeModal">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPositionModal">
                 Tambah Jabatan
             </button>
         </div>
@@ -62,6 +62,33 @@
     </div>
 </div>
 
+<!-- Tambah Jabatan Modal -->
+<div class="modal fade" id="addPositionModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Jabatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                          <label for="">Nama Jabatan</label>
+                          <input type="text" class="form-control" name="name" aria-describedby="helpId" placeholder="Masukkan nama Jabatan">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('local-js')
 <script>

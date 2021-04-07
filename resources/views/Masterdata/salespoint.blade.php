@@ -48,6 +48,9 @@
                     <th>
                         {{__('GROM')}}
                     </th>
+                    <th>
+                        Jawa Sumatra
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -59,6 +62,7 @@
                         <td>{{$salespoint->region_name()}}</td>
                         <td>{{$salespoint->status_name()}}</td>
                         <td>{{$salespoint->grom}}</td>
+                        <td>{{$salespoint->jawasumatra()}}</td>
                     </tr>
                 @endforeach
             </tbody>

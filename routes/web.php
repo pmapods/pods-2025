@@ -11,6 +11,12 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Masterdata\EmployeeController;
 use App\Http\Controllers\Masterdata\SalesPointController;
 use App\Http\Controllers\Masterdata\EmployeeAccessController;
+use App\Http\Controllers\Masterdata\VendorController;
+use App\Http\Controllers\Masterdata\BudgetPricingController;
+
+// Operational
+use App\Http\Controllers\Operational\PRController;
+use App\Http\Controllers\Operational\TicketingController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -23,13 +29,25 @@ Route::post('/doLogin',[LoginController::class, 'doLogin']);
 Route::get('/dashboard',[DashboardController::class, 'dashboardView']);
 // MASTERDATA
 // ++++++++++++++
-// Employee Postion
-Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
+    // Employee Postion
+    Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
 
-// Employee
-Route::get('/employee',[EmployeeController::class, 'employeeView']);
+    // Employee
+    Route::get('/employee',[EmployeeController::class, 'employeeView']);
 
-// Employee Access
-Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
-Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
-Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
+    // Employee Access
+    Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
+    Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
+    Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
+
+    // VENDOR
+    Route::get('/vendor',[VendorController::class, 'vendorView']);
+
+    // Budget Pricing
+    Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
+
+    // Pengadaan Barang Jasa
+    Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
+
+// Purchase Requisition
+Route::get('/pr',[PRController::class, 'prView']);

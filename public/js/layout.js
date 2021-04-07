@@ -16,6 +16,14 @@ $(document).ready(function(){
         digitGroupSeparator: ".",
     });
 
+    // Selection search with select2
+    $('.select2').select2({
+        theme: 'bootstrap4',
+    });
+    $(window).resize(function () {
+        $('.select2').css('width', "100%");
+    });
+
     $("form[method='post']").on('submit', function(){
         $('button').prop('disabled',true);
         $(this).find('button[type = "submit"]').append('<i class="fad ml-2 fa-spinner-third fa-spin"></i>');

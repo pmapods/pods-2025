@@ -84,9 +84,34 @@ class SalesPoint extends Model
             case 3:
                 return 'SUBDIST';
                 break;
+            case 4:
+                return 'NATIONAL';
+                break;
             default:
                 return 'status_undefined';
                 break;
+        }
+    }
+
+    public function trade_type_name(){
+        switch ($this->trade_type) {
+            case 0:
+                return 'MT';
+                break;
+            case 1:
+                return 'GT';
+                break;
+            default:
+                return 'trade_type_undefined';
+                break;
+        }
+    }
+
+    public function jawasumatra(){
+        if($this->isJawaSumatra){
+            return 'Dalam';
+        }else{
+            return 'Luar';
         }
     }
 }
