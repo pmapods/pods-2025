@@ -11,6 +11,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Masterdata\EmployeeController;
 use App\Http\Controllers\Masterdata\SalesPointController;
 use App\Http\Controllers\Masterdata\EmployeeAccessController;
+use App\Http\Controllers\Masterdata\AuthorizationController;
 use App\Http\Controllers\Masterdata\VendorController;
 use App\Http\Controllers\Masterdata\BudgetPricingController;
 
@@ -39,6 +40,9 @@ Route::get('/dashboard',[DashboardController::class, 'dashboardView']);
     Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
     Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
     Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
+
+    // Authorization
+    Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
 
     // VENDOR
     Route::get('/vendor',[VendorController::class, 'vendorView']);

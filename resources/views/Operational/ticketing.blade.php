@@ -27,7 +27,7 @@
 </div>
 <div class="content-body px-4">
     <div class="table-responsive">
-        <table id="employeeDT" class="table table-bordered table-striped dataTable" role="grid">
+        <table id="ticketDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
                     <th>
@@ -61,15 +61,17 @@
         </table>
     </div>
 </div>
+@include('Operational.addTicketModal')
 
 @endsection
 @section('local-js')
 <script>
     $(document).ready(function(){
-        var table = $('#employeeDT').DataTable(datatable_settings);
-        $('#employeeDT tbody').on('click', 'tr', function () {
+        var table = $('#ticketDT').DataTable(datatable_settings);
+        $('#ticketDT tbody').on('click', 'tr', function () {
 
         });
     })
 </script>
+<script src="js/addticket.js"></script>
 @endsection

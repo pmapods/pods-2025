@@ -177,6 +177,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="/authorization" class="nav-link">
+                          <i class="fad fa-signature nav-icon"></i>
+                          <p>Matriks Otorisasi Form</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="/vendor" class="nav-link">
                           <i class="fad fa-handshake nav-icon"></i>
                           <p>Vendor</p>
