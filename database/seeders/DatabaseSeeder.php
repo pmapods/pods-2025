@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\App;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,12 +15,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
+        $seeder_array = [
             IndoRegionSeeder::class,
             LocationSeeder::class,
+            SuperAdminSeeder::class,
+        ];
+        $dev_array = [
             EmployeeSeeder::class,
             VendorSeeder::class,
             BudgetSeeder::class,
-        ]);
+        ];
+        if(App::environment('local')) {
+            $seeder_array = array_merge($seeder_array,$dev_array);
+        }
+        $this->call($seeder_array);
     }
 }

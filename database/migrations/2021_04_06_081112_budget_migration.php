@@ -17,6 +17,7 @@ class BudgetMigration extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('code')->unique();
+            $table->softDeletes();
             $table->timestamps();
         });
 

@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\softDeletes;
 
-class BudgetPricingCategory extends Model
+class EmployeePosition extends Model
 {
     use softDeletes;
-    protected $table = 'budget_pricing_category';
+    protected $table = 'employee_position';
     protected $primaryKey = 'id';
 
-    public function budget_pricing(){
-        return $this->hasMany(BudgetPricing::class);
+    public function employees(){
+        return $this->hasMany(Employee::class);
     }
 }

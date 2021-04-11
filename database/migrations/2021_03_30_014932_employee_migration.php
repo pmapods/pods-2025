@@ -13,18 +13,26 @@ class EmployeeMigration extends Migration
      */
     public function up()
     {
+        Schema::create('employee_position', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->softDeletes();
+            $table->timestamps();
+        });
         //daftar karyawan
         Schema::create('employee', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('employee_position_id')->unsigned();
             $table->string('code')->unique();
             $table->string('name');
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('phone');
-            $table->string('position');
             $table->tinyInteger('status');
             // 0 Active
             // 1 Non Active
+            $table->foreign('employee_position_id')->references('id')->on('employee_position');
+            $table->softDeletes();
             $table->timestamps();
         });
 
@@ -34,9 +42,10 @@ class EmployeeMigration extends Migration
             $table->integer('employee_id')->unsigned();
             $table->integer('salespoint_id')->unsigned();
             $table->integer('location_access');
-            $table->timestamps();
             $table->foreign('employee_id')->references('id')->on('employee');
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 
