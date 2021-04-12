@@ -4,12 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Employee extends Model
+class Employee extends Authenticatable
 {
     use SoftDeletes;
     protected $table = 'employee';
     protected $primaryKey = 'id';
+
+    public function employee_position(){
+        return $this->belongsTo(EmployeePosition::class);
+    }
 
     public function location_access(){
     	return $this->hasMany(EmployeeLocationAccess::class);

@@ -67,8 +67,15 @@
                     <div class="col-md-6">
                         <div class="form-group">
                           <label for="">SalesPoint</label>
-                          <select class="form-control" name="salespoint_code" required>
+                          <select class="form-control select2" name="salespoint_code" required>
                             <option value="">-- Pilih SalesPoint --</option>
+                            @foreach ($regions as $region)
+                                <optgroup label="{{$region->first()->region_name()}}">
+                                    @foreach ($region as $salespoint)
+                                        <option value="{{$salespoint->id}}">{{$salespoint->name}}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
                           </select>
                         </div>
                     </div>
@@ -93,8 +100,29 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                {{-- <tr>
                                     <td class="text-center" colspan="5">Tingkat belum dipilih</td>
+                                </tr> --}}
+                                <tr>
+                                    <td>Karyawan 1</td>
+                                    <td>Staff</td>
+                                    <td>Pengaju</td>
+                                    <td>1</td>
+                                    <td><i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Karyawan 2</td>
+                                    <td>SPV</td>
+                                    <td>Atasan Langsung</td>
+                                    <td>2</td>
+                                    <td><i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Karyawan 3</td>
+                                    <td>SPV</td>
+                                    <td>Atasan Tidak Langsung</td>
+                                    <td>3</td>
+                                    <td><i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -31,6 +31,23 @@
   </head>
   <body class="login-page">
   <div class="login-box p-5" style="background-color: #2b090a6b">
+    
+    @if(Session::has('success'))
+        <div class="m-1 alert alert-success alert-dismissible fade show" role="alert">
+            {{Session::get('success')}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+    @if(Session::has('error'))
+        <div class="m-1 alert alert-danger alert-dismissible fade show" role="alert">
+            {{Session::get('error')}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
     <div class="login-logout">
         <div class="d-flex flex-row">
             <img src="assets/logo.png" width="100" alt="">
@@ -44,9 +61,9 @@
     <div class="card">
       <div class="card-body login-card-body">
         <form action="/doLogin" method="post">
-            {{ csrf_field() }}
+          {{ csrf_field() }}
           <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Email / Username">
+            <input type="text" class="form-control" name="username" placeholder="Email / Username" required>
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fad fa-user"></span>
@@ -54,7 +71,7 @@
             </div>
           </div>
           <div class="input-group mb-3">
-            <input type="password" class="form-control" placeholder="Password">
+            <input type="password" class="form-control" name="password" placeholder="Password" required>
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-lock"></span>

@@ -27,8 +27,9 @@ class EmployeeMigration extends Migration
             $table->string('name');
             $table->string('username')->unique();
             $table->string('email')->unique();
+            $table->string('password');
             $table->string('phone');
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(0);
             // 0 Active
             // 1 Non Active
             $table->foreign('employee_position_id')->references('id')->on('employee_position');

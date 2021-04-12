@@ -27,31 +27,39 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'loginView'])->name('login');
 Route::post('/doLogin',[LoginController::class, 'doLogin']);
 
-Route::get('/dashboard',[DashboardController::class, 'dashboardView']);
-// MASTERDATA
-// ++++++++++++++
-    // Employee Postion
-    Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
+Route::middleware(['auth'])->group(function () {
+    // Auth
+    Route::get('/logout', function (){
+        Auth::logout();
+        return back();
+    });
+    
+    Route::get('/dashboard',[DashboardController::class, 'dashboardView']);
+    // MASTERDATA
+        // Employee Postion
+        Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
+    
+        // Employee
+        Route::get('/employee',[EmployeeController::class, 'employeeView']);
+    
+        // Employee Access
+        Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
+        Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
+        Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
+    
+        // Authorization
+        Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
+    
+        // VENDOR
+        Route::get('/vendor',[VendorController::class, 'vendorView']);
+    
+        // Budget Pricing
+        Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
+    
+    // OPERATIONAL
+        // Pengadaan Barang Jasa
+        Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
 
-    // Employee
-    Route::get('/employee',[EmployeeController::class, 'employeeView']);
-
-    // Employee Access
-    Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
-    Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
-    Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
-
-    // Authorization
-    Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
-
-    // VENDOR
-    Route::get('/vendor',[VendorController::class, 'vendorView']);
-
-    // Budget Pricing
-    Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
-
-    // Pengadaan Barang Jasa
-    Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
-
-// Purchase Requisition
-Route::get('/pr',[PRController::class, 'prView']);
+        // Purchase Requisition
+        Route::get('/pr',[PRController::class, 'prView']);
+});
