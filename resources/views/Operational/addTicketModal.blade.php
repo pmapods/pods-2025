@@ -69,6 +69,8 @@
                                 <tr>
                                     <th>Nama Item</th>
                                     <th>Jumlah</th>
+                                    <th>Min</th>
+                                    <th>Max</th>
                                     <th>Harga Satuan</th>
                                     <th></th>
                                 </tr>
@@ -77,6 +79,8 @@
                                 <tr>
                                     <td>Item 1</td>
                                     <td>Rp 1.500.000</td>
+                                    <td>Rp 1.500.000</td>
+                                    <td>Rp 2.000.000</td>
                                     <td>1</td>
                                     <td><i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
                                 </tr>

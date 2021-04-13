@@ -28,7 +28,7 @@ class EmployeeMigration extends Migration
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->tinyInteger('status')->default(0);
             // 0 Active
             // 1 Non Active

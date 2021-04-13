@@ -17,6 +17,9 @@ use App\Models\Employee;
 class LoginController extends Controller
 {
     public function loginView(){
+        if(Auth::user()){
+            return redirect('/dashboard');
+        }
     	return view('Auth.login');
     }
 
@@ -26,7 +29,7 @@ class LoginController extends Controller
         $employee = Employee::where('username',$request->username)->first();
         if(!$employee){
             // check via email
-            $employee = Employee::where('email',$request->email)->first();
+            $employee = Employee::where('email',$request->username)->first();
         }
         if($employee){
             if(Hash::check($request->password, $employee->password)){

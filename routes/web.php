@@ -20,7 +20,7 @@ use App\Http\Controllers\Operational\PRController;
 use App\Http\Controllers\Operational\TicketingController;
 
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect('login');
 });
 
 //Auth
@@ -38,14 +38,25 @@ Route::middleware(['auth'])->group(function () {
     // MASTERDATA
         // Employee Postion
         Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
+        Route::post('/addPosition',[EmployeeController::class, 'addEmployeePosition']);
+        Route::patch('/updatePosition',[EmployeeController::class, 'updateEmployeePosition']);
+        Route::delete('/deletePosition',[EmployeeController::class, 'deleteEmployeePosition']);
     
         // Employee
         Route::get('/employee',[EmployeeController::class, 'employeeView']);
+        Route::post('/addEmployee',[EmployeeController::class, 'addEmployee']);
+        Route::patch('/updateEmployee',[EmployeeController::class, 'updateEmployee']);
+        Route::delete('/deleteEmployee',[EmployeeController::class, 'deleteEmployee']);
+        Route::patch('/nonactiveemployee',[EmployeeController::class, 'nonactiveEmployee']);
+        Route::patch('/activeemployee',[EmployeeController::class, 'activeEmployee']);
     
         // Employee Access
         Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
         Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
+
+        // Sales Point
         Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
+        Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
     
         // Authorization
         Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);

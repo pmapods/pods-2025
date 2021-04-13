@@ -19,4 +19,18 @@ class Employee extends Authenticatable
     public function location_access(){
     	return $this->hasMany(EmployeeLocationAccess::class);
     }
+
+    public function statusName(){
+        switch ($this->status){
+            case 0:
+                return 'Aktif';
+                break;
+            case 1:
+                return 'Non Aktif';
+                break;
+            default:
+                return 'status_name_undefined';
+                break;
+        }
+    }
 }

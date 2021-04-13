@@ -55,28 +55,135 @@
             </thead>
             <tbody>
                 @foreach ($salespoints as $key => $salespoint)
-                    <tr>
-                        <td>{{$key+1}}</td>
-                        <td>{{$salespoint->code}}</td>
-                        <td>{{$salespoint->name}}</td>
-                        <td>{{$salespoint->region_name()}}</td>
-                        <td>{{$salespoint->status_name()}}</td>
-                        <td>{{$salespoint->grom}}</td>
-                        <td>{{$salespoint->jawasumatra()}}</td>
-                    </tr>
+                <tr data-salespoint="{{$salespoint}}">
+                    <td>{{$key+1}}</td>
+                    <td>{{$salespoint->code}}</td>
+                    <td>{{$salespoint->name}}</td>
+                    <td>{{$salespoint->region_name()}}</td>
+                    <td>{{$salespoint->status_name()}}</td>
+                    <td>{{$salespoint->grom}}</td>
+                    <td>{{$salespoint->jawasumatra()}}</td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
+{{-- add modal --}}
+<div class="modal fade" id="addSalesPoint" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Sales Point</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/addsalespoint" method="post">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Kode Sales Point</label>
+                                <input type="text" class="form-control" name="code"
+                                    placeholder="Masukkan Kode Sales Point" required>
+                                <small class="form-text text-danger">* kode sales point bersifat unik / tidak bisa sama
+                                    jika sudah terdaftar di sistem</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Nama Area</label>
+                                <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Pilih Region</label>
+                                <select class="form-control select2" name="region" required>
+                                    <option value="">-- Pilih Region --</option>
+                                    <option value="0">MT CENTRAL 1</option>
+                                    <option value="1">SUMATERA 1</option>
+                                    <option value="2">SUMATERA 2</option>
+                                    <option value="3">SUMATERA 3</option>
+                                    <option value="4">SUMATERA 4</option>
+                                    <option value="5">BANTEN</option>
+                                    <option value="6">DKI</option>
+                                    <option value="7">JABAR 1</option>
+                                    <option value="8">JABAR 2</option>
+                                    <option value="9">R13 JABAR 3</option>
+                                    <option value="10">JATENG 1</option>
+                                    <option value="11">JATENG 2</option>
+                                    <option value="12">JATIM 1</option>
+                                    <option value="13">JATIM 2</option>
+                                    <option value="14">BALINUSRA</option>
+                                    <option value="15">KALIMANTAN</option>
+                                    <option value="16">SULAWESI</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Status Point</label>
+                                <select class="form-control" name="status" required>
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="0">Depo</option>
+                                    <option value="1">Cabang</option>
+                                    <option value="2">Cellpoint</option>
+                                    <option value="3">Subdist</option>
+                                    <option value="4">Nasional</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Trade Type</label>
+                                <select class="form-control" name="trade_type" required>
+                                    <option value="">-- Pilih Tipe Trade --</option>
+                                    <option value="0">General Trade</option>
+                                    <option value="1">Modern Trade</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Apakah area Jawa Sumatra</label>
+                                <select class="form-control" name="isJawaSumatra" required>
+                                    <option value="">-- Pilih --</option>
+                                    <option value="1">Ya (Dalam Jawa Sumatra)</option>
+                                    <option value="0">Tidak (Luar Jawa Sumatra)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Nama GROM (optional)</label>
+                                <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Tambah Sales Point</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 @section('local-js')
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         var table = $('#salespointDT').DataTable(datatable_settings);
         $('#salespointDT tbody').on('click', 'tr', function () {
-
+            // $('')
         });
     })
 

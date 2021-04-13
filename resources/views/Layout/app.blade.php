@@ -28,6 +28,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   {{-- Select 2 CSS bootstrap theme --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+  
 
   @yield('local-css')
 </head>
@@ -200,7 +201,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         @endif
         @if(Session::has('error'))
             <div class="m-1 alert alert-danger alert-dismissible fade show" role="alert">
-                {{Session::get('error')}}
+                {{Session::get('error')}} - error message( {{Session::get('err_message')}} )
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>

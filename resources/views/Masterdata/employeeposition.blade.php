@@ -42,21 +42,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>General Area Manage</td>
-                    <td>5 karyawan</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>General Area Manage</td>
-                    <td>5 karyawan</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>General Area Manage</td>
-                    <td>5 karyawan</td>
-                </tr>
+                @foreach ($positions as $key=>$position)
+                    <tr data-position="{{$position}}" data-employee_count="{{$position->employees->count()}}">
+                        <td>{{$key+1}}</td>
+                        <td>{{$position->name}}</td>
+                        <td>{{$position->employees->count()}} Karyawan</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -65,6 +57,8 @@
 <!-- Tambah Jabatan Modal -->
 <div class="modal fade" id="addPositionModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
     <div class="modal-dialog" role="document">
+        <form action="/addPosition" method="post">
+        {{csrf_field()}}
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Jabatan</h5>
@@ -77,7 +71,7 @@
                     <div class="col-12">
                         <div class="form-group">
                           <label for="">Nama Jabatan</label>
-                          <input type="text" class="form-control" name="name" aria-describedby="helpId" placeholder="Masukkan nama Jabatan">
+                          <input type="text" class="form-control" name="name" aria-describedby="helpId" placeholder="Masukkan nama Jabatan" required>
                         </div>
                     </div>
                 </div>
@@ -87,6 +81,47 @@
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </div>
+        </form>
+    </div>
+</div>
+
+{{-- Detail Jabatan Modal --}}
+<div class="modal fade" id="detailPositionModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form action="/updatePosition" method="post">
+            @csrf
+            @method('PATCH')
+        <input type="hidden" name="position_id">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detil Jabatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                          <label for="">Nama Jabatan</label>
+                          <input type="text" class="form-control" name="name" aria-describedby="helpId" placeholder="Masukkan nama Jabatan" required>
+                        </div>
+                    </div>
+                </div>
+                <small class="text-danger">*penghapusan jabatan hanya dapat dilakukan setelah tidak ada karyawan yang terkait dengan jabatan bersangkutan</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-danger delete_button" onclick="deletePosition()">Hapus</button>
+                <button type="submit" class="btn btn-info">Update</button>
+            </div>
+        </div>
+        </form>
+        <form action="/deletePosition" method="post" id="deleteform">
+            @csrf
+            @method('DELETE')
+            <input type="hidden" name="position_id">
+        </form>
     </div>
 </div>
 @endsection
@@ -95,8 +130,32 @@
     $(document).ready(function(){
         var table = $('#employeeposDT').DataTable(datatable_settings);
         $('#employeeposDT tbody').on('click', 'tr', function () {
+            let updatemodal = $('#detailPositionModal');
+            let data = $(this).data('position');
+            let count_employee = $(this).data('employee_count');
+            updatemodal.find('input[name="position_id"]').val(data['id']);
+            updatemodal.find('input[name="name"]').val(data['name']);
+            // kalo masih ada employee disable tombol hapus
+            if(count_employee>0){
+                updatemodal.find('.delete_button').prop('disabled',true);
+            }else{
+                updatemodal.find('.delete_button').prop('disabled',false);
+            }
 
+            // kalo superadmin matiin akses update delete
+            if(data['id']==1){
+                updatemodal.find('.modal-footer').hide();
+            }else{
+                updatemodal.find('.modal-footer').show();
+            }
+            $('#detailPositionModal').modal('show');
         });
     })
+    function deletePosition(){
+        if (confirm('Jabatan akan dihapus dan tidak dapat dikembalikan. Lanjutkan?')) {
+            $('#deleteform').submit();
+        } else {
+        }
+    }
 </script>
 @endsection

@@ -13,7 +13,6 @@ class LocationMigration extends Migration
      */
     public function up()
     {
-
         Schema::create('salespoint', function (Blueprint $table) {
             $table->increments('id');
             $table->string('code')->unique();
