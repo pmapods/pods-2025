@@ -91,7 +91,7 @@
                                 <input type="text" class="form-control" name="code"
                                     placeholder="Masukkan Kode Sales Point" required>
                                 <small class="form-text text-danger">* kode sales point bersifat unik / tidak bisa sama
-                                    jika sudah terdaftar di sistem</small>
+                                    jika sudah terdaftar di sistem. kode tidak dapat diubah setelah didaftarkan</small>
                             </div>
                         </div>
                         <div class="col-md-6"></div>
@@ -177,15 +177,145 @@
     </div>
 </div>
 
+
+{{-- edit modal --}}
+<div class="modal fade" id="editSalesPoint" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Sales Point</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/updatesalespoint" method="post">
+                @csrf
+                @method('patch')
+                <input type="hidden" name="salespoint_id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Kode Sales Point</label>
+                                <input type="text" class="form-control" name="code"
+                                    placeholder="Masukkan Kode Sales Point" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Nama Area</label>
+                                <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Pilih Region</label>
+                                <select class="form-control select2" name="region" required>
+                                    <option value="">-- Pilih Region --</option>
+                                    <option value="0">MT CENTRAL 1</option>
+                                    <option value="1">SUMATERA 1</option>
+                                    <option value="2">SUMATERA 2</option>
+                                    <option value="3">SUMATERA 3</option>
+                                    <option value="4">SUMATERA 4</option>
+                                    <option value="5">BANTEN</option>
+                                    <option value="6">DKI</option>
+                                    <option value="7">JABAR 1</option>
+                                    <option value="8">JABAR 2</option>
+                                    <option value="9">R13 JABAR 3</option>
+                                    <option value="10">JATENG 1</option>
+                                    <option value="11">JATENG 2</option>
+                                    <option value="12">JATIM 1</option>
+                                    <option value="13">JATIM 2</option>
+                                    <option value="14">BALINUSRA</option>
+                                    <option value="15">KALIMANTAN</option>
+                                    <option value="16">SULAWESI</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Status Point</label>
+                                <select class="form-control" name="status" required>
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="0">Depo</option>
+                                    <option value="1">Cabang</option>
+                                    <option value="2">Cellpoint</option>
+                                    <option value="3">Subdist</option>
+                                    <option value="4">Nasional</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Trade Type</label>
+                                <select class="form-control" name="trade_type" required>
+                                    <option value="">-- Pilih Tipe Trade --</option>
+                                    <option value="0">General Trade</option>
+                                    <option value="1">Modern Trade</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="">Apakah area Jawa Sumatra</label>
+                                <select class="form-control" name="isJawaSumatra" required>
+                                    <option value="">-- Pilih --</option>
+                                    <option value="1">Ya (Dalam Jawa Sumatra)</option>
+                                    <option value="0">Tidak (Luar Jawa Sumatra)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Nama GROM (optional)</label>
+                                <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="deletesalespoint()">Hapus</button>
+                    <button type="submit" class="btn btn-info">Update Sales Point</button>
+                </div>
+            </form>
+            <form action="/deletesalespoint" method="post" id="deleteform">
+                @csrf
+                @method('delete')
+                <input type="hidden" name="salespoint_id">
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 @section('local-js')
 <script>
     $(document).ready(function () {
         var table = $('#salespointDT').DataTable(datatable_settings);
         $('#salespointDT tbody').on('click', 'tr', function () {
-            // $('')
+            let modal = $('#editSalesPoint');
+            let data = $(this).data('salespoint');
+            modal.find('input[name="salespoint_id"]').val(data['id']);
+            modal.find('input[name="code"]').val(data['code']);
+            modal.find('input[name="name"]').val(data['name']);
+            modal.find('select[name="region"]').val(data['region']);
+            modal.find('select[name="region"]').trigger('change');
+            modal.find('select[name="status"]').val(data['status']);
+            modal.find('select[name="trade_type"]').val(data['trade_type']);
+            modal.find('select[name="isJawaSumatra"]').val(data['isJawaSumatra']);
+            modal.find('input[name="grom"]').val(data['grom']);
+            modal.modal('show');
         });
     })
-
+    
+    function deletesalespoint(){
+        if (confirm('Menghapus sales point tidak menghilangkan transaksi terkait yang sedang berlangsung. Lanjutkan ?')) {
+            $('#deleteform').submit();
+        }
+    }
 </script>
 @endsection

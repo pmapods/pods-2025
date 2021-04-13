@@ -201,7 +201,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         @endif
         @if(Session::has('error'))
             <div class="m-1 alert alert-danger alert-dismissible fade show" role="alert">
-                {{Session::get('error')}} - error message( {{Session::get('err_message')}} )
+                {{Session::get('error')}}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>

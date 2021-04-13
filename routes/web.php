@@ -57,6 +57,8 @@ Route::middleware(['auth'])->group(function () {
         // Sales Point
         Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
         Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
+        Route::patch('/updatesalespoint',[SalesPointController::class, 'updateSalesPoint']);
+        Route::delete('/deletesalespoint',[SalesPointController::class, 'deleteSalesPoint']);
     
         // Authorization
         Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);

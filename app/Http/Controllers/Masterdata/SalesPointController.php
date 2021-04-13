@@ -22,7 +22,6 @@ class SalesPointController extends Controller
             if($checksalespoint){
                 return back()->with('error','Kode sales point sudah terdaftar ('.$checksalespoint->name.'('.$checksalespoint->region_name().')'.')');
             }else{
-                // dd($request);
                 $newSalesPoint = new SalesPoint;
                 $newSalesPoint->code           = $request->code;
                 $newSalesPoint->name           = $request->name;
@@ -35,7 +34,33 @@ class SalesPointController extends Controller
                 return back()->with('success','Sales Point berhasil terdaftar ('.$newSalesPoint->name.'('.$newSalesPoint->region_name().')'.')');
             }
         }catch (\Exception $ex) {
-            return back()->with('error','Gagal menambahkan salespoint');
+            return back()->with('error','Gagal menambahkan salespoint, silahkan coba kembali atau hubungi admin');
+        }
+    }
+
+    public function updateSalesPoint(Request $request){
+        try {
+            $salespoint                 = SalesPoint::findOrFail($request->salespoint_id);
+            $salespoint->code           = $request->code;
+            $salespoint->name           = $request->name;
+            $salespoint->region         = $request->region;
+            $salespoint->status         = $request->status;
+            $salespoint->trade_type     = $request->trade_type;
+            $salespoint->isJawaSumatra  = $request->isJawaSumatra;
+            $salespoint->grom           = $request->grom;
+            $salespoint->save();
+            return back()->with('success','Berhasil memperbarui data sales point '.$request->name);
+        } catch (\Exception $ex) {
+            return back()->with('error','Gagal memperbarui data salespoint, silahkan coba kembali atau hubungi admin');
+        }
+    }
+    public function deleteSalesPoint(Request $request){
+        try {
+            $salespoint           = Salespoint::findOrFail($request->salespoint_id);
+            $salespoint->delete();
+            return back()->with('success','Berhasil menghapus salespoint '.$salespoint->name);
+        } catch (\Exception $ex) {
+            return back()->with('error','Gagal menghapus salespoint, silahkan coba kembali atau hubungi admin');
         }
     }
 }
