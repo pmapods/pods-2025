@@ -22,7 +22,7 @@
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <strong>Pilih karyawan untuk memberikan hak akses</strong>
+          <strong>Pilih karyawan untuk memberikan hak akses area</strong>
         </div>
     </div>
 </div>
@@ -46,12 +46,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>EMP-00001</td>
-                    <td>Fahmi</td>
-                    <td>Manager</td>
-                </tr>
+                @foreach ($employees as $key=>$employee)
+                    <tr data-employee="{{$employee}}">
+                        <td>{{$key+1}}</td>
+                        <td>{{$employee->code}}</td>
+                        <td>{{$employee->name}}</td>
+                        <td>{{$employee->employee_position->name}}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -63,7 +65,8 @@
     $(document).ready(function(){
         var table = $('#employeeaccessDT').DataTable(datatable_settings);
         $('#employeeaccessDT tbody').on('click', 'tr', function () {
-            window.location.href ='/employeeaccess/EMP-0001/'
+            let data = $(this).data('employee');
+            window.location.href ='/employeeaccess/'+data['code']+'/';
         });
     })
 </script>

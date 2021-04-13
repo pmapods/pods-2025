@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
         // Employee Access
         Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
         Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
+        Route::patch('/updateemployeeaccessdetail',[EmployeeAccessController::class, 'updateemployeeaccessdetail']);
 
         // Sales Point
         Route::get('/salespoint',[SalesPointController::class, 'salespointView']);

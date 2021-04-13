@@ -42,10 +42,8 @@ class EmployeeMigration extends Migration
             $table->bigIncrements('id');
             $table->integer('employee_id')->unsigned();
             $table->integer('salespoint_id')->unsigned();
-            $table->integer('location_access');
             $table->foreign('employee_id')->references('id')->on('employee');
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
-            $table->softDeletes();
             $table->timestamps();
         });
     }
