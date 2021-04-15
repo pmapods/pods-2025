@@ -1,6 +1,14 @@
 @extends('Layout.app')
 @section('local-css')
-
+<style>
+    .remove_list{
+        cursor: pointer;
+    }
+    .select2-results__option--disabled {
+        color: brown;
+        font-weight: bold;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -30,8 +38,8 @@
         <table id="authorDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr>
-                    <td>Kode</td>
-                    <td>Area</td>
+                    <td>Salespoint</td>
+                    <td>Region</td>
                     <td>Orang Pertama</td>
                     <td>Jenis Form</td>
                     <td>Tanggal Dibuat</td>
@@ -39,14 +47,16 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach ($authorizations as $authorization)
                 <tr>
-                    <td>Auth-0001</td>
-                    <td>Palangkaraya (HO)</td>
-                    <td>Kevin - Staff</td>
-                    <td>Form Pengadaan</td>
-                    <td>20 Februari 2020</td>
-                    <td>3 Tingkat</td>
+                    <td>{{ $authorization->salespoint->name }}</td>
+                    <td>{{ $authorization->salespoint->region_name() }}</td>
+                    <td>{{ $authorization->authorization_detail->first()->employee->name }}</td>
+                    <td>{{ $authorization->form_type_name() }}</td>
+                    <td>{{ $authorization->created_at->format('d F Y') }}</td>
+                    <td>{{ $authorization->authorization_detail->count() }} Tingkat</td>
                 </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -64,10 +74,10 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <div class="form-group">
                           <label for="">SalesPoint</label>
-                          <select class="form-control select2" name="salespoint_code" required>
+                          <select class="form-control select2 salespoint_select2" name="salespoint">
                             <option value="">-- Pilih SalesPoint --</option>
                             @foreach ($regions as $region)
                                 <optgroup label="{{$region->first()->region_name()}}">
@@ -79,6 +89,11 @@
                           </select>
                         </div>
                     </div>
+                    <div class="col-md-1 d-flex align-items-center pt-3">
+                        <span class="spinner-border text-danger loading_salespoint_select2" role="status" style="display:none">
+                            <span class="sr-only">Loading...</span>
+                        </span>
+                    </div>
                     <div class="col-md-6">
                         <div class="form-group">
                           <label for="">Jenis Form</label>
@@ -89,82 +104,206 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered table_level">
                             <thead>
                                 <tr>
                                     <th>Nama</th>
                                     <th>Jabatan</th>
                                     <th>Sebagai</th>
                                     <th>Level</th>
-                                    <th></th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- <tr>
-                                    <td class="text-center" colspan="5">Tingkat belum dipilih</td>
-                                </tr> --}}
-                                <tr>
-                                    <td>Karyawan 1</td>
-                                    <td>Staff</td>
-                                    <td>Pengaju</td>
-                                    <td>1</td>
-                                    <td><i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
-                                </tr>
-                                <tr>
-                                    <td>Karyawan 2</td>
-                                    <td>SPV</td>
-                                    <td>Atasan Langsung</td>
-                                    <td>2</td>
-                                    <td><i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
-                                </tr>
-                                <tr>
-                                    <td>Karyawan 3</td>
-                                    <td>SPV</td>
-                                    <td>Atasan Tidak Langsung</td>
-                                    <td>3</td>
-                                    <td><i class="fa fa-trash text-danger" aria-hidden="true"></i></td>
-                                </tr>
+                                <tr class="empty_row text-center"><td colspan="5">Otorasi belum dipilih</td></tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
                           <label for="">Pilih Karyawan</label>
-                          <select class="form-control select2">
+                          <select class="form-control select2 employee_select2" name="employee_id" disabled>
+                              <option value="" class="initial-select">--Pilih Karyawan --</option>
                           </select>
+                          <small class="text-danger">* Daftar karyawan yang muncul sesuai matriks otorisasi area yang didaftarkan</small>
                         </div>
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
                           <label for="">Sebagai</label>
-                          <input type="text" class="form-control">
+                          <input type="text" class="form-control as_text" placeholder="ex. Pengaju / Atasan Pengaju">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                           <label for="">&nbsp</label>
-                          <button type="button" class="btn btn-primary form-control">Tambah</button>
+                          <button type="button" class="btn btn-info form-control add_new_level">Tambah</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary">Tambah</button>
+                <button type="button" class="btn btn-primary" onclick="addAuthorization()">Tambah Otorisasi</button>
             </div>
         </div>
     </div>
+    <form action="/addauthorization" method="post" id="#addform">
+        @csrf
+        <div class="inputfield">
+        </div>
+    </form>
 </div>
 
 @endsection
 @section('local-js')
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
-            
-        });
 
-    })
+        });
+        $('.salespoint_select2').on('change', function () {
+            let closestmodal = $(this).closest('.modal');
+            let salespoint_id = $(this).find('option:selected').val();
+            let employee_select = closestmodal.find('.employee_select2');
+            let loading = closestmodal.find('.loading_salespoint_select2');
+
+            // initial state
+            employee_select.prop('disabled', true);
+            employee_select.find('option').remove();
+            var empty = new Option('-- Pilih Karyawan --', "", false, true);
+            employee_select.append(empty);
+            employee_select.trigger('change');
+
+            if (salespoint_id == "") {
+                return;
+            }
+            loading.show();
+            $.ajax({
+                type: "get",
+                url: "/getauthorizedemployeebysalesPoint/" + salespoint_id,
+                success: function (response) {
+                    let data = response.data;
+                    employee_select.prop('disabled', false);
+                    data.forEach(single_data => {
+                        let option_text = single_data.name + ' -- ' + single_data.position;
+                        var newOption = new Option(option_text, single_data.id, false, false);
+                        employee_select.append(newOption);
+                    })
+                    loading.hide();
+                },
+                error: function (response) {
+                    alert("error", response);
+                    loading.hide();
+                }
+            });
+        })
+        $('.add_new_level').on('click', function () {
+            let closestmodal = $(this).closest('.modal');
+            let employee_select = closestmodal.find('.employee_select2');
+            let as_text = closestmodal.find('.as_text');
+            let table_level = closestmodal.find('.table_level');
+
+
+            // check if all required field were selected
+            if (employee_select.val() == "" || as_text.val() == "") {
+                alert('Karyawan harus dipilih dan input sebagai harus diisi');
+            } else {
+                let id = employee_select.val();
+                let name = employee_select.find('option:selected').text().split('--')[0].trim();
+                let position = employee_select.find('option:selected').text().split('--')[1].trim();
+
+                table_level.find('tbody').append('<tr data-id="' + id + '" data-as="' + as_text.val() + '"><td>' + name + '</td><td>' + position + '</td><td>' + as_text.val() + '</td><td class="level"></td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+
+                employee_select.find('option:selected').prop('disabled', true);
+                employee_select.val('');
+                as_text.val('');
+                employee_select.trigger('change');
+                tableRefreshed($(this));
+            }
+        });
+    });
+    // remove button
+    function removeList(el) {
+        let closestmodal = $(el).closest('.modal');
+        let table = closestmodal.find('table');
+        let employee_select = closestmodal.find('.employee_select2');
+        let tr = $(el).closest('tr');
+        let employee_id = tr.data('id');
+        employee_select.val(employee_id);
+        employee_select.find('option:selected').prop('disabled', false);
+        employee_select.val("");
+        employee_select.trigger('change');
+        tr.remove();
+        tableRefreshed(table);
+    }
+    // table on refresh
+    function tableRefreshed(current_element) {
+        let closestmodal = $(current_element).closest('.modal');
+        let table_level = closestmodal.find('.table_level');
+        let salespoint_select = closestmodal.find('.salespoint_select2');
+        // check table level if table has data / tr or not
+        let row_count = 0;
+        table_level.find('tbody tr').not('.empty_row').each(function () {
+            row_count++;
+        });
+        if (row_count > 0) {
+            salespoint_select.prop('disabled', true);
+            table_level.find('.empty_row').remove();
+            table_level.find('.level').each(function (index, el) {
+                $(el).text(index + 1);
+            });
+        } else {
+            salespoint_select.prop('disabled', false);
+            table_level.append('<tr class="empty_row text-center"><td colspan="5">Otorasi belum dipilih</td></tr>');
+        }
+    }
+
+    // POST ADD AUTHORIZATION
+    function addAuthorization() {
+        let modal = $('#addAuthorModal');
+        let salespoint = modal.find('select[name="salespoint"]').val();
+        let form_type = modal.find('select[name="form_type"]').val();
+        let table_level = modal.find('.table_level');
+        let authorizationlist = [];
+        let list_count = 0;
+        if(salespoint==""){
+            alert('Harap memilih salespoint');
+            return;
+        }
+        if(form_type==""){
+            alert('Harap memilih jenis form');
+            return;
+        }
+        table_level.find('tbody tr').not('.empty_row').each(function (index,el){
+            list_count++;
+            let id = $(el).data('id');
+            let as = $(el).data('as');
+            let level = parseInt($(el).find('.level').text().trim());
+            authorizationlist.push({
+                "id":id,
+                "as":as,
+                "level":level
+            })
+        });
+        console.log(authorizationlist);
+        if(list_count<1){
+            alert('Minimal 1 otorisasi dipilih');
+            return;
+        }
+        // form filling
+        let form =  $('#addAuthorModal').find('form');
+        let inputfield = form.find('.inputfield');
+        inputfield.empty();
+        inputfield.append('<input type="hidden" name="salespoint" value="'+salespoint+'">');
+        inputfield.append('<input type="hidden" name="form_type" value="'+form_type+'">');
+        authorizationlist.forEach((item,index) => {
+            inputfield.append('<input type="hidden" name="authorization['+index+'][id]" value="'+item.id+'">')
+            inputfield.append('<input type="hidden" name="authorization['+index+'][as]" value="'+item.as+'">')
+            inputfield.append('<input type="hidden" name="authorization['+index+'][level]" value="'+item.level+'">')
+        });
+        form.submit();
+    }
 </script>
 @endsection

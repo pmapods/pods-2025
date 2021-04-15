@@ -11,6 +11,10 @@ class SalesPoint extends Model
     protected $table = 'salespoint';
     protected $primaryKey = 'id';
 
+    public function authorization(){
+        $this->hasMany(Authorization::class);
+    }
+
     public function region_name(){
         switch ($this->region) {
             case 0:

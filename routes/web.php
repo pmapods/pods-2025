@@ -63,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
     
         // Authorization
         Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
+        Route::get('/getauthorizedemployeebysalesPoint/{salespoint_id}',[AuthorizationController::class,'AuthorizedEmployeeBySalesPoint']);
+        Route::post('/addauthorization',[AuthorizationController::class, 'addAuthorization']);
     
         // VENDOR
         Route::get('/vendor',[VendorController::class, 'vendorView']);

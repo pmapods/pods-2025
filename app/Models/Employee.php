@@ -33,4 +33,8 @@ class Employee extends Authenticatable
                 break;
         }
     }
+
+    public function authorization_detail(){
+        $this->hasMany(AuthorizationDetail::class);
+    }
 }

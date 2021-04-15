@@ -46,14 +46,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-      <!-- Notifications Dropdown Menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="fad fa-bell"></i>
-          <span class="badge badge-primary navbar-badge">5</span>
-        </a>
+      <li class="nav-item font-weight-bold d-flex justify-content-center flex-column m-0" style="font-weight: 600 !important; color: #FFF; font-size: 17px">
+          Selamat Datang, {{Auth::user()->name}}
       </li>
-      {{-- Language Dropdown --}}
       {{-- Profile Dropdown --}}
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">

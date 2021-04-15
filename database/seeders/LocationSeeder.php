@@ -18,20 +18,54 @@ public function run()
         $faker = Faker::create('id_ID');
         // 17 region
         $count=0;
-        for($i=0; $i<17; $i++){
-            // sample 10 location each region
-            for($j=0; $j<5; $j++){
-                $salespoint = new SalesPoint;
-                $salespoint->code           = 'samplecode-'.$count;
-                $salespoint->name           = $faker->city();
-                $salespoint->region         = $i;
-                $salespoint->status         = array_rand ( [0,1,2,3] );
-                $salespoint->trade_type     = array_rand([0, 1]);
-                $salespoint->isJawaSumatra  = array_rand([0, 1]);
-                $salespoint->grom           = $faker->firstName();
-                $salespoint->save();
-                $count++;
-            }
+        $data =[
+            [
+                "code" => "1001000",
+                "name" => "DAAN MOGOT MT",
+                "region" => 0,
+                "status" => 1,
+                "trade_type" => 1,
+                "isJawaSumatra" => 1,
+                "grom" => "Hafid Fauzi",
+            ],
+            [
+                "code" => "1000913",
+                "name" => "JABODETABEK MT",
+                "region" => 0,
+                "status" => 0,
+                "trade_type" => 1,
+                "isJawaSumatra" => 1,
+                "grom" => "Hafid Fauzi",
+            ],
+            [
+                "code" => "1000570",
+                "name" => "MEDAN TIMUR",
+                "region" => 1,
+                "status" => 1,
+                "trade_type" => 0,
+                "isJawaSumatra" => 1,
+                "grom" => "Rudy Maryadin",
+            ],
+            [
+                "code" => "1000810",
+                "name" => "BINJAI",
+                "region" => 1,
+                "status" => 0,
+                "trade_type" => 0,
+                "isJawaSumatra" => 1,
+                "grom" => "Rudy Maryadin",
+            ],
+        ];
+        foreach ($data as $salespoint){
+            $newsalespoint                 = new SalesPoint;
+            $newsalespoint->code           = $salespoint['code'];
+            $newsalespoint->name           = $salespoint['name'];
+            $newsalespoint->region         = $salespoint['region'];
+            $newsalespoint->status         = $salespoint['status'];
+            $newsalespoint->trade_type     = $salespoint['trade_type'];
+            $newsalespoint->isJawaSumatra  = $salespoint['isJawaSumatra'];
+            $newsalespoint->grom           = $salespoint['grom'];
+            $newsalespoint->save();
         }
     }
 }
