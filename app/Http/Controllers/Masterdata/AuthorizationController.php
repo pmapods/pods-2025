@@ -43,6 +43,33 @@ class AuthorizationController extends Controller
         }
     }
 
+    public function updateAuthorization(Request $request){
+        try {
+            DB::beginTransaction();
+            $authorization = Authorization::findOrFail($request->authorization_id);
+            $authorization->salespoint_id  = $request->salespoint;
+            $authorization->form_type      = $request->form_type;
+            $authorization->save();
+
+            foreach ($authorization->authorization_detail as $old){
+                $old->delete();
+            }
+            foreach ($request->authorization as $data){
+                $detail                    = new AuthorizationDetail;
+                $detail->authorization_id  = $authorization->id;
+                $detail->employee_id       = $data['id'];
+                $detail->sign_as           = $data['as'];
+                $detail->level             = $data['level'];
+                $detail->save();
+            }
+            DB::commit();
+            return back()->with('success', 'Berhasil update otorisasi');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            return back()->with('error','Gagal update otorisasi "'.$ex->getMessage().'"');
+        }
+    }
+
     public function deleteAuthorization(Request $request){
         try {
             DB::beginTransaction();
