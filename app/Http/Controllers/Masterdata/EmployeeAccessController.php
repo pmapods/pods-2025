@@ -40,7 +40,7 @@ class EmployeeAccessController extends Controller
             return redirect('/employeeaccess')->with('success','Berhasil update data akses karyawan');
         } catch (\Exception $ex) {
             dd($ex);
-            return redirect('/employeeaccess')->with('error','Gagal update data akses karyawan');
+            return redirect('/employeeaccess')->with('error','Gagal update data akses karyawan "'.$ex->getMessage().'"');
         }
         
 

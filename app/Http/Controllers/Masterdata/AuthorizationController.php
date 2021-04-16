@@ -39,7 +39,7 @@ class AuthorizationController extends Controller
             return back()->with('success', 'Berhasil menambahkan otorisasi untuk salespoint');
         } catch (\Exception $ex) {
             DB::rollback();
-            return back()->with('error','Gagal membuat otorisasi');
+            return back()->with('error','Gagal membuat otorisasi "'.$ex->getMessage().'"');
         }
     }
 
@@ -80,7 +80,7 @@ class AuthorizationController extends Controller
             return back()->with('success','Berhasil menghapus otorasi');
         } catch (\Exception $ex) {
             DB::rollback();
-            return back()->with('error','Gagal menghapus otorisasi');
+            return back()->with('error','Gagal menghapus otorisasi "'.$ex->getMessage().'"');
         }
     }
 

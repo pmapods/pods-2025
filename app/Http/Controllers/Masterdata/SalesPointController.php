@@ -34,7 +34,7 @@ class SalesPointController extends Controller
                 return back()->with('success','Sales Point berhasil terdaftar ('.$newSalesPoint->name.'('.$newSalesPoint->region_name().')'.')');
             }
         }catch (\Exception $ex) {
-            return back()->with('error','Gagal menambahkan salespoint, silahkan coba kembali atau hubungi admin');
+            return back()->with('error','Gagal menambahkan salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
         }
     }
 
@@ -51,7 +51,7 @@ class SalesPointController extends Controller
             $salespoint->save();
             return back()->with('success','Berhasil memperbarui data sales point '.$request->name);
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal memperbarui data salespoint, silahkan coba kembali atau hubungi admin');
+            return back()->with('error','Gagal memperbarui data salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
         }
     }
     public function deleteSalesPoint(Request $request){
@@ -60,7 +60,7 @@ class SalesPointController extends Controller
             $salespoint->delete();
             return back()->with('success','Berhasil menghapus salespoint '.$salespoint->name);
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal menghapus salespoint, silahkan coba kembali atau hubungi admin');
+            return back()->with('error','Gagal menghapus salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
         }
     }
 }
