@@ -234,16 +234,25 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-danger" onclick="deleteAuthorization()">Hapus</button>
                 <button type="button" class="btn btn-primary" onclick="updateAuthorization()">Update Otorisasi</button>
             </div>
         </div>
     </div>
-    <form action="/updateauthorization" method="post" id="#updateform">
+    <form action="/updateauthorization" method="post" id="updateform">
         @csrf
+        @method('patch')
         <input type="hidden" name="authorization_id">
         <div class="inputfield">
         </div>
     </form>
+    
+    <form action="/deleteauthorization" method="post" id="deleteform">
+        @csrf
+        @method('delete')
+        <input type="hidden" name="authorization_id">
+    </form>
+    
 </div>
 
 @endsection
@@ -457,7 +466,7 @@
             return;
         }
         // form filling
-        let form =  $('#detailAuthorModal').find('form');
+        let form =  $('#updateform');
         let inputfield = form.find('.inputfield');
         inputfield.empty();
         inputfield.append('<input type="hidden" name="salespoint" value="'+salespoint+'">');
@@ -468,6 +477,14 @@
             inputfield.append('<input type="hidden" name="authorization['+index+'][level]" value="'+item.level+'">')
         });
         form.submit();
+    }
+
+    function deleteAuthorization(){
+        if (confirm('Otorisasi akan dihapus dan tidak dapat dikembalikan. Lanjutkan?')) {
+            $('#deleteform').submit();
+        } else {
+
+        }
     }
 </script>
 @endsection

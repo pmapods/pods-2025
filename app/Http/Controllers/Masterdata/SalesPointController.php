@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\SalesPoint;
+use App\Models\EmployeeLocationAccess;
 
 class SalesPointController extends Controller
 {
@@ -20,7 +21,7 @@ class SalesPointController extends Controller
         try{
             $checksalespoint = SalesPoint::where('code', $request->code)->first();
             if($checksalespoint){
-                return back()->with('error','Kode sales point sudah terdaftar ('.$checksalespoint->name.'('.$checksalespoint->region_name().')'.')');
+                return back()->with('error','Kode sales point sudah terdaftar '.$checksalespoint->name.' -- '.$checksalespoint->region_name());
             }else{
                 $newSalesPoint = new SalesPoint;
                 $newSalesPoint->code           = $request->code;
@@ -31,7 +32,14 @@ class SalesPointController extends Controller
                 $newSalesPoint->isJawaSumatra  = $request->isJawaSumatra;
                 $newSalesPoint->grom           = $request->grom;
                 $newSalesPoint->save();
-                return back()->with('success','Sales Point berhasil terdaftar ('.$newSalesPoint->name.'('.$newSalesPoint->region_name().')'.')');
+
+                // give new salespoint access to admin
+                $newAccess = new EmployeeLocationAccess;
+                $newAccess->employee_id = 1;
+                $newAccess->salespoint_id = $newSalesPoint->id;
+                $newAccess->save();
+
+                return back()->with('success','Sales Point berhasil terdaftar '.$newSalesPoint->name.' -- '.$newSalesPoint->region_name());
             }
         }catch (\Exception $ex) {
             return back()->with('error','Gagal menambahkan salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
@@ -58,6 +66,13 @@ class SalesPointController extends Controller
         try {
             $salespoint           = Salespoint::findOrFail($request->salespoint_id);
             $salespoint->delete();
+
+            // remove semua akses di salespoint terkait
+            $salespoint_access = EmployeeLocationAccess::where('salespoint_id',$request->salespoint_id)->get();
+            foreach($salespoint_access as $access){
+                $access->delete();
+            }
+
             return back()->with('success','Berhasil menghapus salespoint '.$salespoint->name);
         } catch (\Exception $ex) {
             return back()->with('error','Gagal menghapus salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');

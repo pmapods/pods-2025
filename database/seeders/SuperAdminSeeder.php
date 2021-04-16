@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\EmployeePosition;
 use App\Models\Employee;
+use App\Models\EmployeeLocationAccess;
+use App\Models\SalesPoint;
 use Hash;
 
 class SuperAdminSeeder extends Seeder
@@ -31,5 +33,13 @@ class SuperAdminSeeder extends Seeder
         $employee->email                  = 'pma_purchasing@pinusmerahabadi.co.id';
         $employee->phone                  = '08123456789';
         $employee->save();
+
+        // kasih full akses untuk ke seluruh area
+        foreach(Salespoint::all() as $salespoint){
+            $newAccess = new EmployeeLocationAccess;
+            $newAccess->employee_id = $employee->id;
+            $newAccess->salespoint_id = $salespoint->id;
+            $newAccess->save();
+        }
     }
 }

@@ -73,8 +73,10 @@ class AuthorizationController extends Controller
     public function deleteAuthorization(Request $request){
         try {
             DB::beginTransaction();
-            $authorization = Authorization::find($request->authorization_id);
-            $authorization->authorization_detail->delete();
+            $authorization = Authorization::findOrFail($request->authorization_id);
+            foreach ($authorization->authorization_detail as $old){
+                $old->delete();
+            }
             $authorization->delete();
             DB::commit();
             return back()->with('success','Berhasil menghapus otorasi');
