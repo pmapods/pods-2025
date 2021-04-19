@@ -1,3 +1,4 @@
+let autoNumeric_field;
 $(document).ready(function(){
     $('.sidebar .active').removeClass('active');
 
@@ -10,10 +11,12 @@ $(document).ready(function(){
     }
 
     // rupiah formatter
-    new AutoNumeric.multiple('.rupiah', {
+    autoNumeric_field = new AutoNumeric.multiple('.rupiah', {
         currencySymbol: "Rp ",
         decimalCharacter: ",",
         digitGroupSeparator: ".",
+        emptyInputBehavior: "zero",
+        unformatOnSubmit: true,
     });
 
     // Selection search with select2

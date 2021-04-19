@@ -60,12 +60,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
         Route::patch('/updatesalespoint',[SalesPointController::class, 'updateSalesPoint']);
         Route::delete('/deletesalespoint',[SalesPointController::class, 'deleteSalesPoint']);
+        Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
     
         // Authorization
         Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
         Route::get('/getauthorizedemployeebysalesPoint/{salespoint_id}',[AuthorizationController::class,'AuthorizedEmployeeBySalesPoint']);
         Route::post('/addauthorization',[AuthorizationController::class, 'addAuthorization']);
-        Route::post('/updateauthorization',[AuthorizationController::class, 'updateAuthorization']);
+        Route::patch('/updateauthorization',[AuthorizationController::class, 'updateAuthorization']);
+        Route::delete('/deleteauthorization',[AuthorizationController::class, 'deleteAuthorization']);
     
         // VENDOR
         Route::get('/vendor',[VendorController::class, 'vendorView']);

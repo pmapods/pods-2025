@@ -325,7 +325,7 @@
                     
                 },
                 error: function (response) {
-                    alert("error", response);
+                    alert("error");
                     loading.hide();
                 }
             });

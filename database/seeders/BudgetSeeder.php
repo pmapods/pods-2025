@@ -16,7 +16,7 @@ class BudgetSeeder extends Seeder
      */
     public function run()
     {
-        $category_list = ["Office Equipment","Fixture and Furniture","Warehouse Equipment","Computer","Others"];
+        $category_list = ["Office Equipment","Fixture and Furniture","Warehouse Equipment","Computer", "Others"];
         $category_code = ["EO","FF","WE","TC","OT"];
         foreach($category_list as $key=>$list){
             $newCategory = new BudgetPricingCategory;

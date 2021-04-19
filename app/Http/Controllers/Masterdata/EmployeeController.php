@@ -14,6 +14,7 @@ use DB;
 
 use App\Models\EmployeePosition;
 use App\Models\Employee;
+use App\Models\AuthorizationDetail;
 
 class EmployeeController extends Controller
 {
@@ -111,5 +112,4 @@ class EmployeeController extends Controller
             return back()->with('error','Gagal mengaktifkan karyawan, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
         }
     }
-
 }

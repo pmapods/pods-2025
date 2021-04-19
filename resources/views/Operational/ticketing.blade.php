@@ -1,6 +1,7 @@
 @extends('Layout.app')
 @section('local-css')
-
+<style>
+</style>
 @endsection
 
 @section('content')
@@ -41,15 +42,12 @@
                     </th>
                     <th>
                         Area
-                        {{-- HO [nama area] --}}
                     </th>
                     <th>
                         Jenis
-                        {{-- barang / jasa --}}
                     </th>
                     <th>
                         Jenis Budget
-                        {{-- budget / non budget --}}
                     </th>
                     <th>
                         Tanggal Pengadaan
@@ -61,17 +59,10 @@
         </table>
     </div>
 </div>
-@include('Operational.addTicketModal')
+
+@include('Operational.ticketing_modal')
 
 @endsection
 @section('local-js')
-<script>
-    $(document).ready(function(){
-        var table = $('#ticketDT').DataTable(datatable_settings);
-        $('#ticketDT tbody').on('click', 'tr', function () {
-
-        });
-    })
-</script>
-<script src="js/addticket.js"></script>
+<script src="js/ticketing.js"></script>
 @endsection

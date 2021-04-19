@@ -31,15 +31,16 @@ class EmployeeAccessController extends Controller
                     $access->delete();
                 }
             }
-            foreach($request->location as $access){
-                $newAccess = new EmployeeLocationAccess;
-                $newAccess->employee_id = $request->employee_id;
-                $newAccess->salespoint_id = $access;
-                $newAccess->save();
+            if($request->location!=null){
+                foreach($request->location as $access){
+                    $newAccess = new EmployeeLocationAccess;
+                    $newAccess->employee_id = $request->employee_id;
+                    $newAccess->salespoint_id = $access;
+                    $newAccess->save();
+                }
             }
             return redirect('/employeeaccess')->with('success','Berhasil update data akses karyawan');
         } catch (\Exception $ex) {
-            dd($ex);
             return redirect('/employeeaccess')->with('error','Gagal update data akses karyawan "'.$ex->getMessage().'"');
         }
         

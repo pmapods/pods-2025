@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\SalesPoint;
 use App\Models\EmployeeLocationAccess;
+use App\Models\Employee;
+use App\Models\Authorization;
 
 class SalesPointController extends Controller
 {
@@ -77,5 +79,26 @@ class SalesPointController extends Controller
         } catch (\Exception $ex) {
             return back()->with('error','Gagal menghapus salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
         }
+    }
+    public function getSalesAuthorization($salespoint_id) {
+        $authorizations = Authorization::where('salespoint_id',$salespoint_id)->get();
+        $data = array();
+        foreach($authorizations as $authorization){
+            $single_data = (object)[];
+            $single_data->id = $authorization->id;
+            $single_data->detail = array();
+            foreach($authorization->authorization_detail->sortBy('level') as $detail){
+                $single_detail = (object)[];
+                $single_detail->name = $detail->employee->name;
+                $single_detail->position = $detail->employee->employee_position->name;
+                $single_detail->as = $detail->sign_as;
+                $single_detail->level = $detail->level;
+                array_push($single_data->detail,$single_detail);
+            }
+            array_push($data,$single_data);
+        }
+        return response()->json([
+            'data' => $data
+        ]);
     }
 }
