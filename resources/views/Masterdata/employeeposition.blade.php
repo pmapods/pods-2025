@@ -70,7 +70,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
-                          <label for="">Nama Jabatan</label>
+                          <label class="required_field">Nama Jabatan</label>
                           <input type="text" class="form-control" name="name" aria-describedby="helpId" placeholder="Masukkan nama Jabatan" required>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
-                          <label for="">Nama Jabatan</label>
+                          <label class="required_field">Nama Jabatan</label>
                           <input type="text" class="form-control" name="name" aria-describedby="helpId" placeholder="Masukkan nama Jabatan" required>
                         </div>
                     </div>

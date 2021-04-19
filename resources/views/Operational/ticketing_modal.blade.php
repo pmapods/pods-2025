@@ -13,19 +13,19 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label for="">Tanggal Pengajuan</label>
+                          <label class="required_field">Tanggal Pengajuan</label>
                           <input type="date" class="form-control" value="{{now()->format('Y-m-d')}}" disabled>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label for="">Pembuat Form</label>
+                          <label class="required_field">Pembuat Form</label>
                           <input type="text" class="form-control" value="{{Auth::user()->name}}" disabled>
                         </div>
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                            <label for="">Pilihan Area / Salespoint</label>
+                            <label class="required_field">Pilihan Area / Salespoint</label>
                             <select class="form-control select2 salespoint_select2">
                             <option value="" data-isjawasumatra="-1">-- Pilih Salespoint --</option>
                             @foreach ($available_salespoints as $region)
@@ -36,7 +36,7 @@
                                 </optgroup>
                             @endforeach
                             </select>
-                            <small class="text-danger">Salespoint yang muncul berdasarkan hak akses tiap akun</small>
+                            <small class="text-danger">* Salespoint yang muncul berdasarkan hak akses tiap akun</small>
                         </div>
                     </div>
                     <div class="col-md-1 d-flex align-items-center">
@@ -45,8 +45,7 @@
                         </span>
                     </div>
                     <div class="col-md-6 form-group">
-                        <label for="">Pilih Otorisasi</label>
-                          <label for=""></label>
+                        <label class="required_field">Pilih Otorisasi</label>
                           <select class="form-control select2 authorization_select2" disabled>
                             <option value="">-- Pilih Otorisasi --</option>
                           </select>
@@ -60,7 +59,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label for="">Jenis Item</label>
+                          <label class="required_field">Jenis Item</label>
                           <select class="form-control" name="item_type" required>
                             <option value="">-- Pilih Jenis Item --</option>
                             <option value="0">Barang</option>
@@ -70,7 +69,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label for="">Jenis Pengadaan</label>
+                          <label class="required_field">Jenis Pengadaan</label>
                           <select class="form-control" name="request_type" id="">
                                 <option value="">-- Pilih Jenis Pengadaan --</option>
                                 <option>Replace</option>
@@ -80,7 +79,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label for="">Jenis Budget</label>
+                          <label class="required_field">Jenis Budget</label>
                           <select class="form-control budget_type" disabled>
                             <option value="">-- Pilih Jenis Budget --</option>
                             <option value="0">Budget</option>
@@ -89,7 +88,7 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <h5 class="font-weight-bold">Daftar Barang</h5>
+                        <h5 class="font-weight-bold required_field">Daftar Barang</h5>
                         <table class="table table-bordered table_item">
                             <thead>
                                 <tr>
@@ -166,7 +165,7 @@
                     
                     <div class="col-md-12">
                         <div class="form-group">
-                          <label for="">Notes</label>
+                          <label class="optional_field">Notes</label>
                           <textarea class="form-control" name="notes" rows="3"></textarea>
                         </div>
                     </div>

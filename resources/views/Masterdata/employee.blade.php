@@ -89,13 +89,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                              <label for="">Nama Karyawan</label>
+                              <label class="required_field">Nama Karyawan</label>
                               <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                              <label for="">Pilih Jabatan</label>
+                              <label class="required_field">Pilih Jabatan</label>
                               <select class="form-control select2" name="position" required>
                                 <option value="">-- Pilih Jabatan --</option>
                                 @foreach ($positions as $position)
@@ -106,33 +106,33 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                            <label for="">Nomor Telfon (optional)</label>
+                            <label class="optional_field">Nomor Telfon</label>
                             <input type="text" class="form-control" name="phone" placeholder="ex 08xxxxxxxxxx">
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label for="">Email Karyawan</label>
+                              <label class="required_field">Email Karyawan</label>
                               <input type="email" class="form-control" name="email" placeholder="Masukkan nama karyawan" required>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label for="">username</label>
+                              <label class="required_field">username</label>
                               <input type="text" class="form-control" name="username" placeholder="Masukkan username (ex: userhobandung1)" required>
                               <small class="text-info">username dan email bersifat unik dan dapat digunakan untuk melakukan login. <b>Usename dan Email tidak dapat diubah setelah dibuat !</b></small>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label for="">Kata Sandi</label>
+                              <label class="required_field">Kata Sandi</label>
                               <input type="password" class="form-control" oninput="validatepassword()" value="12345678" name="password" placeholder="Masukkan kata sandi" id="password" required>
                               <small class="text-danger">* karyawan akan melakukan pergantian password saat pertama kali melakukan login. Kata sandi ini merupakan kata sandi untuk pertama kali / sementara</small>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label for="">Konfirmasi Kata Sandi</label>
+                              <label class="required_field">Konfirmasi Kata Sandi</label>
                               <input type="password" class="form-control" oninput="validatepassword()" value="12345678" id="confirmpassword" name="conf_password" placeholder="Konfirmasi Kata sandi" required>
                               <small class="text-danger d-none" id="confpassworderror">konfirmasi kata sandi tidak sesuai</small>
                             </div>
@@ -166,13 +166,13 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                              <label for="">Nama Karyawan</label>
+                              <label class="required_field">Nama Karyawan</label>
                               <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                              <label for="">Pilih Jabatan</label>
+                              <label class="required_field">Pilih Jabatan</label>
                               <select class="form-control select2" name="position" required>
                                 <option value="">-- Pilih Jabatan --</option>
                                 @foreach ($positions as $position)
@@ -183,19 +183,19 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                            <label for="">Nomor Telfon (optional)</label>
+                            <label class="optional_field">Nomor Telfon</label>
                             <input type="text" class="form-control" name="phone" placeholder="ex 08xxxxxxxxxx">
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label for="">Email Karyawan</label>
+                              <label class="required_field">Email Karyawan</label>
                               <input type="email" class="form-control" name="email" placeholder="Masukkan nama karyawan" readonly>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label for="">username</label>
+                              <label class="required_field">username</label>
                               <input type="text" class="form-control" name="username" placeholder="Masukkan username (ex: userhobandung1)" readonly>
                             </div>
                         </div>

@@ -76,7 +76,7 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label for="">SalesPoint</label>
+                          <label class="required_field">SalesPoint</label>
                           <select class="form-control select2 salespoint_select2" name="salespoint">
                             <option value="">-- Pilih SalesPoint --</option>
                             @foreach ($regions as $region)
@@ -96,7 +96,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label for="">Jenis Form</label>
+                          <label class="required_field">Jenis Form</label>
                           <select class="form-control" name="form_type" required>
                             <option value="">-- Pilih Jenis Form --</option>
                             <option value="0">Form Pengadaan</option>
@@ -121,7 +121,7 @@
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label for="">Pilih Karyawan</label>
+                          <label>Pilih Karyawan</label>
                           <select class="form-control select2 employee_select2" name="employee_id" disabled>
                               <option value="" class="initial-select">--Pilih Karyawan --</option>
                           </select>
@@ -130,13 +130,13 @@
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label for="">Sebagai</label>
+                          <label>Sebagai</label>
                           <input type="text" class="form-control as_text" placeholder="ex. Pengaju / Atasan Pengaju">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                          <label for="">&nbsp</label>
+                          <label>&nbsp</label>
                           <button type="button" class="btn btn-info form-control add_new_level">Tambah</button>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label for="">SalesPoint</label>
+                          <label class="required_field">SalesPoint</label>
                           <select class="form-control select2 salespoint_select2" name="salespoint" disabled>
                             <option value="">-- Pilih SalesPoint --</option>
                             @foreach ($regions as $region)
@@ -187,7 +187,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                          <label for="">Jenis Form</label>
+                          <label class="required_field">Jenis Form</label>
                           <select class="form-control" name="form_type" required>
                             <option value="">-- Pilih Jenis Form --</option>
                             <option value="0">Form Pengadaan</option>
@@ -211,7 +211,7 @@
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label for="">Pilih Karyawan</label>
+                          <label>Pilih Karyawan</label>
                           <select class="form-control select2 employee_select2" name="employee_id" disabled>
                               <option value="" class="initial-select">--Pilih Karyawan --</option>
                           </select>
@@ -220,13 +220,13 @@
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label for="">Sebagai</label>
+                          <label>Sebagai</label>
                           <input type="text" class="form-control as_text" placeholder="ex. Pengaju / Atasan Pengaju">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                          <label for="">&nbsp</label>
+                          <label>&nbsp</label>
                           <button type="button" class="btn btn-info form-control add_new_level">Tambah</button>
                         </div>
                     </div>

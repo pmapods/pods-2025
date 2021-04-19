@@ -87,7 +87,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Kode Sales Point</label>
+                                <label class="required_field">Kode Sales Point</label>
                                 <input type="text" class="form-control" name="code"
                                     placeholder="Masukkan Kode Sales Point" required>
                                 <small class="form-text text-danger">* kode sales point bersifat unik / tidak bisa sama
@@ -97,14 +97,14 @@
                         <div class="col-md-6"></div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Nama Area</label>
+                                <label class="required_field">Nama Area</label>
                                 <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area"
                                     required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Pilih Region</label>
+                                <label class="required_field">Pilih Region</label>
                                 <select class="form-control select2" name="region" required>
                                     <option value="">-- Pilih Region --</option>
                                     <option value="0">MT CENTRAL 1</option>
@@ -129,7 +129,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Status Point</label>
+                                <label class="required_field">Status Point</label>
                                 <select class="form-control" name="status" required>
                                     <option value="">-- Pilih Status --</option>
                                     <option value="0">Depo</option>
@@ -142,7 +142,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Trade Type</label>
+                                <label class="required_field">Trade Type</label>
                                 <select class="form-control" name="trade_type" required>
                                     <option value="">-- Pilih Tipe Trade --</option>
                                     <option value="0">General Trade</option>
@@ -152,7 +152,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Apakah area Jawa Sumatra</label>
+                                <label class="required_field">Apakah area Jawa Sumatra</label>
                                 <select class="form-control" name="isJawaSumatra" required>
                                     <option value="">-- Pilih --</option>
                                     <option value="1">Ya (Dalam Jawa Sumatra)</option>
@@ -162,7 +162,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Nama GROM (optional)</label>
+                                <label class="optional_field">Nama GROM</label>
                                 <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
                             </div>
                         </div>
@@ -197,7 +197,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Kode Sales Point</label>
+                                <label class="required_field">Kode Sales Point</label>
                                 <input type="text" class="form-control" name="code"
                                     placeholder="Masukkan Kode Sales Point" readonly>
                             </div>
@@ -205,14 +205,14 @@
                         <div class="col-md-6"></div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Nama Area</label>
+                                <label class="required_field">Nama Area</label>
                                 <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area"
                                     required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Pilih Region</label>
+                                <label class="required_field">Pilih Region</label>
                                 <select class="form-control select2" name="region" required>
                                     <option value="">-- Pilih Region --</option>
                                     <option value="0">MT CENTRAL 1</option>
@@ -237,7 +237,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Status Point</label>
+                                <label class="required_field">Status Point</label>
                                 <select class="form-control" name="status" required>
                                     <option value="">-- Pilih Status --</option>
                                     <option value="0">Depo</option>
@@ -250,7 +250,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Trade Type</label>
+                                <label class="required_field">Trade Type</label>
                                 <select class="form-control" name="trade_type" required>
                                     <option value="">-- Pilih Tipe Trade --</option>
                                     <option value="0">General Trade</option>
@@ -260,7 +260,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">Apakah area Jawa Sumatra</label>
+                                <label class="required_field">Apakah area Jawa Sumatra</label>
                                 <select class="form-control" name="isJawaSumatra" required>
                                     <option value="">-- Pilih --</option>
                                     <option value="1">Ya (Dalam Jawa Sumatra)</option>
@@ -270,7 +270,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Nama GROM (optional)</label>
+                                <label class="optional_field">Nama GROM</label>
                                 <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
                             </div>
                         </div>
