@@ -214,7 +214,6 @@ function removeList(el) {
     tableRefreshed(closestmodal);
 }
 
-// refresh table
 // table on refresh
 function tableRefreshed(current_element) {
     let closestmodal = $(current_element).closest('.modal');
@@ -236,3 +235,71 @@ function tableRefreshed(current_element) {
         table_item.find('tbody').append('<tr class="empty_row text-center"><td colspan="7">Item belum dipilih</td></tr>');
     }
 }
+
+// add vendor
+function addVendor(el){
+    let closestmodal = $(el).closest('.modal');
+    let select_vendor = closestmodal.find('.select_vendor');
+    let table_vendor = closestmodal.find('.table_vendor');
+    let data = select_vendor.find('option:selected').data('vendor');
+    if(select_vendor.val()==""){
+        alert('Harap pilih vendor terlebih dulu');
+        return;
+    }
+    table_vendor.find('tbody').append('<tr><td>'+data.code+'</td><td>'+data.name+'</td><td>'+data.salesperson+'</td><td>'+data.phone+'</td><td>Terdaftar</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>'
+    );
+    select_vendor.val('');
+    select_vendor.trigger('change');
+    tableVendorRefreshed(select_vendor);
+}
+
+function addOTVendor(el){
+    let closestmodal = $(el).closest('.modal');
+    let vendor_name = closestmodal.find('.ot_vendor_name');
+    let vendor_sales = closestmodal.find('.ot_vendor_sales');
+    let vendor_phone = closestmodal.find('.ot_vendor_phone');
+    let table_vendor = closestmodal.find('.table_vendor');
+    if(vendor_name.val()==""){
+        alert('Nama Vendor tidak boleh kosong');
+        return;
+    }
+    if(vendor_sales.val()==""){
+        alert('Sales Vendor tidak boleh kosong');
+        return;
+    }
+    if(vendor_phone.val()==""){
+        alert('Telfon Vendor tidak boleh kosong');
+        return;
+    }
+    table_vendor.find('tbody').append('<tr><td>-</td><td>'+vendor_name.val()+'</td><td>'+vendor_sales.val()+'</td><td>'+vendor_phone.val()+'</td><td>One Time</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>'
+    );
+    vendor_name.val('');
+    vendor_sales.val('');
+    vendor_phone.val('');
+    tableVendorRefreshed(vendor_name);
+}
+
+// remove vendor
+function removeVendor(el) {
+    let closestmodal = $(el).closest('.modal');
+    let tr = $(el).closest('tr');
+    tr.remove();
+    tableVendorRefreshed(closestmodal);
+}
+
+// table on refresh
+function tableVendorRefreshed(current_element) {
+    let closestmodal = $(current_element).closest('.modal');
+    let table_vendor = closestmodal.find('.table_vendor');
+
+    let row_count = 0;
+    table_vendor.find('tbody tr').not('.empty_row').each(function () {
+        row_count++;
+    });
+    if (row_count > 0) {
+        table_vendor.find('.empty_row').remove();
+    } else {
+        table_vendor.find('tbody').append('<tr class="empty_row text-center"><td colspan="6">Vendor belum dipilih</td></tr>');
+    }
+}
+

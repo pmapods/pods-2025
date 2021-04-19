@@ -9,7 +9,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -51,7 +51,7 @@
                           </select>
                         <small class="text-danger">* Pilihan otorisasi yang muncul berdasarkan salespoint yang dipilih. Untuk membuat sistem otorisasi dapat melakukan request ke super admin</small>
                     </div>
-                    <div class="col-md-12 border p-3 mb-3">
+                    <div class="col-md-12 box p-3 mb-3">
                         <div class="font-weight-bold h5">Urutan Otorisasi</div>
                         <div class="authorization_list_field row row-cols-md-3 row-cols-2 p-3">
                             <div>Belum memilih otorisasi</div>
@@ -87,7 +87,7 @@
                           </select>
                         </div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-12 box p-3 mt-3">
                         <h5 class="font-weight-bold required_field">Daftar Barang</h5>
                         <table class="table table-bordered table_item">
                             <thead>
@@ -162,8 +162,69 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-12 box p-3 mt-3">
+                        <h5 class="font-weight-bold required_field">Daftar Vendor</h5>
+                        <table class="table table-bordered table_vendor">
+                            <thead>
+                                <tr>
+                                    <th>Kode Vendor</th>
+                                    <th>Nama Vendor</th>
+                                    <th>Sales Person</th>
+                                    <th>Telfon</th>
+                                    <th>Tipe</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="empty_row text-center"><td colspan="6">Vendor belum dipilih</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h5>Vendor Terdaftar</h5>
+                                <div class="form-group">
+                                  <label class="required_field">Pilih Vendor</label>
+                                  <select class="form-control select2 select_vendor">
+                                      <option value="">-- Pilih Vendor --</option>
+                                      @foreach ($vendors as $vendor)
+                                          <option value="{{$vendor->id}}" data-vendor="{{$vendor}}">{{$vendor->name}}</option>
+                                      @endforeach
+                                  </select>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="addVendor(this)">Tambah Vendor Terdaftar</button>
+                            </div>
+                            <div class="col-md-8">
+                                <h5>One Time Vendor</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                          <label class="required_field">Nama Vendor</label>
+                                          <input type="text" class="form-control ot_vendor_name" placeholder="Masukan nama vendor">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                          <label class="required_field">Sales Person</label>
+                                          <input type="text" class="form-control ot_vendor_sales" placeholder="Masukkan nama sales">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                          <label class="required_field">Telfon</label>
+                                          <input type="text" class="form-control ot_vendor_phone" placeholder="Masukkan nomor telfon">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-primary" onclick="addOTVendor(this)">Tambah One Time Vendor</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="col-md-12">
+                    <div class="col-md-12 mt-3">
                         <div class="form-group">
                           <label class="optional_field">Notes</label>
                           <textarea class="form-control" name="notes" rows="3"></textarea>
@@ -172,7 +233,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 <button type="button" class="btn btn-primary">Save</button>
             </div>
         </div>

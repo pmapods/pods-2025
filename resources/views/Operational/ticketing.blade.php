@@ -1,6 +1,12 @@
 @extends('Layout.app')
 @section('local-css')
 <style>
+    .box {
+        box-shadow: 0px 1px 2px rgba(0, 0, 0,0.25);
+        border : 1px solid;
+        border-color: gainsboro;
+        border-radius: 0.5em;
+    }
 </style>
 @endsection
 
