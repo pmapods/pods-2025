@@ -72,8 +72,8 @@
                           <label class="required_field">Jenis Pengadaan</label>
                           <select class="form-control" name="request_type" id="">
                                 <option value="">-- Pilih Jenis Pengadaan --</option>
-                                <option>Replace</option>
-                                <option>Existing</option>
+                                <option>Baru</option>
+                                <option>Replace / Existing</option>
                           </select>
                         </div>
                     </div>
@@ -226,7 +226,7 @@
                     
                     <div class="col-md-12 mt-3">
                         <div class="form-group">
-                          <label class="optional_field">Notes</label>
+                          <label class="required_field">Alasan Pengadaan Barang atau Jasa</label>
                           <textarea class="form-control" name="notes" rows="3"></textarea>
                         </div>
                     </div>

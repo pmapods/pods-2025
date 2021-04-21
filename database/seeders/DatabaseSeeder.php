@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             IndoRegionSeeder::class,
             LocationSeeder::class,
             SuperAdminSeeder::class,
+            BudgetCategorySeeder::class,
         ];
         $dev_array = [
             EmployeeSeeder::class,

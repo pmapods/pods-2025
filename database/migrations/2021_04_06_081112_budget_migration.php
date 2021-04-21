@@ -30,10 +30,10 @@ class BudgetMigration extends Migration
             $table->string('type')->nullable();
             // harga dalam jawa
             $table->double('injs_min_price')->nullable();
-            $table->double('injs_max_price');
+            $table->double('injs_max_price')->nullable();
             // harga luar jawa
             $table->double('outjs_min_price')->nullable();
-            $table->double('outjs_max_price');
+            $table->double('outjs_max_price')->nullable();
             $table->foreign('budget_pricing_category_id')->references('id')->on('budget_pricing_category');
             $table->softDeletes();
             $table->timestamps();

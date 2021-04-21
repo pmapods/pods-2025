@@ -26,7 +26,6 @@ public function run()
                 "status" => 1,
                 "trade_type" => 1,
                 "isJawaSumatra" => 1,
-                "grom" => "Hafid Fauzi",
             ],
             [
                 "code" => "1000913",
@@ -35,7 +34,6 @@ public function run()
                 "status" => 0,
                 "trade_type" => 1,
                 "isJawaSumatra" => 1,
-                "grom" => "Hafid Fauzi",
             ],
             [
                 "code" => "1000570",
@@ -44,7 +42,6 @@ public function run()
                 "status" => 1,
                 "trade_type" => 0,
                 "isJawaSumatra" => 1,
-                "grom" => "Rudy Maryadin",
             ],
             [
                 "code" => "1000810",
@@ -53,7 +50,6 @@ public function run()
                 "status" => 0,
                 "trade_type" => 0,
                 "isJawaSumatra" => 1,
-                "grom" => "Rudy Maryadin",
             ],
         ];
         foreach ($data as $salespoint){
@@ -64,7 +60,6 @@ public function run()
             $newsalespoint->status         = $salespoint['status'];
             $newsalespoint->trade_type     = $salespoint['trade_type'];
             $newsalespoint->isJawaSumatra  = $salespoint['isJawaSumatra'];
-            $newsalespoint->grom           = $salespoint['grom'];
             $newsalespoint->save();
         }
     }

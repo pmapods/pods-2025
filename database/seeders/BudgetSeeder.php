@@ -16,15 +16,6 @@ class BudgetSeeder extends Seeder
      */
     public function run()
     {
-        $category_list = ["Office Equipment","Fixture and Furniture","Warehouse Equipment","Computer", "Others"];
-        $category_code = ["EO","FF","WE","TC","OT"];
-        foreach($category_list as $key=>$list){
-            $newCategory = new BudgetPricingCategory;
-            $newCategory->name = $list;
-            $newCategory->code = $category_code[$key];
-            $newCategory->save();
-        }
-
         $faker = Faker::create('id_ID');
         for($i = 0; $i <100; $i++){
             $newBudget                             = new BudgetPricing;

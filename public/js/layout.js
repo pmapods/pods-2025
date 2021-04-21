@@ -19,6 +19,13 @@ $(document).ready(function(){
         unformatOnSubmit: true,
     });
 
+    // rupiahtext formatter
+    new AutoNumeric.multiple('.rupiah_text', {
+        currencySymbol: "Rp ",
+        decimalCharacter: ",",
+        digitGroupSeparator: ".",
+    });
+
     // Selection search with select2
     $('.select2').select2({
         theme: 'bootstrap4',

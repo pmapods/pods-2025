@@ -14,4 +14,7 @@ class BudgetPricingCategory extends Model
     public function budget_pricing(){
         return $this->hasMany(BudgetPricing::class);
     }
+    public function budget_pricing_with_trashed(){
+        return $this->hasMany(BudgetPricing::class)->withTrashed();
+    }
 }

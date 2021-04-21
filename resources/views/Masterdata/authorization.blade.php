@@ -97,7 +97,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                           <label class="required_field">Jenis Form</label>
-                          <select class="form-control" name="form_type" required>
+                          <select class="form-control form_type" name="form_type" required>
                             <option value="">-- Pilih Jenis Form --</option>
                             <option value="0">Form Pengadaan</option>
                           </select>
@@ -130,8 +130,10 @@
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label>Sebagai</label>
-                          <input type="text" class="form-control as_text" placeholder="ex. Pengaju / Atasan Pengaju">
+                            <label>Sebagai</label>
+                            <select class="form-control as_text" disabled>
+                                <option value="">-- Pilih --</option>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -188,7 +190,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                           <label class="required_field">Jenis Form</label>
-                          <select class="form-control" name="form_type" required>
+                          <select class="form-control form_type" name="form_type" required>
                             <option value="">-- Pilih Jenis Form --</option>
                             <option value="0">Form Pengadaan</option>
                           </select>
@@ -220,8 +222,10 @@
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                          <label>Sebagai</label>
-                          <input type="text" class="form-control as_text" placeholder="ex. Pengaju / Atasan Pengaju">
+                            <label>Sebagai</label>
+                            <select class="form-control as_text">
+                                <option value="">-- Pilih --</option>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -258,6 +262,7 @@
 @endsection
 @section('local-js')
 <script>
+    let formpengadaan = ['Pengaju','Atasan Langsung','Atasan Tidak Langsung'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -273,6 +278,7 @@
             salespoint.val(data['salespoint_id']);
             salespoint.trigger('change');
             form_type.val(data['form_type']);
+            form_type.trigger('change');
 
             table_level.find('tbody').empty();
             list.forEach((item,index)=>{
@@ -282,6 +288,29 @@
             modal.modal('show');
             
         });
+        $('.form_type').on('change', function(){
+            let closestmodal = $(this).closest('.modal');
+            let as_text = closestmodal.find('.as_text');
+            as_text.prop('disabled', true);
+            as_text.find('option').remove();
+            as_text.append('<option value="">-- Pilih --</option>');
+            let value_array = [];
+            switch ($(this).val()) {
+                case "0":
+                    value_array = formpengadaan;
+                    break;
+            
+                default:
+                    return;
+                    break;
+            }
+            value_array.forEach(item =>{
+                console.log(item);
+                as_text.append('<option value="'+item+'">'+item+'</option>');
+            });
+            as_text.prop('disabled', false);
+        });
+
         $('.salespoint_select2').on('change', function () {
             let closestmodal = $(this).closest('.modal');
             let salespoint_id = $(this).find('option:selected').val();
@@ -339,7 +368,7 @@
 
             // check if all required field were selected
             if (employee_select.val() == "" || as_text.val() == "") {
-                alert('Karyawan harus dipilih dan input sebagai harus diisi');
+                alert('Karyawan harus dipilih dan input sebagai harus dipilih');
             } else {
                 let id = employee_select.val();
                 let name = employee_select.find('option:selected').text().split('--')[0].trim();

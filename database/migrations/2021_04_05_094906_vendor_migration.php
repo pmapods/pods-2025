@@ -20,8 +20,8 @@ class VendorMigration extends Migration
             $table->string('name');
             $table->string('address');
             $table->char('city_id');
-            $table->string('salesperson');
-            $table->string('phone');
+            $table->string('salesperson')->nullable();
+            $table->string('phone')->nullable();
             $table->tinyInteger('status')->default(0);
             // 0 active
             // 1 non active

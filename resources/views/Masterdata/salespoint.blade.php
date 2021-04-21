@@ -46,9 +46,6 @@
                         {{__('Status')}}
                     </th>
                     <th>
-                        {{__('GROM')}}
-                    </th>
-                    <th>
                         Jawa Sumatra
                     </th>
                 </tr>
@@ -61,7 +58,6 @@
                     <td>{{$salespoint->name}}</td>
                     <td>{{$salespoint->region_name()}}</td>
                     <td>{{$salespoint->status_name()}}</td>
-                    <td>{{$salespoint->grom}}</td>
                     <td>{{$salespoint->jawasumatra()}}</td>
                 </tr>
                 @endforeach
@@ -160,12 +156,12 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
                             <div class="form-group">
                                 <label class="optional_field">Nama GROM</label>
                                 <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -207,7 +203,7 @@
                             <div class="form-group">
                                 <label class="required_field">Nama Area</label>
                                 <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area"
-                                    required>
+                                    readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -268,12 +264,12 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
                             <div class="form-group">
-                                <label class="optional_field">Nama GROM</label>
+                                <label class="required_field">Nama GROM</label>
                                 <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="modal-footer">

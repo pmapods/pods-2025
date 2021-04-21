@@ -71,9 +71,15 @@ Route::middleware(['auth'])->group(function () {
     
         // VENDOR
         Route::get('/vendor',[VendorController::class, 'vendorView']);
+        Route::post('/addvendor',[VendorController::class, 'addVendor']);
+        Route::patch('/updatevendor',[VendorController::class, 'updateVendor']);
+        Route::delete('/deletevendor',[VendorController::class, 'deleteVendor']);
     
         // Budget Pricing
         Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
+        Route::post('/addbudget',[BudgetPricingController::class, 'addBudget']);
+        Route::patch('/updatebudget',[BudgetPricingController::class, 'updateBudget']);
+        Route::delete('/deletebudget',[BudgetPricingController::class, 'deleteBudget']);
     
     // OPERATIONAL
         // Pengadaan Barang Jasa

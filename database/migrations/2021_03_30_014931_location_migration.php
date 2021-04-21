@@ -45,7 +45,6 @@ class LocationMigration extends Migration
             // 0 MT Modern Trade
             // 1 GT General Trade
             $table->boolean('isJawaSumatra');
-            $table->string('grom')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
