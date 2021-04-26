@@ -298,6 +298,9 @@
                         <tbody>
                         </tbody>
                     </table>
+                    <span class="termination_reason">
+                        <b>Alasan Pembatalan</b><br>
+                    </span>
                 </div>
                 <div class="row">
                     <div class="col-md-6">

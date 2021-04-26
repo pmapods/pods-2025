@@ -157,7 +157,16 @@
                         break;
                 }
                 status_table.append('<tr><td>'+item.employee_name+' -- '+item.employee_position+'</td><td>'+status+'</td><td>'+updated_at+'</td></tr>');
-            })
+            });
+            // jika ada pembatalan
+            console.log(data_ticket);
+            if(data_ticket.status == 3){
+                modal.find('.termination_reason').show();
+                modal.find('.termination_reason').empty();
+                modal.find('.termination_reason').append('<b>Alasan Pembatalan</b><br>'+data_ticket.termination_reason +'<b> ( pembatalan oleh '+data_ticket.terminated_by+') </b>');
+            }else{
+                modal.find('.termination_reason').hide();
+            }
 
             // button control
             if(data_ticket.status == 0){

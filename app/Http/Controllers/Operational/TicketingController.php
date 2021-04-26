@@ -186,7 +186,9 @@ class TicketingController extends Controller
             if ($updated_at == $ticket->updated_at) {
                 $ticket->status = 3;
                 $ticket->terminated_by = Auth::user()->id;
+                $ticket->termination_reason = $request->reason;
                 $ticket->save();
+                return back()->with('success','Berhasil membatalkan ticket');
             }else{
                 return back()->with('error','Ticket sudah dibatalkan sebelumnya');
             }

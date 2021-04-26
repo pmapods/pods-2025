@@ -102,7 +102,7 @@ class Ticket extends Model
     public function current_authorization(){
         $queue = $this->ticket_authorization->where('status',0)->sortBy('level');
         $current = $queue->first();
-        if($this->status < 1){
+        if($this->status != 1){
             return null;
         }else{
             return $current;
@@ -114,11 +114,15 @@ class Ticket extends Model
         if($last){
             $last = $queue->first();
         }
-        if($this->status < 1){
+        if($this->status != 1){
             return null;
         }else{
             return $last;
         }
+    }
+
+    public function terminated_by_employee(){
+        return $this->belongsTo(Employee::class,'terminated_by','id');
     }
 
     public function row_data(){
@@ -137,6 +141,8 @@ class Ticket extends Model
             'items'=> $this->ticket_items,
             'reason'=> $this->reason,
             'vendors' => $this->ticket_vendor,
+            'terminated_by' => ($this->terminated_by_employee) ? $this->terminated_by_employee->name : null,
+            'termination_reason' =>$this->termination_reason,
         ];
         $data = collect($data);
         return $data;
