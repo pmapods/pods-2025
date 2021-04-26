@@ -22,7 +22,7 @@ class BudgetPricingController extends Controller
             $count_items = $category->budget_pricing_with_trashed->count() + 1;
             $code = $category->code."-".str_repeat("0", 2-strlen($count_items)).$count_items;
 
-            $newBudget = new BudgetPricing();
+            $newBudget = new BudgetPricing;
             $newBudget->budget_pricing_category_id = $request->budget_pricing_category_id;
             $newBudget->code = $code;
             $newBudget->name = $request->name;
@@ -36,6 +36,7 @@ class BudgetPricingController extends Controller
 
             return back()->with('success','Berhasil menambah budget');
         } catch (\Exception $ex) {
+            dd($ex);
             return back()->with('error','Gagal menambah budget "'.$ex->getMessage().'"');
         }
     }
@@ -53,7 +54,7 @@ class BudgetPricingController extends Controller
             
             return back()->with('success','Berhasil mengubah budget');
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal menambah budget "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal mengubah budget "'.$ex->getMessage().'"');
         }
     }
 
@@ -63,7 +64,7 @@ class BudgetPricingController extends Controller
             $budget->delete();
             return back()->with('success','Berhasil menghapus budget');
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal menambah budget "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal menghapus budget "'.$ex->getMessage().'"');
         }
     }
 }

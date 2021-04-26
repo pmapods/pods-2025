@@ -84,6 +84,11 @@ Route::middleware(['auth'])->group(function () {
     // OPERATIONAL
         // Pengadaan Barang Jasa
         Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
+        Route::post('/addticket',[TicketingController::class, 'addTicket']);
+        Route::patch('/startauthorization',[TicketingController::class, 'startAuthorization']);
+        Route::delete('/deleteticket',[TicketingController::class, 'deleteTicket']);
+        Route::patch('/approveticket',[TicketingController::class, 'approveTicket']);
+        Route::patch('/rejectticket',[TicketingController::class, 'rejectTicket']);
 
         // Purchase Requisition
         Route::get('/pr',[PRController::class, 'prView']);

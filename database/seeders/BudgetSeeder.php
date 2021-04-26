@@ -27,10 +27,17 @@ class BudgetSeeder extends Seeder
             $newBudget->type                       = 'type1 / type2 / etc';
             $min_price = $faker->numberBetween(1000000, 3000000);
             $rand = array_rand([0,1],1);
-            $newBudget->injs_min_price             = ($rand==0)? null : $min_price;
-            $newBudget->injs_max_price             = $faker->numberBetween(4000000, 5000000);
-            $newBudget->outjs_min_price            = ($rand==0)? null : $min_price;
-            $newBudget->outjs_max_price            = $faker->numberBetween(4000000, 5000000);
+            if($selected_category->code == "JS"){
+                $newBudget->injs_min_price             = null;
+                $newBudget->injs_max_price             = null;
+                $newBudget->outjs_min_price            = null;
+                $newBudget->outjs_max_price            = null;
+            }else{
+                $newBudget->injs_min_price             = ($rand==0)? null : $min_price;
+                $newBudget->injs_max_price             = $faker->numberBetween(4000000, 5000000);
+                $newBudget->outjs_min_price            = ($rand==0)? null : $min_price;
+                $newBudget->outjs_max_price            = $faker->numberBetween(4000000, 5000000);
+            }
             $newBudget->save();
         }
     }

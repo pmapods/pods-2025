@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Model\BudgetPricingCategory;
+use App\Models\BudgetPricingCategory;
 
 class BudgetCategorySeeder extends Seeder
 {

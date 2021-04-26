@@ -78,18 +78,10 @@
                         <td>{{$budget->budget_pricing_category->name}}</td>
                         <td>{{$budget->brand}}</td>
                         <td>{{$budget->type}}</td>
-                        @if ($budget->injs_min_price !=null)
-                            <td class="rupiah_text">{{$budget->injs_min_price}}</td>
-                        @else
-                            <td>-</td>
-                        @endif
-                        <td class="rupiah_text">{{$budget->injs_max_price}}</td>
-                        @if ($budget->outjs_min_price !=null)
-                            <td class="rupiah_text">{{$budget->outjs_min_price}}</td>
-                        @else
-                            <td>-</td>
-                        @endif
-                        <td class="rupiah_text">{{$budget->outjs_max_price}}</td>
+                        @if ($budget->injs_min_price !=null)<td class="rupiah_text">{{$budget->injs_min_price}}</td> @else <td>-</td> @endif
+                        @if ($budget->injs_max_price !=null)<td class="rupiah_text">{{$budget->injs_max_price}}</td> @else <td>-</td> @endif
+                        @if ($budget->outjs_min_price !=null)<td class="rupiah_text">{{$budget->outjs_min_price}}</td> @else <td>-</td> @endif
+                        @if ($budget->outjs_max_price !=null)<td class="rupiah_text">{{$budget->outjs_max_price}}</td> @else <td>-</td> @endif
                     </tr>
                 @endforeach
             </tbody>
@@ -112,7 +104,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Kategori</label>
-                            <select class="form-control" name="category" required>
+                            <select class="form-control pricing_category" name="category" required>
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach ($budget_categories as $category)
                                     <option value="{{ $category->id }}" data-code="{{ $category->code }}">{{ $category->name }} -- {{ $category->code }}</option>
@@ -144,13 +136,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="optional_field">Harga Minimum</label>
-                                    <input type="text" class="form-control rupiah" name="injs_min_price" placeholder="Masukan Harga Minimum" disabled>
+                                    <input type="text" class="form-control rupiah" id="add_injs_min_price" name="injs_min_price" placeholder="Masukan Harga Minimum" disabled>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="required_field">Harga Maksimum</label>
-                                    <input type="text" class="form-control rupiah" name="injs_max_price" placeholder="Masukan Harga Maksimum" disabled>
+                                    <input type="text" class="form-control rupiah" id="add_injs_max_price" name="injs_max_price" placeholder="Masukan Harga Maksimum" disabled>
                                 </div>
                             </div>
                         </div>
@@ -161,13 +153,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="optional_field">Harga Minimum</label>
-                                    <input type="text" class="form-control rupiah" name="outjs_min_price" placeholder="Masukan Harga Minimum" disabled>
+                                    <input type="text" class="form-control rupiah" id="add_outjs_min_price" name="outjs_min_price" placeholder="Masukan Harga Minimum" disabled>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="required_field">Harga Maksimum</label>
-                                    <input type="text" class="form-control rupiah" name="outjs_max_price" placeholder="Masukan Harga Maksimum" disabled>
+                                    <input type="text" class="form-control rupiah" id="add_outjs_max_price" name="outjs_max_price" placeholder="Masukan Harga Maksimum" disabled>
                                 </div>
                             </div>
                         </div>
@@ -329,12 +321,20 @@
             outjs_max_field.set(data['outjs_max_price']);
             modal.modal('show');
         });
-        $('.modal').find('select[name="category"]').change(function(){
+        $('.modal').find('.pricing_category').change(function(){
             let closestmodal = $(this).closest('.modal');
             let in_min_js = closestmodal.find('input[name="injs_min_price"]');
             let in_max_js = closestmodal.find('input[name="injs_max_price"]');
             let out_min_js = closestmodal.find('input[name="outjs_min_price"]');
             let out_max_js = closestmodal.find('input[name="outjs_max_price"]');
+            let in_min_js_rupiah = AutoNumeric.getAutoNumericElement('#addBudgetModal input[name="injs_min_price"]');
+            let in_max_js_rupiah = AutoNumeric.getAutoNumericElement('#addBudgetModal input[name="injs_max_price"]');
+            let out_min_js_rupiah = AutoNumeric.getAutoNumericElement('#addBudgetModal input[name="outjs_min_price"]');
+            let out_max_js_rupiah = AutoNumeric.getAutoNumericElement('#addBudgetModal input[name="outjs_max_price"]');
+            in_min_js_rupiah.set(0);
+            in_max_js_rupiah.set(0);
+            out_min_js_rupiah.set(0);
+            out_max_js_rupiah.set(0);
             
             let category_code = $(this).find('option:selected').data('code');
             in_min_js.prop('disabled',false);
@@ -382,11 +382,11 @@
         }
         if(category.find('option:selected').data('code') != "JS"){
             if(injs_max_field.get() == 0){
-                alert('Harga maksimum Dalam Jawa Barat Harus diisi');
+                alert('Harga maksimum Dalam Jawa Sumatra Harus diisi');
                 return;
             }
             if(outjs_max_field.get() == 0){
-                alert('Harga maksimum Luar Jawa Barat Harus diisi');
+                alert('Harga maksimum Luar Jawa Sumatra Harus diisi');
                 return;
             }
         }
@@ -399,7 +399,7 @@
         closestmodal.find('.input_field').append('<input type="hidden" name="injs_max_price" value="'+injs_max_field.get()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="outjs_min_price" value="'+outjs_min_field.get()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="outjs_max_price" value="'+outjs_max_field.get()+'">');
-        $('#updateform').submit();
+        $('#addform').submit();
     }
     function updateBudget(el){
         let closestmodal = $(el).closest('.modal');
@@ -426,11 +426,11 @@
         }
         if(category.find('option:selected').data('code') != "JS"){
             if(injs_max_field.get() == 0){
-                alert('Harga maksimum Dalam Jawa Barat Harus diisi');
+                alert('Harga maksimum Dalam Jawa Sumatra Harus diisi');
                 return;
             }
             if(outjs_max_field.get() == 0){
-                alert('Harga maksimum Luar Jawa Barat Harus diisi');
+                alert('Harga maksimum Luar Jawa Sumatra Harus diisi');
                 return;
             }
         }

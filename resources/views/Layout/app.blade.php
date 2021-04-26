@@ -222,6 +222,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.1.0/autoNumeric.min.js"></script>
 {{-- Datatable --}}
 <script src="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.js"></script>
+{{-- moment --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
 <script src="{{ asset('/js/layout.js') }}"></script>
 

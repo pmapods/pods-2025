@@ -38,6 +38,7 @@ $(document).ready(function(){
         $('button').prop('disabled',true);
         $(this).find('button[type = "submit"]').append('<i class="fad ml-2 fa-spinner-third fa-spin"></i>');
     });
+
 });
 
 function setRupiah(amount) {
@@ -84,13 +85,26 @@ function setRupiah(amount) {
     return finalString;
 }
 
+function autonumber(el) {
+    var max = parseInt($(el).prop('max'));
+    var min = parseInt($(el).prop('min'));
+    if ($(el).val() > max) {
+        $(el).val(max);
+    } else if ($(el).val() < min) {
+        $(el).val(min);
+    } else if($(el).val() == ""){
+        $(el).val(0);
+    }
+}
+
 // Datatable Settings
 var datatable_settings = {
     "language": language_setting,
     "aria": {
         "sortAscending": ": aktifkan untuk mengurutkan keatas",
         "sortDescending": ": aktifkan untuk mengurutkan kebawah"
-    }
+    },
+    "ordering": false
 };
 var language_setting = {
     "decimal": "",

@@ -167,7 +167,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                               <label class="required_field">Nama Karyawan</label>
-                              <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan" required>
+                              <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
