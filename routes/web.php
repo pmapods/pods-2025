@@ -35,52 +35,53 @@ Route::middleware(['auth'])->group(function () {
     });
     
     Route::get('/dashboard',[DashboardController::class, 'dashboardView']);
-    // MASTERDATA
-        // Employee Postion
-        Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
-        Route::post('/addPosition',[EmployeeController::class, 'addEmployeePosition']);
-        Route::patch('/updatePosition',[EmployeeController::class, 'updateEmployeePosition']);
-        Route::delete('/deletePosition',[EmployeeController::class, 'deleteEmployeePosition']);
+    Route::middleware(['superadmin'])->group(function () {
+        // MASTERDATA
+            // Employee Postion
+            Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
+            Route::post('/addPosition',[EmployeeController::class, 'addEmployeePosition']);
+            Route::patch('/updatePosition',[EmployeeController::class, 'updateEmployeePosition']);
+            Route::delete('/deletePosition',[EmployeeController::class, 'deleteEmployeePosition']);
+        
+            // Employee
+            Route::get('/employee',[EmployeeController::class, 'employeeView']);
+            Route::post('/addEmployee',[EmployeeController::class, 'addEmployee']);
+            Route::patch('/updateEmployee',[EmployeeController::class, 'updateEmployee']);
+            Route::delete('/deleteEmployee',[EmployeeController::class, 'deleteEmployee']);
+            Route::patch('/nonactiveemployee',[EmployeeController::class, 'nonactiveEmployee']);
+            Route::patch('/activeemployee',[EmployeeController::class, 'activeEmployee']);
+        
+            // Employee Access
+            Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
+            Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
+            Route::patch('/updateemployeeaccessdetail',[EmployeeAccessController::class, 'updateemployeeaccessdetail']);
     
-        // Employee
-        Route::get('/employee',[EmployeeController::class, 'employeeView']);
-        Route::post('/addEmployee',[EmployeeController::class, 'addEmployee']);
-        Route::patch('/updateEmployee',[EmployeeController::class, 'updateEmployee']);
-        Route::delete('/deleteEmployee',[EmployeeController::class, 'deleteEmployee']);
-        Route::patch('/nonactiveemployee',[EmployeeController::class, 'nonactiveEmployee']);
-        Route::patch('/activeemployee',[EmployeeController::class, 'activeEmployee']);
-    
-        // Employee Access
-        Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
-        Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
-        Route::patch('/updateemployeeaccessdetail',[EmployeeAccessController::class, 'updateemployeeaccessdetail']);
-
-        // Sales Point
-        Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
-        Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
-        Route::patch('/updatesalespoint',[SalesPointController::class, 'updateSalesPoint']);
-        Route::delete('/deletesalespoint',[SalesPointController::class, 'deleteSalesPoint']);
-        Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
-    
-        // Authorization
-        Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
-        Route::get('/getauthorizedemployeebysalesPoint/{salespoint_id}',[AuthorizationController::class,'AuthorizedEmployeeBySalesPoint']);
-        Route::post('/addauthorization',[AuthorizationController::class, 'addAuthorization']);
-        Route::patch('/updateauthorization',[AuthorizationController::class, 'updateAuthorization']);
-        Route::delete('/deleteauthorization',[AuthorizationController::class, 'deleteAuthorization']);
-    
-        // VENDOR
-        Route::get('/vendor',[VendorController::class, 'vendorView']);
-        Route::post('/addvendor',[VendorController::class, 'addVendor']);
-        Route::patch('/updatevendor',[VendorController::class, 'updateVendor']);
-        Route::delete('/deletevendor',[VendorController::class, 'deleteVendor']);
-    
-        // Budget Pricing
-        Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
-        Route::post('/addbudget',[BudgetPricingController::class, 'addBudget']);
-        Route::patch('/updatebudget',[BudgetPricingController::class, 'updateBudget']);
-        Route::delete('/deletebudget',[BudgetPricingController::class, 'deleteBudget']);
-    
+            // Sales Point
+            Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
+            Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
+            Route::patch('/updatesalespoint',[SalesPointController::class, 'updateSalesPoint']);
+            Route::delete('/deletesalespoint',[SalesPointController::class, 'deleteSalesPoint']);
+            Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
+        
+            // Authorization
+            Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
+            Route::get('/getauthorizedemployeebysalesPoint/{salespoint_id}',[AuthorizationController::class,'AuthorizedEmployeeBySalesPoint']);
+            Route::post('/addauthorization',[AuthorizationController::class, 'addAuthorization']);
+            Route::patch('/updateauthorization',[AuthorizationController::class, 'updateAuthorization']);
+            Route::delete('/deleteauthorization',[AuthorizationController::class, 'deleteAuthorization']);
+        
+            // VENDOR
+            Route::get('/vendor',[VendorController::class, 'vendorView']);
+            Route::post('/addvendor',[VendorController::class, 'addVendor']);
+            Route::patch('/updatevendor',[VendorController::class, 'updateVendor']);
+            Route::delete('/deletevendor',[VendorController::class, 'deleteVendor']);
+        
+            // Budget Pricing
+            Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
+            Route::post('/addbudget',[BudgetPricingController::class, 'addBudget']);
+            Route::patch('/updatebudget',[BudgetPricingController::class, 'updateBudget']);
+            Route::delete('/deletebudget',[BudgetPricingController::class, 'deleteBudget']);
+    });
     // OPERATIONAL
         // Pengadaan Barang Jasa
         Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
