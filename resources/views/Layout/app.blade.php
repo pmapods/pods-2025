@@ -161,6 +161,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </a>
                   </li>
                   <li class="nav-item">
+                    <a href="/bidding" class="nav-link">
+                      <i class="fad fa-less-than-equal nav-icon"></i>
+                      <p>Bidding</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
                     <a href="/pr" class="nav-link">
                       <i class="fad fa-shopping-bag nav-icon"></i>
                       <p>Purchase Requisition</p>

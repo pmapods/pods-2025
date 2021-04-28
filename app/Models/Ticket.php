@@ -86,7 +86,7 @@ class Ticket extends Model
                 break;
 
             case '2':
-                return 'Selesai';
+                return 'Otorisasi Selesai / Menunggu Proses Bidding';
                 break;
                 
             case '3':

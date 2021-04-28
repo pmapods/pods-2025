@@ -14,4 +14,12 @@ class BudgetPricing extends Model
     public function budget_pricing_category(){
         return $this->belongsTo(BudgetPricingCategory::class);
     }
+
+    public function budget_brand(){
+        return $this->hasMany(BudgetBrand::class);
+    }
+    
+    public function budget_type(){
+        return $this->hasMany(BudgetType::class);
+    }
 }

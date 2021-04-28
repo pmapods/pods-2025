@@ -18,6 +18,7 @@ use App\Http\Controllers\Masterdata\BudgetPricingController;
 // Operational
 use App\Http\Controllers\Operational\PRController;
 use App\Http\Controllers\Operational\TicketingController;
+use App\Http\Controllers\Operational\BiddingController;
 
 Route::get('/', function () {
     return redirect('login');
@@ -90,6 +91,10 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/deleteticket',[TicketingController::class, 'deleteTicket']);
         Route::patch('/approveticket',[TicketingController::class, 'approveTicket']);
         Route::patch('/rejectticket',[TicketingController::class, 'rejectTicket']);
+
+        // Bidding
+        Route::get('/bidding',[BiddingController::class, 'biddingView']);
+        Route::get('/bidding/{ticket_code}',[BiddingController::class, 'biddingDetailView']);
 
         // Purchase Requisition
         Route::get('/pr',[PRController::class, 'prView']);

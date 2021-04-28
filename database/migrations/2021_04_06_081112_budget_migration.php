@@ -38,6 +38,19 @@ class BudgetMigration extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+        Schema::create('budget_brand', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('budget_pricing_id')->unsigned();
+            $table->foreign('budget_princing_id')->references('id')->on('budget_pricing');
+            $table->string('name');
+        });
+        Schema::create('budget_type', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('budget_pricing_id')->unsigned();
+            $table->foreign('budget_princing_id')->references('id')->on('budget_pricing');
+            $table->string('name');
+        });
     }
 
     /**

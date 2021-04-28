@@ -34,7 +34,7 @@ class TicketingMigration extends Migration
             $table->tinyInteger('status')->default(0);
             // 0 draft
             // 1 waiting for authorization
-            // 2 finished
+            // 2 finished authorization / waiting for bidding
             // 3 terminated / cancelled
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('authorization_id')->references('id')->on('authorization');
