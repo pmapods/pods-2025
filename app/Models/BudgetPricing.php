@@ -22,4 +22,19 @@ class BudgetPricing extends Model
     public function budget_type(){
         return $this->hasMany(BudgetType::class);
     }
+
+    public function brand_list_text(){
+        if(count($this->budget_brand) > 0){
+            $array = $this->budget_brand->pluck('name')->toArray();
+            return implode(" / ", $array);
+        }
+        return '-';
+    }
+    public function type_list_text(){
+        if(count($this->budget_type) > 0){
+            $array = $this->budget_type->pluck('name')->toArray();
+            return implode(" / ", $array);
+        }
+        return '-';
+    }
 }

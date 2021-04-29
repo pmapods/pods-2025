@@ -26,8 +26,6 @@ class BudgetMigration extends Migration
             $table->integer('budget_pricing_category_id')->unsigned();
             $table->string('code')->unique();
             $table->string('name');
-            $table->string('brand')->nullable();
-            $table->string('type')->nullable();
             // harga dalam jawa
             $table->double('injs_min_price')->nullable();
             $table->double('injs_max_price')->nullable();
@@ -42,14 +40,16 @@ class BudgetMigration extends Migration
         Schema::create('budget_brand', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('budget_pricing_id')->unsigned();
-            $table->foreign('budget_princing_id')->references('id')->on('budget_pricing');
+            $table->foreign('budget_pricing_id')->references('id')->on('budget_pricing');
             $table->string('name');
+            $table->timestamps();
         });
         Schema::create('budget_type', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('budget_pricing_id')->unsigned();
-            $table->foreign('budget_princing_id')->references('id')->on('budget_pricing');
+            $table->foreign('budget_pricing_id')->references('id')->on('budget_pricing');
             $table->string('name');
+            $table->timestamps();
         });
     }
 

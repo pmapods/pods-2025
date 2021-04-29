@@ -7,6 +7,28 @@
         border-color: gainsboro;
         border-radius: 0.5em;
     }
+    .brand_list{
+        font-size: 15px !important;
+        padding-top: 0.4em !important;
+        padding-bottom: 0.4em !important;
+        margin-right: 0.4em !important;
+        margin-bottom: 0.4em !important;
+    }
+    .brand_list .brand_remove{
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    .type_list{
+        font-size: 15px !important;
+        padding-top: 0.4em !important;
+        padding-bottom: 0.4em !important;
+        margin-right: 0.4em !important;
+        margin-bottom: 0.4em !important;
+    }
+    .type_list .type_remove{
+        cursor: pointer;
+        margin-left: 10px;
+    }
 </style>
 @endsection
 
@@ -71,13 +93,19 @@
             </thead>
             <tbody>
                 @foreach ($budgets as $key => $budget)
-                    <tr data-budget="{{$budget}}">
+                    <tr data-budget="{{$budget}}"
+                        data-brand="{{$budget->budget_brand->pluck('name')}}"
+                        data-type="{{$budget->budget_type->pluck('name')}}">
                         <td>{{$key+1}}</td>
                         <td>{{$budget->code}}</td>
                         <td>{{$budget->name}}</td>
                         <td>{{$budget->budget_pricing_category->name}}</td>
-                        <td>{{$budget->brand}}</td>
-                        <td>{{$budget->type}}</td>
+                        <td>
+                            {{$budget->brand_list_text()}}
+                        </td>
+                        <td>
+                            {{$budget->type_list_text()}}
+                        </td>
                         @if ($budget->injs_min_price !=null)<td class="rupiah_text">{{$budget->injs_min_price}}</td> @else <td>-</td> @endif
                         @if ($budget->injs_max_price !=null)<td class="rupiah_text">{{$budget->injs_max_price}}</td> @else <td>-</td> @endif
                         @if ($budget->outjs_min_price !=null)<td class="rupiah_text">{{$budget->outjs_min_price}}</td> @else <td>-</td> @endif
@@ -119,15 +147,25 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="optional_field">Brand / Merk</label>
-                            <textarea class="form-control" name="brand" rows="3"></textarea>
+                        <label class="optional_field">Merk</label>
+                        <div class="d-flex flex-row flex-wrap brand_list_container">
+                        </div>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <input type="text" class="form-control brand_input">
+                            </div>
+                            <button type="button" class="btn btn-primary ml-3 add_brand">Tambah</button>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="optional_field">Tipe</label>
-                            <textarea class="form-control" name="type" rows="3"></textarea>
+                        <label class="optional_field">Tipe</label>
+                        <div class="d-flex flex-row flex-wrap type_list_container">
+                        </div>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <input type="text" class="form-control type_input">
+                            </div>
+                            <button type="button" class="btn btn-primary ml-3 add_type">Tambah</button>
                         </div>
                     </div>
                     <div class="col-md-12 box p-3 mt-3">
@@ -180,7 +218,6 @@
     </div>
 </div>
 
-
 <!-- Modal -->
 <div class="modal fade" id="detailBudgetModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -211,15 +248,25 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="optional_field">Brand / Merk</label>
-                            <textarea class="form-control" name="brand" rows="3"></textarea>
+                        <label class="optional_field">Merk</label>
+                        <div class="d-flex flex-row flex-wrap brand_list_container">
+                        </div>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <input type="text" class="form-control brand_input">
+                            </div>
+                            <button type="button" class="btn btn-primary ml-3 add_brand">Tambah</button>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="optional_field">Tipe</label>
-                            <textarea class="form-control" name="type" rows="3"></textarea>
+                        <label class="optional_field">Tipe</label>
+                        <div class="d-flex flex-row flex-wrap type_list_container">
+                        </div>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <input type="text" class="form-control type_input">
+                            </div>
+                            <button type="button" class="btn btn-primary ml-3 add_type">Tambah</button>
                         </div>
                     </div>
                     <div class="col-md-12 box p-3 mt-3">
@@ -288,11 +335,13 @@
         $('#budgetDT tbody').on('click', 'tr', function () {
             let modal = $('#detailBudgetModal');
             let data =  $(this).data('budget');
+            let brands =  $(this).data('brand');
+            let types =  $(this).data('type');
             let id = modal.find('input[name="id"]');
             let category = modal.find('select[name="category"]');
             let name = modal.find('input[name="name"]');
-            let brand = modal.find('textarea[name="brand"]');
-            let type = modal.find('textarea[name="type"]');
+            let brand_list_container = modal.find('.brand_list_container');
+            let type_list_container = modal.find('.type_list_container');
             let injs_min = modal.find('input[name="injs_min_price"]');
             let injs_max = modal.find('input[name="injs_max_price"]');
             let outjs_min = modal.find('input[name="outjs_min_price"]');
@@ -302,6 +351,7 @@
             let outjs_min_field = autoNumeric_field[$('.rupiah').index(outjs_min)];
             let outjs_max_field = autoNumeric_field[$('.rupiah').index(outjs_max)];
             id.val(data['id']);
+            name.val(data['name']);
             category.val(data['budget_pricing_category_id']);
             let category_code =  modal.find('select[name="category"]').find('option:selected').data('code');
             // if jasa change harga maksimum to optional
@@ -312,13 +362,20 @@
                 injs_max.closest('.form-group').find('label').removeClass('optional_field').addClass('required_field');
                 outjs_max.closest('.form-group').find('label').removeClass('optional_field').addClass('required_field');
             }
-            name.val(data['name']);
-            brand.val(data['brand']);
-            type.val(data['type']);
             injs_min_field.set(data['injs_min_price']);
             injs_max_field.set(data['injs_max_price']);
             outjs_min_field.set(data['outjs_min_price']);
             outjs_max_field.set(data['outjs_max_price']);
+
+            brand_list_container.empty();
+            brands.forEach(function(brand){
+                brand_list_container.append('<span class="badge badge-pill badge-primary brand_list"><span class="brand_text">'+brand+'<span class="brand_remove">x</span></span></span>')
+            });
+            
+            type_list_container.empty();
+            types.forEach(function(type){
+                type_list_container.append('<span class="badge badge-pill badge-info type_list"><span class="type_text">'+type+'<span class="type_remove">x</span></span></span>')
+            })
             modal.modal('show');
         });
         $('.modal').find('.pricing_category').change(function(){
@@ -356,13 +413,37 @@
                 out_max_js.closest('.form-group').find('label').removeClass('optional_field').addClass('required_field');
             }
         });
-    })
+    });
+    // BRAND CONTROL
+    $(document).on('click','.brand_remove',function(){
+        $(this).closest('.brand_list').remove();
+    });
+    $(document).on('click','.add_brand',function(){
+        let modal = $(this).closest('.modal');
+        let input = modal.find('.brand_input');
+        let container = modal.find('.brand_list_container');
+        if(input.val().trim() != ""){
+            container.append('<span class="badge badge-pill badge-primary brand_list"><span class="brand_text">'+input.val()+'<span class="brand_remove">x</span></span>');
+            input.val("");
+        }
+    });
+    // TYPE CONTROL
+    $(document).on('click','.type_remove',function(){
+        $(this).closest('.type_list').remove();
+    });
+    $(document).on('click','.add_type',function(){
+        let modal = $(this).closest('.modal');
+        let input = modal.find('.type_input');
+        let container = modal.find('.type_list_container');
+        if(input.val().trim() != ""){
+            container.append('<span class="badge badge-pill badge-info type_list"><span class="type_text">'+input.val()+'<span class="type_remove">x</span></span>');
+            input.val("");
+        }
+    });
     function addBudget(el){
         let closestmodal = $(el).closest('.modal');
         let category = closestmodal.find('select[name="category"]');
         let name = closestmodal.find('input[name="name"]');
-        let brand = closestmodal.find('textarea[name="brand"]');
-        let type = closestmodal.find('textarea[name="type"]');
         let injs_min = closestmodal.find('input[name="injs_min_price"]');
         let injs_max = closestmodal.find('input[name="injs_max_price"]');
         let outjs_min = closestmodal.find('input[name="outjs_min_price"]');
@@ -393,8 +474,12 @@
         closestmodal.find('.input_field').empty();
         closestmodal.find('.input_field').append('<input type="hidden" name="budget_pricing_category_id" value="'+category.val()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="name" value="'+name.val()+'">');
-        closestmodal.find('.input_field').append('<input type="hidden" name="brand" value="'+brand.val()+'">');
-        closestmodal.find('.input_field').append('<input type="hidden" name="type" value="'+type.val()+'">');
+        closestmodal.find('.brand_list').each((index,el)=>{
+            closestmodal.find('.input_field').append('<input type="hidden" name="brand[]" value="'+$(el).find('.brand_text').text().trim()+'">');
+        });
+        closestmodal.find('.type_list').each((index,el)=>{
+            closestmodal.find('.input_field').append('<input type="hidden" name="type[]" value="'+$(el).find('.type_text').text().trim()+'">');
+        });
         closestmodal.find('.input_field').append('<input type="hidden" name="injs_min_price" value="'+injs_min_field.get()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="injs_max_price" value="'+injs_max_field.get()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="outjs_min_price" value="'+outjs_min_field.get()+'">');
@@ -437,8 +522,12 @@
         closestmodal.find('.input_field').empty();
         closestmodal.find('.input_field').append('<input type="hidden" name="budget_pricing_category_id" value="'+category.val()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="name" value="'+name.val()+'">');
-        closestmodal.find('.input_field').append('<input type="hidden" name="brand" value="'+brand.val()+'">');
-        closestmodal.find('.input_field').append('<input type="hidden" name="type" value="'+type.val()+'">');
+        closestmodal.find('.brand_list').each((index,el)=>{
+            closestmodal.find('.input_field').append('<input type="hidden" name="brand[]" value="'+$(el).find('.brand_text').text().trim()+'">');
+        });
+        closestmodal.find('.type_list').each((index,el)=>{
+            closestmodal.find('.input_field').append('<input type="hidden" name="type[]" value="'+$(el).find('.type_text').text().trim()+'">');
+        });
         closestmodal.find('.input_field').append('<input type="hidden" name="injs_min_price" value="'+injs_min_field.get()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="injs_max_price" value="'+injs_max_field.get()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="outjs_min_price" value="'+outjs_min_field.get()+'">');

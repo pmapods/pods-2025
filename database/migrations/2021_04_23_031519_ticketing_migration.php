@@ -86,7 +86,7 @@ class TicketingMigration extends Migration
             // 1 approved
             // 2 terminate
             $table->foreign('ticket_id')->references('id')->on('ticket');
-            $table->foreign('enmployee_id')->references('id')->on('employee');
+            $table->foreign('employee_id')->references('id')->on('employee');
             $table->timestamps();
         });
     }

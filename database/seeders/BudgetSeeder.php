@@ -23,8 +23,6 @@ class BudgetSeeder extends Seeder
             $newBudget->budget_pricing_category_id = $selected_category->id;
             $newBudget->code                       = $selected_category->code.'-'.($selected_category->budget_pricing->count()+1);
             $newBudget->name                       = $selected_category->name.$i;
-            $newBudget->brand                      = 'brand1 / brand2';
-            $newBudget->type                       = 'type1 / type2 / etc';
             $min_price = $faker->numberBetween(1000000, 3000000);
             $rand = array_rand([0,1],1);
             if($selected_category->code == "JS"){

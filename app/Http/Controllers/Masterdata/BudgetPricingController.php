@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 use App\Models\BudgetPricing;
 use App\Models\BudgetPricingCategory;
+use App\Models\BudgetBrand;
+use App\Models\BudgetType;
+use DB;
 
 class BudgetPricingController extends Controller
 {
@@ -18,42 +21,77 @@ class BudgetPricingController extends Controller
 
     public function addBudget(Request $request){
         try {
+            DB::beginTransaction();
             $category = BudgetPricingCategory::findOrFail($request->budget_pricing_category_id);
             $count_items = $category->budget_pricing_with_trashed->count() + 1;
             $code = $category->code."-".str_repeat("0", 2-strlen($count_items)).$count_items;
 
             $newBudget = new BudgetPricing;
             $newBudget->budget_pricing_category_id = $request->budget_pricing_category_id;
-            $newBudget->code = $code;
-            $newBudget->name = $request->name;
-            $newBudget->brand = $request->brand;
-            $newBudget->type = $request->type;
-            $newBudget->injs_min_price = ($request->injs_min_price > 0) ? $request->injs_min_price : null;
-            $newBudget->injs_max_price = ($request->injs_max_price > 0) ? $request->injs_max_price : null;
-            $newBudget->outjs_min_price = ($request->outjs_min_price > 0) ? $request->outjs_min_price : null;
-            $newBudget->outjs_max_price = ($request->outjs_max_price > 0) ? $request->outjs_max_price : null;
+            $newBudget->code                       = $code;
+            $newBudget->name                       = $request->name;
+            $newBudget->injs_min_price             = ($request->injs_min_price > 0) ? $request->injs_min_price : null;
+            $newBudget->injs_max_price             = ($request->injs_max_price > 0) ? $request->injs_max_price : null;
+            $newBudget->outjs_min_price            = ($request->outjs_min_price > 0) ? $request->outjs_min_price : null;
+            $newBudget->outjs_max_price            = ($request->outjs_max_price > 0) ? $request->outjs_max_price : null;
             $newBudget->save();
 
+            foreach($request->brand as $brand){
+                $newBudgetBrand = new BudgetBrand;
+                $newBudgetBrand->budget_pricing_id = $newBudget->id;
+                $newBudgetBrand->name = $brand;
+                $newBudgetBrand->save();
+            }
+
+            foreach($request->type as $type){
+                $newBudgetType = new BudgetType;
+                $newBudgetType->budget_pricing_id = $newBudget->id;
+                $newBudgetType->name = $type;
+                $newBudgetType->save();
+            }
+            DB::commit();
             return back()->with('success','Berhasil menambah budget');
-        } catch (\Exception $ex) {
-            dd($ex);
+        } catch (Exception $ex) {
+            DB::rollback();
             return back()->with('error','Gagal menambah budget "'.$ex->getMessage().'"');
         }
     }
     
     public function updateBudget(Request $request){
         try {
+            DB::beginTransaction();
             $budget = BudgetPricing::findOrFail($request->id);
-            $budget->brand = $request->brand;
-            $budget->type = $request->type;
             $budget->injs_min_price = ($request->injs_min_price > 0) ? $request->injs_min_price : null;
             $budget->injs_max_price = ($request->injs_max_price > 0) ? $request->injs_max_price : null;
             $budget->outjs_min_price = ($request->outjs_min_price > 0) ? $request->outjs_min_price : null;
             $budget->outjs_max_price = ($request->outjs_max_price > 0) ? $request->outjs_max_price : null;
             $budget->save();
-            
+
+            foreach($budget->budget_brand as $brand){
+                $brand->delete();
+            }
+
+            foreach($request->brand as $brand){
+                $newBudgetBrand = new BudgetBrand;
+                $newBudgetBrand->budget_pricing_id = $budget->id;
+                $newBudgetBrand->name = $brand;
+                $newBudgetBrand->save();
+            }
+
+            foreach($budget->budget_type as $type){
+                $type->delete();
+            }
+
+            foreach($request->type as $type){
+                $newBudgetType = new BudgetType;
+                $newBudgetType->budget_pricing_id = $budget->id;
+                $newBudgetType->name = $type;
+                $newBudgetType->save();
+            }
+            DB::commit();
             return back()->with('success','Berhasil mengubah budget');
         } catch (\Exception $ex) {
+            DB::rollback();
             return back()->with('error','Gagal mengubah budget "'.$ex->getMessage().'"');
         }
     }
@@ -61,6 +99,12 @@ class BudgetPricingController extends Controller
     public function deleteBudget(Request $request){
         try {
             $budget = BudgetPricing::findOrFail($request->id);
+            foreach($budget->budget_brand as $brand){
+                $brand->delete();
+            }
+            foreach($budget->budget_type as $type){
+                $type->delete();
+            }
             $budget->delete();
             return back()->with('success','Berhasil menghapus budget');
         } catch (\Exception $ex) {
