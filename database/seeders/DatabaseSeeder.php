@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         ];
         $dev_array = [
             EmployeeSeeder::class,
+            AuthorizationSeeder::class,
             VendorSeeder::class,
             BudgetSeeder::class,
         ];

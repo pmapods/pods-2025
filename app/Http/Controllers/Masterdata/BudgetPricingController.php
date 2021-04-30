@@ -35,19 +35,23 @@ class BudgetPricingController extends Controller
             $newBudget->outjs_min_price            = ($request->outjs_min_price > 0) ? $request->outjs_min_price : null;
             $newBudget->outjs_max_price            = ($request->outjs_max_price > 0) ? $request->outjs_max_price : null;
             $newBudget->save();
-
-            foreach($request->brand as $brand){
-                $newBudgetBrand = new BudgetBrand;
-                $newBudgetBrand->budget_pricing_id = $newBudget->id;
-                $newBudgetBrand->name = $brand;
-                $newBudgetBrand->save();
+            
+            if($request->brand){
+                foreach($request->brand as $brand){
+                    $newBudgetBrand = new BudgetBrand;
+                    $newBudgetBrand->budget_pricing_id = $newBudget->id;
+                    $newBudgetBrand->name = $brand;
+                    $newBudgetBrand->save();
+                }
             }
 
-            foreach($request->type as $type){
-                $newBudgetType = new BudgetType;
-                $newBudgetType->budget_pricing_id = $newBudget->id;
-                $newBudgetType->name = $type;
-                $newBudgetType->save();
+            if($request->type){
+                foreach($request->type as $type){
+                    $newBudgetType = new BudgetType;
+                    $newBudgetType->budget_pricing_id = $newBudget->id;
+                    $newBudgetType->name = $type;
+                    $newBudgetType->save();
+                }
             }
             DB::commit();
             return back()->with('success','Berhasil menambah budget');
@@ -67,26 +71,34 @@ class BudgetPricingController extends Controller
             $budget->outjs_max_price = ($request->outjs_max_price > 0) ? $request->outjs_max_price : null;
             $budget->save();
 
-            foreach($budget->budget_brand as $brand){
-                $brand->delete();
+            if($budget->budget_brand){
+                foreach($budget->budget_brand as $brand){
+                    $brand->delete();
+                }
             }
 
-            foreach($request->brand as $brand){
-                $newBudgetBrand = new BudgetBrand;
-                $newBudgetBrand->budget_pricing_id = $budget->id;
-                $newBudgetBrand->name = $brand;
-                $newBudgetBrand->save();
+            if($request->brand){
+                foreach($request->brand as $brand){
+                    $newBudgetBrand = new BudgetBrand;
+                    $newBudgetBrand->budget_pricing_id = $budget->id;
+                    $newBudgetBrand->name = $brand;
+                    $newBudgetBrand->save();
+                }
             }
 
-            foreach($budget->budget_type as $type){
-                $type->delete();
+            if($budget->budget_type){
+                foreach($budget->budget_type as $type){
+                    $type->delete();
+                }
             }
 
-            foreach($request->type as $type){
-                $newBudgetType = new BudgetType;
-                $newBudgetType->budget_pricing_id = $budget->id;
-                $newBudgetType->name = $type;
-                $newBudgetType->save();
+            if($request->type){
+                foreach($request->type as $type){
+                    $newBudgetType = new BudgetType;
+                    $newBudgetType->budget_pricing_id = $budget->id;
+                    $newBudgetType->name = $type;
+                    $newBudgetType->save();
+                }
             }
             DB::commit();
             return back()->with('success','Berhasil mengubah budget');
@@ -98,16 +110,23 @@ class BudgetPricingController extends Controller
 
     public function deleteBudget(Request $request){
         try {
+            DB::beginTransaction();
             $budget = BudgetPricing::findOrFail($request->id);
-            foreach($budget->budget_brand as $brand){
-                $brand->delete();
+            if($budget->budget_brand){
+                foreach($budget->budget_brand as $brand){
+                    $brand->delete();
+                }
             }
-            foreach($budget->budget_type as $type){
-                $type->delete();
+            if($budget->budget_type){
+                foreach($budget->budget_type as $type){
+                    $type->delete();
+                 }
             }
             $budget->delete();
+            DB::commit();
             return back()->with('success','Berhasil menghapus budget');
         } catch (\Exception $ex) {
+            DB::rollback();
             return back()->with('error','Gagal menghapus budget "'.$ex->getMessage().'"');
         }
     }

@@ -369,12 +369,12 @@
 
             brand_list_container.empty();
             brands.forEach(function(brand){
-                brand_list_container.append('<span class="badge badge-pill badge-primary brand_list"><span class="brand_text">'+brand+'<span class="brand_remove">x</span></span></span>')
+                brand_list_container.append('<span class="badge badge-pill badge-primary brand_list"><span class="brand_text">'+brand+'</span><span class="brand_remove">x</span></span>');
             });
             
             type_list_container.empty();
             types.forEach(function(type){
-                type_list_container.append('<span class="badge badge-pill badge-info type_list"><span class="type_text">'+type+'<span class="type_remove">x</span></span></span>')
+                type_list_container.append('<span class="badge badge-pill badge-info type_list"><span class="type_text">'+type+'</span><span class="type_remove">x</span></span>')
             })
             modal.modal('show');
         });
@@ -423,7 +423,7 @@
         let input = modal.find('.brand_input');
         let container = modal.find('.brand_list_container');
         if(input.val().trim() != ""){
-            container.append('<span class="badge badge-pill badge-primary brand_list"><span class="brand_text">'+input.val()+'<span class="brand_remove">x</span></span>');
+            container.append('<span class="badge badge-pill badge-primary brand_list"><span class="brand_text">'+input.val()+'</span><span class="brand_remove">x</span></span>');
             input.val("");
         }
     });
@@ -436,7 +436,7 @@
         let input = modal.find('.type_input');
         let container = modal.find('.type_list_container');
         if(input.val().trim() != ""){
-            container.append('<span class="badge badge-pill badge-info type_list"><span class="type_text">'+input.val()+'<span class="type_remove">x</span></span>');
+            container.append('<span class="badge badge-pill badge-info type_list"><span class="type_text">'+input.val()+'</span><span class="type_remove">x</span></span>');
             input.val("");
         }
     });

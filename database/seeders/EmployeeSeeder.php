@@ -7,6 +7,8 @@ use Hash;
 use Illuminate\Database\Seeder;
 use App\Models\Employee;
 use App\Models\EmployeePosition;
+use App\Models\Salespoint;
+use App\Models\EmployeeLocationAccess;
 
 class EmployeeSeeder extends Seeder
 {
@@ -41,6 +43,13 @@ class EmployeeSeeder extends Seeder
             $newEmployee->password               = Hash::make('12345678');
             $newEmployee->phone                  = $faker->phoneNumber();
             $newEmployee->save();
+
+            foreach(Salespoint::all() as $salespoint){
+                $newAccess = new EmployeeLocationAccess;
+                $newAccess->employee_id = $newEmployee->id;
+                $newAccess->salespoint_id = $salespoint->id;
+                $newAccess->save();
+            }
         }
 
         $count_employee = Employee::withTrashed()->count() + 1;
@@ -55,6 +64,13 @@ class EmployeeSeeder extends Seeder
         $newEmployee->phone                  = $faker->phoneNumber();
         $newEmployee->save();
 
+        foreach(Salespoint::all() as $salespoint){
+            $newAccess = new EmployeeLocationAccess;
+            $newAccess->employee_id = $newEmployee->id;
+            $newAccess->salespoint_id = $salespoint->id;
+            $newAccess->save();
+        }
+
         $count_employee = Employee::withTrashed()->count() + 1;
         $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
         $newEmployee                         = new Employee;
@@ -66,5 +82,12 @@ class EmployeeSeeder extends Seeder
         $newEmployee->password               = Hash::make('12345678');
         $newEmployee->phone                  = $faker->phoneNumber();
         $newEmployee->save();
+
+        foreach(Salespoint::all() as $salespoint){
+            $newAccess = new EmployeeLocationAccess;
+            $newAccess->employee_id = $newEmployee->id;
+            $newAccess->salespoint_id = $salespoint->id;
+            $newAccess->save();
+        }
     }
 }
