@@ -416,10 +416,6 @@
                 <button type="button" class="btn btn-success approve" onclick="approve(this)">Approve pengajuan</button>
             </div>
         </div>
-        <form action="/addticket" method="post" id="addform">
-            @csrf
-        <div class="input_field"></div>
-        </form>
         <form action="/startauthorization" method="post" id="startauthorizationform">
             @csrf
             @method('patch')

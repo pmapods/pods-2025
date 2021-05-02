@@ -1,16 +1,5 @@
 @extends('Layout.app')
 @section('local-css')
-<style>
-    .box {
-        box-shadow: 0px 1px 2px rgba(0, 0, 0,0.25);
-        border : 1px solid;
-        border-color: gainsboro;
-        border-radius: 0.5em;
-    }
-    .select2-results__option--disabled {
-        display: none;
-    }
-</style>
 @endsection
 
 @section('content')
@@ -29,7 +18,7 @@
             </div>
         </div>
         <div class="d-flex justify-content-end mt-4">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNewTicket">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectTicketModal">
                 Tambah Pengadaan Baru
             </button>
         </div>
@@ -83,7 +72,48 @@
         </table>
     </div>
 </div>
-
+<!-- Modal -->
+<div class="modal fade" id="selectTicketModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pilih Jenis</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <form method="get" action="/addnewticket">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input type="radio" class="form-check-input" name="ticketing_type" value="0" checked>
+                        Pengadaan Barang Jasa
+                      </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input type="radio" class="form-check-input" name="ticketing_type" value="1" checked>
+                        Pengadaan 1
+                      </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <label class="form-check-label">
+                        <input type="radio" class="form-check-input" name="ticketing_type" value="2" checked>
+                        Pengadaan 2
+                      </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Buat Pengadaan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @include('Operational.ticketing_modal')
 
 @endsection

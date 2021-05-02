@@ -1,10 +1,27 @@
+
 $(document).ready(function () {
+    // set minimal tanggal pengadaan 14 setelah tanggal pengajuan
+    
+    $('.requirement_date').val(moment().add(14,'days').format('YYYY-MM-DD'));
+    $('.requirement_date').prop('min',moment().add(14,'days').format('YYYY-MM-DD'));
+    $('.requirement_date').on('change',function(){
+        let req_date = $(this).val();
+        let exp_date = $('.expired_date');
+        exp_date.prop('disabled',true);
+        if(req_date){
+            let moment_req_date = new moment(req_date);
+            exp_date.val(moment_req_date.add(1,'days').format('YYYY-MM-DD'));
+            exp_date.prop('min',(moment_req_date.add(1,'months').format('YYYY-MM-DD')));
+            exp_date.prop('disabled',false);
+        }
+    });
+    $('.requirement_date').trigger('change');
+
     $('.salespoint_select2').on('change', function () {
-        let closestmodal = $(this).closest('.modal');
-        let salespoint_select = closestmodal.find('.salespoint_select2');
-        let area_status = closestmodal.find('.area_status');
-        let authorization_select = closestmodal.find('.authorization_select2');
-        let loading = closestmodal.find('.loading_salespoint_select2');
+        let salespoint_select = $('.salespoint_select2');
+        let area_status = $('.area_status');
+        let authorization_select = $('.authorization_select2');
+        let loading = $('.loading_salespoint_select2');
 
         let isjawasumatra = salespoint_select.find('option:selected').data('isjawasumatra');
 
@@ -49,12 +66,11 @@ $(document).ready(function () {
                 loading.hide();
             }
         });
-    })
+    });
 
     $('.authorization_select2').on('change', function () {
-        let closestmodal = $(this).closest('.modal');
-        let field = closestmodal.find('.authorization_list_field');
-        let item_type = closestmodal.find('.item_type');
+        let field = $('.authorization_list_field');
+        let item_type = $('.item_type');
         // initial state
         field.empty();
         let selected_data = $(this).find('option:selected').data('item');
@@ -70,10 +86,10 @@ $(document).ready(function () {
         }
         item_type.trigger('change');
     });
+
     $('.item_type').on('change', function () {
-        let closestmodal = $(this).closest('.modal');
-        let request_select = closestmodal.find('.request_type');
-        let budget_item = closestmodal.find('.select_budget_item');
+        let request_select = $('.request_type');
+        let budget_item = $('.select_budget_item');
         let type = $(this).val();
         // 0 barang
         // 1 jasa
@@ -110,17 +126,17 @@ $(document).ready(function () {
         request_select.trigger('change');
 
     });
+
     $('.request_type').on('change', function () {
-        let closestmodal = $(this).closest('.modal');
-        let budget_type = closestmodal.find('.budget_type');
-        if($(this).val()==""){
+        let budget_type = $('.budget_type');
+        budget_type.prop('disabled',true);
+        if($(this).val()!=""){
             budget_type.val('');
-            budget_type.prop('disabled',true);
-        }else{
             budget_type.prop('disabled',false);
         }
         budget_type.trigger('change');
     });
+
     $('.budget_type').on('change', function () {
         let type = $(this).val();
 
@@ -134,16 +150,16 @@ $(document).ready(function () {
             // non budget
             $('.nonbudget_item_adder').removeClass('d-none');
         }
-    })
+    });
 
     $('.select_budget_item').on('change', function () {
-        let closestmodal = $(this).closest('.modal');
-        let salespoint_select = closestmodal.find('.salespoint_select2');
+        let salespoint_select = $('.salespoint_select2');
         let isjawasumatra = salespoint_select.find('option:selected').data('isjawasumatra');
-        let item_min_price = closestmodal.find('.item_min_price');
-        let item_max_price = closestmodal.find('.item_max_price');
-        let brand_field = closestmodal.find('.brand_field');
-        let price = closestmodal.find('.price_budget_item');
+        let item_min_price = $('.item_min_price');
+        let item_max_price = $('.item_max_price');
+        let brand_field = $('.brand_field');
+        let type_field = $('.type_field');
+        let price = $('.price_budget_item');
         let price_field = autoNumeric_field[$('.rupiah').index(price)];
         price_field.set(0);
         if ($(this).val() == "") {
@@ -155,8 +171,10 @@ $(document).ready(function () {
         let maxjs = $(this).find('option:selected').data('maxjs');
         let minoutjs = $(this).find('option:selected').data('minoutjs');
         let maxoutjs = $(this).find('option:selected').data('maxoutjs');
-        let brand = $(this).find('option:selected').data('brand');
-        brand_field.text(brand);
+        let brands = $(this).find('option:selected').data('brand');
+        let types = $(this).find('option:selected').data('type');
+        brand_field.text(brands.map(a => a.name));
+        type_field.text(types.map(a => a.name));
 
         price_field.options.minimumValue(0);
         if (isjawasumatra == 1) {
@@ -175,61 +193,146 @@ $(document).ready(function () {
             // price_field.options.maximumValue(0);
             price.prop('disabled', true)
         }
-    })
+
+        // set pilih merk selection
+        $('.select_budget_brand').empty();
+        brands.forEach((brand) => {
+            $('.select_budget_brand').append('<option value="'+brand.name+'">'+brand.name+'</option>');
+        });
+        $('.select_budget_brand').append('<option value="-1">Merk Lain</option>');
+        $('.select_budget_brand').prop('disabled',false);
+        $('.select_budget_brand').trigger('change');
+
+        // set pilih tipe selection
+        $('.select_budget_type').empty();
+        types.forEach((type) => {
+            $('.select_budget_type').append('<option value="'+type.name+'">'+type.name+'</option>');
+        });
+        $('.select_budget_type').append('<option value="-1">Tipe Lain</option>');
+        $('.select_budget_type').prop('disabled',false);
+        $('.select_budget_type').trigger('change');
+    });
+
+    $('.select_budget_brand').on('change',()=>{
+        let value_brand = $('.select_budget_brand').val();
+
+        $('.budget_ba_field').hide();
+        $('.input_budget_brand_field').hide();
+        if(value_brand == -1){
+            $('.input_budget_brand_field').show();
+        }
+        checkNeedBA();
+    });
+    $('.select_budget_type').on('change',()=>{
+        let value_type = $('.select_budget_type').val();
+        $('.budget_ba_field').hide();
+        $('.input_budget_type_field').hide();
+        if(value_type == -1){
+            $('.input_budget_type_field').show();
+        }
+        checkNeedBA();
+    });
+
+    function checkNeedBA(){
+        let value_brand = $('.select_budget_brand').val();
+        let value_type = $('.select_budget_type').val();
+        let brands = $('.select_budget_item').find('option:selected').data('brand');
+        let types = $('.select_budget_item').find('option:selected').data('type');
+        // check apakah butuh BA
+        let is_ba_required = false;
+        if(brands.length>0 && value_brand == -1){
+            is_ba_required = true;
+        }
+        if(types.length>0 && value_type == -1){
+            is_ba_required = true;
+        }
+        if(is_ba_required){
+            $('.budget_ba_field').show();
+        }else{
+            $('.budget_ba_field').hide();
+        }
+    }
+
+    $('.budget_ba_file').on('change', function (e) {
+        let file = $(this).val();
+        console.log('budget_ba_file',file);
+    });
 });
 // add budget
 function addBudgetItem(el) {
-    let closestmodal = $(el).closest('.modal');
-    let select_item = closestmodal.find('.select_budget_item');
-    let price_item = closestmodal.find('.price_budget_item');
-    let input_budget_brand = closestmodal.find('.input_budget_brand');
-    let price_field = autoNumeric_field[$('.rupiah').index(price_item)];
-    let item_min_price = closestmodal.find('.item_min_price');
-    let item_max_price = closestmodal.find('.item_max_price');
-    let count_item = closestmodal.find('.count_budget_item');
-    let table_item = closestmodal.find('.table_item');
+    let select_item = $('.select_budget_item');
+    let select_budget_brand = $('.select_budget_brand');
+    let select_budget_type = $('.select_budget_type');
+    let input_budget_brand = $('.input_budget_brand');
+    let input_budget_type = $('.input_budget_type');
+    let price_item = AutoNumeric.getAutoNumericElement('.price_budget_item');
+    let budget_ba_file = $('.budget_ba_file');
+    let budget_ba_field = $('.budget_ba_field');
+    let count_item = $('.count_budget_item');
+    let table_item = $('.table_item');
+    
 
     let id = select_item.find('option:selected').val();
     let name = select_item.find('option:selected').text().trim();
-    let brand = input_budget_brand.val().trim();
-    let price = price_field.get();
-    let price_text = price_item.val();
-    let min_text = item_min_price.text().trim();
-    let max_text = item_max_price.text().trim();
+    let price = price_item.get();
+    let price_text = price_item.domElement.value;
     let count = count_item.val();
+
+    let brand = select_budget_brand.val();
+    let type = select_budget_type.val();
+    if(brand == -1){
+        brand = input_budget_brand.val().trim();
+    }else{
+        brand = brand.trim();
+    }
+    if(type == -1){
+        type = input_budget_type.val().trim();
+    }else{
+        type = type.trim();
+    }
 
     if (id == "") {
         alert("Item harus dipilih");
         return;
-    } else if (brand == "") {
-        alert("Pilihan Brand harus diisi");
+    }
+    if (brand == "") {
+        alert("Pilihan Merk harus dipilih / diisi");
         return;
-    } else if (price < 1000) {
+    }
+    if (type == "") {
+        alert("Pilihan Tipe harus dipilih / diisi");
+        return;
+    }
+    if(budget_ba_field.is(':visible') && budget_ba_file.val() == ""){
+        alert("File Harus dipilih");
+        return;
+    }
+    if (price < 1000) {
         alert("Harga harus lebih besar dari Rp 1.000");
         return;
-    } else if (count < 1) {
+    }
+    if (count < 1) {
         alert("Jumlah Item minimal 1");
         return;
-    } else {
-        table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '"><td>' + name + '</td><td>' + brand + '</td><td>' + min_text + '</td><td>' + max_text + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
-  
-        select_item.val("");
-        select_item.trigger('change');
-        price_field.set(0);
-        count_item.val("");
-        tableRefreshed(el);
     }
+
+    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+
+    select_item.val("");
+    select_item.trigger('change');
+    price_field.set(0);
+    count_item.val("");
+    tableRefreshed(el);
 }
 
 // add non budget
 function addNonBudgetItem(el){
-    let closestmodal = $(el).closest('.modal');
-    let input_name = closestmodal.find('.nonbudget_item_name');
-    let item_brand = closestmodal.find('.nonbudget_item_brand');
-    let price_item = closestmodal.find('.nonbudget_item_price');
+    let input_name = $('.nonbudget_item_name');
+    let item_brand = $('.nonbudget_item_brand');
+    let price_item = $('.nonbudget_item_price');
     let price_field = autoNumeric_field[$('.rupiah').index(price_item)];
-    let count_item = closestmodal.find('.nonbudget_item_count');
-    let table_item = closestmodal.find('.table_item');
+    let count_item = $('.nonbudget_item_count');
+    let table_item = $('.table_item');
 
     let name = input_name.val().trim();
     let brand = item_brand.val().trim();
@@ -257,7 +360,6 @@ function addNonBudgetItem(el){
 }
 // remove button
 function removeList(el) {
-    let closestmodal = $(el).closest('.modal');
     let tr = $(el).closest('tr');
     tr.remove();
     tableRefreshed(closestmodal);
@@ -265,13 +367,12 @@ function removeList(el) {
 
 // table on refresh
 function tableRefreshed(current_element) {
-    let closestmodal = $(current_element).closest('.modal');
-    let table_item = closestmodal.find('.table_item');
-    let salespoint_select = closestmodal.find('.salespoint_select2');
-    let authorization_select = closestmodal.find('.authorization_select2');
-    let item_select = closestmodal.find('.item_type');
-    let request_select = closestmodal.find('.request_type');
-    let budget_select = closestmodal.find('.budget_type');
+    let table_item = $('.table_item');
+    let salespoint_select = $('.salespoint_select2');
+    let authorization_select = $('.authorization_select2');
+    let item_select = $('.item_type');
+    let request_select = $('.request_type');
+    let budget_select = $('.budget_type');
     // check table level if table has data / tr or not
     let row_count = 0;
     table_item.find('tbody tr').not('.empty_row').each(function () {
@@ -296,9 +397,8 @@ function tableRefreshed(current_element) {
 
 // add vendor
 function addVendor(el){
-    let closestmodal = $(el).closest('.modal');
-    let select_vendor = closestmodal.find('.select_vendor');
-    let table_vendor = closestmodal.find('.table_vendor');
+    let select_vendor = $('.select_vendor');
+    let table_vendor = $('.table_vendor');
     let data = select_vendor.find('option:selected').data('vendor');
     if(select_vendor.val()==""){
         alert('Harap pilih vendor terlebih dulu');
@@ -312,11 +412,10 @@ function addVendor(el){
 }
 
 function addOTVendor(el){
-    let closestmodal = $(el).closest('.modal');
-    let vendor_name = closestmodal.find('.ot_vendor_name');
-    let vendor_sales = closestmodal.find('.ot_vendor_sales');
-    let vendor_phone = closestmodal.find('.ot_vendor_phone');
-    let table_vendor = closestmodal.find('.table_vendor');
+    let vendor_name = $('.ot_vendor_name');
+    let vendor_sales = $('.ot_vendor_sales');
+    let vendor_phone = $('.ot_vendor_phone');
+    let table_vendor = $('.table_vendor');
     if(vendor_name.val()==""){
         alert('Nama Vendor tidak boleh kosong');
         return;
@@ -339,7 +438,6 @@ function addOTVendor(el){
 
 // remove vendor
 function removeVendor(el) {
-    let closestmodal = $(el).closest('.modal');
     let tr = $(el).closest('tr');
     tr.remove();
     tableVendorRefreshed(closestmodal);
@@ -347,8 +445,7 @@ function removeVendor(el) {
 
 // table on refresh
 function tableVendorRefreshed(current_element) {
-    let closestmodal = $(current_element).closest('.modal');
-    let table_vendor = closestmodal.find('.table_vendor');
+    let table_vendor = $('.table_vendor');
 
     let row_count = 0;
     table_vendor.find('tbody tr').not('.empty_row').each(function () {

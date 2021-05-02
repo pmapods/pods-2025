@@ -157,7 +157,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <li class="nav-item">
                     <a href="/ticketing" class="nav-link">
                       <i class="fad fa-ticket nav-icon"></i>
-                      <p>Pengadaan Barang Jasa</p>
+                      <p>Pengadaan</p>
                     </a>
                   </li>
                   <li class="nav-item">
