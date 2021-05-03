@@ -1,4 +1,9 @@
 
+var temp_ba_file = null;
+var temp_ba_extension = null;
+
+var temp_olditem_file = null;
+var temp_olditem_extension = null;
 $(document).ready(function () {
     // set minimal tanggal pengadaan 14 setelah tanggal pengajuan
     
@@ -135,6 +140,11 @@ $(document).ready(function () {
             budget_type.prop('disabled',false);
         }
         budget_type.trigger('change');
+        if($(this).val()==1){
+            $('.budget_olditem_field').show();
+        }else{
+            $('.budget_olditem_field').hide();
+        }
     });
 
     $('.budget_type').on('change', function () {
@@ -157,15 +167,9 @@ $(document).ready(function () {
         let isjawasumatra = salespoint_select.find('option:selected').data('isjawasumatra');
         let item_min_price = $('.item_min_price');
         let item_max_price = $('.item_max_price');
-        let brand_field = $('.brand_field');
-        let type_field = $('.type_field');
         let price = $('.price_budget_item');
         let price_field = autoNumeric_field[$('.rupiah').index(price)];
         price_field.set(0);
-        if ($(this).val() == "") {
-            brand_field.text('-');
-            return;
-        }
 
         let minjs = $(this).find('option:selected').data('minjs');
         let maxjs = $(this).find('option:selected').data('maxjs');
@@ -173,8 +177,6 @@ $(document).ready(function () {
         let maxoutjs = $(this).find('option:selected').data('maxoutjs');
         let brands = $(this).find('option:selected').data('brand');
         let types = $(this).find('option:selected').data('type');
-        brand_field.text(brands.map(a => a.name));
-        type_field.text(types.map(a => a.name));
 
         price_field.options.minimumValue(0);
         if (isjawasumatra == 1) {
@@ -196,20 +198,30 @@ $(document).ready(function () {
 
         // set pilih merk selection
         $('.select_budget_brand').empty();
-        brands.forEach((brand) => {
-            $('.select_budget_brand').append('<option value="'+brand.name+'">'+brand.name+'</option>');
-        });
-        $('.select_budget_brand').append('<option value="-1">Merk Lain</option>');
-        $('.select_budget_brand').prop('disabled',false);
+        $('.select_budget_brand').prop('disabled',true);
+        if(brands != null){
+            if(brands.length > 0) {
+                brands.forEach((brand) => {
+                    $('.select_budget_brand').append('<option value="'+brand.name+'">'+brand.name+'</option>');
+                });
+            }
+            $('.select_budget_brand').append('<option value="-1">Merk Lain</option>');
+            $('.select_budget_brand').prop('disabled',false);
+        }
         $('.select_budget_brand').trigger('change');
 
         // set pilih tipe selection
         $('.select_budget_type').empty();
-        types.forEach((type) => {
-            $('.select_budget_type').append('<option value="'+type.name+'">'+type.name+'</option>');
-        });
-        $('.select_budget_type').append('<option value="-1">Tipe Lain</option>');
-        $('.select_budget_type').prop('disabled',false);
+        $('.select_budget_type').prop('disabled',true);
+        if(types !=null){
+            if(types.length > 0) {
+                types.forEach((type) => {
+                    $('.select_budget_type').append('<option value="'+type.name+'">'+type.name+'</option>');
+                });
+            }
+            $('.select_budget_type').append('<option value="-1">Tipe Lain</option>');
+            $('.select_budget_type').prop('disabled',false);
+        }
         $('.select_budget_type').trigger('change');
     });
 
@@ -223,6 +235,7 @@ $(document).ready(function () {
         }
         checkNeedBA();
     });
+
     $('.select_budget_type').on('change',()=>{
         let value_type = $('.select_budget_type').val();
         $('.budget_ba_field').hide();
@@ -240,11 +253,15 @@ $(document).ready(function () {
         let types = $('.select_budget_item').find('option:selected').data('type');
         // check apakah butuh BA
         let is_ba_required = false;
-        if(brands.length>0 && value_brand == -1){
-            is_ba_required = true;
+        if(brands != null){
+            if(brands.length>0 && value_brand == -1){
+                is_ba_required = true;
+            }
         }
-        if(types.length>0 && value_type == -1){
-            is_ba_required = true;
+        if(types != null){
+            if(types.length>0 && value_type == -1){
+                is_ba_required = true;
+            }
         }
         if(is_ba_required){
             $('.budget_ba_field').show();
@@ -253,10 +270,30 @@ $(document).ready(function () {
         }
     }
 
-    $('.budget_ba_file').on('change', function (e) {
-        let file = $(this).val();
-        console.log('budget_ba_file',file);
+    $('.budget_ba_file').on('change', function (event) {
+        var reader = new FileReader();
+        let value = $(this).val()
+        reader.onload = function(e) {
+            temp_ba_file = e.target.result;
+            temp_ba_extension = value.split('.').pop().toLowerCase();
+        }
+        reader.readAsDataURL(event.target.files[0]);
     });
+
+    $('.budget_olditem_file').on('change', function (event) {
+        var reader = new FileReader();
+        let value = $(this).val()
+        reader.onload = function(e) {
+            temp_olditem_file = e.target.result;
+            temp_olditem_extension = value.split('.').pop().toLowerCase();
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    });
+
+    $(this).on('click','.remove_attachment', function (event) {
+        console.log($(this));
+        $(this).closest('div').remove();
+    })
 });
 // add budget
 function addBudgetItem(el) {
@@ -266,12 +303,11 @@ function addBudgetItem(el) {
     let input_budget_brand = $('.input_budget_brand');
     let input_budget_type = $('.input_budget_type');
     let price_item = AutoNumeric.getAutoNumericElement('.price_budget_item');
-    let budget_ba_file = $('.budget_ba_file');
     let budget_ba_field = $('.budget_ba_field');
+    let budget_olditem_field = $('.budget_olditem_field');
     let count_item = $('.count_budget_item');
     let table_item = $('.table_item');
     
-
     let id = select_item.find('option:selected').val();
     let name = select_item.find('option:selected').text().trim();
     let price = price_item.get();
@@ -283,16 +319,20 @@ function addBudgetItem(el) {
     if(brand == -1){
         brand = input_budget_brand.val().trim();
     }else{
-        brand = brand.trim();
+        brand = brand;
     }
     if(type == -1){
         type = input_budget_type.val().trim();
     }else{
-        type = type.trim();
+        type = type;
     }
 
     if (id == "") {
         alert("Item harus dipilih");
+        return;
+    }
+    if(budget_olditem_field.is(':visible') && temp_olditem_file == null){
+        alert("File Foto Item Lama harus diupload");
         return;
     }
     if (brand == "") {
@@ -303,8 +343,8 @@ function addBudgetItem(el) {
         alert("Pilihan Tipe harus dipilih / diisi");
         return;
     }
-    if(budget_ba_field.is(':visible') && budget_ba_file.val() == ""){
-        alert("File Harus dipilih");
+    if(budget_ba_field.is(':visible') && temp_ba_file == null){
+        alert("File Berita Acara Harus diupload");
         return;
     }
     if (price < 1000) {
@@ -315,14 +355,49 @@ function addBudgetItem(el) {
         alert("Jumlah Item minimal 1");
         return;
     }
+    let attachments_link = "";
+    if(budget_ba_field.is(':visible')){
+        attachments_link  += '<a href="'+temp_ba_file+'" download="ba_file.'+temp_ba_extension+'">ba_file.'+temp_ba_extension+'</a><br>';
+    }
+    if(budget_olditem_field.is(':visible')){
+        attachments_link  += '<a href="'+temp_olditem_file+'" download="old_item.'+temp_olditem_extension+'">old_item.'+temp_olditem_extension+'</a><br>';
+    }
+    if(!budget_ba_field.is(':visible') && !budget_olditem_field.is(':visible')){
+        console.log('im here');
+        attachments_link = '-';
+    }
 
-    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-price="' + price + '" data-count="' + count + '" -brand="' + brand + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
 
     select_item.val("");
     select_item.trigger('change');
-    price_field.set(0);
+    price_item.set(0);
     count_item.val("");
+    input_budget_brand.val("");
+    input_budget_type.val("");
+    $('.budget_ba_file').val('');
+    $('.budget_olditem_file').val('');
+    temp_ba_file = null;
+    temp_ba_extension = null;
+    temp_olditem_file = null;
+    temp_olditem_extension = null;
     tableRefreshed(el);
+}
+
+function addAttachment() {
+    if($('#attachment_file_input').val() == null || $('#attachment_file_input').val() == '') {
+        alert('File attachment belum dipilih');
+        return;
+    }
+    let filename = $('#attachment_file_input')[0].files[0].name;
+    let file = null;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        file = e.target.result;
+        $('#attachment_list').append('<div><a href="'+file+'" download="'+filename+'">'+filename+'</a><span class="remove_attachment">X</span></div>');
+        $('#attachment_file_input').val('');
+    }
+    reader.readAsDataURL($('#attachment_file_input')[0].files[0]);
 }
 
 // add non budget
@@ -350,7 +425,7 @@ function addNonBudgetItem(el){
         alert("Jumlah Item minimal 1");
         return;
     } else {
-        table_item.find('tbody').append('<tr class="item_list" data-id="-1" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '"><td>' + name + '</td><td>' + brand + '</td><td>-</td><td>-</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+        table_item.find('tbody').append('<tr class="item_list" data-id="-1" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '"><td>' + name + '</td><td>' + brand + '</td><td>-</td><td>-</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
   
         input_name.val('');
         price_field.set(0);
@@ -362,11 +437,11 @@ function addNonBudgetItem(el){
 function removeList(el) {
     let tr = $(el).closest('tr');
     tr.remove();
-    tableRefreshed(closestmodal);
+    tableRefreshed();
 }
 
 // table on refresh
-function tableRefreshed(current_element) {
+function tableRefreshed() {
     let table_item = $('.table_item');
     let salespoint_select = $('.salespoint_select2');
     let authorization_select = $('.authorization_select2');
@@ -440,7 +515,7 @@ function addOTVendor(el){
 function removeVendor(el) {
     let tr = $(el).closest('tr');
     tr.remove();
-    tableVendorRefreshed(closestmodal);
+    tableVendorRefreshed();
 }
 
 // table on refresh
@@ -458,61 +533,26 @@ function tableVendorRefreshed(current_element) {
     }
 }
 
-function addRequest(el,type){
-    let modal = $(el).closest('.modal');
-    let requirement_date = modal.find('.requirement_date');
-    let salespoint_select2 = modal.find('.salespoint_select2');
-    let authorization_select2 = modal.find('.authorization_select2');
-    let item_type = modal.find('.item_type');
-    let request_type = modal.find('.request_type');
-    let budget_type = modal.find('.budget_type');
-    let reason = modal.find('.reason');
-    let item_list = modal.find('.item_list');
-    let vendor_item_list = modal.find('.vendor_item_list');
+function addRequest(type){
+    let requirement_date = $('.requirement_date');
+    let expired_date = $('.expired_date');
+    let salespoint_select2 = $('.salespoint_select2');
+    let authorization_select2 = $('.authorization_select2');
+    let item_type = $('.item_type');
+    let request_type = $('.request_type');
+    let budget_type = $('.budget_type');
+    let reason = $('.reason');
+    let item_list = $('.item_list');
+    let vendor_item_list = $('.vendor_item_list');
 
-    // VALIDATION
-    if(requirement_date.val()==""){
-        alert('Tanggal Pengadaan harus diisi');
-        return;
-    }
-    if(salespoint_select2.val()==""){
-        alert('Sales point harus dipilih');
-        return;
-    }
-    if(authorization_select2.val()==""){
-        alert('Otorisasi harus dipilih');
-        return;
-    }
-    if(item_type.val()==""){
-        alert('Jenis barang harus dipilih');
-        return;
-    }
-    if(request_type.val()==""){
-        alert('Jenis Pengadaan harus dipilih');
-        return;
-    }
-    if(budget_type.val()==""){
-        alert('Jenis Budget harus dipilih');
-        return;
-    }
-    if(item_list.length < 1){
-        alert('Daftar barang minimal 1 barang');
-        return;
-    }
-    if(reason.val()==""){
-        alert('Alasan Pengadaan harus diisi');
-        return;
-    }
-    if(vendor_item_list.length < 2){
-        alert('Minimal 2 pilihan vendor');
-        return;
-    }
-    let input_field = modal.find('.input_field');
+    let input_field = $('#input_field');
+    input_field.empty();
+
     input_field.append('<input type="hidden" name="type" value="'+type+'">')
-
     input_field.append('<input type="hidden" name="requirement_date" value="'+requirement_date.val()+'">');
-    input_field.append('<input type="hidden" name="salespoint_select2" value="'+salespoint_select2.val()+'">');
-    input_field.append('<input type="hidden" name="authorization_select2" value="'+authorization_select2.val()+'">');
+    input_field.append('<input type="hidden" name="expired_date" value="'+expired_date.val()+'">');
+    input_field.append('<input type="hidden" name="salespoint" value="'+salespoint_select2.val()+'">');
+    input_field.append('<input type="hidden" name="authorization" value="'+authorization_select2.val()+'">');
     input_field.append('<input type="hidden" name="item_type" value="'+item_type.val()+'">');
     input_field.append('<input type="hidden" name="request_type" value="'+request_type.val()+'">');
     input_field.append('<input type="hidden" name="budget_type" value="'+budget_type.val()+'">');
@@ -524,6 +564,7 @@ function addRequest(el,type){
         input_field.append('<input type="hidden" name="item['+index+'][price]" value="'+$(el).data('price')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][count]" value="'+$(el).data('count')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][brand]" value="'+$(el).data('brand')+'">');
+        input_field.append('<input type="hidden" name="item['+index+'][type]" value="'+$(el).data('type')+'">');
     });
     vendor_item_list.each(function(index, el) {
         input_field.append('<input type="hidden" name="vendor['+index+'][id]" value="'+$(el).data('id')+'">');
@@ -533,17 +574,5 @@ function addRequest(el,type){
     });
 
     $('#addform').submit();
-
-    // data-item
-    // id
-    // price
-    // count
-    // brand
-
-    // data-vendor
-    // id
-    // name
-    // sales
-    // phone
 }
 

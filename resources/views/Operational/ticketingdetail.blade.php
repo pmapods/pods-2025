@@ -14,6 +14,12 @@
     .select2-results__option--disabled {
         display: none;
     }
+    .remove_attachment{
+        margin-left: 2em;
+        font-weight: bold;
+        cursor: pointer;
+        color: red;
+    }
 </style>
 @endsection
 
@@ -153,31 +159,34 @@
             </table>
     
             <div class="d-none row justify-content-between budget_item_adder">
-                <div class="form-group col-md-3">
-                    <label class="required_field">Pilih Item</label>
-                    <select class="form-control select2 select_budget_item">
-                        <option value="" data-brand="">-- Pilih Item Budget --</option>
-                        @foreach ($budget_category_items as $item)
-                        <optgroup label="{{$item->name}}">
-                            @foreach ($item->budget_pricing as $pricing)
-                            <option value="{{$pricing->id}}" 
-                                data-brand="{{$pricing->budget_brand}}"
-                                data-type="{{$pricing->budget_type}}"
-                                data-categorycode="{{$item->code}}"
-                                data-minjs="{{$pricing->injs_min_price}}"
-                                data-maxjs="{{$pricing->injs_max_price}}"
-                                data-minoutjs="{{$pricing->outjs_min_price}}"
-                                data-maxoutjs="{{$pricing->outjs_max_price}}">{{$pricing->name}}</option>
-                            @endforeach
-                        </optgroup>
-                        @endforeach
-                    </select>
-                    <small>
-                        <b>Pilihan Merk :</b><br>
-                        <span class="brand_field">-</span><br>
-                        <b>Pilihan Tipe :</b><br>
-                        <span class="type_field">-</span>
-                    </small>
+                <div class="row col-md-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="required_field">Pilih Item</label>
+                            <select class="form-control select2 select_budget_item">
+                                <option value="">-- Pilih Item Budget --</option>
+                                @foreach ($budget_category_items as $item)
+                                <optgroup label="{{$item->name}}">
+                                    @foreach ($item->budget_pricing as $pricing)
+                                    <option value="{{$pricing->id}}" 
+                                        data-brand="{{$pricing->budget_brand}}"
+                                        data-type="{{$pricing->budget_type}}"
+                                        data-categorycode="{{$item->code}}"
+                                        data-minjs="{{$pricing->injs_min_price}}"
+                                        data-maxjs="{{$pricing->injs_max_price}}"
+                                        data-minoutjs="{{$pricing->outjs_min_price}}"
+                                        data-maxoutjs="{{$pricing->outjs_max_price}}">{{$pricing->name}}</option>
+                                    @endforeach
+                                </optgroup>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 budget_olditem_field" style="display: none">
+                        <label class="required_field">Foto Item Lama</label>
+                        <input type="file" class="form-control-file budget_olditem_file" accept="image/*">
+                        <small class="text-danger">*jpg, jpeg</small>
+                    </div>
                 </div>
                 <div class="col-md-4 pl-1 row">
                     <div class="col-6">
@@ -330,15 +339,40 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="">Berita Acara</label>
+                      <input type="file" class="form-control-file vendor_ba_file">
+                      <small class="text-danger">*Wajib menyertakan berita acara untuk pemilihan satu vendor</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="col-md-12 mt-3">
+        <h5 class="font-weight-bold optional_field">Attachment Tambahan</h5>
+        <div id="attachment_list">
+
+        </div>
+        <div class="form-group mt-2">
+          <input type="file" class="form-control-file" id="attachment_file_input" accept="image/*,application/pdf,application/vnd.ms-excel">
+          <small class="text-danger">*pdf, xls, jpg, jpeg</small>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="addAttachment()">Tambah</button>
+    </div>
     <div class="d-flex justify-content-center mt-3 bottom_action">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        <button type="button" class="btn btn-info" onclick="addRequest(this,0)">Simpan Sebagai Draft</button>
-        <button type="button" class="btn btn-primary" onclick="addRequest(this,1)">Langsung Mulai Otorisasi</button>
+        <button type="button" class="btn btn-info" onclick="addRequest(0)">Simpan Sebagai Draft</button>
+        <button type="button" class="btn btn-primary" onclick="addRequest(1)">Mulai Otorisasi</button>
     </div>
 </div>
+<form action="/addticket" method="post">
+    @csrf
+    <div id="input_field">
+
+    </div>
+</form>
 
 @endsection
 @section('local-js')
