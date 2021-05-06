@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class TicketItems extends Model
+class TicketAdditionalAttachment extends Model
 {
-    use SoftDeletes;
-    protected $table = 'ticket_items';
+    protected $table = 'ticket_additional_attachment';
     protected $primaryKey = 'id';
 
     public function ticket(){

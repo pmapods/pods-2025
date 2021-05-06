@@ -391,7 +391,7 @@
         <button type="button" class="btn btn-primary" onclick="addRequest(1)">Mulai Otorisasi</button>
     </div>
 </div>
-<form action="/addticket" method="post">
+<form action="/addticket" method="post" enctype="multipart/form-data" id="addform">
     @csrf
     <div id="input_field">
 

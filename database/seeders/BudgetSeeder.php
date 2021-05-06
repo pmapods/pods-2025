@@ -6,6 +6,8 @@ use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use App\Models\BudgetPricingCategory;
 use App\Models\BudgetPricing;
+use App\Models\BudgetBrand;
+use App\Models\BudgetType;
 
 class BudgetSeeder extends Seeder
 {
@@ -37,6 +39,21 @@ class BudgetSeeder extends Seeder
                 $newBudget->outjs_max_price            = $faker->numberBetween(4000000, 5000000);
             }
             $newBudget->save();
+
+            $rand = array_rand([0,1],1);
+            if($rand==0){
+                $newBudgetBrand = new BudgetBrand;
+                $newBudgetBrand->budget_pricing_id = $newBudget->id;
+                $newBudgetBrand->name = $faker->word;
+                $newBudgetBrand->save();
+            }
+            $rand = array_rand([0,1],1);
+            if($rand==0){
+                $newBudgetType = new BudgetType;
+                $newBudgetType->budget_pricing_id = $newBudget->id;
+                $newBudgetType->name = $faker->word;
+                $newBudgetType->save();
+            }
         }
     }
 }

@@ -11,8 +11,8 @@ class Ticket extends Model
     protected $table = 'ticket';
     protected $primaryKey = 'id';
 
-    public function ticket_items(){
-        return $this->hasMany(TicketItems::class);
+    public function ticket_item(){
+        return $this->hasMany(TicketItem::class);
     }
 
     public function ticket_vendor(){
@@ -21,6 +21,10 @@ class Ticket extends Model
 
     public function ticket_authorization(){
         return $this->hasMany(TicketAuthorization::class);
+    }
+
+    public function ticket_additional_attachment(){
+        return $this->hasMany(TicketAdditionalAttachment::class);
     }
 
     public function created_by_employee(){

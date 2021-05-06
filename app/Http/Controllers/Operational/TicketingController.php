@@ -16,6 +16,7 @@ use App\Models\TicketAuthorization;
 use App\Models\Authorization;
 use Auth;
 use DB;
+use Storage;
 use Carbon\Carbon;
 
 class TicketingController extends Controller
@@ -56,6 +57,9 @@ class TicketingController extends Controller
     }
 
     public function addTicket(Request $request){
+        dd($request);
+        // $file = explode('base64,',$request->item[0]['attachments'][0]['file'])[1];
+        // Storage::disk('local')->put($request->item[0]['attachments'][0]['filename'], base64_decode($file));
         try {
             DB::beginTransaction();
             $newTicket                     = new Ticket;

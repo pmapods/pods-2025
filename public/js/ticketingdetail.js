@@ -373,10 +373,10 @@ function addBudgetItem(el) {
     }
     let attachments_link = "";
     if(budget_ba_field.is(':visible')){
-        attachments_link  += '<a href="'+temp_ba_file+'" download="ba_file.'+temp_ba_extension+'">ba_file.'+temp_ba_extension+'</a><br>';
+        attachments_link  += '<a class="attachment" href="'+temp_ba_file+'" download="ba_file.'+temp_ba_extension+'">ba_file.'+temp_ba_extension+'</a><br>';
     }
     if(budget_olditem_field.is(':visible')){
-        attachments_link  += '<a href="'+temp_olditem_file+'" download="old_item.'+temp_olditem_extension+'">old_item.'+temp_olditem_extension+'</a><br>';
+        attachments_link  += '<a class="attachment" href="'+temp_olditem_file+'" download="old_item.'+temp_olditem_extension+'">old_item.'+temp_olditem_extension+'</a><br>';
     }
     if(!budget_ba_field.is(':visible') && !budget_olditem_field.is(':visible')){
         attachments_link = '-';
@@ -385,7 +385,7 @@ function addBudgetItem(el) {
     if(budget_expired_date.val()!=""){
         naming = name+'<br>(expired : '+budget_expired_date.val()+')';
     }
-    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
 
     select_item.val("");
     select_item.trigger('change');
@@ -576,7 +576,6 @@ function tableVendorRefreshed(current_element) {
     } else {
         table_vendor.find('tbody').append('<tr class="empty_row text-center"><td colspan="6">Vendor belum dipilih</td></tr>');
     }
-    console.log($('.vendor_item_list').length);
     if($('.vendor_item_list').length<2){
         $('.vendor_ba_field').show();
     }else{
@@ -585,13 +584,6 @@ function tableVendorRefreshed(current_element) {
 }
 
 function addRequest(type){
-    let requirement_date = $('.requirement_date');
-    let salespoint_select2 = $('.salespoint_select2');
-    let authorization_select2 = $('.authorization_select2');
-    let item_type = $('.item_type');
-    let request_type = $('.request_type');
-    let budget_type = $('.budget_type');
-    let reason = $('.reason');
     let item_list = $('.item_list');
     let vendor_item_list = $('.vendor_item_list');
 
@@ -599,13 +591,13 @@ function addRequest(type){
     input_field.empty();
 
     input_field.append('<input type="hidden" name="type" value="'+type+'">')
-    input_field.append('<input type="hidden" name="requirement_date" value="'+requirement_date.val()+'">');
-    input_field.append('<input type="hidden" name="salespoint" value="'+salespoint_select2.val()+'">');
-    input_field.append('<input type="hidden" name="authorization" value="'+authorization_select2.val()+'">');
-    input_field.append('<input type="hidden" name="item_type" value="'+item_type.val()+'">');
-    input_field.append('<input type="hidden" name="request_type" value="'+request_type.val()+'">');
-    input_field.append('<input type="hidden" name="budget_type" value="'+budget_type.val()+'">');
-    input_field.append('<input type="hidden" name="reason" value="'+reason.val()+'">');
+    input_field.append('<input type="hidden" name="requirement_date" value="'+$('.requirement_date').val()+'">');
+    input_field.append('<input type="hidden" name="salespoint" value="'+$('.salespoint_select2').val()+'">');
+    input_field.append('<input type="hidden" name="authorization" value="'+$('.authorization_select2').val()+'">');
+    input_field.append('<input type="hidden" name="item_type" value="'+$('.item_type').val()+'">');
+    input_field.append('<input type="hidden" name="request_type" value="'+$('.request_type').val()+'">');
+    input_field.append('<input type="hidden" name="budget_type" value="'+$('.budget_type').val()+'">');
+    input_field.append('<input type="hidden" name="reason" value="'+$('.reason').val()+'">');
 
     item_list.each(function(index,el){
         input_field.append('<input type="hidden" name="item['+index+'][id]" value="'+$(el).data('id')+'">');
@@ -614,6 +606,14 @@ function addRequest(type){
         input_field.append('<input type="hidden" name="item['+index+'][count]" value="'+$(el).data('count')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][brand]" value="'+$(el).data('brand')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][type]" value="'+$(el).data('type')+'">');
+        input_field.append('<input type="hidden" name="item['+index+'][expired_date]" value="'+$(el).data('expired')+'">');
+        $(el).find('.attachment').each(function(att_index,att_el){
+            let filename = $(att_el).prop('download');
+            let file = $(att_el).prop('href');
+            input_field.append('<input type="hidden" name="item['+index+'][attachments]['+att_index+'][filename]" value="'+filename+'">');
+            // base 64 data
+            input_field.append('<input type="hidden" name="item['+index+'][attachments]['+att_index+'][file]" value="'+file+'">');
+        });
     });
     vendor_item_list.each(function(index, el) {
         input_field.append('<input type="hidden" name="vendor['+index+'][id]" value="'+$(el).data('id')+'">');
