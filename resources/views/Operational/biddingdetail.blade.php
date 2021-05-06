@@ -30,55 +30,45 @@
 <div class="content-body px-4">
     <h3>PCD-210425-0001</h3>
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>Tanggal Pengajuan</label>
-                <input type="text" class="form-control created_date" disabled>
-            </div>
+        <div class="col-md-4">
+            <table class="table table-borderless table-sm">
+                <tbody>
+                    <tr>
+                        <td><b>Tanggal Pengajuan</b></td>
+                        <td>26 April 2021</td>
+                    </tr>
+                    <tr>
+                        <td><b>Tanggal Pengadaan</b></td>
+                        <td>5 Mei 2021</td>
+                    </tr>
+                    <tr>
+                        <td><b>Tanggal Expired</b></td>
+                        <td>7 Mei 2021</td>
+                    </tr>
+                    <tr>
+                        <td><b>Salespoint</b></td>
+                        <td>DAAN MOGOT MT</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>Pembuat Form</label>
-                <input type="text" class="form-control created_by"  disabled>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>Tanggal Pengadaan</label>
-                <input type="date" class="form-control requirement_date" disabled>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>Pilihan Area / Salespoint</label>
-                <input type="text" class="form-control salespoint" disabled>
-            </div>
-        </div>
-        <div class="col-md-7">
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>Jenis Item</label>
-                <select class="form-control item_type" disabled>
-                    <option value="0">Barang</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="">Jenis Pengadaan</label>
-                <select class="form-control request_type" disabled>
-                    <option value="0">Baru</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="">Jenis Budget</label>
-                <select class="form-control budget_type" disabled>
-                    <option value="0">Budget</option>
-                </select>
-            </div>
+        <div class="col-md-4">
+            <table class="table table-borderless table-sm">
+                <tbody>
+                    <tr>
+                        <td><b>Jenis Item</b></td>
+                        <td>Barang</td>
+                    </tr>
+                    <tr>
+                        <td><b>Jenis Pengadaan</b></td>
+                        <td>Baru</td>
+                    </tr>
+                    <tr>
+                        <td><b>Jenis Budget</b></td>
+                        <td>Budget</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="col-md-12 box p-3 mt-3">
             <h5 class="font-weight-bold ">Daftar Barang</h5>
@@ -86,48 +76,63 @@
                 <thead>
                     <tr>
                         <th>Nama Item</th>
-                        <th>Pilihan Merk</th>
-                        <th>Min Harga Satuan</th>
-                        <th>Max harga Satuan</th>
+                        <th>Merk</th>
+                        <th>Type</th>
                         <th>Harga Satuan</th>
-                        <th width="100px">Jumlah</th>
+                        <th>Jumlah</th>
                         <th>Total</th>
+                        <th>Attachment</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>Laptop</td>
+                        <td>Dell</td>
+                        <td>13 Inch</td>
+                        <td>Rp 5.000.000</td>
+                        <td>5</td>
+                        <td>Rp 25.000.000</td>
+                        <td>
+                            <a href="http://www.africau.edu/images/default/sample.pdf" download="ba_file.pdf">ba_file.pdf</a><br>
+                            <a href="https://cdn.pocket-lint.com/r/s/1200x/assets/images/155087-laptops-review-microsoft-surface-laptop-go-review-image1-6ezitk9ymj.jpg" download="old_item.jpg">old_item.jpg</a><br>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary">Seleksi Vendor</button>
+                            <button type="button" class="btn btn-info">Detail</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="col-12">
-            <h5 class="font-weight-bold mt-3">Daftar Vendor</h5>
-        </div>
-        <div class="col-md-6 box p-3">
-            <div class="d-flex flex-row justify-content-between h5 font-weight-bold">
-                <span>nama_vendor</span>
-                <span>Vendor 1</span>
-            </div>
-            <table class="table table-borderless">
-                <tr>
-                    <td>Alamat</td>
-                    <td>Occaecat fugiat minim excepteur cupidatat labore enim tempor ullamco id fugiat. Sit ad </td>
-                </tr>
-                <tr>
-                    <td>Salesperson</td>
-                    <td>Budi</td>
-                </tr>
-                <tr>
-                    <td>Salesperson</td>
-                    <td>123-123-123</td>
-                </tr>
+        <div class="col-md-12 box p-3 mt-3">
+            <h5 class="font-weight-bold">Daftar Vendor</h5>
+            <table class="table table-bordered table_vendor">
+                <thead>
+                    <tr>
+                        <th>Kode Vendor</th>
+                        <th>Nama Vendor</th>
+                        <th>Sales Person</th>
+                        <th>Telfon</th>
+                        <th>Tipe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>V-1</td>
+                        <td>PT Tamba</td>
+                        <td>Vivi</td>
+                        <td>(+62) 27 3830 117</td>
+                        <td>Terdaftar</td>
+                    </tr>
+                    <tr>
+                        <td>V-3</td>
+                        <td>CV Megantara</td>
+                        <td>Laila</td>
+                        <td>0556 1486 795</td>
+                        <td>Terdaftar</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>

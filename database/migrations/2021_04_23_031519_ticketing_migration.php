@@ -23,7 +23,8 @@ class TicketingMigration extends Migration
             // 1 Jasa
             $table->tinyInteger('request_type');
             // 0 Baru
-            // 1 Replace / Existing
+            // 1 Replace Existing
+            // 2 Repeat Order
             $table->tinyInteger('budget_type');
             // 0 Budget
             // 1 NonBudget

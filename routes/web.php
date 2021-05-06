@@ -62,7 +62,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
             Route::patch('/updatesalespoint',[SalesPointController::class, 'updateSalesPoint']);
             Route::delete('/deletesalespoint',[SalesPointController::class, 'deleteSalesPoint']);
-            Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
         
             // Authorization
             Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
@@ -86,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     // OPERATIONAL
         // Pengadaan Barang Jasa
         Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
+        Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
         Route::get('/addnewticket',[TicketingController::class, 'addNewTicket']);
         Route::post('/addticket',[TicketingController::class, 'addTicket']);
         Route::patch('/startauthorization',[TicketingController::class, 'startAuthorization']);
@@ -96,6 +96,7 @@ Route::middleware(['auth'])->group(function () {
         // Bidding
         Route::get('/bidding',[BiddingController::class, 'biddingView']);
         Route::get('/bidding/{ticket_code}',[BiddingController::class, 'biddingDetailView']);
+        Route::get('/bidding/{ticket_code}/{item_code}',[BiddingController::class, 'vendorSelectionView']);
 
         // Purchase Requisition
         Route::get('/pr',[PRController::class, 'prView']);

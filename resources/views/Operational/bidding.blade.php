@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <h1 class="m-0 text-dark">Operasional</h1>
-                <h5 class="m-0">Menunggu Proses Bidding</h5>
+                <h5 class="mt-2">Menunggu Proses Bidding</h5>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -49,6 +49,9 @@
                     <th>
                         Tanggal Pengajuan
                     </th>
+                    <th>
+                        Tanggal Expired
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -59,6 +62,7 @@
                     <td>DAAN MOGOT MT</td>
                     <td>26 April 2021</td>
                     <td>5 Mei 2021</td>
+                    <td>7 Mei 2021</td>
                 </tr>
             </tbody>
         </table>

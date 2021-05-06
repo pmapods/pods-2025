@@ -92,87 +92,91 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <p>Dashboard</p>
                 </a>
               </li>
+            {{-- MASTERDATA --}}
+            @if(Auth::user()->employee_position->name == 'Super Admin')
             <li class="nav-item has-treeview menu-close">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-database"></i>
-                  <p>
-                    Masterdata
-                    <i class="right fas fa-angle-left"></i>
-                  </p>
+                    <i class="nav-icon fas fa-database"></i>
+                    <p>
+                        Masterdata
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="/employeeposition" class="nav-link">
-                        <i class="fad fa-user-cowboy nav-icon"></i>
-                        <p>Jabatan</p>
-                      </a>
+                        <a href="/employeeposition" class="nav-link">
+                            <i class="fad fa-user-cowboy nav-icon"></i>
+                            <p>Jabatan</p>
+                        </a>
                     </li>
                     <li class="nav-item">
-                      <a href="/employee" class="nav-link">
-                        <i class="fad fa-users nav-icon"></i>
-                        <p>Karyawan</p>
-                      </a>
+                        <a href="/employee" class="nav-link">
+                            <i class="fad fa-users nav-icon"></i>
+                            <p>Karyawan</p>
+                        </a>
                     </li>
                     <li class="nav-item">
-                      <a href="/salespoint" class="nav-link">
-                        <i class="fad fa-globe-asia nav-icon"></i>
-                        <p>Sales Point</p>
-                      </a>
+                        <a href="/salespoint" class="nav-link">
+                            <i class="fad fa-globe-asia nav-icon"></i>
+                            <p>Sales Point</p>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a href="/employeeaccess" class="nav-link">
-                          <i class="fad fa-user-unlock nav-icon"></i>
-                          <p>Akses Karyawan</p>
+                            <i class="fad fa-user-unlock nav-icon"></i>
+                            <p>Akses Karyawan</p>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="/authorization" class="nav-link">
-                          <i class="fad fa-signature nav-icon"></i>
-                          <p>Matriks Otorisasi Form</p>
+                            <i class="fad fa-signature nav-icon"></i>
+                            <p>Matriks Otorisasi Form</p>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="/vendor" class="nav-link">
-                          <i class="fad fa-handshake nav-icon"></i>
-                          <p>Vendor</p>
+                            <i class="fad fa-handshake nav-icon"></i>
+                            <p>Vendor</p>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="/budgetpricing" class="nav-link">
-                          <i class="fad fa-calculator nav-icon"></i>
-                          <p>Budget Pricing</p>
+                            <i class="fad fa-calculator nav-icon"></i>
+                            <p>Budget Pricing</p>
                         </a>
                     </li>
                 </ul>
             </li>
+            @endif
+            {{-- OPERATIONAL --}}
             <li class="nav-item has-treeview menu-close">
-                <a href="#" class="nav-link">
+              <a href="#" class="nav-link">
                   <i class="nav-icon fas fa-briefcase"></i>
                   <p>
-                    Operasional
-                    <i class="right fas fa-angle-left"></i>
+                      Operasional
+                      <i class="right fas fa-angle-left"></i>
                   </p>
-                </a>
-                <ul class="nav nav-treeview">
+              </a>
+              <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="/ticketing" class="nav-link">
-                      <i class="fad fa-ticket nav-icon"></i>
-                      <p>Pengadaan</p>
-                    </a>
+                      <a href="/ticketing" class="nav-link">
+                          <i class="fad fa-ticket nav-icon"></i>
+                          <p>Pengadaan</p>
+                      </a>
                   </li>
                   <li class="nav-item">
-                    <a href="/bidding" class="nav-link">
-                      <i class="fad fa-less-than-equal nav-icon"></i>
-                      <p>Bidding</p>
-                    </a>
+                      <a href="/bidding" class="nav-link">
+                          <i class="fad fa-less-than-equal nav-icon"></i>
+                          <p>Bidding</p>
+                      </a>
                   </li>
                   <li class="nav-item">
-                    <a href="/pr" class="nav-link">
-                      <i class="fad fa-shopping-bag nav-icon"></i>
-                      <p>Purchase Requisition</p>
-                    </a>
+                      <a href="/pr" class="nav-link">
+                          <i class="fad fa-shopping-bag nav-icon"></i>
+                          <p>Purchase Requisition</p>
+                      </a>
                   </li>
-                </ul>
+              </ul>
             </li>
         </ul>
       </nav>

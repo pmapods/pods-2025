@@ -14,4 +14,8 @@ class BiddingController extends Controller
     public function biddingDetailView(){
         return view('Operational.biddingdetail');
     }
+
+    public function vendorSelectionView(){
+        return view('Operational.vendorselection');
+    }
 }

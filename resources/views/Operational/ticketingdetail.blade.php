@@ -58,10 +58,6 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="form-group">
-                <label class="required_field">Expired Date</label>
-                <input type="date" class="form-control expired_date" disabled>
-            </div>
         </div>
         <div class="col-md-4">
             <div class="form-group">
@@ -122,7 +118,8 @@
                 <select class="form-control request_type" disabled>
                     <option value="">-- Pilih Jenis Pengadaan --</option>
                     <option value="0">Baru</option>
-                    <option value="1">Replace / Existing</option>
+                    <option value="1">Replace Existing</option>
+                    <option value="2">Repeat Order</option>
                 </select>
             </div>
         </div>
@@ -182,10 +179,15 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-12 budget_expired_field form-group" style="display: none">
+                        <label class="optional_field">Expired Date</label>
+                        <input type="date" class="form-control form-control-file budget_expired_date">
+                        <small class="text-danger">* Hanya untuk pengadaan APAR</small>
+                    </div>
                     <div class="col-12 budget_olditem_field" style="display: none">
                         <label class="required_field">Foto Item Lama</label>
-                        <input type="file" class="form-control-file budget_olditem_file" accept="image/*">
-                        <small class="text-danger">*jpg, jpeg</small>
+                        <input type="file" class="form-control-file budget_olditem_file" accept="image/*,application/pdf">
+                        <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
                     </div>
                 </div>
                 <div class="col-md-4 pl-1 row">
@@ -195,6 +197,10 @@
                             <select class="form-control select_budget_brand" disabled>
                             </select>
                         </div>
+                        <div class="form-group input_budget_brand_field" style="display: none">
+                            <label class="required_field">Nama Merk Lain</label>
+                            <input class="form-control input_budget_brand">
+                        </div>
                     </div>
                     <div class="col-6">
                         <div class="form-group">
@@ -202,14 +208,6 @@
                             <select class="form-control select_budget_type" disabled>
                             </select>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group input_budget_brand_field" style="display: none">
-                            <label class="required_field">Nama Merk Lain</label>
-                            <input class="form-control input_budget_brand">
-                        </div>
-                    </div>
-                    <div class="col-6">
                         <div class="form-group input_budget_type_field" style="display: none">
                             <label class="required_field">Nama Tipe Lain</label>
                             <input class="form-control input_budget_type">
@@ -218,7 +216,7 @@
                     <div class="col-12 budget_ba_field" style="display: none">
                         <label class="required_field">Berita Acara</label>
                         <input type="file" class="form-control-file budget_ba_file" accept="application/pdf,application/vnd.ms-excel">
-                        <small class="text-danger">*pdf, xls</small>
+                        <small class="text-danger">*pdf, xls (MAX 5MB)</small>
                     </div>
                 </div>
                 <div class="form-group col-md-3 pl-1">
@@ -242,26 +240,50 @@
             </div>
     
             <div class="d-none row justify-content-between nonbudget_item_adder">
-                <div class="form-group col-md-3">
-                    <label class="required_field">Nama Item</label>
-                    <input class="form-control nonbudget_item_name">
+                <div class="row col-md-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                          <label class="required_field">Nama Item</label>
+                          <input type="text" class="form-control input_nonbudget_name">
+                        </div>
+                    </div>
+                    <div class="col-12 nonbudget_expired_field form-group" style="display: none">
+                        <label class="optional_field">Expired Date</label>
+                        <input type="date" class="form-control form-control-file nonbudget_expired_date">
+                        <small class="text-danger">* Hanya untuk pengadaan APAR</small>
+                    </div>
+                    <div class="col-12 nonbudget_olditem_field" style="display: none">
+                        <label class="required_field">Foto Item Lama</label>
+                        <input type="file" class="form-control-file nonbudget_olditem_file" accept="image/*,application/pdf">
+                        <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
+                    </div>
                 </div>
-                <div class="form-group col-md-4 pl-2">
-                    <label class="optional_field">Merk</label>
-                    <input class="form-control nonbudget_item_brand">
+                <div class="col-md-4 pl-1 row">
+                    <div class="col-6">
+                        <div class="form-group">
+                          <label class="required_field">Merk</label>
+                          <input type="text" class="form-control input_nonbudget_brand">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="required_field">Tipe</label>
+                            <input type="text" class="form-control input_nonbudget_type">
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group col-md-3 pl-2">
+                <div class="form-group col-md-3 pl-1">
                     <label class="required_field">Harga Item</label>
-                    <input class="form-control rupiah nonbudget_item_price">
+                    <input class="form-control rupiah price_nonbudget_item">
                 </div>
-                <div class="form-group col-md-1 pl-2">
+                <div class="form-group col-md-1 pl-1">
                     <label class="required_field">Jumlah</label>
-                    <input type="number" class="form-control nonbudget_item_count">
+                    <input type="number" class="form-control count_nonbudget_item">
                 </div>
-                <div class="form-group col-md-1 pl-2">
+                <div class="form-group col-md-1 pl-1">
                     <label>&nbsp</label>
                     <button type="button" class="btn btn-primary form-control"
-                        onclick="addNonBudgetItem(this)">Tambah</button>
+                        onclick="addNonBudgetItem()">Tambah</button>
                 </div>
             </div>
         </div>
@@ -287,9 +309,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="empty_row text-center">
-                        <td colspan="6">Vendor belum dipilih</td>
-                    </tr>
                 </tbody>
             </table>
             <div class="row">
@@ -300,7 +319,12 @@
                         <select class="form-control select2 select_vendor">
                             <option value="">-- Pilih Vendor --</option>
                             @foreach ($vendors as $vendor)
-                            <option value="{{$vendor->id}}" data-vendor="{{$vendor}}">{{$vendor->name}}
+                            <option value="{{$vendor->id}}" 
+                                data-id="{{$vendor->id}}"
+                                data-code="{{$vendor->code}}"
+                                data-name="{{$vendor->name}}"
+                                data-salesperson="{{$vendor->salesperson}}"
+                                >{{$vendor->name}}
                             </option>
                             @endforeach
                         </select>
@@ -340,10 +364,10 @@
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="form-group">
-                      <label for="">Berita Acara</label>
+                    <div class="form-group vendor_ba_field">
+                      <label class="required_field">Berita Acara</label>
                       <input type="file" class="form-control-file vendor_ba_file">
-                      <small class="text-danger">*Wajib menyertakan berita acara untuk pemilihan satu vendor</small>
+                      <small class="text-danger">* Wajib menyertakan berita acara untuk pemilihan satu vendor</small>
                     </div>
                 </div>
             </div>
@@ -357,7 +381,7 @@
         </div>
         <div class="form-group mt-2">
           <input type="file" class="form-control-file" id="attachment_file_input" accept="image/*,application/pdf,application/vnd.ms-excel">
-          <small class="text-danger">*pdf, xls, jpg, jpeg</small>
+          <small class="text-danger">*pdf, xls, jpg, jpeg (MAX 5MB)</small>
         </div>
         <button type="button" class="btn btn-primary" onclick="addAttachment()">Tambah</button>
     </div>
