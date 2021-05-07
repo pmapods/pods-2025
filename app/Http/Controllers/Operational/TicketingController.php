@@ -10,10 +10,11 @@ use App\Models\BudgetPricingCategory;
 use App\Models\BudgetPricing;
 use App\Models\Vendor;
 use App\Models\Ticket;
-use App\Models\TicketItems;
+use App\Models\TicketItem;
+use App\Models\TicketItemAttachment;
 use App\Models\TicketVendor;
-use App\Models\TicketAuthorization;
 use App\Models\Authorization;
+use App\Models\TicketAuthorization;
 use Auth;
 use DB;
 use Storage;
@@ -22,19 +23,30 @@ use Carbon\Carbon;
 class TicketingController extends Controller
 {
     public function ticketingView(){
-        $user_location_access = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
-        $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
-        $available_salespoints = $available_salespoints->groupBy('region');
-        
-        $budget_category_items = BudgetPricingCategory::all();
-
-        // active vendors
-        $vendors = Vendor::where('status',0)->get();
-
         // show ticket liat based on auth access area
         $access = Auth::user()->location_access->pluck('salespoint_id');
         $tickets = Ticket::whereIn('salespoint_id',$access)->get()->sortByDesc('created_at');
-        return view('Operational.ticketing',compact('available_salespoints','budget_category_items','vendors','tickets'));
+        return view('Operational.ticketing',compact('tickets'));
+    }
+
+    public function ticketingDetailView($code){
+        $ticket = Ticket::where('code',$code)->first();
+        if($ticket){
+            $user_location_access = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
+            $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
+            $available_salespoints = $available_salespoints->groupBy('region');
+            
+            $budget_category_items = BudgetPricingCategory::all();
+    
+            // active vendors
+            $vendors = Vendor::where('status',0)->get();
+    
+            // show ticket liat based on auth access area
+            $access = Auth::user()->location_access->pluck('salespoint_id');
+            return view('Operational.ticketingdetail',compact('ticket','available_salespoints','budget_category_items','vendors'));
+        }else{
+            return back()->with('error','Form tidak ditemukan');
+        }
     }
 
     public function addNewTicket(Request $request){
@@ -57,91 +69,115 @@ class TicketingController extends Controller
     }
 
     public function addTicket(Request $request){
-        dd($request);
-        // $file = explode('base64,',$request->item[0]['attachments'][0]['file'])[1];
-        // Storage::disk('local')->put($request->item[0]['attachments'][0]['filename'], base64_decode($file));
+        // add ticket save ticket as a draft (no validation)
         try {
             DB::beginTransaction();
-            $newTicket                     = new Ticket;
+            if(!isset($request->salespoint)){
+                return back()->with('error','Salespoint harus dipilih');
+            }
+            $ticket = Ticket::find($request->id);
+            $isnew = true;
+            if($ticket == null){
+                $newTicket = new Ticket;
+                $count_ticket = Ticket::whereBetween('created_at', [
+                    Carbon::now()->startOfYear(),
+                    Carbon::now()->endOfYear(),
+                ])->withTrashed()->count();
+                do {
+                    $code = "PCD-".now()->format('ymd').'-'.str_repeat("0", 4-strlen($count_ticket+1)).($count_ticket+1);
+                    $count_ticket++;
+                    $checkticket = Ticket::where('code',$code)->first();
+                    ($checkticket)? $flag = false : $flag = true;
+                } while (!$flag);
+                $newTicket->code           = $code;
+            }else{
+                $newTicket = $ticket;
+                $isnew = false;
+            }
             $newTicket->requirement_date   = $request->requirement_date;
-            $newTicket->salespoint_id      = $request->salespoint_select2;
-            $newTicket->authorization_id   = $request->authorization_select2;
+            $newTicket->salespoint_id      = $request->salespoint;
+            $newTicket->authorization_id   = $request->authorization;
             $newTicket->item_type          = $request->item_type;
             $newTicket->request_type       = $request->request_type;
             $newTicket->budget_type        = $request->budget_type;
             $newTicket->reason             = $request->reason;
-            $newTicket->created_by         = Auth::user()->id;
-            if($request->type == 1){
-                $newTicket->status = 1;
-            }
             $newTicket->save();
             $salespoint = $newTicket->salespoint;
 
             // ticket items
-            foreach($request->item as $item) {
-                $newTicketItems                    = new TicketItems;
-                $newTicketItems->ticket_id         = $newTicket->id;
-                $budget                            = BudgetPricing::find($item['id']);
-                if($budget){
-                    $newTicketItems->budget_pricing_id     = $budget->id;
-                    $newTicketItems->name                  = $budget->name;
-                    if($salespoint->isJawaSumatra){
-                        $newTicketItems->min_price         = $budget->injs_min_price;
-                        $newTicketItems->max_price         = $budget->injs_max_price;
-                    }else{
-                        $newTicketItems->min_price         = $budget->outjs_min_price;
-                        $newTicketItems->max_price         = $budget->outjs_max_price;
+            if(isset($request->item)){
+                foreach($request->item as $item) {
+                    $newTicketItem                        = new TicketItem;
+                    $newTicketItem->ticket_id             = $newTicket->id;
+                    $newTicketItem->budget_pricing_id     = $item['id'];
+                    $newTicketItem->name                  = $item['name'];
+                    $newTicketItem->brand                 = $item['brand'];
+                    $newTicketItem->type                  = $item['type'];
+                    $newTicketItem->price                 = $item['price'];
+                    $newTicketItem->count                 = $item['count'];
+                    $newTicketItem->save();
+    
+                    if(isset($item["attachments"])){
+                        foreach($item["attachments"] as $attachment){
+                            $newAttachment = new TicketItemAttachment;
+                            $newAttachment->ticket_item_id = $newTicketItem->id;
+                            $newAttachment->name = $attachment['filename'];
+                            $file = explode('base64,',$attachment['file'])[1];
+                            $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/'.$attachment['filename'];
+                            Storage::disk('local')->put($path, base64_decode($file));
+                            $newAttachment->path = $path;
+                            $newAttachment->save();
+                        }
                     }
-                }else{
-                    $newTicketItems->budget_pricing_id     = null;
-                    $newTicketItems->name                  = $item['name'];
-                    $newTicketItems->min_price             = null;
-                    $newTicketItems->max_price             = null;
                 }
-                $newTicketItems->brand             = $item['brand'];
-                $newTicketItems->price             = $item['price'];
-                $newTicketItems->count             = $item['count'];
-                $newTicketItems->save();
             }
 
             // ticket vendor
-            foreach ($request->vendor as $list){
-                $vendor = Vendor::find($list['id']);
-                $newTicketVendor = new TicketVendor;
-                $newTicketVendor->ticket_id         = $newTicket->id;
-                if($vendor){
-                    $newTicketVendor->vendor_id     = $vendor->id;
-                    $newTicketVendor->name          = $vendor->name;
-                    $newTicketVendor->salesperson   = $vendor->salesperson;
-                    $newTicketVendor->phone         = $vendor->phone;
-                    $newTicketVendor->type          = 0;
-                }else{
-                    $newTicketVendor->vendor_id     = null;
-                    $newTicketVendor->name          = $list['name'];
-                    $newTicketVendor->salesperson   = $list['sales'];
-                    $newTicketVendor->phone         = $list['phone'];
-                    $newTicketVendor->type          = 1;
+            if(isset($request->vendor)){
+                foreach ($request->vendor as $list){
+                    $vendor = Vendor::find($list['id']);
+                    $newTicketVendor = new TicketVendor;
+                    $newTicketVendor->ticket_id         = $newTicket->id;
+                    if($vendor){
+                        $newTicketVendor->vendor_id     = $vendor->id;
+                        $newTicketVendor->name          = $vendor->name;
+                        $newTicketVendor->salesperson   = $vendor->salesperson;
+                        $newTicketVendor->phone         = $vendor->phone;
+                        $newTicketVendor->type          = 0;
+                    }else{
+                        $newTicketVendor->vendor_id     = null;
+                        $newTicketVendor->name          = $list['name'];
+                        $newTicketVendor->salesperson   = $list['sales'];
+                        $newTicketVendor->phone         = $list['phone'];
+                        $newTicketVendor->type          = 1;
+                    }
+                    $newTicketVendor->save();
                 }
-                $newTicketVendor->save();
             }
 
             // ticket authorization
-            $authorizations = Authorization::findOrFail($request->authorization_select2);
-            foreach($authorizations->authorization_detail as $detail){
-                $newTicketAuthorization                     = new TicketAuthorization;
-                $newTicketAuthorization->ticket_id          = $newTicket->id;
-                $newTicketAuthorization->employee_id        = $detail->employee_id;
-                $newTicketAuthorization->employee_name      = $detail->employee->name;
-                $newTicketAuthorization->as                 = $detail->sign_as;
-                $newTicketAuthorization->employee_position  = $detail->employee->employee_position->name;
-                $newTicketAuthorization->level              = $detail->level;
-                $newTicketAuthorization->save();
+            $authorizations = Authorization::find($request->authorization);
+            if(isset($authorizations)){
+                foreach($authorizations->authorization_detail as $detail){
+                    $newTicketAuthorization                     = new TicketAuthorization;
+                    $newTicketAuthorization->ticket_id          = $newTicket->id;
+                    $newTicketAuthorization->employee_id        = $detail->employee_id;
+                    $newTicketAuthorization->employee_name      = $detail->employee->name;
+                    $newTicketAuthorization->as                 = $detail->sign_as;
+                    $newTicketAuthorization->employee_position  = $detail->employee->employee_position->name;
+                    $newTicketAuthorization->level              = $detail->level;
+                    $newTicketAuthorization->save();
+                }
             }
             DB::commit();
-            return back()->with('success','Berhasil menambah form pengadaan. Silahkan melakukan review kembali');
+            if($isnew){
+                return redirect('/ticketing')->with('success','Berhasil menambah form pengadaan '.$newTicket->code.'. Silahkan melakukan review kembali');
+            }else{
+                return redirect('/ticketing')->with('success','Berhasil update form pengadaan');
+            }
         } catch (\Exception $ex) {
             DB::rollback();
-            return back()->with('error','Gagal menambah tiket "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal menyimpan tiket "'.$ex->getMessage().'"');
         }
     }
 

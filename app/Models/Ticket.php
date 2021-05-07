@@ -129,27 +129,4 @@ class Ticket extends Model
         return $this->belongsTo(Employee::class,'terminated_by','id');
     }
 
-    public function row_data(){
-        $data = [
-            'id' => $this->id,
-            'status' => $this->status,
-            'created_at' => $this->created_at->format('Y-m-d (H:i)'),
-            'updated_at' => $this->updated_at,
-            'created_by' => $this->created_by_employee->name,
-            'requirement_date' => $this->requirement_date,
-            'salespoint' => $this->salespoint->name,
-            'authorization_list' => $this->ticket_authorization,
-            'item_type' => $this->item_type,
-            'request_type' => $this->request_type,
-            'budget_type' => $this->budget_type,
-            'items'=> $this->ticket_items,
-            'reason'=> $this->reason,
-            'vendors' => $this->ticket_vendor,
-            'terminated_by' => ($this->terminated_by_employee) ? $this->terminated_by_employee->name : null,
-            'termination_reason' =>$this->termination_reason,
-        ];
-        $data = collect($data);
-        return $data;
-    }
-
 }

@@ -85,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     // OPERATIONAL
         // Pengadaan Barang Jasa
         Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
+        Route::get('/ticketing/{code}',[TicketingController::class, 'ticketingDetailView']);
         Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
         Route::get('/addnewticket',[TicketingController::class, 'addNewTicket']);
         Route::post('/addticket',[TicketingController::class, 'addTicket']);

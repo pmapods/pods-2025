@@ -55,6 +55,7 @@
             <div class="form-group">
                 <label class="required_field">Tanggal Pengadaan</label>
                 <input type="date" class="form-control requirement_date">
+                <small class="text-danger">*Tanggal pengadaan minimal 14 hari dari tanggal pengajuan</small>
             </div>
         </div>
         <div class="col-md-4">
@@ -105,7 +106,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label class="required_field">Jenis Item</label>
-                <select class="form-control item_type" disabled>
+                <select class="form-control item_type">
                     <option value="">-- Pilih Jenis Item --</option>
                     <option value="0">Barang</option>
                     <option value="1">Jasa</option>
@@ -393,6 +394,7 @@
 </div>
 <form action="/addticket" method="post" enctype="multipart/form-data" id="addform">
     @csrf
+    <input type="hidden" name="id" id="ticket_id">
     <div id="input_field">
 
     </div>
@@ -400,5 +402,10 @@
 
 @endsection
 @section('local-js')
+<script>
+</script>
 <script src="/js/ticketingdetail.js"></script>
+<script>
+    // for existing data
+</script>
 @endsection

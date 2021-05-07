@@ -15,8 +15,10 @@ class TicketingMigration extends Migration
     {
         Schema::create('ticket', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('code')->nullable();
+            // PCD-YYMMDD-0001
             $table->date('requirement_date')->nullable();
-            $table->integer('salespoint_id')->unsigned()->nullable();
+            $table->integer('salespoint_id')->unsigned();
             $table->integer('authorization_id')->unsigned()->nullable();
             $table->tinyInteger('item_type')->nullable();
             // 0 barang
@@ -29,7 +31,7 @@ class TicketingMigration extends Migration
             // 0 Budget
             // 1 NonBudget
             $table->text('reason')->nullable();
-            $table->integer('created_by')->unsigned();
+            $table->integer('created_by')->unsigned()->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
             $table->tinyInteger('status')->default(0);
