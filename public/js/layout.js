@@ -97,6 +97,15 @@ function autonumber(el) {
     }
 }
 
+// max 5mb
+function validatefilesize(event){
+    if(event.target.files[0].size > 5242880){
+        alert("File melebihi kapasitas maksimum");
+        return false;
+    };
+    return true;
+}
+
 // Datatable Settings
 var datatable_settings = {
     "language": language_setting,

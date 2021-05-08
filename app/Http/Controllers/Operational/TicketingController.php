@@ -104,9 +104,20 @@ class TicketingController extends Controller
             $newTicket->save();
             $salespoint = $newTicket->salespoint;
 
+
+            // remove old data
+            if($newTicket->ticket_item->count() > 0){
+                foreach($newTicket->ticket_item as $item){
+                    // foreach($item->ticket_item_attachment as $attachment){
+                    //     Storage::disk('public')->delete($attachment->path);
+                    //     $attachment->delete();
+                    // }
+                    $item->delete();
+                }
+            }
             // ticket items
             if(isset($request->item)){
-                foreach($request->item as $item) {
+                foreach($request->item as $key=>$item) {
                     $newTicketItem                        = new TicketItem;
                     $newTicketItem->ticket_id             = $newTicket->id;
                     $newTicketItem->budget_pricing_id     = $item['id'];
@@ -116,15 +127,22 @@ class TicketingController extends Controller
                     $newTicketItem->price                 = $item['price'];
                     $newTicketItem->count                 = $item['count'];
                     $newTicketItem->save();
-    
+                    
                     if(isset($item["attachments"])){
                         foreach($item["attachments"] as $attachment){
                             $newAttachment = new TicketItemAttachment;
                             $newAttachment->ticket_item_id = $newTicketItem->id;
                             $newAttachment->name = $attachment['filename'];
-                            $file = explode('base64,',$attachment['file'])[1];
-                            $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/'.$attachment['filename'];
-                            Storage::disk('local')->put($path, base64_decode($file));
+                            $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/item'.$key.'/'.$attachment['filename'];
+                            if(str_contains($attachment['file'], 'http')){
+                                // url
+                                $file = Storage::disk('public')->get(explode('storage',$attachment['file'])[1]);
+                                Storage::disk('public')->put($path, $file);
+                            }else{
+                                // base 64 data
+                                $file = explode('base64,',$attachment['file'])[1];
+                                Storage::disk('public')->put($path, base64_decode($file));
+                            }
                             $newAttachment->path = $path;
                             $newAttachment->save();
                         }
@@ -132,7 +150,13 @@ class TicketingController extends Controller
                 }
             }
 
+
             // ticket vendor
+            if($newTicket->ticket_vendor->count() > 0){
+                foreach($newTicket->ticket_vendor as $vendor){
+                    $vendor->delete();
+                }
+            }
             if(isset($request->vendor)){
                 foreach ($request->vendor as $list){
                     $vendor = Vendor::find($list['id']);
@@ -142,7 +166,8 @@ class TicketingController extends Controller
                         $newTicketVendor->vendor_id     = $vendor->id;
                         $newTicketVendor->name          = $vendor->name;
                         $newTicketVendor->salesperson   = $vendor->salesperson;
-                        $newTicketVendor->phone         = $vendor->phone;
+                        // hide phone on order (personal for purhasing team)
+                        $newTicketVendor->phone         = '';
                         $newTicketVendor->type          = 0;
                     }else{
                         $newTicketVendor->vendor_id     = null;

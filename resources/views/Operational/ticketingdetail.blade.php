@@ -141,7 +141,7 @@
                     <tr>
                         <th>Nama Item</th>
                         <th>Merk</th>
-                        <th>Type</th>
+                        <th>Tipe</th>
                         <th>Harga Satuan</th>
                         <th>Jumlah</th>
                         <th>Total</th>
@@ -367,8 +367,9 @@
                 <div class="col-md-12">
                     <div class="form-group vendor_ba_field">
                       <label class="required_field">Berita Acara</label>
-                      <input type="file" class="form-control-file vendor_ba_file">
-                      <small class="text-danger">* Wajib menyertakan berita acara untuk pemilihan satu vendor</small>
+                      <input type="file" class="form-control-file vendor_ba_file" accept="application/pdf,application/vnd.ms-excel">
+                      <small class="text-danger">* Wajib menyertakan berita acara untuk pemilihan satu vendor (.pdf/xls MAX 5MB)</small><br>
+                      <a href="" download="" id="vendor_ba_preview" style="display: none">tampilkan berita acara</a>
                     </div>
                 </div>
             </div>
@@ -405,7 +406,62 @@
 <script>
 </script>
 <script src="/js/ticketingdetail.js"></script>
+@if (Request::is('ticketing/*'))
 <script>
-    // for existing data
+    $(document).ready(function() {
+        let ticket = @json($ticket);
+        let ticket_items = @json($ticket->ticket_items_with_attachments());
+        let ticket_vendors = @json($ticket->ticket_vendor);
+        // console.log(ticket_vendors);
+        $('#ticket_id').val(ticket["id"]);
+        if(ticket['salespoint_id']){
+            $('.salespoint_select2').val(ticket['salespoint_id']);
+            $('.salespoint_select2').trigger('change');
+        }
+        setTimeout(function(){ 
+            if(ticket['authorization_id'] != null){
+                $('.authorization_select2').val(ticket['authorization_id']); 
+                $('.authorization_select2').trigger('change'); 
+            }
+            if(ticket['item_type'] != null){
+                $('.item_type').val(ticket['item_type']);
+                $('.item_type').trigger('change');
+            }
+            if(ticket['request_type'] != null){
+                $('.request_type').val(ticket['request_type']);
+                $('.request_type').trigger('change');
+            }
+            if(ticket['budget_type'] != null){
+                $('.budget_type').val(ticket['budget_type']);
+                $('.budget_type').trigger('change');
+            }
+        },1500);
+        if(ticket_items.length > 0){
+            $('.table_item tbody').empty();
+        }
+        ticket_items.forEach(function(item,index){
+            let naming = item.name;
+            if(item.expired_date != null){
+                naming = item.name+'<br>(expired : '+item.expired_date+')';
+            }
+            let attachments_link = '-';
+            item.attachments.forEach(function(attachment,i){
+                if(i==0) attachments_link = "";
+                attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><br>';
+            })
+            $('.table_item tbody').append('<tr class="item_list" data-id="' + item.id + '" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+        });
+        $('.reason').val(ticket.reason);
+        if(ticket_vendors.length > 0){
+            $('.table_vendor').find('tbody').empty();
+        }
+        ticket_vendors.forEach(function(vendor,index){
+            console.log(vendor);
+            let type = (vendor.type == 0) ? 'Terdaftar' : 'One Time Vendor';
+            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-id="'+vendor.id+'"><td>'+vendor.code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
+        });
+        // 
+    })
 </script>
+@endif
 @endsection

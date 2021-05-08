@@ -16,6 +16,6 @@ class TicketItem extends Model
     }
 
     public function ticket_item_attachment(){
-        return $this->belongsTo(TicketItemAttachment::class);
+        return $this->hasMany(TicketItemAttachment::class);
     }
 }

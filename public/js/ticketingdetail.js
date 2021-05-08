@@ -65,13 +65,6 @@ $(document).ready(function () {
         });
     });
 
-    $('input[type="file"]').change(function(){
-        if(this.files[0].size > 5242880){
-            alert("File melebihi kapasitas maksimum");
-            this.value('');
-        };
-    });
-
     $('.authorization_select2').on('change', function () {
         let field = $('.authorization_list_field');
         let item_type = $('.item_type');
@@ -277,36 +270,65 @@ $(document).ready(function () {
 
     $('.budget_ba_file').on('change', function (event) {
         var reader = new FileReader();
-        let value = $(this).val()
-        reader.onload = function(e) {
-            temp_ba_file = e.target.result;
-            temp_ba_extension = value.split('.').pop().toLowerCase();
+        let value = $(this).val();
+        if(validatefilesize(event)){
+            reader.onload = function(e) {
+                temp_ba_file = e.target.result;
+                temp_ba_extension = value.split('.').pop().toLowerCase();
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }else{
+            $(this).val('');
         }
-        reader.readAsDataURL(event.target.files[0]);
     });
 
     $('.budget_olditem_file').on('change', function (event) {
         var reader = new FileReader();
-        let value = $(this).val()
-        reader.onload = function(e) {
-            temp_olditem_file = e.target.result;
-            temp_olditem_extension = value.split('.').pop().toLowerCase();
+        let value = $(this).val();
+        if(validatefilesize(event)){
+            reader.onload = function(e) {
+                temp_olditem_file = e.target.result;
+                temp_olditem_extension = value.split('.').pop().toLowerCase();
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }else{
+            $(this).val('');
         }
-        reader.readAsDataURL(event.target.files[0]);
     });
     
     $('.nonbudget_olditem_file').on('change', function (event) {
         var reader = new FileReader();
-        let value = $(this).val()
-        reader.onload = function(e) {
-            temp_nonbudget_olditem_file = e.target.result;
-            temp_nonbudget_olditem_extension = value.split('.').pop().toLowerCase();
+        let value = $(this).val();
+        if(validatefilesize(event)){
+            reader.onload = function(e) {
+                temp_nonbudget_olditem_file = e.target.result;
+                temp_nonbudget_olditem_extension = value.split('.').pop().toLowerCase();
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }else{
+            $(this).val('');
         }
-        reader.readAsDataURL(event.target.files[0]);
+    });
+
+    $('.vendor_ba_file').on('change', function (event) {
+        var reader = new FileReader();
+        let value = $(this).val();
+        if(validatefilesize(event)){
+            reader.onload = function(e) {
+                $('#vendor_ba_preview').prop('href',e.target.result);
+                $('#vendor_ba_preview').prop('download','berita_acara_vendor.'+value.split('.').pop().toLowerCase());
+                $('#vendor_ba_preview').show();
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }else{
+            $(this).val('');
+            $('#vendor_ba_preview').prop('href',"");
+            $('#vendor_ba_preview').prop('download');
+            $('#vendor_ba_preview').hide();
+        }
     });
 
     $(this).on('click','.remove_attachment', function (event) {
-        console.log($(this));
         $(this).closest('div').remove();
     })
 });
@@ -385,7 +407,7 @@ function addBudgetItem(el) {
     if(budget_expired_date.val()!=""){
         naming = name+'<br>(expired : '+budget_expired_date.val()+')';
     }
-    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
 
     select_item.val("");
     select_item.trigger('change');
@@ -600,6 +622,7 @@ function addRequest(type){
     input_field.append('<input type="hidden" name="reason" value="'+$('.reason').val()+'">');
 
     item_list.each(function(index,el){
+        console.log($(el).data('type'));
         input_field.append('<input type="hidden" name="item['+index+'][id]" value="'+$(el).data('id')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][name]" value="'+$(el).data('name')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][price]" value="'+$(el).data('price')+'">');
@@ -621,7 +644,7 @@ function addRequest(type){
         input_field.append('<input type="hidden" name="vendor['+index+'][sales]" value="'+$(el).data('sales')+'">');
         input_field.append('<input type="hidden" name="vendor['+index+'][phone]" value="'+$(el).data('phone')+'">');
     });
-
+    // return;
     $('#addform').submit();
 }
 

@@ -129,4 +129,13 @@ class Ticket extends Model
         return $this->belongsTo(Employee::class,'terminated_by','id');
     }
 
+    public function ticket_items_with_attachments(){
+        $data = array();
+        foreach($this->ticket_item as $item){
+            $item->attachments = $item->ticket_item_attachment;
+            array_push($data,$item);
+        }
+        return $data;
+    }
+
 }
