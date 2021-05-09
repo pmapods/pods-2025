@@ -137,5 +137,18 @@ class Ticket extends Model
         }
         return $data;
     }
+    
+    public function ticket_vendors_with_additional_data(){
+        $data = array();
+        foreach($this->ticket_vendor as $ticket_vendor){
+            if(isset($ticket_vendor->vendor()["code"])){
+                $ticket_vendor->code = $ticket_vendor->vendor()["code"];
+            }else{
+                $ticket_vendor->code = null;
+            }
+            array_push($data,$ticket_vendor);
+        }
+        return $data;
+    }
 
 }

@@ -323,8 +323,18 @@ $(document).ready(function () {
         }else{
             $(this).val('');
             $('#vendor_ba_preview').prop('href',"");
-            $('#vendor_ba_preview').prop('download');
+            $('#vendor_ba_preview').prop('download',"");
             $('#vendor_ba_preview').hide();
+        }
+    });
+    $('#attachment_file_input').change(function(event){
+        var reader = new FileReader();
+        if(validatefilesize(event)){
+            reader.onload = function(e) {
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }else{
+            $(this).val('');
         }
     });
 
@@ -435,7 +445,7 @@ function addAttachment() {
     var reader = new FileReader();
     reader.onload = function(e) {
         file = e.target.result;
-        $('#attachment_list').append('<div><a href="'+file+'" download="'+filename+'">'+filename+'</a><span class="remove_attachment">X</span></div>');
+        $('#attachment_list').append('<div><a class="opt_attachment" href="'+file+'" download="'+filename+'">'+filename+'</a><span class="remove_attachment">X</span></div>');
         $('#attachment_file_input').val('');
     }
     reader.readAsDataURL($('#attachment_file_input')[0].files[0]);
@@ -546,6 +556,10 @@ function addVendor(el){
         alert('Harap pilih vendor terlebih dulu');
         return;
     }
+    if($('.vendor_item_list').length>1){
+        alert('Maksimal 2 vendor');
+        return;
+    }
     table_vendor.find('tbody').append('<tr class="vendor_item_list" data-id="'+id+'"><td>'+code+'</td><td>'+name+'</td><td>'+salesperson+'</td><td>-</td><td>Terdaftar</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>'
     );
     select_vendor.val('');
@@ -568,6 +582,10 @@ function addOTVendor(el){
     }
     if(vendor_phone.val()==""){
         alert('Telfon Vendor tidak boleh kosong');
+        return;
+    }
+    if($('.vendor_item_list').length>1){
+        alert('Maksimal 2 vendor');
         return;
     }
     table_vendor.find('tbody').append('<tr class="vendor_item_list" data-id="" data-name="'+vendor_name.val()+'" data-sales="'+vendor_sales.val()+'" data-phone="'+vendor_phone.val()+'"><td>-</td><td>'+vendor_name.val()+'</td><td>'+vendor_sales.val()+'</td><td>'+vendor_phone.val()+'</td><td>One Time</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>'
@@ -645,6 +663,20 @@ function addRequest(type){
         input_field.append('<input type="hidden" name="vendor['+index+'][phone]" value="'+$(el).data('phone')+'">');
     });
     // return;
+    if(vendor_item_list.length<2){
+        let filename = $('#vendor_ba_preview').prop('download');
+        let file = $('#vendor_ba_preview').prop('href');
+        input_field.append('<input type="hidden" name="ba_vendor_name" value="'+filename+'">');
+        input_field.append('<input type="hidden" name="ba_vendor_file" value="'+file+'">');
+    }
+
+    $('.opt_attachment').each(function(index,el){
+        let file = $(el).prop('href');
+        let filename = $(el).prop('download');
+        input_field.append('<input type="hidden" name="opt_attach['+index+'][file]" value="'+file+'">');
+        input_field.append('<input type="hidden" name="opt_attach['+index+'][name]" value="'+filename+'">');
+    });
+
     $('#addform').submit();
 }
 

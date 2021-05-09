@@ -369,7 +369,7 @@
                       <label class="required_field">Berita Acara</label>
                       <input type="file" class="form-control-file vendor_ba_file" accept="application/pdf,application/vnd.ms-excel">
                       <small class="text-danger">* Wajib menyertakan berita acara untuk pemilihan satu vendor (.pdf/xls MAX 5MB)</small><br>
-                      <a href="" download="" id="vendor_ba_preview" style="display: none">tampilkan berita acara</a>
+                      <a href="" download="" id="vendor_ba_preview">tampilkan berita acara</a>
                     </div>
                 </div>
             </div>
@@ -411,7 +411,8 @@
     $(document).ready(function() {
         let ticket = @json($ticket);
         let ticket_items = @json($ticket->ticket_items_with_attachments());
-        let ticket_vendors = @json($ticket->ticket_vendor);
+        let ticket_vendors = @json($ticket->ticket_vendors_with_additional_data());
+        let ticket_additional_attachments = @json($ticket->ticket_additional_attachment);
         // console.log(ticket_vendors);
         $('#ticket_id').val(ticket["id"]);
         if(ticket['salespoint_id']){
@@ -435,9 +436,17 @@
                 $('.budget_type').val(ticket['budget_type']);
                 $('.budget_type').trigger('change');
             }
+            if(ticket_items.length > 0){
+                $('.salespoint_select2').prop('disabled',true);
+                $('.authorization_select2').prop('disabled',true);
+                $('.request_type').prop('disabled',true);
+                $('.item_type').prop('disabled',true);
+                $('.budget_type').prop('disabled',true);
+            }
         },1500);
         if(ticket_items.length > 0){
             $('.table_item tbody').empty();
+
         }
         ticket_items.forEach(function(item,index){
             let naming = item.name;
@@ -456,9 +465,23 @@
             $('.table_vendor').find('tbody').empty();
         }
         ticket_vendors.forEach(function(vendor,index){
-            console.log(vendor);
             let type = (vendor.type == 0) ? 'Terdaftar' : 'One Time Vendor';
-            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-id="'+vendor.id+'"><td>'+vendor.code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
+            let code = (vendor.code == null) ? '-' : vendor.code;
+            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-id="'+vendor.id+'"><td>'+code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
+        });
+        if(ticket_vendors.length < 2){
+            // need ba
+            $('.vendor_ba_field').show();
+            $('#vendor_ba_preview').prop('href','/storage'+ticket.ba_vendor_filepath);
+            $('#vendor_ba_preview').prop('download',ticket.ba_vendor_filename);
+        }else{
+            // no need ba
+            $('.vendor_ba_field').hide();
+            $('.vendor_ba_file').val('');
+        }
+        $('#attachment_list').empty();
+        ticket_additional_attachments.forEach(function(attachment,index){
+            $('#attachment_list').append('<div><a class="opt_attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><span class="remove_attachment">X</span></div>')
         });
         // 
     })

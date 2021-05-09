@@ -15,6 +15,7 @@ use App\Models\TicketItemAttachment;
 use App\Models\TicketVendor;
 use App\Models\Authorization;
 use App\Models\TicketAuthorization;
+use App\Models\TicketAdditionalAttachment;
 use Auth;
 use DB;
 use Storage;
@@ -101,9 +102,25 @@ class TicketingController extends Controller
             $newTicket->request_type       = $request->request_type;
             $newTicket->budget_type        = $request->budget_type;
             $newTicket->reason             = $request->reason;
+            if(isset($request->ba_vendor_name) && isset($request->ba_vendor_file)){
+                $newTicket->ba_vendor_filename = $request->ba_vendor_name;
+                $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/'.$request->ba_vendor_name;
+                if(str_contains($request->ba_vendor_file, 'http')){
+                    // url
+                    $file = Storage::disk('public')->get(explode('storage',$request->ba_vendor_file)[1]);
+                    Storage::disk('public')->put($path, $file);
+                }else{
+                    // base 64 data
+                    $file = explode('base64,',$request->ba_vendor_file)[1];
+                    Storage::disk('public')->put($path, base64_decode($file));
+                }
+                $newTicket->ba_vendor_filepath = $path;
+            }else{
+                $newTicket->ba_vendor_filename = null;
+                $newTicket->ba_vendor_filepath = null;
+            }
             $newTicket->save();
             $salespoint = $newTicket->salespoint;
-
 
             // remove old data
             if($newTicket->ticket_item->count() > 0){
@@ -136,6 +153,7 @@ class TicketingController extends Controller
                             $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/item'.$key.'/'.$attachment['filename'];
                             if(str_contains($attachment['file'], 'http')){
                                 // url
+                                // dd(explode('storage',$attachment['file'])[1]);
                                 $file = Storage::disk('public')->get(explode('storage',$attachment['file'])[1]);
                                 Storage::disk('public')->put($path, $file);
                             }else{
@@ -194,6 +212,33 @@ class TicketingController extends Controller
                     $newTicketAuthorization->save();
                 }
             }
+
+            // optional attachment
+            if($newTicket->ticket_additional_attachment->count() > 0){
+                foreach($newTicket->ticket_additional_attachment as $attach){
+                    $attach->delete();
+                }
+            }
+            if(isset($request->opt_attach)){
+                foreach($request->opt_attach as $attach){
+                    $path = '/attachments/ticketing/barangjasa/'.$newTicket->code.'/optional_attachment/'.$attach['name'];
+                    if(str_contains($attach['file'], 'http')){
+                        // url
+                        $replaced = str_replace('%20', ' ', explode('storage',$attach['file'])[1]);;
+                        $file = Storage::disk('public')->get($replaced);
+                        Storage::disk('public')->put($path, $file);
+                    }else{
+                        // base 64 data
+                        $file = explode('base64,',$attach['file'])[1];
+                        Storage::disk('public')->put($path, base64_decode($file));
+                    }
+                    $newAttachment = new TicketAdditionalAttachment;
+                    $newAttachment->ticket_id = $newTicket->id;
+                    $newAttachment->name = $attach['name'];
+                    $newAttachment->path = $path;
+                    $newAttachment->save();
+                }
+            }
             DB::commit();
             if($isnew){
                 return redirect('/ticketing')->with('success','Berhasil menambah form pengadaan '.$newTicket->code.'. Silahkan melakukan review kembali');
@@ -201,6 +246,7 @@ class TicketingController extends Controller
                 return redirect('/ticketing')->with('success','Berhasil update form pengadaan');
             }
         } catch (\Exception $ex) {
+            dd($ex);
             DB::rollback();
             return back()->with('error','Gagal menyimpan tiket "'.$ex->getMessage().'"');
         }
@@ -244,6 +290,7 @@ class TicketingController extends Controller
             return back()->with('error','Gagal melakukan approve ticket '.$ex->getMessage());
         }
     }
+
     public function checkTicketApproval($ticket_id){
         try{
             $ticket = Ticket::findOrFail($ticket_id);
@@ -262,6 +309,7 @@ class TicketingController extends Controller
             return back()->with('error','Approval checker error please contact admin '.$ex->getMessage());
         }
     }
+
     public function rejectTicket(Request $request){
         try{
             $ticket = Ticket::findOrFail($request->ticket_id);
