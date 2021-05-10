@@ -199,6 +199,13 @@ class TicketingController extends Controller
             }
 
             // ticket authorization
+            if(isset($ticket->ticket_authorization)){
+                if($ticket->ticket_authorization->count() > 0){
+                    foreach($ticket->ticket_authorization as $auth){
+                        $auth->delete();
+                    }
+                }
+            }
             $authorizations = Authorization::find($request->authorization);
             if(isset($authorizations)){
                 foreach($authorizations->authorization_detail as $detail){
@@ -254,23 +261,64 @@ class TicketingController extends Controller
 
     public function startAuthorization(Request $request){
         try{
-            $ticket = Ticket::findOrFail($request->ticket_id);
+            DB::beginTransaction();
+            $ticket = Ticket::findOrFail($request->id);
+            $validate = $this->validateticket($ticket);
+            if($validate['error']){
+                return back()->with('error',implode(',',$validate['messages']));
+            }
+            $ticket->created_by = Auth::user()->id;
             $updated_at = new Carbon($request->updated_at);
             if($updated_at == $ticket->updated_at){
                 $ticket->status = 1;
                 $ticket->save();
-                return back()->with('success','Berhasil memulai otorisasi');
+                DB::commit();
+                return redirect('/ticketing')->with('success','Berhasil memulai otorisasi untuk form '.$ticket->code);
             }else{
+                DB::rollback();
                 return back()->with('error','Ticket sudah memulai otorisasi');
             }
         }catch (\Exception $ex){
-            return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage());
+            DB::rollback();
+            return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage().'('.$ex->getLine().')');
         }
+    }
+
+    public function validateticket($ticket){
+        $messages = array();
+        $flag = true;
+        if(!isset($ticket->requirement_date)){
+            array_push($messages,'Tanggal Pengadaan harus dipilih');
+        }
+        // jumlah item minimal 1
+        if($ticket->ticket_item->count() < 1){
+            array_push($messages,"Jumlah permintaan item minimal 1");
+            $flag = false;
+        }
+        // jika vendor 1 butuh berita acara
+        if($ticket->ticket_vendor->count() == 1 && $ticket->ba_vendor_filepath == null){
+            array_push($messages,"Untuk pemilihan hanya satu vendor membutuhkan berita acara vendor");
+            $flag = false;
+        }
+        // vendor gaboleh kosong 
+        if($ticket->ticket_vendor->count() == 0){
+            array_push($messages,"Silahkan ajukan / pilih 2 vendor");
+            $flag = false;
+        }
+        // alasan harus diisi
+        if(!isset($ticket->reason)){
+            array_push($messages,'Alasan pengadaan barang atau jasa harus diisi');
+        }
+        $data = collect([
+            "error" => !$flag,
+            "messages" => $messages
+        ]);
+        return $data;
     }
 
     public function approveTicket(Request $request){
         try{
-            $ticket = Ticket::findOrFail($request->ticket_id);
+            $ticket = Ticket::findOrFail($request->id);
             $updated_at = new Carbon($request->updated_at);
             if ($updated_at == $ticket->updated_at) {
                 $authorization = $ticket->current_authorization();
@@ -279,7 +327,7 @@ class TicketingController extends Controller
                     $authorization->status = 1;
                     $authorization->save();
                     $this->checkTicketApproval($ticket->id);
-                    return back()->with('success','Berhasil melakukan approve ticket');
+                    return redirect('/ticketing')->with('success','Berhasil melakukan approve ticket');
                 }else{
                     return back()->with('error','ID otorisasi tidak sesuai. Silahkan coba kembali');
                 }
@@ -312,7 +360,7 @@ class TicketingController extends Controller
 
     public function rejectTicket(Request $request){
         try{
-            $ticket = Ticket::findOrFail($request->ticket_id);
+            $ticket = Ticket::findOrFail($request->id);
             $updated_at = new Carbon($request->updated_at);
             if ($updated_at == $ticket->updated_at) {
                 $ticket->status = 3;

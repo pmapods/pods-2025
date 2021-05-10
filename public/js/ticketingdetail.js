@@ -680,3 +680,21 @@ function addRequest(type){
     $('#addform').submit();
 }
 
+function startauthorization(){
+    $('#startauthorizationform').submit();
+}
+
+function approve(){
+    $('#approveform').submit();
+}
+
+function reject(){
+    var reason = prompt("Harap memasukan alasan penolakan");
+  if (reason != null || reason != "") {
+    $('#rejectform').append('<input type="hidden" name="reason" value="'+reason+'">');
+    $('#rejectform').submit();
+  }else{
+      alert("Alasan harus diisi")
+  }
+}
+

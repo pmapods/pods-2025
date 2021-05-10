@@ -388,17 +388,37 @@
         <button type="button" class="btn btn-primary" onclick="addAttachment()">Tambah</button>
     </div>
     <div class="d-flex justify-content-center mt-3 bottom_action">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        <button type="button" class="btn btn-info" onclick="addRequest(0)">Simpan Sebagai Draft</button>
-        <button type="button" class="btn btn-primary" onclick="addRequest(1)">Mulai Otorisasi</button>
+        <button type="button" class="btn btn-info" onclick="addRequest(0)" id="draftbutton">Simpan Sebagai Draft</button>
+        <button type="button" class="btn btn-primary" onclick="startauthorization()" id="startauthorizationbutton">Mulai Otorisasi</button>
+        <button type="button" class="btn btn-danger" onclick="reject()" id="rejectbutton" style="display:none">Reject</button>
+        <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton" style="display:none">Approve</button>
     </div>
 </div>
 <form action="/addticket" method="post" enctype="multipart/form-data" id="addform">
     @csrf
-    <input type="hidden" name="id" id="ticket_id">
+    <input type="hidden" name="id" class="ticket_id">    
+    <input type="hidden" name="updated_at" class="updated_at">
     <div id="input_field">
 
     </div>
+</form>
+<form action="/startauthorization" method="post" id="startauthorizationform">
+    @method('patch')
+    @csrf
+    <input type="hidden" name="id" class="ticket_id">    
+    <input type="hidden" name="updated_at" class="updated_at">
+</form>
+<form action="/approveticket" method="post" id="approveform">
+    @method('patch')
+    @csrf
+    <input type="hidden" name="id" class="ticket_id">    
+    <input type="hidden" name="updated_at" class="updated_at">
+</form>
+<form action="/rejectticket" method="post" id="refectform">
+    @method('patch')
+    @csrf
+    <input type="hidden" name="id" class="ticket_id">    
+    <input type="hidden" name="updated_at" class="updated_at">
 </form>
 
 @endsection
@@ -409,12 +429,15 @@
 @if (Request::is('ticketing/*'))
 <script>
     $(document).ready(function() {
+        let user = @json(Auth::user());
+        let current_auth = @json($ticket->current_authorization());
         let ticket = @json($ticket);
         let ticket_items = @json($ticket->ticket_items_with_attachments());
         let ticket_vendors = @json($ticket->ticket_vendors_with_additional_data());
         let ticket_additional_attachments = @json($ticket->ticket_additional_attachment);
         // console.log(ticket_vendors);
-        $('#ticket_id').val(ticket["id"]);
+        $('.ticket_id').val(ticket["id"]);
+        $('.updated_at').val(ticket["updated_at"]);
         if(ticket['salespoint_id']){
             $('.salespoint_select2').val(ticket['salespoint_id']);
             $('.salespoint_select2').trigger('change');
@@ -483,7 +506,18 @@
         ticket_additional_attachments.forEach(function(attachment,index){
             $('#attachment_list').append('<div><a class="opt_attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><span class="remove_attachment">X</span></div>')
         });
-        // 
+        // draftbutton
+        // startauthorizationbutton
+        // rejectbutton
+        // approvebutton
+        if(ticket['status'] == 1){
+            $('#draftbutton').hide();
+            $('#startauthorizationbutton').hide();
+        }
+        if(user['id'] == current_auth['employee_id']){
+            $('#rejectbutton').show();
+            $('#approvebutton').show();
+        }
     })
 </script>
 @endif
