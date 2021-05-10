@@ -28,26 +28,22 @@
     </div>
 </div>
 <div class="content-body px-4">
-    <h3>PCD-210425-0001</h3>
+    <h3>{{$ticket->code}}</h3>
     <div class="row">
         <div class="col-md-4">
             <table class="table table-borderless table-sm">
                 <tbody>
                     <tr>
                         <td><b>Tanggal Pengajuan</b></td>
-                        <td>26 April 2021</td>
+                        <td>{{$ticket->updated_at->format('d F Y (H:i)')}}</td>
                     </tr>
                     <tr>
                         <td><b>Tanggal Pengadaan</b></td>
-                        <td>5 Mei 2021</td>
-                    </tr>
-                    <tr>
-                        <td><b>Tanggal Expired</b></td>
-                        <td>7 Mei 2021</td>
+                        <td>{{\Carbon\Carbon::parse($ticket->requirement_date)->format('d F Y')}}</td>
                     </tr>
                     <tr>
                         <td><b>Salespoint</b></td>
-                        <td>DAAN MOGOT MT</td>
+                        <td>{{$ticket->salespoint->name}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -57,15 +53,15 @@
                 <tbody>
                     <tr>
                         <td><b>Jenis Item</b></td>
-                        <td>Barang</td>
+                        <td>{{$ticket->item_type()}}</td>
                     </tr>
                     <tr>
                         <td><b>Jenis Pengadaan</b></td>
-                        <td>Baru</td>
+                        <td>{{$ticket->request_type()}}</td>
                     </tr>
                     <tr>
                         <td><b>Jenis Budget</b></td>
-                        <td>Budget</td>
+                        <td>{{$ticket->budget_type()}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -86,22 +82,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Laptop</td>
-                        <td>Dell</td>
-                        <td>13 Inch</td>
-                        <td>Rp 5.000.000</td>
-                        <td>5</td>
-                        <td>Rp 25.000.000</td>
-                        <td>
-                            <a href="http://www.africau.edu/images/default/sample.pdf" download="ba_file.pdf">ba_file.pdf</a><br>
-                            <a href="https://cdn.pocket-lint.com/r/s/1200x/assets/images/155087-laptops-review-microsoft-surface-laptop-go-review-image1-6ezitk9ymj.jpg" download="old_item.jpg">old_item.jpg</a><br>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-primary">Seleksi Vendor</button>
-                            <button type="button" class="btn btn-info">Detail</button>
-                        </td>
-                    </tr>
+                    @foreach($ticket->ticket_item as $item)
+                        <tr>
+                            <td>{{$item->name}}</td>
+                            <td>{{$item->brand}}</td>
+                            <td>{{$item->type}}</td>
+                            <td class="rupiah_text">{{$item->price}}</td>
+                            <td>{{$item->count}}</td>
+                            <td class="rupiah_text">{{$item->price * $item->count}}</td>
+                            <td>
+                                @foreach ($item->ticket_item_attachment as $attachment)
+                                    <a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a><br>
+                                @endforeach
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary" onclick="openselectionvendor({{$item->id}})">Seleksi Vendor</button>
+                                {{-- <button type="button" class="btn btn-info" >Detail</button> --}}
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -118,20 +117,21 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach ($ticket->ticket_vendor as $vendor)   
                     <tr>
-                        <td>V-1</td>
-                        <td>PT Tamba</td>
-                        <td>Vivi</td>
-                        <td>(+62) 27 3830 117</td>
-                        <td>Terdaftar</td>
+                        <td>
+                            @if($vendor->vendor() != null)
+                            {{$vendor->vendor()->code}}
+                            @else
+                            -
+                            @endif
+                        </td>
+                        <td>{{$vendor->name}}</td>
+                        <td>{{$vendor->salesperson}}</td>
+                        <td>{{$vendor->phone}}</td>
+                        <td>{{$vendor->type()}}</td>
                     </tr>
-                    <tr>
-                        <td>V-3</td>
-                        <td>CV Megantara</td>
-                        <td>Laila</td>
-                        <td>0556 1486 795</td>
-                        <td>Terdaftar</td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -141,5 +141,8 @@
 @endsection
 @section('local-js')
 <script>
+    function openselectionvendor(item_id) {
+        window.open(window.location.href+'/'+item_id);
+    }
 </script>
 @endsection

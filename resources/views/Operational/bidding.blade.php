@@ -49,21 +49,19 @@
                     <th>
                         Tanggal Pengajuan
                     </th>
-                    <th>
-                        Tanggal Expired
-                    </th>
                 </tr>
             </thead>
             <tbody>
+                @foreach ($biddings as $key => $bid)
                 <tr>
-                    <td>1</td>
-                    <td>PCD-210425-0001</td>
-                    <td>Kevin Farel</td>
-                    <td>DAAN MOGOT MT</td>
-                    <td>26 April 2021</td>
-                    <td>5 Mei 2021</td>
-                    <td>7 Mei 2021</td>
+                    <td>{{$key+1}}</td>
+                    <td>{{$bid->code}}</td>
+                    <td>{{$bid->created_by_employee->name}}</td>
+                    <td>{{$bid->salespoint->name}}</td>
+                    <td>{{$bid->updated_at->format('d F Y (H:i)')}}</td>
+                    <td>{{\Carbon\Carbon::parse($bid->requirement_date)->format('d F Y')}}</td>
                 </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -75,7 +73,8 @@
     $(document).ready(function(){
         var table = $('#biddingDT').DataTable(datatable_settings);
         $('#biddingDT tbody').on('click', 'tr', function () {
-            window.location.href="/bidding/form_code";
+            let code = $(this).find('td').eq(1).text().trim();
+            window.location.href="/bidding/"+code;
         });
     })
 </script>

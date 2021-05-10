@@ -97,7 +97,7 @@ Route::middleware(['auth'])->group(function () {
         // Bidding
         Route::get('/bidding',[BiddingController::class, 'biddingView']);
         Route::get('/bidding/{ticket_code}',[BiddingController::class, 'biddingDetailView']);
-        Route::get('/bidding/{ticket_code}/{item_code}',[BiddingController::class, 'vendorSelectionView']);
+        Route::get('/bidding/{ticket_code}/{ticket_item_id}',[BiddingController::class, 'vendorSelectionView']);
 
         // Purchase Requisition
         Route::get('/pr',[PRController::class, 'prView']);

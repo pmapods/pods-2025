@@ -22,4 +22,18 @@ class TicketVendor extends Model
         }
         return null;
     }
+
+    public function type(){
+        switch ($this->type) {
+            case '0':
+                return 'Terdaftar';
+                break;
+            case '1':
+                return 'One Time Vendor';
+                break;
+            default:
+                return 'undefined vendor type';
+                break;
+        }
+    }
 }
