@@ -144,7 +144,7 @@
             <div class="col-md-12">
                 <h5>Attachment Tambahan</h5>
                 @foreach ($ticket->ticket_additional_attachment as $attachment)
-                    <a href="/storage/{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a>
+                    <a href="/storage/{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a><br>
                 @endforeach
             </div>
         @endif

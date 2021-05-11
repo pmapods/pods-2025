@@ -30,6 +30,10 @@ Route::post('/doLogin',[LoginController::class, 'doLogin']);
 
 Route::middleware(['auth'])->group(function () {
     // Auth
+    Route::get('/changepassword',function(){
+        return view('Auth.changepassword');
+    });
+    Route::patch('/updatepassword',[LoginController::class, 'updatePassword']);
     Route::get('/logout', function (){
         Auth::logout();
         return back();

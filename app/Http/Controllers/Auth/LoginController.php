@@ -34,7 +34,12 @@ class LoginController extends Controller
         if($employee){
             if(Hash::check($request->password, $employee->password)){
                 Auth::login($employee);
-                return redirect('/dashboard')->with('success','Selamat datang '.$employee->name);
+                // check if already change password or not
+                if($employee->is_password_changed){
+                    return redirect('/dashboard')->with('success','Selamat datang '.$employee->name);
+                }else{
+                    return redirect('/changepassword');
+                }
             }else{
                 return back()->with('error','Password salah');
             }
@@ -43,4 +48,11 @@ class LoginController extends Controller
         }
     }
 
+    public function updatePassword(Request $request){
+        $employee = Auth::user();
+        $employee->password =Hash::make($request->newpassword);
+        $employee->is_password_changed = true;
+        $employee->save();
+        return redirect('/dashboard')->with('success','Berhasil mengubah kata sandi');
+    }
 }

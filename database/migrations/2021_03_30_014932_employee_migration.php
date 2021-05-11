@@ -32,6 +32,7 @@ class EmployeeMigration extends Migration
             $table->tinyInteger('status')->default(0);
             // 0 Active
             // 1 Non Active
+            $table->boolean('is_password_changed')->default(0);
             $table->foreign('employee_position_id')->references('id')->on('employee_position');
             $table->softDeletes();
             $table->timestamps();

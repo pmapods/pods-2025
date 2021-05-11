@@ -29,6 +29,7 @@
         @csrf
         @method('patch')
         <input type="hidden" name="employee_id" value="{{$employee->id}}">
+        <h3>Akses Area</h3>
         <div class="row">
             @foreach($regions as $key => $region)
             <div class="col-6 col-md-4 mb-3 location_check">
@@ -48,6 +49,70 @@
                 @endforeach
             </div>
             @endforeach
+        </div>
+        <hr>
+        <h3>Akses Menu</h3>
+        <div class="row">
+            <div class="col-6 col-md-4 mb-3">
+                <div class="form-check form-check-inline mb-2">
+                    <label class="form-check-label">
+                        <span class="h4 mr-2">Master Data</span> <input class="form-check-input" type="checkbox">
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Jabatan
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Karyawan
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Salespoint
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Akses Karyawan
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Matriks Otorisasi
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Vendor
+                    </label>
+                </div>
+            </div>
+            
+            <div class="col-6 col-md-4 mb-3">
+                <div class="form-check form-check-inline mb-2">
+                    <label class="form-check-label">
+                        <span class="h4 mr-2">Operational</span> <input class="form-check-input" type="checkbox">
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Pengadaan
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Bidding
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input">Purchase Requisition
+                    </label>
+                </div>
+            </div>
         </div>
     
         <div class="text-center mt-3">

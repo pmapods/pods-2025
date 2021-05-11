@@ -44,7 +44,12 @@ class TicketingController extends Controller
     
             // show ticket liat based on auth access area
             $access = Auth::user()->location_access->pluck('salespoint_id');
-            return view('Operational.ticketingdetail',compact('ticket','available_salespoints','budget_category_items','vendors'));
+            if($ticket->status == 0){
+                // if draft make it editable
+                return view('Operational.ticketingdetail',compact('ticket','available_salespoints','budget_category_items','vendors'));
+            }else{
+                return view('Operational.ticketingform',compact('ticket','available_salespoints','budget_category_items','vendors'));
+            }
         }else{
             return back()->with('error','Form tidak ditemukan');
         }

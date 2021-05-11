@@ -28,7 +28,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   {{-- Select 2 CSS bootstrap theme --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
-  
 
   @yield('local-css')
 </head>
@@ -43,7 +42,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
     </ul>
-
+    <style>
+      marquee span{
+        color: #ffffff;
+        font-size: 2em !important;
+        font-weight: bold;
+      }
+    </style>
+    <ul class="navbar-nav ml-auto">
+      <marquee width="350" scrolldelay="60" vspace="0">
+        <span>WEB PURCHASING</span>
+      </marquee>
+    </ul>
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <li class="nav-item font-weight-bold d-flex justify-content-center flex-column m-0" style="font-weight: 600 !important; color: #FFF; font-size: 17px">

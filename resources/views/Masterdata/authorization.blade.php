@@ -199,7 +199,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Jenis Form</label>
-                            <select class="form-control form_type" name="form_type" required>
+                            <select class="form-control form_type" name="form_type" disabled>
                                 <option value="">-- Pilih Jenis Form --</option>
                                 <option value="0">Form Pengadaan</option>
                             </select>
@@ -273,6 +273,7 @@
 @section('local-js')
 <script>
     let formpengadaan = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
+    let formbidding = ['Diajukan Oleh','Diperiksa Oleh','Disetujui Oleh'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -309,13 +310,15 @@
                 case "0":
                     value_array = formpengadaan;
                     break;
+                case "1":
+                    value_array = formbidding;
+                    break;
 
                 default:
                     return;
                     break;
             }
             value_array.forEach(item => {
-                console.log(item);
                 as_text.append('<option value="' + item + '">' + item + '</option>');
             });
             as_text.prop('disabled', false);

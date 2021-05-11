@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     public function dashboardView(){
-        // dd('im on dashboard controller');
+        // check if already change password
         return view('Dashboard.dashboard');
     }
 }
