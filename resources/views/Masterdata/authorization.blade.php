@@ -103,6 +103,7 @@
                             <select class="form-control form_type" name="form_type" required>
                                 <option value="">-- Pilih Jenis Form --</option>
                                 <option value="0">Form Pengadaan</option>
+                                <option value="1">Form Bidding</option>
                             </select>
                         </div>
                     </div>

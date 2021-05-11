@@ -51,10 +51,9 @@
                     <th>
                         Telfon
                     </th>
-                    {{-- <th>
-                        Status
-                    </th> --}}
-                </tr>
+                    <th>
+                        Email
+                    </th>
             </thead>
             <tbody>
                 @foreach ($vendors as $key=>$vendor)
@@ -66,6 +65,7 @@
                         <td>{{$vendor->regency->name}}</td>
                         <td>{{$vendor->salesperson}}</td>
                         <td>{{$vendor->phone}}</td>
+                        <td>{{$vendor->email}}</td>
                         {{-- <td>{{$vendor->status_name()}}</td> --}}
                     </tr>
                 @endforeach

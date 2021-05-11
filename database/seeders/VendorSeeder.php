@@ -25,6 +25,7 @@ class VendorSeeder extends Seeder
             $newVendor->city_id       = Regency::inRandomOrder()->first()->id;
             $newVendor->salesperson   = $faker->firstName();
             $newVendor->phone         = $faker->phoneNumber();
+            $newVendor->email         = $faker->freeEmail();
             $newVendor->save();
         }
     }

@@ -102,7 +102,7 @@ class TicketingController extends Controller
             $newTicket->request_type       = $request->request_type;
             $newTicket->budget_type        = $request->budget_type;
             $newTicket->reason             = $request->reason;
-            if(isset($request->ba_vendor_name) && isset($request->ba_vendor_file)){
+            if($request->ba_vendor_name != null && $request->ba_vendor_file != null){
                 $newTicket->ba_vendor_filename = $request->ba_vendor_name;
                 $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/'.$request->ba_vendor_name;
                 if(str_contains($request->ba_vendor_file, 'http')){

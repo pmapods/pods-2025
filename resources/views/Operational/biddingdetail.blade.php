@@ -134,7 +134,20 @@
                     @endforeach
                 </tbody>
             </table>
+            @if($ticket->ba_vendor_filename != null && $ticket->ba_vendor_filepath != null)
+                <b> Berita Acara </b><br>
+                <a href="/storage/{{$ticket->ba_vendor_filepath}}" download="{{$ticket->ba_vendor_filename}}">{{$ticket->ba_vendor_filename}}</a>
+
+            @endif
         </div>
+        @if ($ticket->ticket_additional_attachment->count() > 0)
+            <div class="col-md-12">
+                <h5>Attachment Tambahan</h5>
+                @foreach ($ticket->ticket_additional_attachment as $attachment)
+                    <a href="/storage/{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a>
+                @endforeach
+            </div>
+        @endif
     </div>
 </div>
 
@@ -142,7 +155,7 @@
 @section('local-js')
 <script>
     function openselectionvendor(item_id) {
-        window.open(window.location.href+'/'+item_id);
+        window.location.href = window.location.href+'/'+item_id;
     }
 </script>
 @endsection
