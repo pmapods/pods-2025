@@ -66,7 +66,6 @@
                         <td>{{$vendor->salesperson}}</td>
                         <td>{{$vendor->phone}}</td>
                         <td>{{$vendor->email}}</td>
-                        {{-- <td>{{$vendor->status_name()}}</td> --}}
                     </tr>
                 @endforeach
             </tbody>
@@ -138,6 +137,13 @@
                             <label class="optional_field">Telfon</label>
                             <input type="text" class="form-control" name="phone"
                                 placeholder="Masukkan no telfon vendor">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="optional_field">Email</label>
+                            <input type="email" class="form-control" name="email"
+                                placeholder="Masukkan email vendor">
                         </div>
                     </div>
                 </div>
@@ -217,6 +223,12 @@
                             <input type="text" class="form-control" name="phone" placeholder="Masukkan no telfon vendor">
                         </div>
                     </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="optional_field">Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="Masukkan email vendor">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -251,6 +263,7 @@
             modal.find('select[name="city_id"]').trigger('change');
             modal.find('input[name="salesperson"]').val(data['salesperson']);
             modal.find('input[name="phone"]').val(data['phone']);
+            modal.find('input[name="email"]').val(data['email']);
             modal.modal('show');
         });
     })

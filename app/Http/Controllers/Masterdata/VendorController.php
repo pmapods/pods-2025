@@ -31,6 +31,7 @@ class VendorController extends Controller
             $newVendor->city_id     = $request->city_id;
             $newVendor->salesperson = $request->salesperson;
             $newVendor->phone       = $request->phone;
+            $newVendor->email       = $request->email;
             $newVendor->save();
             return back()->with('success','Berhasil menambahkan vendor');
         }catch (\Exception $ex) {
@@ -45,6 +46,7 @@ class VendorController extends Controller
             $vendor->city_id     = $request->city_id;
             $vendor->salesperson = $request->salesperson;
             $vendor->phone       = $request->phone;
+            $vendor->email       = $request->email;
             $vendor->save();
 
             return back()->with('success','Berhasil memperbarui vendor');

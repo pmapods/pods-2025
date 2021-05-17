@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $seeder_array = [
             IndoRegionSeeder::class,
-            LocationSeeder::class,
+            SalespointSeeder::class,
             SuperAdminSeeder::class,
             BudgetCategorySeeder::class,
         ];
