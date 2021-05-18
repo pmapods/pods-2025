@@ -62,7 +62,7 @@
                     <th rowspan="2">
                         #
                     </th>
-                    <th rowspan="2">
+                    <th rowspan="2" width="80">
                         Kode
                     </th>
                     <th rowspan="2">

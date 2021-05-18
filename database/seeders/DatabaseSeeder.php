@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SalespointSeeder::class,
             SuperAdminSeeder::class,
             BudgetCategorySeeder::class,
+            FileCompletementSeeder::class,
         ];
         $dev_array = [
             EmployeeSeeder::class,

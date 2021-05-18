@@ -44,7 +44,7 @@
             <tbody>
                 @php $count = 0 @endphp
                 @foreach ($tickets as $ticket)
-                    <tr>
+                    <tr data-id="{{$ticket->id}}">
                         <td>{{$count+=1}}</td>
                         <td>{{$ticket->code}}</td>
                         <td>{{$ticket->created_at->format('d F Y (H:i)')}}</td>
@@ -145,7 +145,13 @@
     $(document).ready(function() {
         var table = $('#ticketDT').DataTable(datatable_settings);
         $('#ticketDT tbody').on('click', 'tr', function () {
-            window.location.href = '/ticketing/'+$(this).find('td:eq(1)').text().trim();
+            let id = $(this).data('id');
+            let code = $(this).find('td:eq(1)').text().trim();
+            if(code != ""){
+                window.location.href = '/ticketing/'+code;
+            }else{
+                window.location.href = '/ticketing/'+id;
+            }
         });
     });
 </script>

@@ -134,14 +134,10 @@ $(document).ready(function () {
         budget_type.trigger('change');
         if($(this).val()==1){
             $('.budget_olditem_field').show();
-            $('.budget_expired_field').show();
             $('.nonbudget_olditem_field').show();
-            $('.nonbudget_expired_field').show();
         }else{
             $('.budget_olditem_field').hide();
-            $('.budget_expired_field').hide();
             $('.nonbudget_olditem_field').hide();
-            $('.nonbudget_expired_field').hide();
         }
     });
 
@@ -220,6 +216,14 @@ $(document).ready(function () {
             $('.select_budget_type').append('<option value="-1">Tipe Lain</option>');
             $('.select_budget_type').prop('disabled',false);
         }
+
+        // validate kalo namanya apar tunjukin expirednya
+        if($(this).find('option:selected').text().trim() == "Apar"){
+            $('.budget_expired_field').show();
+        }else{
+            $('.budget_expired_field').hide();
+        }
+        $('.budget_expired_date').val("");
         $('.select_budget_type').trigger('change');
     });
 
@@ -457,7 +461,6 @@ function addNonBudgetItem(){
     let name = $('.input_nonbudget_name').val().trim();
     let brand = $('.input_nonbudget_brand').val().trim();
     let type = $('.input_nonbudget_type').val().trim();
-    let expired_date = $('.nonbudget_expired_date').val();
     let price = AutoNumeric.getAutoNumericElement('.price_nonbudget_item');
     let price_text = price.domElement.value;
     let count = $('.count_nonbudget_item').val();
@@ -498,7 +501,6 @@ function addNonBudgetItem(){
     $('.input_nonbudget_name').val('');
     $('.input_nonbudget_brand').val('');
     $('.input_nonbudget_type').val('');
-    $('.nonbudget_expired_date').val('');
     $('.count_nonbudget_item').val('');
     price.set(0);
     temp_nonbudget_olditem_file = null;
@@ -630,6 +632,8 @@ function addRequest(type){
     let input_field = $('#input_field');
     input_field.empty();
 
+    // 0 save to draft
+    // 1 start authorization
     input_field.append('<input type="hidden" name="type" value="'+type+'">')
     input_field.append('<input type="hidden" name="requirement_date" value="'+$('.requirement_date').val()+'">');
     input_field.append('<input type="hidden" name="salespoint" value="'+$('.salespoint_select2').val()+'">');
@@ -666,8 +670,12 @@ function addRequest(type){
     if(vendor_item_list.length<2){
         let filename = $('#vendor_ba_preview').prop('download');
         let file = $('#vendor_ba_preview').prop('href');
-        input_field.append('<input type="hidden" name="ba_vendor_name" value="'+filename+'">');
-        input_field.append('<input type="hidden" name="ba_vendor_file" value="'+file+'">');
+        if(filename == null){
+            input_field.append('<input type="hidden" name="ba_vendor_name" value="'+filename+'">');
+            input_field.append('<input type="hidden" name="ba_vendor_file" value="'+file+'">');
+        }
+    }else{
+
     }
 
     $('.opt_attachment').each(function(index,el){
@@ -680,9 +688,6 @@ function addRequest(type){
     $('#addform').submit();
 }
 
-function startauthorization(){
-    $('#startauthorizationform').submit();
-}
 
 function approve(){
     $('#approveform').submit();

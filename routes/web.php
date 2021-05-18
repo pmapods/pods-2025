@@ -14,6 +14,7 @@ use App\Http\Controllers\Masterdata\EmployeeAccessController;
 use App\Http\Controllers\Masterdata\AuthorizationController;
 use App\Http\Controllers\Masterdata\VendorController;
 use App\Http\Controllers\Masterdata\BudgetPricingController;
+use App\Http\Controllers\Masterdata\FileCompletementController;
 
 // Operational
 use App\Http\Controllers\Operational\PRController;
@@ -85,6 +86,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/addbudget',[BudgetPricingController::class, 'addBudget']);
             Route::patch('/updatebudget',[BudgetPricingController::class, 'updateBudget']);
             Route::delete('/deletebudget',[BudgetPricingController::class, 'deleteBudget']);
+
+            // Kelengkapan berkas
+            Route::get('/filecompletement',[FileCompletementController::class, 'fileCompletementView']);
     });
     // OPERATIONAL
         // Pengadaan Barang Jasa

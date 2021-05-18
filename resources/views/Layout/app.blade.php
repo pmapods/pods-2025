@@ -155,6 +155,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <p>Budget Pricing</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                      <a href="/filecompletement" class="nav-link">
+                          <i class="fad fa-folders nav-icon"></i>
+                          <p>Kelengkapan Berkas</p>
+                      </a>
+                    </li>
                 </ul>
             </li>
             @endif

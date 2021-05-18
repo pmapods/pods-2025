@@ -248,11 +248,6 @@
                           <input type="text" class="form-control input_nonbudget_name">
                         </div>
                     </div>
-                    <div class="col-12 nonbudget_expired_field form-group" style="display: none">
-                        <label class="optional_field">Expired Date</label>
-                        <input type="date" class="form-control form-control-file nonbudget_expired_date">
-                        <small class="text-danger">* Hanya untuk pengadaan APAR</small>
-                    </div>
                     <div class="col-12 nonbudget_olditem_field" style="display: none">
                         <label class="required_field">Foto Item Lama</label>
                         <input type="file" class="form-control-file nonbudget_olditem_file" accept="image/*,application/pdf">
@@ -389,7 +384,7 @@
     </div>
     <div class="d-flex justify-content-center mt-3 bottom_action">
         <button type="button" class="btn btn-info" onclick="addRequest(0)" id="draftbutton">Simpan Sebagai Draft</button>
-        <button type="button" class="btn btn-primary" onclick="startauthorization()" id="startauthorizationbutton">Mulai Otorisasi</button>
+        <button type="button" class="btn btn-primary" onclick="addRequest(1)" id="startauthorizationbutton">Mulai Otorisasi</button>
         <button type="button" class="btn btn-danger" onclick="reject()" id="rejectbutton" style="display:none">Reject</button>
         <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton" style="display:none">Approve</button>
     </div>
@@ -401,12 +396,6 @@
     <div id="input_field">
 
     </div>
-</form>
-<form action="/startauthorization" method="post" id="startauthorizationform">
-    @method('patch')
-    @csrf
-    <input type="hidden" name="id" class="ticket_id">    
-    <input type="hidden" name="updated_at" class="updated_at">
 </form>
 <form action="/approveticket" method="post" id="approveform">
     @method('patch')
@@ -438,6 +427,9 @@
         // console.log(ticket_vendors);
         $('.ticket_id').val(ticket["id"]);
         $('.updated_at').val(ticket["updated_at"]);
+        if(ticket["requirement_date"]){
+            $('.requirement_date').val(ticket["requirement_date"]);
+        }
         if(ticket['salespoint_id']){
             $('.salespoint_select2').val(ticket['salespoint_id']);
             $('.salespoint_select2').trigger('change');
@@ -469,7 +461,6 @@
         },1500);
         if(ticket_items.length > 0){
             $('.table_item tbody').empty();
-
         }
         ticket_items.forEach(function(item,index){
             let naming = item.name;
@@ -514,9 +505,11 @@
             $('#draftbutton').hide();
             $('#startauthorizationbutton').hide();
         }
-        if(user['id'] == current_auth['employee_id']){
-            $('#rejectbutton').show();
-            $('#approvebutton').show();
+        if(current_auth){
+            if(user['id'] == current_auth['employee_id']){
+                $('#rejectbutton').show();
+                $('#approvebutton').show();
+            }
         }
     })
 </script>

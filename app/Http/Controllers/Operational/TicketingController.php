@@ -32,6 +32,9 @@ class TicketingController extends Controller
 
     public function ticketingDetailView($code){
         $ticket = Ticket::where('code',$code)->first();
+        if(!$ticket){
+            $ticket = Ticket::find($code);
+        }
         if($ticket){
             $user_location_access = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
             $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
@@ -84,32 +87,24 @@ class TicketingController extends Controller
             $ticket = Ticket::find($request->id);
             $isnew = true;
             if($ticket == null){
-                $newTicket = new Ticket;
-                $count_ticket = Ticket::whereBetween('created_at', [
-                    Carbon::now()->startOfYear(),
-                    Carbon::now()->endOfYear(),
-                ])->withTrashed()->count();
-                do {
-                    $code = "PCD-".now()->format('ymd').'-'.str_repeat("0", 4-strlen($count_ticket+1)).($count_ticket+1);
-                    $count_ticket++;
-                    $checkticket = Ticket::where('code',$code)->first();
-                    ($checkticket)? $flag = false : $flag = true;
-                } while (!$flag);
-                $newTicket->code           = $code;
+                $ticket = new Ticket;
             }else{
-                $newTicket = $ticket;
                 $isnew = false;
             }
-            $newTicket->requirement_date   = $request->requirement_date;
-            $newTicket->salespoint_id      = $request->salespoint;
-            $newTicket->authorization_id   = $request->authorization;
-            $newTicket->item_type          = $request->item_type;
-            $newTicket->request_type       = $request->request_type;
-            $newTicket->budget_type        = $request->budget_type;
-            $newTicket->reason             = $request->reason;
+            $ticket->requirement_date   = $request->requirement_date;
+            $ticket->salespoint_id      = $request->salespoint;
+            $ticket->authorization_id   = $request->authorization;
+            $ticket->item_type          = $request->item_type;
+            $ticket->request_type       = $request->request_type;
+            $ticket->budget_type        = $request->budget_type;
+            $ticket->reason             = $request->reason;
             if($request->ba_vendor_name != null && $request->ba_vendor_file != null){
-                $newTicket->ba_vendor_filename = $request->ba_vendor_name;
-                $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/'.$request->ba_vendor_name;
+                $ticket->ba_vendor_filename = $request->ba_vendor_name;
+                if($ticket->code){
+                    $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/'.$request->ba_vendor_name;
+                }else{
+                    $path = "/attachments/ticketing/barangjasa/draft_".$ticket->id.'/'.$request->ba_vendor_name;
+                }
                 if(str_contains($request->ba_vendor_file, 'http')){
                     // url
                     $file = Storage::disk('public')->get(explode('storage',$request->ba_vendor_file)[1]);
@@ -119,21 +114,17 @@ class TicketingController extends Controller
                     $file = explode('base64,',$request->ba_vendor_file)[1];
                     Storage::disk('public')->put($path, base64_decode($file));
                 }
-                $newTicket->ba_vendor_filepath = $path;
+                $ticket->ba_vendor_filepath = $path;
             }else{
-                $newTicket->ba_vendor_filename = null;
-                $newTicket->ba_vendor_filepath = null;
+                $ticket->ba_vendor_filename = null;
+                $ticket->ba_vendor_filepath = null;
             }
-            $newTicket->save();
-            $salespoint = $newTicket->salespoint;
+            $ticket->save();
+            $salespoint = $ticket->salespoint;
 
             // remove old data
-            if($newTicket->ticket_item->count() > 0){
-                foreach($newTicket->ticket_item as $item){
-                    // foreach($item->ticket_item_attachment as $attachment){
-                    //     Storage::disk('public')->delete($attachment->path);
-                    //     $attachment->delete();
-                    // }
+            if($ticket->ticket_item->count() > 0){
+                foreach($ticket->ticket_item as $item){
                     $item->delete();
                 }
             }
@@ -141,7 +132,7 @@ class TicketingController extends Controller
             if(isset($request->item)){
                 foreach($request->item as $key=>$item) {
                     $newTicketItem                        = new TicketItem;
-                    $newTicketItem->ticket_id             = $newTicket->id;
+                    $newTicketItem->ticket_id             = $ticket->id;
                     $newTicketItem->budget_pricing_id     = $item['id'];
                     $newTicketItem->name                  = $item['name'];
                     $newTicketItem->brand                 = $item['brand'];
@@ -149,13 +140,16 @@ class TicketingController extends Controller
                     $newTicketItem->price                 = $item['price'];
                     $newTicketItem->count                 = $item['count'];
                     $newTicketItem->save();
-                    
                     if(isset($item["attachments"])){
                         foreach($item["attachments"] as $attachment){
                             $newAttachment = new TicketItemAttachment;
                             $newAttachment->ticket_item_id = $newTicketItem->id;
                             $newAttachment->name = $attachment['filename'];
-                            $path = "/attachments/ticketing/barangjasa/".$newTicket->code.'/item'.$key.'/'.$attachment['filename'];
+                            if($ticket->code){
+                                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$key.'/'.$attachment['filename'];
+                            }else{
+                                $path = "/attachments/ticketing/barangjasa/draft_".$ticket->id.'/item'.$key.'/'.$attachment['filename'];
+                            }
                             if(str_contains($attachment['file'], 'http')){
                                 // url
                                 // dd(explode('storage',$attachment['file'])[1]);
@@ -173,10 +167,9 @@ class TicketingController extends Controller
                 }
             }
 
-
             // ticket vendor
-            if($newTicket->ticket_vendor->count() > 0){
-                foreach($newTicket->ticket_vendor as $vendor){
+            if($ticket->ticket_vendor->count() > 0){
+                foreach($ticket->ticket_vendor as $vendor){
                     $vendor->delete();
                 }
             }
@@ -184,7 +177,7 @@ class TicketingController extends Controller
                 foreach ($request->vendor as $list){
                     $vendor = Vendor::find($list['id']);
                     $newTicketVendor = new TicketVendor;
-                    $newTicketVendor->ticket_id         = $newTicket->id;
+                    $newTicketVendor->ticket_id         = $ticket->id;
                     if($vendor){
                         $newTicketVendor->vendor_id     = $vendor->id;
                         $newTicketVendor->name          = $vendor->name;
@@ -215,7 +208,7 @@ class TicketingController extends Controller
             if(isset($authorizations)){
                 foreach($authorizations->authorization_detail as $detail){
                     $newTicketAuthorization                     = new TicketAuthorization;
-                    $newTicketAuthorization->ticket_id          = $newTicket->id;
+                    $newTicketAuthorization->ticket_id          = $ticket->id;
                     $newTicketAuthorization->employee_id        = $detail->employee_id;
                     $newTicketAuthorization->employee_name      = $detail->employee->name;
                     $newTicketAuthorization->as                 = $detail->sign_as;
@@ -226,14 +219,18 @@ class TicketingController extends Controller
             }
 
             // optional attachment
-            if($newTicket->ticket_additional_attachment->count() > 0){
-                foreach($newTicket->ticket_additional_attachment as $attach){
+            if($ticket->ticket_additional_attachment->count() > 0){
+                foreach($ticket->ticket_additional_attachment as $attach){
                     $attach->delete();
                 }
             }
             if(isset($request->opt_attach)){
                 foreach($request->opt_attach as $attach){
-                    $path = '/attachments/ticketing/barangjasa/'.$newTicket->code.'/optional_attachment/'.$attach['name'];
+                    if($ticket_code){
+                        $path = '/attachments/ticketing/barangjasa/'.$ticket->code.'/optional_attachment/'.$attach['name'];
+                    }else{
+                        $path = '/attachments/ticketing/barangjasa/draft_'.$ticket->id.'/optional_attachment/'.$attach['name'];
+                    }
                     if(str_contains($attach['file'], 'http')){
                         // url
                         $replaced = str_replace('%20', ' ', explode('storage',$attach['file'])[1]);;
@@ -245,17 +242,23 @@ class TicketingController extends Controller
                         Storage::disk('public')->put($path, base64_decode($file));
                     }
                     $newAttachment = new TicketAdditionalAttachment;
-                    $newAttachment->ticket_id = $newTicket->id;
+                    $newAttachment->ticket_id = $ticket->id;
                     $newAttachment->name = $attach['name'];
                     $newAttachment->path = $path;
                     $newAttachment->save();
                 }
             }
+
             DB::commit();
-            if($isnew){
-                return redirect('/ticketing')->with('success','Berhasil menambah form pengadaan '.$newTicket->code.'. Silahkan melakukan review kembali');
+            if($request->type == 1){
+                // start authorization
+                $this->startAuthorization($request);
             }else{
-                return redirect('/ticketing')->with('success','Berhasil update form pengadaan');
+                if($isnew){
+                    return redirect('/ticketing')->with('success','Berhasil menambah form pengadaan kedalam draft. Silahkan melakukan review kembali');
+                }else{
+                    return back()->with('success','Berhasil update form pengadaan');
+                }
             }
         } catch (\Exception $ex) {
             dd($ex);
@@ -264,7 +267,7 @@ class TicketingController extends Controller
         }
     }
 
-    public function startAuthorization(Request $request){
+    public function startAuthorization($request){
         try{
             DB::beginTransaction();
             $ticket = Ticket::findOrFail($request->id);
@@ -272,10 +275,25 @@ class TicketingController extends Controller
             if($validate['error']){
                 return back()->with('error',implode(',',$validate['messages']));
             }
+            $count_ticket = Ticket::whereBetween('created_at', [
+                Carbon::now()->startOfYear(),
+                Carbon::now()->endOfYear(),
+            ])
+            ->where('status','>',0)
+            ->withTrashed()
+            ->count();
+            do {
+                $code = "PCD-".now()->format('ymd').'-'.str_repeat("0", 4-strlen($count_ticket+1)).($count_ticket+1);
+                $count_ticket++;
+                $checkticket = Ticket::where('code',$code)->first();
+                ($checkticket)? $flag = false : $flag = true;
+            } while (!$flag);
+            $ticket->code           = $code;
             $ticket->created_by = Auth::user()->id;
             $updated_at = new Carbon($request->updated_at);
             if($updated_at == $ticket->updated_at){
                 $ticket->status = 1;
+                $ticket->updateTicketFileSavePath($ticket);
                 $ticket->save();
                 DB::commit();
                 return redirect('/ticketing')->with('success','Berhasil memulai otorisasi untuk form '.$ticket->code);
@@ -319,6 +337,22 @@ class TicketingController extends Controller
             "messages" => $messages
         ]);
         return $data;
+    }
+
+    public function updateTicketFileSavePath($ticket){
+        $old_code = "draft_".$ticket->id;
+        $path = "/attachments/ticketing/barangjasa/".$old_code;
+        if($ticket->ba_vendor_filepath != null){
+            $ticket->ba_vendor_filepath = str_replace($old_code,$ticket->code,$attachment->$ticket->ba_vendor_filepath);
+        }
+        foreach($ticket->ticket_item as $item){
+            foreach($item->ticket_item_attachment as $attachment){
+                $attachment->path = str_replace($old_code,$ticket->code,$attachment->path);
+                $attachment->save();
+            }
+        }
+        Storage::disk('public')->move($path,'/attachments/ticketing/barangjasa/'.$ticket->code);
+        
     }
 
     public function approveTicket(Request $request){
