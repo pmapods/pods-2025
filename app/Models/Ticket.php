@@ -143,8 +143,10 @@ class Ticket extends Model
         foreach($this->ticket_vendor as $ticket_vendor){
             if(isset($ticket_vendor->vendor()["code"])){
                 $ticket_vendor->code = $ticket_vendor->vendor()["code"];
+                $ticket_vendor->vendor_id = $ticket_vendor->vendor()["id"];
             }else{
                 $ticket_vendor->code = null;
+                $ticket_vendor->vendor_id = null;
             }
             array_push($data,$ticket_vendor);
         }

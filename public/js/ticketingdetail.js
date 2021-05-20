@@ -421,7 +421,7 @@ function addBudgetItem(el) {
     if(budget_expired_date.val()!=""){
         naming = name+'<br>(expired : '+budget_expired_date.val()+')';
     }
-    table_item.find('tbody').append('<tr class="item_list" data-id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+    table_item.find('tbody').append('<tr class="item_list" data-budget_pricing_id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
 
     select_item.val("");
     select_item.trigger('change');
@@ -457,7 +457,6 @@ function addAttachment() {
 
 // add non budget
 function addNonBudgetItem(){
-
     let name = $('.input_nonbudget_name').val().trim();
     let brand = $('.input_nonbudget_brand').val().trim();
     let type = $('.input_nonbudget_type').val().trim();
@@ -487,21 +486,18 @@ function addNonBudgetItem(){
          
     let attachments_link = "";
     if($('.nonbudget_olditem_field').is(':visible')){
-        attachments_link  += '<a href="'+temp_nonbudget_olditem_file+'" download="old_item.'+temp_nonbudget_olditem_extension+'">old_item.'+temp_nonbudget_olditem_extension+'</a><br>';
+        attachments_link  += '<a class="attachment" href="'+temp_nonbudget_olditem_file+'" download="old_item.'+temp_nonbudget_olditem_extension+'">old_item.'+temp_nonbudget_olditem_extension+'</a><br>';
     }
     if(!$('.nonbudget_olditem_field').is(':visible')){
         attachments_link = '-';
     }
-    let naming = name;
-    if(expired_date!=""){
-        naming = name+'<br>(expired : '+expired_date+')';
-    }
-    $('.table_item').find('tbody').append('<tr class="item_list" data-id="-1" data-name="' + naming + '" data-brand="' + brand + '" data-type="' + type + '" data-price="' + price.get() + '" data-expired="'+expired_date+'"data-count="' + count + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+    $('.table_item').find('tbody').append('<tr class="item_list" data-name="' + name + '" data-brand="' + brand + '" data-type="' + type + '" data-price="' + price.get() + '" data-count="' + count + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
   
     $('.input_nonbudget_name').val('');
     $('.input_nonbudget_brand').val('');
     $('.input_nonbudget_type').val('');
     $('.count_nonbudget_item').val('');
+    $('.nonbudget_olditem_file').val('');
     price.set(0);
     temp_nonbudget_olditem_file = null;
     temp_nonbudget_olditem_extension = null;
@@ -562,8 +558,7 @@ function addVendor(el){
         alert('Maksimal 2 vendor');
         return;
     }
-    table_vendor.find('tbody').append('<tr class="vendor_item_list" data-id="'+id+'"><td>'+code+'</td><td>'+name+'</td><td>'+salesperson+'</td><td>-</td><td>Terdaftar</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>'
-    );
+    table_vendor.find('tbody').append('<tr class="vendor_item_list" data-vendor_id="'+id+'"><td>'+code+'</td><td>'+name+'</td><td>'+salesperson+'</td><td>-</td><td>Terdaftar</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
     select_vendor.val('');
     select_vendor.trigger('change');
     tableVendorRefreshed(select_vendor);
@@ -590,7 +585,7 @@ function addOTVendor(el){
         alert('Maksimal 2 vendor');
         return;
     }
-    table_vendor.find('tbody').append('<tr class="vendor_item_list" data-id="" data-name="'+vendor_name.val()+'" data-sales="'+vendor_sales.val()+'" data-phone="'+vendor_phone.val()+'"><td>-</td><td>'+vendor_name.val()+'</td><td>'+vendor_sales.val()+'</td><td>'+vendor_phone.val()+'</td><td>One Time</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>'
+    table_vendor.find('tbody').append('<tr class="vendor_item_list" data-name="'+vendor_name.val()+'" data-sales="'+vendor_sales.val()+'" data-phone="'+vendor_phone.val()+'"><td>-</td><td>'+vendor_name.val()+'</td><td>'+vendor_sales.val()+'</td><td>'+vendor_phone.val()+'</td><td>One Time</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>'
     );
     vendor_name.val('');
     vendor_sales.val('');
@@ -644,8 +639,8 @@ function addRequest(type){
     input_field.append('<input type="hidden" name="reason" value="'+$('.reason').val()+'">');
 
     item_list.each(function(index,el){
-        console.log($(el).data('type'));
         input_field.append('<input type="hidden" name="item['+index+'][id]" value="'+$(el).data('id')+'">');
+        input_field.append('<input type="hidden" name="item['+index+'][budget_pricing_id]" value="'+$(el).data('budget_pricing_id')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][name]" value="'+$(el).data('name')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][price]" value="'+$(el).data('price')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][count]" value="'+$(el).data('count')+'">');
@@ -662,6 +657,7 @@ function addRequest(type){
     });
     vendor_item_list.each(function(index, el) {
         input_field.append('<input type="hidden" name="vendor['+index+'][id]" value="'+$(el).data('id')+'">');
+        input_field.append('<input type="hidden" name="vendor['+index+'][vendor_id]" value="'+$(el).data('vendor_id')+'">');
         input_field.append('<input type="hidden" name="vendor['+index+'][name]" value="'+$(el).data('name')+'">');
         input_field.append('<input type="hidden" name="vendor['+index+'][sales]" value="'+$(el).data('sales')+'">');
         input_field.append('<input type="hidden" name="vendor['+index+'][phone]" value="'+$(el).data('phone')+'">');
@@ -670,12 +666,10 @@ function addRequest(type){
     if(vendor_item_list.length<2){
         let filename = $('#vendor_ba_preview').prop('download');
         let file = $('#vendor_ba_preview').prop('href');
-        if(filename == null){
+        if(filename != "null"){
             input_field.append('<input type="hidden" name="ba_vendor_name" value="'+filename+'">');
             input_field.append('<input type="hidden" name="ba_vendor_file" value="'+file+'">');
         }
-    }else{
-
     }
 
     $('.opt_attachment').each(function(index,el){
@@ -684,7 +678,6 @@ function addRequest(type){
         input_field.append('<input type="hidden" name="opt_attach['+index+'][file]" value="'+file+'">');
         input_field.append('<input type="hidden" name="opt_attach['+index+'][name]" value="'+filename+'">');
     });
-
     $('#addform').submit();
 }
 

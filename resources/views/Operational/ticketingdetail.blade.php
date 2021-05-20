@@ -28,13 +28,13 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Pengadaan Barang Jasa Baru</h1>
+                <h1 class="m-0 text-dark">Pengadaan Barang Jasa @isset($ticket) ({{$ticket->code}}) @else Baru @endisset</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Operasional</li>
                     <li class="breadcrumb-item">Pengadaan</li>
-                    <li class="breadcrumb-item active">Pengadaan Barang Jasa Baru</li>
+                    <li class="breadcrumb-item active">Pengadaan Barang Jasa @isset($ticket) ({{$ticket->code}}) @else Baru @endisset</li>
                 </ol>
             </div>
         </div>
@@ -372,6 +372,11 @@
     </div>
 
     <div class="col-md-12 mt-3">
+        <h5 class="font-weight-bold required_field">Dokumen Pendukung</h5>
+        Pilih Dokumen
+    </div>
+
+    <div class="col-md-12 mt-3">
         <h5 class="font-weight-bold optional_field">Attachment Tambahan</h5>
         <div id="attachment_list">
 
@@ -472,7 +477,7 @@
                 if(i==0) attachments_link = "";
                 attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><br>';
             })
-            $('.table_item tbody').append('<tr class="item_list" data-id="' + item.id + '" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+            $('.table_item tbody').append('<tr class="item_list" data-id="' + item.id + '" data-budget_pricing_id="'+ item.budget_pricing_id+'" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
         });
         $('.reason').val(ticket.reason);
         if(ticket_vendors.length > 0){
@@ -481,7 +486,7 @@
         ticket_vendors.forEach(function(vendor,index){
             let type = (vendor.type == 0) ? 'Terdaftar' : 'One Time Vendor';
             let code = (vendor.code == null) ? '-' : vendor.code;
-            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-id="'+vendor.id+'"><td>'+code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
+            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-vendor_id="'+vendor.vendor_id+'" data-id="'+vendor.id+'"><td>'+code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
         });
         if(ticket_vendors.length < 2){
             // need ba

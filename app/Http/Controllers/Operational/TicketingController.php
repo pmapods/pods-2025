@@ -78,7 +78,6 @@ class TicketingController extends Controller
     }
 
     public function addTicket(Request $request){
-        // add ticket save ticket as a draft (no validation)
         try {
             DB::beginTransaction();
             if(!isset($request->salespoint)){
@@ -98,13 +97,14 @@ class TicketingController extends Controller
             $ticket->request_type       = $request->request_type;
             $ticket->budget_type        = $request->budget_type;
             $ticket->reason             = $request->reason;
+            $ticket->save();
+            if($ticket->code == null){
+                $ticket->code = 'draft_'.date('ymdHi').$ticket->id;
+            }
             if($request->ba_vendor_name != null && $request->ba_vendor_file != null){
                 $ticket->ba_vendor_filename = $request->ba_vendor_name;
-                if($ticket->code){
-                    $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/'.$request->ba_vendor_name;
-                }else{
-                    $path = "/attachments/ticketing/barangjasa/draft_".$ticket->id.'/'.$request->ba_vendor_name;
-                }
+                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/'.$request->ba_vendor_name;
+                
                 if(str_contains($request->ba_vendor_file, 'http')){
                     // url
                     $file = Storage::disk('public')->get(explode('storage',$request->ba_vendor_file)[1]);
@@ -124,16 +124,31 @@ class TicketingController extends Controller
 
             // remove old data
             if($ticket->ticket_item->count() > 0){
-                foreach($ticket->ticket_item as $item){
-                    $item->delete();
+                // get deleted new data
+                $registered_id = collect($request->item)->pluck('id')->filter(function($item){
+                    if($item != "undefined"){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                });
+                $deleted_item =[];
+                if($ticket->ticket_item->count()>0){
+                    $deleted_item = $ticket->ticket_item->whereNotIn('id',$registered_id);
+                }
+                foreach($deleted_item as $deleted){
+                    $deleted->delete();
                 }
             }
-            // ticket items
-            if(isset($request->item)){
-                foreach($request->item as $key=>$item) {
+            // add ticket item that not registered
+            $newitems = collect($request->item)->where('id','undefined');
+            if(isset($newitems)){
+                foreach($newitems as $key=>$item) {
                     $newTicketItem                        = new TicketItem;
                     $newTicketItem->ticket_id             = $ticket->id;
-                    $newTicketItem->budget_pricing_id     = $item['id'];
+                    if($item['budget_pricing_id'] != "undefined"){
+                        $newTicketItem->budget_pricing_id     = $item['budget_pricing_id'];
+                    }
                     $newTicketItem->name                  = $item['name'];
                     $newTicketItem->brand                 = $item['brand'];
                     $newTicketItem->type                  = $item['type'];
@@ -145,14 +160,8 @@ class TicketingController extends Controller
                             $newAttachment = new TicketItemAttachment;
                             $newAttachment->ticket_item_id = $newTicketItem->id;
                             $newAttachment->name = $attachment['filename'];
-                            if($ticket->code){
-                                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$key.'/'.$attachment['filename'];
-                            }else{
-                                $path = "/attachments/ticketing/barangjasa/draft_".$ticket->id.'/item'.$key.'/'.$attachment['filename'];
-                            }
+                            $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$newTicketItem->id.'/'.$attachment['filename'];
                             if(str_contains($attachment['file'], 'http')){
-                                // url
-                                // dd(explode('storage',$attachment['file'])[1]);
                                 $file = Storage::disk('public')->get(explode('storage',$attachment['file'])[1]);
                                 Storage::disk('public')->put($path, $file);
                             }else{
@@ -169,13 +178,26 @@ class TicketingController extends Controller
 
             // ticket vendor
             if($ticket->ticket_vendor->count() > 0){
-                foreach($ticket->ticket_vendor as $vendor){
-                    $vendor->delete();
+                $registered_id = collect($request->vendor)->pluck('id')->filter(function($item){
+                    if($item != "undefined"){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                });
+                $deleted_item=[];
+                if($ticket->ticket_vendor->count()>0){
+                    $deleted_item = $ticket->ticket_vendor->whereNotIn('id',$registered_id);
+                }
+                foreach($deleted_item as $deleted){
+                    $deleted->delete();
                 }
             }
-            if(isset($request->vendor)){
-                foreach ($request->vendor as $list){
-                    $vendor = Vendor::find($list['id']);
+            // add ticket vendor that not registered yet
+            $newitems = collect($request->vendor)->where('id','undefined');
+            if(isset($newitems)){
+                foreach ($newitems as $list){
+                    $vendor = Vendor::find($list['vendor_id']);
                     $newTicketVendor = new TicketVendor;
                     $newTicketVendor->ticket_id         = $ticket->id;
                     if($vendor){
@@ -226,11 +248,7 @@ class TicketingController extends Controller
             }
             if(isset($request->opt_attach)){
                 foreach($request->opt_attach as $attach){
-                    if($ticket_code){
-                        $path = '/attachments/ticketing/barangjasa/'.$ticket->code.'/optional_attachment/'.$attach['name'];
-                    }else{
-                        $path = '/attachments/ticketing/barangjasa/draft_'.$ticket->id.'/optional_attachment/'.$attach['name'];
-                    }
+                    $path = '/attachments/ticketing/barangjasa/'.$ticket->code.'/optional_attachment/'.$attach['name'];
                     if(str_contains($attach['file'], 'http')){
                         // url
                         $replaced = str_replace('%20', ' ', explode('storage',$attach['file'])[1]);;
@@ -252,7 +270,7 @@ class TicketingController extends Controller
             DB::commit();
             if($request->type == 1){
                 // start authorization
-                $this->startAuthorization($request);
+                return $this->startAuthorization($ticket,$request->updated_at);
             }else{
                 if($isnew){
                     return redirect('/ticketing')->with('success','Berhasil menambah form pengadaan kedalam draft. Silahkan melakukan review kembali');
@@ -261,19 +279,17 @@ class TicketingController extends Controller
                 }
             }
         } catch (\Exception $ex) {
-            dd($ex);
             DB::rollback();
             return back()->with('error','Gagal menyimpan tiket "'.$ex->getMessage().'"');
         }
     }
 
-    public function startAuthorization($request){
+    public function startAuthorization($ticket,$updated_at){
         try{
             DB::beginTransaction();
-            $ticket = Ticket::findOrFail($request->id);
             $validate = $this->validateticket($ticket);
             if($validate['error']){
-                return back()->with('error',implode(',',$validate['messages']));
+                return redirect('/ticketing/'.$ticket->code)->with('error',implode(',',$validate['messages']));
             }
             $count_ticket = Ticket::whereBetween('created_at', [
                 Carbon::now()->startOfYear(),
@@ -288,20 +304,41 @@ class TicketingController extends Controller
                 $checkticket = Ticket::where('code',$code)->first();
                 ($checkticket)? $flag = false : $flag = true;
             } while (!$flag);
+            $old_code               = $ticket->code;
             $ticket->code           = $code;
-            $ticket->created_by = Auth::user()->id;
-            $updated_at = new Carbon($request->updated_at);
+            $ticket->created_by     = Auth::user()->id;
+            $updated_at             = new Carbon($updated_at);
+            $ticket->status = 1;
+            // cari oper semua path kode lama ke kode baru
+            $oldpath ='/attachments/ticketing/barangjasa/'.$old_code;
+            $newpath ='/attachments/ticketing/barangjasa/'.$ticket->code;
+            // dd($oldpath);
+
+            if($ticket->ba_vendor_filepath != null){
+                $old = $ticket->ba_vendor_filepath;
+                $ticket->ba_vendor_filepath = str_replace($oldpath,$newpath,$ticket->ba_vendor_filepath);
+                Storage::disk('public')->move($old,$ticket->ba_vendor_filepath,true);
+                $ticket->save();
+            }
+
+            $ticket_item_attachments = TicketItemAttachment::where('path', 'LIKE', $oldpath.'%')->get();
+            foreach($ticket_item_attachments as $attachment){
+                $old  = $attachment->path;
+                $attachment->path = str_replace($oldpath,$newpath,$attachment->path);
+                Storage::disk('public')->move($old,$attachment->path,true);
+                $attachment->save();
+            }
+            // end cari oper semua path kode
             if($updated_at == $ticket->updated_at){
-                $ticket->status = 1;
-                $ticket->updateTicketFileSavePath($ticket);
                 $ticket->save();
                 DB::commit();
                 return redirect('/ticketing')->with('success','Berhasil memulai otorisasi untuk form '.$ticket->code);
             }else{
                 DB::rollback();
-                return back()->with('error','Ticket sudah memulai otorisasi');
+                return redirect('/ticketing/'.$ticket->code)->with('error','Ticket sudah memulai otorisasi');
             }
         }catch (\Exception $ex){
+            dd($ex);
             DB::rollback();
             return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage().'('.$ex->getLine().')');
         }
@@ -337,22 +374,6 @@ class TicketingController extends Controller
             "messages" => $messages
         ]);
         return $data;
-    }
-
-    public function updateTicketFileSavePath($ticket){
-        $old_code = "draft_".$ticket->id;
-        $path = "/attachments/ticketing/barangjasa/".$old_code;
-        if($ticket->ba_vendor_filepath != null){
-            $ticket->ba_vendor_filepath = str_replace($old_code,$ticket->code,$attachment->$ticket->ba_vendor_filepath);
-        }
-        foreach($ticket->ticket_item as $item){
-            foreach($item->ticket_item_attachment as $attachment){
-                $attachment->path = str_replace($old_code,$ticket->code,$attachment->path);
-                $attachment->save();
-            }
-        }
-        Storage::disk('public')->move($path,'/attachments/ticketing/barangjasa/'.$ticket->code);
-        
     }
 
     public function approveTicket(Request $request){
