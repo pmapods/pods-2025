@@ -32,9 +32,6 @@ class TicketingController extends Controller
 
     public function ticketingDetailView($code){
         $ticket = Ticket::where('code',$code)->first();
-        if(!$ticket){
-            $ticket = Ticket::find($code);
-        }
         if($ticket){
             $user_location_access = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
             $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
@@ -54,7 +51,7 @@ class TicketingController extends Controller
                 return view('Operational.ticketingform',compact('ticket','available_salespoints','budget_category_items','vendors'));
             }
         }else{
-            return back()->with('error','Form tidak ditemukan');
+            return redirect('/ticketing')->with('error','Form tidak ditemukan');
         }
     }
 
@@ -74,6 +71,16 @@ class TicketingController extends Controller
             return view('Operational.ticketingdetail',compact('available_salespoints','budget_category_items','vendors'));
         }else{
             return back()->with('error','Terjadi Kesalahan silahakan mencoba lagi');
+        }
+    }
+
+    public function deleteTicket(Request $request){
+        $ticket = Ticket::where('code',$request->code)->first();
+        if($ticket){
+            $ticket->delete();
+            return redirect('/ticketing')->with('success','Berhasil Menghapus Ticket');
+        }else{
+            return redirect('/ticketing')->with('error','Gagal Menghapus Ticket');
         }
     }
 
@@ -270,7 +277,7 @@ class TicketingController extends Controller
             DB::commit();
             if($request->type == 1){
                 // start authorization
-                return $this->startAuthorization($ticket,$request->updated_at);
+                return $this->startAuthorization($ticket);
             }else{
                 if($isnew){
                     return redirect('/ticketing')->with('success','Berhasil menambah form pengadaan kedalam draft. Silahkan melakukan review kembali');
@@ -284,7 +291,7 @@ class TicketingController extends Controller
         }
     }
 
-    public function startAuthorization($ticket,$updated_at){
+    public function startAuthorization($ticket){
         try{
             DB::beginTransaction();
             $validate = $this->validateticket($ticket);
@@ -306,39 +313,32 @@ class TicketingController extends Controller
             } while (!$flag);
             $old_code               = $ticket->code;
             $ticket->code           = $code;
+            $ticket->created_at     = Carbon::now()->format('Y-m-d H:i:s');
             $ticket->created_by     = Auth::user()->id;
-            $updated_at             = new Carbon($updated_at);
             $ticket->status = 1;
             // cari oper semua path kode lama ke kode baru
             $oldpath ='/attachments/ticketing/barangjasa/'.$old_code;
             $newpath ='/attachments/ticketing/barangjasa/'.$ticket->code;
-            // dd($oldpath);
-
             if($ticket->ba_vendor_filepath != null){
-                $old = $ticket->ba_vendor_filepath;
                 $ticket->ba_vendor_filepath = str_replace($oldpath,$newpath,$ticket->ba_vendor_filepath);
-                Storage::disk('public')->move($old,$ticket->ba_vendor_filepath,true);
                 $ticket->save();
             }
 
             $ticket_item_attachments = TicketItemAttachment::where('path', 'LIKE', $oldpath.'%')->get();
             foreach($ticket_item_attachments as $attachment){
-                $old  = $attachment->path;
                 $attachment->path = str_replace($oldpath,$newpath,$attachment->path);
-                Storage::disk('public')->move($old,$attachment->path,true);
                 $attachment->save();
             }
             // end cari oper semua path kode
-            if($updated_at == $ticket->updated_at){
-                $ticket->save();
-                DB::commit();
-                return redirect('/ticketing')->with('success','Berhasil memulai otorisasi untuk form '.$ticket->code);
-            }else{
-                DB::rollback();
-                return redirect('/ticketing/'.$ticket->code)->with('error','Ticket sudah memulai otorisasi');
-            }
+            $oldpath = 'storage'.$oldpath;
+            $newpath = 'storage'.$newpath;
+            // dd($oldpath,$newpath);
+            rename($oldpath,$newpath);
+            $ticket->save();
+            DB::commit();
+            // oper path
+            return redirect('/ticketing')->with('success','Berhasil memulai otorisasi untuk form '.$ticket->code);
         }catch (\Exception $ex){
-            dd($ex);
             DB::rollback();
             return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage().'('.$ex->getLine().')');
         }

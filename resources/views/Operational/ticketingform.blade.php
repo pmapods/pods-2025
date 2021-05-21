@@ -22,6 +22,13 @@
     </div>
 </div>
 <div class="content-body">
+    <div class="row d-flex justify-content-end">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#statusModal">
+          Cek Status Pengadaan
+        </button>
+    </div>
+
     <div class="row">
         <div class="col-md-4">
             <table class="table table-borderless table-sm">
@@ -177,6 +184,54 @@
     <input type="hidden" name="updated_at" class="updated_at">
 </form>
 
+<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Status pengadaan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <h5>Status saat ini :</h5>
+                Menunggu Otorisasi {{$ticket->current_authorization()->employee_name}} <b>({{$ticket->current_authorization()->as}})</b>
+                <table class="table table-borderless">
+                    <thead>
+                        <tr class="font-weight-bold">
+                            <td>Nama</td>
+                            <td>Posisi</td>
+                            <td>Tanggal Approval</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($ticket->ticket_authorization as $auth)
+                            <tr>
+                                <td>
+                                    <b>{{$auth->employee_name}}</b><br>
+                                    {{$auth->employee_position}}
+                                </td>
+                                <td>
+                                    {{$auth->as}}
+                                </td>
+                                <td>
+                                    @if($auth->status == 1)
+                                        {{$auth->updated_at->format('d F Y (H:i)')}}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('local-js')
 <script>
@@ -246,7 +301,7 @@
         ticket_vendors.forEach(function(vendor,index){
             let type = (vendor.type == 0) ? 'Terdaftar' : 'One Time Vendor';
             let code = (vendor.code == null) ? '-' : vendor.code;
-            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-id="'+vendor.id+'"><td>'+code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
+            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-id="'+vendor.id+'"><td>'+code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td></tr>');
         });
         if(ticket_vendors.length < 2){
             // need ba

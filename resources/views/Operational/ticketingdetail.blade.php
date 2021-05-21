@@ -390,6 +390,9 @@
     <div class="d-flex justify-content-center mt-3 bottom_action">
         <button type="button" class="btn btn-info" onclick="addRequest(0)" id="draftbutton">Simpan Sebagai Draft</button>
         <button type="button" class="btn btn-primary" onclick="addRequest(1)" id="startauthorizationbutton">Mulai Otorisasi</button>
+        @isset ($ticket->code)
+        <button type="button" class="btn btn-danger" onclick="deleteTicket()" id="deleteticketbutton">Hapus Form</button>
+        @endisset
         <button type="button" class="btn btn-danger" onclick="reject()" id="rejectbutton" style="display:none">Reject</button>
         <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton" style="display:none">Approve</button>
     </div>
@@ -399,8 +402,12 @@
     <input type="hidden" name="id" class="ticket_id">    
     <input type="hidden" name="updated_at" class="updated_at">
     <div id="input_field">
-
     </div>
+</form>
+<form action="/deleteticket" method="post" enctype="multipart/form-data" id="deleteform">
+    @method('delete')
+    @csrf
+    <input type="hidden" name="code" class="ticket_code">
 </form>
 <form action="/approveticket" method="post" id="approveform">
     @method('patch')
@@ -431,6 +438,7 @@
         let ticket_additional_attachments = @json($ticket->ticket_additional_attachment);
         // console.log(ticket_vendors);
         $('.ticket_id').val(ticket["id"]);
+        $('.ticket_code').val(ticket["code"]);
         $('.updated_at').val(ticket["updated_at"]);
         if(ticket["requirement_date"]){
             $('.requirement_date').val(ticket["requirement_date"]);
@@ -506,17 +514,20 @@
         // startauthorizationbutton
         // rejectbutton
         // approvebutton
-        if(ticket['status'] == 1){
-            $('#draftbutton').hide();
-            $('#startauthorizationbutton').hide();
-        }
-        if(current_auth){
-            if(user['id'] == current_auth['employee_id']){
-                $('#rejectbutton').show();
-                $('#approvebutton').show();
-            }
-        }
-    })
+        // if(ticket['status'] == 1){
+        //     $('#draftbutton').hide();
+        //     $('#startauthorizationbutton').hide();
+        // }
+        // if(current_auth){
+        //     if(user['id'] == current_auth['employee_id']){
+        //         $('#rejectbutton').show();
+        //         $('#approvebutton').show();
+        //     }
+        // }
+    });
+    function deleteTicket(){
+        $('#deleteform').submit();
+    }
 </script>
 @endif
 @endsection

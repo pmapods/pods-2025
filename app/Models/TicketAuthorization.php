@@ -16,4 +16,22 @@ class TicketAuthorization extends Model
     public function employee(){
         return $this->belongsTo(Employee::class);
     }
+
+    public function status(){
+        switch ($this->status) {
+            case '0':
+                return 'Pending';
+                break;
+            case '1':
+                return 'Approved';
+                break;
+            case '2':
+                return 'Terminated';
+                break;
+            
+            default:
+                return 'undefined_authorization_status';
+                break;
+        }
+    }
 }

@@ -15,13 +15,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {{-- Bootstrap 4.6 css--}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="{{asset('fontawesome/css/all.min.css')}}">
+  <link rel="stylesheet" href="/fontawesome/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.0.5/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   {{-- Custom CSS --}}
-  <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+  <link rel="stylesheet" href="/css/global.css">
   {{-- datatable CSS --}}
   <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.css">
   {{-- select2 css --}}
@@ -50,7 +50,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       }
     </style>
     <ul class="navbar-nav ml-auto">
-      <marquee width="350" scrolldelay="60" vspace="0">
+      <marquee width="1000" scrolldelay="60" vspace="0">
         <span>WEB PURCHASING</span>
       </marquee>
     </ul>
@@ -87,7 +87,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Brand Logo -->
     <a href="" class="brand-link navbar-light">
       <center>
-          <img src="{{ asset('/assets/logo.png')}}" width="85%">
+          <img src="/assets/logo.png" width="85%">
       </center>
     </a>
 
@@ -251,7 +251,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 {{-- moment --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
-<script src="{{ asset('/js/layout.js') }}"></script>
+<script src="/js/layout.js"></script>
 
 <!-- Local JS -->
 @yield('local-js')
