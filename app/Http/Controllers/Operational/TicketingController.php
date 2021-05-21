@@ -33,7 +33,7 @@ class TicketingController extends Controller
     public function ticketingDetailView($code){
         $ticket = Ticket::where('code',$code)->first();
         if($ticket){
-            $user_location_access = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
+            $user_location_access  = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
             $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
             $available_salespoints = $available_salespoints->groupBy('region');
             
@@ -273,10 +273,10 @@ class TicketingController extends Controller
                     $newAttachment->save();
                 }
             }
-
             DB::commit();
             if($request->type == 1){
                 // start authorization
+                $ticket = Ticket::find($ticket->id);
                 return $this->startAuthorization($ticket);
             }else{
                 if($isnew){
@@ -333,7 +333,9 @@ class TicketingController extends Controller
             $oldpath = 'storage'.$oldpath;
             $newpath = 'storage'.$newpath;
             // dd($oldpath,$newpath);
-            rename($oldpath,$newpath);
+            if(is_dir($oldpath)){
+                rename($oldpath,$newpath);
+            }
             $ticket->save();
             DB::commit();
             // oper path

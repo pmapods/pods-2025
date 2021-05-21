@@ -24,7 +24,7 @@
 <div class="content-body">
     <div class="row d-flex justify-content-end">
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#statusModal">
+        <button type="button" class="btn btn-primary mr-4" data-toggle="modal" data-target="#statusModal">
           Cek Status Pengadaan
         </button>
     </div>
