@@ -4,8 +4,8 @@
     .bottom_action button{
         margin-right: 1em;
     }
-    
     .box {
+        background: #FFF;
         box-shadow: 0px 1px 2px rgba(0, 0, 0,0.25);
         border : 1px solid;
         border-color: gainsboro;
@@ -370,13 +370,7 @@
             </div>
         </div>
     </div>
-
-    <div class="col-md-12 mt-3">
-        <h5 class="font-weight-bold required_field">Dokumen Pendukung</h5>
-        Pilih Dokumen
-    </div>
-
-    <div class="col-md-12 mt-3">
+    {{-- <div class="col-md-12 mt-3">
         <h5 class="font-weight-bold optional_field">Attachment Tambahan</h5>
         <div id="attachment_list">
 
@@ -386,7 +380,7 @@
           <small class="text-danger">*pdf, xls, jpg, jpeg (MAX 5MB)</small>
         </div>
         <button type="button" class="btn btn-primary" onclick="addAttachment()">Tambah</button>
-    </div>
+    </div> --}}
     <div class="d-flex justify-content-center mt-3 bottom_action">
         <button type="button" class="btn btn-info" onclick="addRequest(0)" id="draftbutton">Simpan Sebagai Draft</button>
         <button type="button" class="btn btn-primary" onclick="addRequest(1)" id="startauthorizationbutton">Mulai Otorisasi</button>
@@ -422,6 +416,56 @@
     <input type="hidden" name="updated_at" class="updated_at">
 </form>
 
+<!-- Modal -->
+<div class="modal fade" id="filesmodal" tabindex="-1" role="dialog" aria-hidden="true">
+    <input type="hidden" class="itempos">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kelengkapan Berkas</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <small class="text-danger">* file max 5MB</small>
+                @foreach ($filecategories as $filecategory)
+                    <h5>{{$filecategory->name}}<br></h5>
+                    <table class="table table-striped tablefiles">
+                        <thead>
+                            <tr>
+                                <th>Pilih</td>
+                                <th>Nama Kelengkapan</td>
+                                <th></td>
+                                <th>File terpilih</td>
+                            </tr>
+                        </thead>
+                        @foreach ($filecategory->file_completements as $file_completement)
+                            <tr data-file_completement="{{$file_completement->id}}">
+                                <td class="align-middle">
+                                    <input type="checkbox" class="file_check">
+                                </td>
+                                <td class="align-middle" width="350">{{$file_completement->name}}</td>
+                                <td class="align-middle">
+                                    <button class="btn btn-info file_button_upload" disabled>upload</button>
+                                    <input class="inputFile" type="file" style="display:none;">
+                                </td>
+                                <td class="align-middle">
+                                    <a class="file_url">-</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
+                @endforeach
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary button_save_files">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 @section('local-js')
 <script>
@@ -436,7 +480,7 @@
         let ticket_items = @json($ticket->ticket_items_with_attachments());
         let ticket_vendors = @json($ticket->ticket_vendors_with_additional_data());
         let ticket_additional_attachments = @json($ticket->ticket_additional_attachment);
-        // console.log(ticket_vendors);
+
         $('.ticket_id').val(ticket["id"]);
         $('.ticket_code').val(ticket["code"]);
         $('.updated_at').val(ticket["updated_at"]);

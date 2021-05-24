@@ -19,43 +19,6 @@ class BudgetSeeder extends Seeder
      */
     public function run()
     {
-        // $faker = Faker::create('id_ID');
-        // for($i = 0; $i <100; $i++){
-        //     $newBudget                             = new BudgetPricing;
-        //     $selected_category                     = BudgetPricingCategory::inRandomOrder()->first();
-        //     $newBudget->budget_pricing_category_id = $selected_category->id;
-        //     $newBudget->code                       = $selected_category->code.'-'.($selected_category->budget_pricing->count()+1);
-        //     $newBudget->name                       = $selected_category->name.$i;
-        //     $min_price = $faker->numberBetween(1000000, 3000000);
-        //     $rand = array_rand([0,1],1);
-        //     if($selected_category->code == "JS"){
-        //         $newBudget->injs_min_price             = null;
-        //         $newBudget->injs_max_price             = null;
-        //         $newBudget->outjs_min_price            = null;
-        //         $newBudget->outjs_max_price            = null;
-        //     }else{
-        //         $newBudget->injs_min_price             = ($rand==0)? null : $min_price;
-        //         $newBudget->injs_max_price             = $faker->numberBetween(4000000, 5000000);
-        //         $newBudget->outjs_min_price            = ($rand==0)? null : $min_price;
-        //         $newBudget->outjs_max_price            = $faker->numberBetween(4000000, 5000000);
-        //     }
-        //     $newBudget->save();
-
-        //     $rand = array_rand([0,1],1);
-        //     if($rand==0){
-        //         $newBudgetBrand = new BudgetBrand;
-        //         $newBudgetBrand->budget_pricing_id = $newBudget->id;
-        //         $newBudgetBrand->name = $faker->word;
-        //         $newBudgetBrand->save();
-        //     }
-        //     $rand = array_rand([0,1],1);
-        //     if($rand==0){
-        //         $newBudgetType = new BudgetType;
-        //         $newBudgetType->budget_pricing_id = $newBudget->id;
-        //         $newBudgetType->name = $faker->word;
-        //         $newBudgetType->save();
-        //     }
-        // }
 
         DB::unprepared("
             /* INSERT QUERY NO: 1 */
@@ -405,91 +368,91 @@ class BudgetSeeder extends Seeder
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-01', 6, 'PC Client (Processor Intel Core i3, Memory DDR3/DDR4 4GB, HDD 500GB, Windows 64 Pro)', 8500000, 10450000, 9000000, 10450000
+            'TC-01', 4, 'PC Client (Processor Intel Core i3, Memory DDR3/DDR4 4GB, HDD 500GB, Windows 64 Pro)', 8500000, 10450000, 9000000, 10450000
             );
             
             /* INSERT QUERY NO: 51 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-02', 6, 'Printer Dot Matrix ', 8925000, 9975000, 8925000, 9975000
+            'TC-02', 4, 'Printer Dot Matrix ', 8925000, 9975000, 8925000, 9975000
             );
             
             /* INSERT QUERY NO: 52 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-03', 6, 'Printer Multifungsi ', 3150000, 4200000, 3150000, 4200000
+            'TC-03', 4, 'Printer Multifungsi ', 3150000, 4200000, 3150000, 4200000
             );
             
             /* INSERT QUERY NO: 53 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-04', 6, 'Printer Laserjet ', 1575000, 2100000, 1575000, 2100000
+            'TC-04', 4, 'Printer Laserjet ', 1575000, 2100000, 1575000, 2100000
             );
             
             /* INSERT QUERY NO: 54 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-05', 6, 'Scanner', 1312500, 1575000, 1312500, 1575000
+            'TC-05', 4, 'Scanner', 1312500, 1575000, 1312500, 1575000
             );
             
             /* INSERT QUERY NO: 55 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-06', 6, 'Server ', 19425000, 21000000, 19425000, 21000000
+            'TC-06', 4, 'Server ', 19425000, 21000000, 19425000, 21000000
             );
             
             /* INSERT QUERY NO: 56 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-07', 6, 'Monitor Server', 1312500, 1575000, 1312500, 1575000
+            'TC-07', 4, 'Monitor Server', 1312500, 1575000, 1312500, 1575000
             );
             
             /* INSERT QUERY NO: 57 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-08', 6, 'License SCYLLA', 14175000, 15750000, 14175000, 15750000
+            'TC-08', 4, 'License SCYLLA', 14175000, 15750000, 14175000, 15750000
             );
             
             /* INSERT QUERY NO: 58 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-09', 6, 'UPS 1200va', 1050000, 1575000, 1050000, 1575000
+            'TC-09', 4, 'UPS 1200va', 1050000, 1575000, 1050000, 1575000
             );
             
             /* INSERT QUERY NO: 59 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-10', 6, 'Switch 16 port', 735000, 945000, 735000, 945000
+            'TC-10', 4, 'Switch 16 port', 735000, 945000, 735000, 945000
             );
             
             /* INSERT QUERY NO: 60 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-11', 6, 'Finger Scan', 2100000, 2835000, 2100000, 2835000
+            'TC-11', 4, 'Finger Scan', 2100000, 2835000, 2100000, 2835000
             );
             
             /* INSERT QUERY NO: 61 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-12', 6, 'Kabel Jaringan LAN', 1365000, 1890000, 1365000, 1890000
+            'TC-12', 4, 'Kabel Jaringan LAN', 1365000, 1890000, 1365000, 1890000
             );
             
             /* INSERT QUERY NO: 62 */
             INSERT INTO budget_pricing(code, budget_pricing_category_id, name, injs_min_price, injs_max_price, outjs_min_price, outjs_max_price)
             VALUES
             (
-            'TC-13', 6, 'Connector RJ45 ( per pax) ', 105000, 157500, 105000, 157500
+            'TC-13', 4, 'Connector RJ45 ( per pax) ', 105000, 157500, 105000, 157500
             );
         ");
 

@@ -72,6 +72,15 @@ class TicketingMigration extends Migration
             $table->timestamps();
         });
 
+        Schema::create('ticket_file_requirement', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->bigInteger('ticket_item_id')->unsigned();
+            $table->string('name');
+            $table->string('path');
+            $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
+            $table->timestamps();
+        });
+
         Schema::create('ticket_vendor', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('ticket_id')->unsigned();

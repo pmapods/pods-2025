@@ -232,6 +232,7 @@ $(document).ready(function () {
 
         $('.budget_ba_field').hide();
         $('.input_budget_brand_field').hide();
+        $('.input_budget_brand').val('');
         if(value_brand == -1){
             $('.input_budget_brand_field').show();
         }
@@ -242,35 +243,12 @@ $(document).ready(function () {
         let value_type = $('.select_budget_type').val();
         $('.budget_ba_field').hide();
         $('.input_budget_type_field').hide();
+        $('.input_budget_type').val('');
         if(value_type == -1){
             $('.input_budget_type_field').show();
         }
         checkNeedBA();
     });
-
-    function checkNeedBA(){
-        let value_brand = $('.select_budget_brand').val();
-        let value_type = $('.select_budget_type').val();
-        let brands = $('.select_budget_item').find('option:selected').data('brand');
-        let types = $('.select_budget_item').find('option:selected').data('type');
-        // check apakah butuh BA
-        let is_ba_required = false;
-        if(brands != null){
-            if(brands.length>0 && value_brand == -1){
-                is_ba_required = true;
-            }
-        }
-        if(types != null){
-            if(types.length>0 && value_type == -1){
-                is_ba_required = true;
-            }
-        }
-        if(is_ba_required){
-            $('.budget_ba_field').show();
-        }else{
-            $('.budget_ba_field').hide();
-        }
-    }
 
     $('.budget_ba_file').on('change', function (event) {
         var reader = new FileReader();
@@ -331,6 +309,7 @@ $(document).ready(function () {
             $('#vendor_ba_preview').hide();
         }
     });
+
     $('#attachment_file_input').change(function(event){
         var reader = new FileReader();
         if(validatefilesize(event)){
@@ -344,9 +323,130 @@ $(document).ready(function () {
 
     $(this).on('click','.remove_attachment', function (event) {
         $(this).closest('div').remove();
-    })
+    });
 });
-// add budget
+// filesmodal control
+$(document).ready(function () {
+    $(this).on('click','.filesbutton', function (event) {
+        let item_position = $(this).closest('.item_list').index('.item_list');
+        let files = $(this).closest('.item_list').data('files');
+        if(files){
+            files.forEach(file => {
+                $('#filesmodal .tablefiles tbody tr').each(function(){
+                    if($(this).data('file_completement')==file.id){
+                        $(this).find('.file_check').prop('checked',true);
+                        $(this).find('.file_button_upload').prop('disabled',false);
+                        $(this).find('.file_url').prop('href',file.file);
+                        $(this).find('.file_url').prop('download',file.name);
+                        $(this).find('.file_url').text(file.name);
+                    }
+                });
+            })
+        }else{
+            console.log('files empty');
+        }
+        $('#filesmodal').find('.itempos').val(item_position);
+        $('#filesmodal').modal('show');
+    });
+
+    $(this).on('change','.file_check', function (event) {
+        let tr = $(this).closest('tr');
+        if($(this).prop('checked')){
+            tr.find('.file_button_upload').prop('disabled', false);
+        }else{
+            tr.find('.file_button_upload').prop('disabled', true);
+        }
+        tr.find('.file_url').prop('href','');
+        tr.find('.file_url').prop('download','');
+        tr.find('.file_url').text('-');
+    });
+
+    $(this).on('click','.file_button_upload', function (event) {
+        $(this).closest('tr').find('.inputFile').click();
+    });
+
+    $(this).on('change','.inputFile', function(event){
+        var reader = new FileReader();
+        let value = $(this).val();
+        let tr = $(this).closest('tr');
+        if(validatefilesize(event)){
+            reader.onload = function(e) {
+                tr.find('.file_url').prop('href',e.target.result);
+                let name = value.split('\\').pop().toLowerCase();
+                tr.find('.file_url').prop('download',name);
+                tr.find('.file_url').text(name);
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }else{
+            $(this).val('');
+        }
+    });
+
+    $(this).on('click','.button_save_files', function(){
+        let parent = $(this).closest('.modal');
+        let count = 0;
+        let data_files = [];
+        parent.find('.file_check:checked').each(function(){
+            let tr = $(this).closest('tr');
+            let file_completement_id = tr.data('file_completement');
+            if(tr.find('.file_url').prop('download')!=""){
+                let data;
+                data = {
+                    id: file_completement_id,
+                    file: tr.find('.file_url').prop('href'),
+                    name: tr.find('.file_url').prop('download')
+                };
+                data_files.push(data);
+                count++;
+            }
+        });
+        if(count<1){
+            alert('Pilih kelengkapan berkas minimal 1');
+            return;
+        }
+        let position = parent.find('.itempos').val();
+        $('.item_list').eq(position).data('files',data_files);
+        resetfilesmodal();
+        $('#filesmodal').modal('hide');
+    });
+    $('#filesmodal').on('hide.bs.modal', function (event) {
+        resetfilesmodal();
+    });
+});
+function resetfilesmodal(){
+    $('#filesmodal').find('.itempos').val('');
+    $('#filesmodal').find('.file_check').prop('checked',false);
+    $('#filesmodal').find('.file_button_upload').prop('disabled',true);
+    $('#filesmodal').find('.inputFile').val('');
+    $('#filesmodal').find('.file_url').prop('href','');
+    $('#filesmodal').find('.file_url').prop('download','');
+    $('#filesmodal').find('.file_url').text('-');
+}
+
+function checkNeedBA(){
+    let value_brand = $('.select_budget_brand').val();
+    let value_type = $('.select_budget_type').val();
+    let brands = $('.select_budget_item').find('option:selected').data('brand');
+    let types = $('.select_budget_item').find('option:selected').data('type');
+    // check apakah butuh BA
+    let is_ba_required = false;
+    if(brands != null){
+        if(brands.length>0 && value_brand == -1){
+            is_ba_required = true;
+        }
+    }
+    if(types != null){
+        if(types.length>0 && value_type == -1){
+            is_ba_required = true;
+        }
+    }
+    if(is_ba_required){
+        $('.budget_ba_field').show();
+    }else{
+        $('.budget_ba_field').hide();
+    }
+}
+
 function addBudgetItem(el) {
     let select_item = $('.select_budget_item');
     let select_budget_brand = $('.select_budget_brand');
@@ -421,8 +521,8 @@ function addBudgetItem(el) {
     if(budget_expired_date.val()!=""){
         naming = name+'<br>(expired : '+budget_expired_date.val()+')';
     }
-    table_item.find('tbody').append('<tr class="item_list" data-budget_pricing_id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
-
+    table_item.find('tbody').append('<tr class="item_list" data-budget_pricing_id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+    
     select_item.val("");
     select_item.trigger('change');
     price_item.set(0);
@@ -680,7 +780,6 @@ function addRequest(type){
     });
     $('#addform').submit();
 }
-
 
 function approve(){
     $('#approveform').submit();

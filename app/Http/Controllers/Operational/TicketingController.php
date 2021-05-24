@@ -16,6 +16,7 @@ use App\Models\TicketVendor;
 use App\Models\Authorization;
 use App\Models\TicketAuthorization;
 use App\Models\TicketAdditionalAttachment;
+use App\Models\FileCategory;
 use Auth;
 use DB;
 use Storage;
@@ -27,6 +28,7 @@ class TicketingController extends Controller
         // show ticket liat based on auth access area
         $access = Auth::user()->location_access->pluck('salespoint_id');
         $tickets = Ticket::whereIn('salespoint_id',$access)->get()->sortByDesc('created_at');
+        
         return view('Operational.ticketing',compact('tickets'));
     }
 
@@ -44,11 +46,14 @@ class TicketingController extends Controller
     
             // show ticket liat based on auth access area
             $access = Auth::user()->location_access->pluck('salespoint_id');
+
+            // show file completement data
+            $filecategories = FileCategory::all();
             if($ticket->status == 0){
                 // if draft make it editable
-                return view('Operational.ticketingdetail',compact('ticket','available_salespoints','budget_category_items','vendors'));
+                return view('Operational.ticketingdetail',compact('ticket','available_salespoints','budget_category_items','vendors','filecategories'));
             }else{
-                return view('Operational.ticketingform',compact('ticket','available_salespoints','budget_category_items','vendors'));
+                return view('Operational.ticketingform',compact('ticket','available_salespoints','budget_category_items','vendors','filecategories'));
             }
         }else{
             return redirect('/ticketing')->with('error','Form tidak ditemukan');
@@ -68,7 +73,10 @@ class TicketingController extends Controller
 
             // show ticket liat based on auth access area
             $access = Auth::user()->location_access->pluck('salespoint_id');
-            return view('Operational.ticketingdetail',compact('available_salespoints','budget_category_items','vendors'));
+            
+            // show file completement data
+            $filecategories = FileCategory::all();
+            return view('Operational.ticketingdetail',compact('available_salespoints','budget_category_items','vendors','filecategories'));
         }else{
             return back()->with('error','Terjadi Kesalahan silahakan mencoba lagi');
         }

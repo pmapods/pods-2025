@@ -78,7 +78,6 @@
                         <th>Jumlah</th>
                         <th>Total</th>
                         <th>Attachment</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -292,7 +291,7 @@
                 if(i==0) attachments_link = "";
                 attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><br>';
             })
-            $('.table_item tbody').append('<tr class="item_list" data-id="' + item.id + '" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+            $('.table_item tbody').append('<tr class="item_list" data-id="' + item.id + '" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><</tr>');
         });
         $('.reason').val(ticket.reason);
         if(ticket_vendors.length > 0){
