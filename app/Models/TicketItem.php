@@ -18,4 +18,8 @@ class TicketItem extends Model
     public function ticket_item_attachment(){
         return $this->hasMany(TicketItemAttachment::class);
     }
+
+    public function ticket_item_file_requirement(){
+        return $this->hasMany(TicketItemFileRequirement::class);
+    }
 }

@@ -133,6 +133,7 @@ class Ticket extends Model
         $data = array();
         foreach($this->ticket_item as $item){
             $item->attachments = $item->ticket_item_attachment;
+            $item->files = $item->ticket_item_file_requirement;
             array_push($data,$item);
         }
         return $data;

@@ -333,7 +333,8 @@ $(document).ready(function () {
         if(files){
             files.forEach(file => {
                 $('#filesmodal .tablefiles tbody tr').each(function(){
-                    if($(this).data('file_completement')==file.id){
+                    if($(this).data('file_completement_id')==file.file_completement_id){
+                        $(this).attr('data-id', file.id);
                         $(this).find('.file_check').prop('checked',true);
                         $(this).find('.file_button_upload').prop('disabled',false);
                         $(this).find('.file_url').prop('href',file.file);
@@ -341,7 +342,7 @@ $(document).ready(function () {
                         $(this).find('.file_url').text(file.name);
                     }
                 });
-            })
+            });
         }else{
             console.log('files empty');
         }
@@ -351,6 +352,7 @@ $(document).ready(function () {
 
     $(this).on('change','.file_check', function (event) {
         let tr = $(this).closest('tr');
+        tr.attr('data-id',undefined);
         if($(this).prop('checked')){
             tr.find('.file_button_upload').prop('disabled', false);
         }else{
@@ -371,6 +373,7 @@ $(document).ready(function () {
         let tr = $(this).closest('tr');
         if(validatefilesize(event)){
             reader.onload = function(e) {
+                tr.attr('data-id',undefined);
                 tr.find('.file_url').prop('href',e.target.result);
                 let name = value.split('\\').pop().toLowerCase();
                 tr.find('.file_url').prop('download',name);
@@ -388,11 +391,13 @@ $(document).ready(function () {
         let data_files = [];
         parent.find('.file_check:checked').each(function(){
             let tr = $(this).closest('tr');
-            let file_completement_id = tr.data('file_completement');
+            let file_completement_id = tr.data('file_completement_id');
+            let id = tr.data('id');
             if(tr.find('.file_url').prop('download')!=""){
                 let data;
                 data = {
-                    id: file_completement_id,
+                    id: id,
+                    file_completement_id: file_completement_id,
                     file: tr.find('.file_url').prop('href'),
                     name: tr.find('.file_url').prop('download')
                 };
@@ -415,6 +420,7 @@ $(document).ready(function () {
 });
 function resetfilesmodal(){
     $('#filesmodal').find('.itempos').val('');
+    $('#filesmodal').find('tr').attr('data-id',undefined);
     $('#filesmodal').find('.file_check').prop('checked',false);
     $('#filesmodal').find('.file_button_upload').prop('disabled',true);
     $('#filesmodal').find('.inputFile').val('');
@@ -754,6 +760,14 @@ function addRequest(type){
             // base 64 data
             input_field.append('<input type="hidden" name="item['+index+'][attachments]['+att_index+'][file]" value="'+file+'">');
         });
+        if($(el).data('files')){
+            $(el).data('files').forEach((file, index_file) =>{
+                input_field.append('<input type="hidden" name="item['+index+'][files]['+index_file+'][id]" value="'+file.id+'">');
+                input_field.append('<input type="hidden" name="item['+index+'][files]['+index_file+'][file_completement_id]" value="'+file.file_completement_id+'">');
+                input_field.append('<input type="hidden" name="item['+index+'][files]['+index_file+'][name]" value="'+file.name+'">');
+                input_field.append('<input type="hidden" name="item['+index+'][files]['+index_file+'][file]" value="'+file.file+'">');
+            });
+        }
     });
     vendor_item_list.each(function(index, el) {
         input_field.append('<input type="hidden" name="vendor['+index+'][id]" value="'+$(el).data('id')+'">');
@@ -762,7 +776,7 @@ function addRequest(type){
         input_field.append('<input type="hidden" name="vendor['+index+'][sales]" value="'+$(el).data('sales')+'">');
         input_field.append('<input type="hidden" name="vendor['+index+'][phone]" value="'+$(el).data('phone')+'">');
     });
-    // return;
+
     if(vendor_item_list.length<2){
         let filename = $('#vendor_ba_preview').prop('download');
         let file = $('#vendor_ba_preview').prop('href');

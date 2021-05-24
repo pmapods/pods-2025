@@ -72,11 +72,18 @@ class TicketingMigration extends Migration
             $table->timestamps();
         });
 
-        Schema::create('ticket_file_requirement', function (Blueprint $table) {
+        Schema::create('ticket_item_file_requirement', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('ticket_item_id')->unsigned();
+            $table->bigInteger('file_completement_id');
             $table->string('name');
             $table->string('path');
+            $table->tinyInteger('status')->default(0);
+            // 0 Pending
+            // 1 Approved
+            // -1 need reupload
+            $table->string('reject_notes')->nullable();
+            $table->integer('rejected_by')->nullable();
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->timestamps();
         });

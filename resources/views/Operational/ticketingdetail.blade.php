@@ -441,7 +441,7 @@
                             </tr>
                         </thead>
                         @foreach ($filecategory->file_completements as $file_completement)
-                            <tr data-file_completement="{{$file_completement->id}}">
+                            <tr data-file_completement_id="{{$file_completement->id}}">
                                 <td class="align-middle">
                                     <input type="checkbox" class="file_check">
                                 </td>
@@ -528,8 +528,21 @@
             item.attachments.forEach(function(attachment,i){
                 if(i==0) attachments_link = "";
                 attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><br>';
-            })
-            $('.table_item tbody').append('<tr class="item_list" data-id="' + item.id + '" data-budget_pricing_id="'+ item.budget_pricing_id+'" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+            });
+            let files_data = [];
+            item.files.forEach(function(file,i){
+                let data;
+                data = {
+                    id: file.id,
+                    file_completement_id: file.file_completement_id,
+                    file: '/storage/'+file.path,
+                    name: file.name
+                };
+                files_data.push(data);
+            });
+            $('.table_item tbody').append('<tr class="item_list" data-files="'+files_data+'" data-id="' + item.id + '" data-budget_pricing_id="'+ item.budget_pricing_id+'" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+
+            $('.table_item tbody tr').last().data('files',files_data);
         });
         $('.reason').val(ticket.reason);
         if(ticket_vendors.length > 0){

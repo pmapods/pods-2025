@@ -71,12 +71,12 @@
             <table class="table table-bordered table_item">
                 <thead>
                     <tr>
-                        <th>Nama Item</th>
-                        <th>Merk</th>
-                        <th>Type</th>
-                        <th>Harga Satuan</th>
+                        <th width="10%">Nama Item</th>
+                        <th width="10%">Merk</th>
+                        <th width="10%">Type</th>
+                        <th width="10%">Harga Satuan</th>
                         <th>Jumlah</th>
-                        <th>Total</th>
+                        <th width="10%">Total</th>
                         <th>Attachment</th>
                     </tr>
                 </thead>
@@ -90,13 +90,25 @@
                             <td>{{$item->count}}</td>
                             <td class="rupiah_text">{{$item->price * $item->count}}</td>
                             <td>
-                                @foreach ($item->ticket_item_attachment as $attachment)
-                                    <a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a><br>
-                                @endforeach
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-primary" onclick="openselectionvendor({{$item->id}})">Seleksi Vendor</button>
-                                {{-- <button type="button" class="btn btn-info" >Detail</button> --}}
+                                @if ($item->ticket_item_attachment->count() > 0)
+                                    @foreach ($item->ticket_item_attachment as $attachment)
+                                        <a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a><br>
+                                    @endforeach
+                                @else
+                                    -
+                                @endif
+                                @if ($item->ticket_item_file_requirement->count() > 0)
+                                    <br>
+                                    <b>Kelengkapan Berkas</b><br>
+                                    <table class="table table-borderless table-sm">
+                                        @foreach ($item->ticket_item_file_requirement as $requirement)
+                                            <tr>
+                                                <td width="40%">{{$requirement->file_completement->name}}</td>
+                                                <td width="60%"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">{{$requirement->name}}</a></td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -150,37 +162,23 @@
     </div>
 
     <div class="d-flex justify-content-center mt-3 bottom_action">
-        <button type="button" class="btn btn-info" onclick="addRequest(0)" id="draftbutton">Simpan Sebagai Draft</button>
-        <button type="button" class="btn btn-primary" onclick="startauthorization()" id="startauthorizationbutton">Mulai Otorisasi</button>
-        <button type="button" class="btn btn-danger" onclick="reject()" id="rejectbutton" style="display:none">Reject</button>
-        <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton" style="display:none">Approve</button>
+        @if (Auth::user()->id == $ticket->current_authorization()->employee->id)
+        <button type="button" class="btn btn-danger mr-2" onclick="reject()" id="rejectbutton">Reject</button>
+        <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton">Approve</button>
+        @endif
     </div>
 </div>
-<form action="/addticket" method="post" enctype="multipart/form-data" id="addform">
-    @csrf
-    <input type="hidden" name="id" class="ticket_id">    
-    <input type="hidden" name="updated_at" class="updated_at">
-    <div id="input_field">
-
-    </div>
-</form>
-<form action="/startauthorization" method="post" id="startauthorizationform">
-    @method('patch')
-    @csrf
-    <input type="hidden" name="id" class="ticket_id">    
-    <input type="hidden" name="updated_at" class="updated_at">
-</form>
 <form action="/approveticket" method="post" id="approveform">
     @method('patch')
     @csrf
-    <input type="hidden" name="id" class="ticket_id">    
-    <input type="hidden" name="updated_at" class="updated_at">
+    <input type="hidden" name="id" value="{{$ticket->id}}">    
+    <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
 </form>
 <form action="/rejectticket" method="post" id="refectform">
     @method('patch')
     @csrf
-    <input type="hidden" name="id" class="ticket_id">    
-    <input type="hidden" name="updated_at" class="updated_at">
+    <input type="hidden" name="id" value="{{$ticket->id}}">    
+    <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
 </form>
 
 <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
@@ -234,101 +232,18 @@
 @endsection
 @section('local-js')
 <script>
-</script>
-<script src="/js/ticketingdetail.js"></script>
-@if (Request::is('ticketing/*'))
-<script>
-    $(document).ready(function() {
-        let user = @json(Auth::user());
-        let current_auth = @json($ticket->current_authorization());
-        let ticket = @json($ticket);
-        let ticket_items = @json($ticket->ticket_items_with_attachments());
-        let ticket_vendors = @json($ticket->ticket_vendors_with_additional_data());
-        let ticket_additional_attachments = @json($ticket->ticket_additional_attachment);
-        // console.log(ticket_vendors);
-        $('.ticket_id').val(ticket["id"]);
-        $('.updated_at').val(ticket["updated_at"]);
-        if(ticket['salespoint_id']){
-            $('.salespoint_select2').val(ticket['salespoint_id']);
-            $('.salespoint_select2').trigger('change');
-        }
-        setTimeout(function(){ 
-            if(ticket['authorization_id'] != null){
-                $('.authorization_select2').val(ticket['authorization_id']); 
-                $('.authorization_select2').trigger('change'); 
-            }
-            if(ticket['item_type'] != null){
-                $('.item_type').val(ticket['item_type']);
-                $('.item_type').trigger('change');
-            }
-            if(ticket['request_type'] != null){
-                $('.request_type').val(ticket['request_type']);
-                $('.request_type').trigger('change');
-            }
-            if(ticket['budget_type'] != null){
-                $('.budget_type').val(ticket['budget_type']);
-                $('.budget_type').trigger('change');
-            }
-            if(ticket_items.length > 0){
-                $('.salespoint_select2').prop('disabled',true);
-                $('.authorization_select2').prop('disabled',true);
-                $('.request_type').prop('disabled',true);
-                $('.item_type').prop('disabled',true);
-                $('.budget_type').prop('disabled',true);
-            }
-        },1500);
-        if(ticket_items.length > 0){
-            $('.table_item tbody').empty();
+    function approve() {
+        $('#approveform').submit();
+    }
 
+    function reject() {
+        var reason = prompt("Harap memasukan alasan penolakan");
+        if (reason != null || reason != "") {
+            $('#rejectform').append('<input type="hidden" name="reason" value="' + reason + '">');
+            $('#rejectform').submit();
+        } else {
+            alert("Alasan harus diisi")
         }
-        ticket_items.forEach(function(item,index){
-            let naming = item.name;
-            if(item.expired_date != null){
-                naming = item.name+'<br>(expired : '+item.expired_date+')';
-            }
-            let attachments_link = '-';
-            item.attachments.forEach(function(attachment,i){
-                if(i==0) attachments_link = "";
-                attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><br>';
-            })
-            $('.table_item tbody').append('<tr class="item_list" data-id="' + item.id + '" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><</tr>');
-        });
-        $('.reason').val(ticket.reason);
-        if(ticket_vendors.length > 0){
-            $('.table_vendor').find('tbody').empty();
-        }
-        ticket_vendors.forEach(function(vendor,index){
-            let type = (vendor.type == 0) ? 'Terdaftar' : 'One Time Vendor';
-            let code = (vendor.code == null) ? '-' : vendor.code;
-            $('.table_vendor').find('tbody').append('<tr class="vendor_item_list" data-id="'+vendor.id+'"><td>'+code+'</td><td>'+vendor.name+'</td><td>'+vendor.salesperson+'</td><td>'+vendor.phone+'</td><td>'+type+'</td></tr>');
-        });
-        if(ticket_vendors.length < 2){
-            // need ba
-            $('.vendor_ba_field').show();
-            $('#vendor_ba_preview').prop('href','/storage'+ticket.ba_vendor_filepath);
-            $('#vendor_ba_preview').prop('download',ticket.ba_vendor_filename);
-        }else{
-            // no need ba
-            $('.vendor_ba_field').hide();
-            $('.vendor_ba_file').val('');
-        }
-        $('#attachment_list').empty();
-        ticket_additional_attachments.forEach(function(attachment,index){
-            $('#attachment_list').append('<div><a class="opt_attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><span class="remove_attachment">X</span></div>')
-        });
-        // draftbutton
-        // startauthorizationbutton
-        // rejectbutton
-        // approvebutton
-        if(ticket['status'] == 1){
-            $('#draftbutton').hide();
-            $('#startauthorizationbutton').hide();
-        }
-        if(user['id'] == current_auth['employee_id']){
-            $('#rejectbutton').show();
-            $('#approvebutton').show();
-        }
-    })
+    }
 </script>
-@endif
 @endsection

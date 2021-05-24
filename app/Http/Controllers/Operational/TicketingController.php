@@ -17,6 +17,7 @@ use App\Models\Authorization;
 use App\Models\TicketAuthorization;
 use App\Models\TicketAdditionalAttachment;
 use App\Models\FileCategory;
+use App\Models\TicketItemFileRequirement;
 use Auth;
 use DB;
 use Storage;
@@ -155,6 +156,45 @@ class TicketingController extends Controller
                     $deleted->delete();
                 }
             }
+            // get all registered file id on ticket
+            $registered_file_id =[];
+            foreach($ticket->ticket_item as $t_item){
+                if($t_item->ticket_item_file_requirement->count() > 0){
+                    foreach($t_item->ticket_item_file_requirement as $t_item_file){
+                        array_push($registered_file_id,$t_item_file->id);
+                    }
+                }
+            }
+            // get all files from request
+            $allfiles =[];
+            foreach($request->item as $item){
+                if(isset($item['files'])){
+                    foreach($item['files'] as $file){
+                        if($file['id'] != "undefined"){
+                            array_push($allfiles,$file);
+                        }
+                    } 
+                }
+            }
+            $deleted_files = array_diff($registered_file_id,collect($allfiles)->pluck('id')->toArray());
+            foreach($deleted_files as $del){
+                $r = TicketItemFileRequirement::find($del);
+                // TODO delete the file from the storage
+                $r->delete();
+            }
+            // update registered files with new data if updated
+            foreach($allfiles as $afiles){
+                $tfile = TicketItemFileRequirement::find($afiles['id']);
+                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$tfile->ticket_item->id.'/files/'.$afiles['name'];
+                if(str_contains($afiles['file'], 'base64,')){
+                    $file = explode('base64,',$afiles['file'])[1];
+                    $tfile->path = $path;
+                    $tfile->name = $afiles['name'];
+                    $tfile->save();
+                    Storage::disk('public')->put($path, base64_decode($file));
+                }
+            }
+            
             // add ticket item that not registered
             $newitems = collect($request->item)->where('id','undefined');
             if(isset($newitems)){
@@ -188,9 +228,56 @@ class TicketingController extends Controller
                             $newAttachment->save();
                         }
                     }
+                    if(isset($item['files'])){
+                        foreach($item["files"] as $filereq){
+                            $newfile                        = new TicketItemFileRequirement;
+                            $newfile->ticket_item_id        = $newTicketItem->id;
+                            $newfile->file_completement_id  = $filereq['file_completement_id'];
+                            $newfile->name                  = $filereq['name'];
+                            $path                           = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$newTicketItem->id.'/files/'.$filereq['name'];
+                            if(str_contains($filereq['file'], 'http')){
+                                $file = Storage::disk('public')->get(explode('storage',$filereq['file'])[1]);
+                                Storage::disk('public')->put($path, $file);
+                            }else{
+                                // base 64 data
+                                $file = explode('base64,',$filereq['file'])[1];
+                                Storage::disk('public')->put($path, base64_decode($file));
+                            }
+                            $newfile->path                  = $path;
+                            $newfile->save();
+                        }
+                    }
                 }
             }
 
+            // TODO daftarin file baru di ticket yang udah ada
+            $registereditem = collect($request->item)->filter(function($oitem){
+                if($oitem['id']!="undefined"){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+            foreach($registereditem as $reg){
+                if(isset($reg['files'])){
+                    foreach($reg['files'] as $regfile){
+                        if($regfile['id']=="undefined"){
+                            $newfile                        = new TicketItemFileRequirement;
+                            $newfile->ticket_item_id        = $reg['id'];
+                            $newfile->file_completement_id  = $regfile['file_completement_id'];
+                            $newfile->name                  = $regfile['name'];
+                            $path                           = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$reg['id'].'/files/'.$regfile['name'];
+                            if(str_contains($regfile['file'], 'base64,')){
+                                // base 64 data
+                                $newfile->path = $path;
+                                $newfile->save();
+                                $file = explode('base64,',$regfile['file'])[1];
+                                Storage::disk('public')->put($path, base64_decode($file));
+                            }
+                        }
+                    }
+                }
+            }
             // ticket vendor
             if($ticket->ticket_vendor->count() > 0){
                 $registered_id = collect($request->vendor)->pluck('id')->filter(function($item){
@@ -208,6 +295,7 @@ class TicketingController extends Controller
                     $deleted->delete();
                 }
             }
+
             // add ticket vendor that not registered yet
             $newitems = collect($request->vendor)->where('id','undefined');
             if(isset($newitems)){
@@ -295,6 +383,7 @@ class TicketingController extends Controller
             }
         } catch (\Exception $ex) {
             DB::rollback();
+            dd($ex);
             return back()->with('error','Gagal menyimpan tiket "'.$ex->getMessage().'"');
         }
     }
@@ -336,6 +425,12 @@ class TicketingController extends Controller
             foreach($ticket_item_attachments as $attachment){
                 $attachment->path = str_replace($oldpath,$newpath,$attachment->path);
                 $attachment->save();
+            }
+
+            $ticket_file_item_requirements = TicketItemFileRequirement::where('path', 'LIKE', $oldpath.'%')->get();
+            foreach($ticket_file_item_requirements as $requirement){
+                $requirement->path = str_replace($oldpath,$newpath,$requirement->path);
+                $requirement->save();
             }
             // end cari oper semua path kode
             $oldpath = 'storage'.$oldpath;
@@ -387,6 +482,7 @@ class TicketingController extends Controller
     }
 
     public function approveTicket(Request $request){
+        // dd($request);
         try{
             $ticket = Ticket::findOrFail($request->id);
             $updated_at = new Carbon($request->updated_at);
