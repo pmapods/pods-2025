@@ -53,7 +53,7 @@
             </thead>
             <tbody>
                 @foreach ($biddings as $key => $bid)
-                <tr>
+                <tr>    
                     <td>{{$key+1}}</td>
                     <td>{{$bid->code}}</td>
                     <td>{{$bid->created_by_employee->name}}</td>

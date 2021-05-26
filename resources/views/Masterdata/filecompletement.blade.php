@@ -27,7 +27,7 @@
             <div class="col-md-6">
                 <h4>{{$category->name}}</h4>
                 <ul>
-                    @foreach ($category->file_completement as $file)
+                    @foreach ($category->file_completements as $file)
                     <li>{{$file->name}}</li>
                     @endforeach
                 </ul>

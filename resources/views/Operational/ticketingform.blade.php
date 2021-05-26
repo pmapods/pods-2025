@@ -1,5 +1,10 @@
 @extends('Layout.app')
 @section('local-css')
+<style>
+    .tdbreak{
+        /* word-break : break-all; */
+    }
+</style>
 @endsection
 
 @section('content')
@@ -104,7 +109,7 @@
                                         @foreach ($item->ticket_item_file_requirement as $requirement)
                                             <tr>
                                                 <td width="40%">{{$requirement->file_completement->name}}</td>
-                                                <td width="60%"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">{{$requirement->name}}</a></td>
+                                                <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
                                             </tr>
                                         @endforeach
                                     </table>
@@ -114,6 +119,54 @@
                     @endforeach
                 </tbody>
             </table>
+            <h5 class="font-weight-bold">Validasi Kelengkapan Berkas</h5>
+            <div class="row">
+                @foreach($ticket->ticket_item as $item)
+                <div class="col-md-6">
+                    <h5>{{$item->name}}</h5><br>
+                    <table class="table table-sm">
+                        <tbody>
+                        @foreach($item->ticket_item_file_requirement as $requirement)
+                        <tr>
+                            <td width="20%">{{$requirement->file_completement->name}}</td>
+                            <td width="30%" class="tdbreak"><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                            @if($requirement->status == 0)
+                            <td colspan="2">
+                                <span class="text-warning">
+                                    Menunggu Proses Validasi Data
+                                </span><br>
+                                @if ($requirement->revised_by != null)
+                                    Revisi oleh : <b>{{$requirement->revised_by_employee()->name}}</b>
+                                @endif
+                            </td>
+                            @endif
+                            @if($requirement->status == 1)
+                            <td colspan="2">
+                                <b class="text-success">Approved</b><br>
+                                {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
+                            </td>
+                            @endif
+                            @if($requirement->status == -1)
+                            <td>
+                                <b class="text-danger">Rejected</b><br>
+                                {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
+                                by <b>{{$requirement->rejected_by_employee()->name}}</b><br>
+                                Alasan : {{$requirement->reject_notes}}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Perbaikan</button>
+                                <input class="inputFile" type="file" style="display:none;">
+                                <div class="display_field mt-1"></div>
+                                <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$requirement->id}},this)">Upload File Perbaikan</button>
+                            </td>
+                            @endif
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endforeach
+            </div>
         </div>
         <div class="col-md-12 box p-3 mt-3">
             <h5 class="font-weight-bold">Daftar Vendor</h5>
@@ -160,11 +213,22 @@
             </div>
         @endif
     </div>
+    
+    <div class="col-md-12  mb-3">
+        <div class="font-weight-bold h5">Urutan Otorisasi</div>
+        <div class="authorization_list_field row row-cols-md-3 row-cols-2 p-3">
+            @foreach ($ticket->ticket_authorization as $author)
+                <div class="mb-3"><span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee->employee_position->name}}</span><br><span>{{$author->as}}</span></div>
+            @endforeach
+        </div>
+    </div>
 
     <div class="d-flex justify-content-center mt-3 bottom_action">
-        @if (Auth::user()->id == $ticket->current_authorization()->employee->id)
-        <button type="button" class="btn btn-danger mr-2" onclick="reject()" id="rejectbutton">Reject</button>
-        <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton">Approve</button>
+        @if ($ticket->status == 1)
+            @if (Auth::user()->id == $ticket->current_authorization()->employee->id)
+            <button type="button" class="btn btn-danger mr-2" onclick="reject()" id="rejectbutton">Reject</button>
+            <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton">Approve</button>
+            @endif
         @endif
     </div>
 </div>
@@ -192,7 +256,12 @@
             </div>
             <div class="modal-body">
                 <h5>Status saat ini :</h5>
-                Menunggu Otorisasi {{$ticket->current_authorization()->employee_name}} <b>({{$ticket->current_authorization()->as}})</b>
+                @if ($ticket->status == 1)
+                    Menunggu Otorisasi {{$ticket->current_authorization()->employee_name}} <b>({{$ticket->current_authorization()->as}})</b>
+                @endif
+                @if ($ticket->status == 2)
+                    Menunggu Proses Bidding
+                @endif
                 <table class="table table-borderless">
                     <thead>
                         <tr class="font-weight-bold">
@@ -229,6 +298,11 @@
         </div>
     </div>
 </div>
+<form action="/uploadticketfilerevision" method="post" enctype="multipart/form" id="uploadrevisionform">
+    @method('patch')
+    @csrf
+    <div class="input_field"></div>
+</form>
 @endsection
 @section('local-js')
 <script>
@@ -245,5 +319,40 @@
             alert("Alasan harus diisi")
         }
     }
+
+    function selectfile(el){
+        $(el).closest('td').find('.inputFile').click();
+    }
+
+    function uploadfile(requirement_id,el){
+        let linkfile = $(el).closest('td').find('.revision_file');
+        if(linkfile.length == 0){
+            alert('Silahkan pilih file revisi untuk di upload terlebih dahulu');
+        }else{
+            let inputfield = $('#uploadrevisionform').find('.input_field');
+            let file = linkfile.prop('href');
+            inputfield.empty();
+            inputfield.append('<input type="hidden" name="ticket_file_requirement_id" value="' + requirement_id + '">');
+            inputfield.append('<input type="hidden" name="file" value="'+file+'">');
+            $('#uploadrevisionform').submit();
+        }
+    }
+    $(document).ready(function(){
+        $(this).on('change','.inputFile', function(event){
+            var reader = new FileReader();
+            let value = $(this).val();
+            let display_field = $(this).closest('td').find('.display_field');
+            if(validatefilesize(event)){
+                reader.onload = function(e) {
+                    display_field.empty();
+                    let name = value.split('\\').pop().toLowerCase();
+                    display_field.append('<a class="revision_file" href="'+e.target.result+'" download="'+name+'">'+name+'</a>');
+                }
+                reader.readAsDataURL(event.target.files[0]);
+            }else{
+                $(this).val('');
+            }
+        });
+    });
 </script>
 @endsection

@@ -101,10 +101,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/deleteticket',[TicketingController::class, 'deleteTicket']);
         Route::patch('/approveticket',[TicketingController::class, 'approveTicket']);
         Route::patch('/rejectticket',[TicketingController::class, 'rejectTicket']);
+        Route::patch('/uploadticketfilerevision',[TicketingController::class, 'uploadFileRevision']);
 
         // Bidding
         Route::get('/bidding',[BiddingController::class, 'biddingView']);
         Route::get('/bidding/{ticket_code}',[BiddingController::class, 'biddingDetailView']);
+        Route::patch('/confirmticketfilerequirement',[BiddingController::class, 'confirmFileRequirement']);
+        Route::patch('/rejectticketfilerequirement',[BiddingController::class, 'rejectFileRequirement']);
         Route::get('/bidding/{ticket_code}/{ticket_item_id}',[BiddingController::class, 'vendorSelectionView']);
 
         // Purchase Requisition

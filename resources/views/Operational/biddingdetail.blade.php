@@ -91,9 +91,25 @@
                             <td>{{$item->count}}</td>
                             <td class="rupiah_text">{{$item->price * $item->count}}</td>
                             <td>
-                                @foreach ($item->ticket_item_attachment as $attachment)
-                                    <a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a><br>
-                                @endforeach
+                                @if ($item->ticket_item_attachment->count() > 0)
+                                    @foreach ($item->ticket_item_attachment as $attachment)
+                                        <a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a><br>
+                                    @endforeach
+                                @else
+                                    -
+                                @endif
+                                @if ($item->ticket_item_file_requirement->count() > 0)
+                                    <br>
+                                    <b>Kelengkapan Berkas</b><br>
+                                    <table class="table table-borderless table-sm">
+                                        @foreach ($item->ticket_item_file_requirement as $requirement)
+                                            <tr>
+                                                <td width="40%">{{$requirement->file_completement->name}}</td>
+                                                <td width="60%"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                @endif
                             </td>
                             <td>
                                 <button type="button" class="btn btn-primary" onclick="openselectionvendor({{$item->id}})">Seleksi Vendor</button>
@@ -103,6 +119,44 @@
                     @endforeach
                 </tbody>
             </table>
+            <h5 class="font-weight-bold">Validasi Kelengkapan Berkas</h5>
+            <div class="row">
+                @foreach($ticket->ticket_item as $item)
+                <div class="col-md-6">
+                    <h5>{{$item->name}}</h5><br>
+                    <table class="table table-sm">
+                        <tbody>
+                        @foreach($item->ticket_item_file_requirement as $requirement)
+                        <tr>
+                            <td>{{$requirement->file_completement->name}}</td>
+                            <td><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                            @if($requirement->status == 0)
+                            <td class="align-middle">
+                                <button type="button" class="btn btn-success btn-sm" onclick="confirm({{$requirement->id}})">Confirm</button>
+                            </td>
+                            <td class="align-middle">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="reject({{$requirement->id}})">Reject</button>
+                            </td>
+                            @endif
+                            @if($requirement->status == 1)
+                            <td colspan="2">
+                                <b class="text-success">Confirmed</b><br>{{$requirement->updated_at->format('d F Y (H:i)')}}
+                            </td>
+                            @endif 
+                            @if($requirement->status == -1)
+                            <td colspan="2">
+                                <b class="text-danger">Rejected</b><br>
+                                {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
+                                Alasan : {{$requirement->reject_notes}}
+                            </td>
+                            @endif
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endforeach
+            </div>
         </div>
         <div class="col-md-12 box p-3 mt-3">
             <h5 class="font-weight-bold">Daftar Vendor</h5>
@@ -150,12 +204,40 @@
         @endif
     </div>
 </div>
-
+<form action="/confirmticketfilerequirement" method="post" id="confirmform">
+    @csrf
+    @method('patch')
+    <div class="input_list">
+    </div>
+</form>
+<form action="/rejectticketfilerequirement" method="post" id="rejectform">
+    @csrf
+    @method('patch')
+    <div class="input_list">
+    </div>
+</form>
 @endsection
 @section('local-js')
 <script>
     function openselectionvendor(item_id) {
         window.location.href = window.location.href+'/'+item_id;
+    }
+    function confirm($requirement_id) {
+        $('#confirmform .input_list').empty();
+        $('#confirmform .input_list').append('<input type="hidden" name="ticket_file_requirement_id" value="'+$requirement_id+'">');
+        $('#confirmform').submit();
+    }
+
+    function reject(requirement_id) {
+        var reason = prompt("Harap memasukan alasan penolakan");
+        $('#rejectform .input_list').empty();
+        if (reason != null || reason != "") {
+            $('#rejectform .input_list').append('<input type="hidden" name="ticket_file_requirement_id" value="' + requirement_id + '">');
+            $('#rejectform .input_list').append('<input type="hidden" name="reason" value="' + reason + '">');
+            $('#rejectform').submit();
+        } else {
+            alert("Alasan harus diisi")
+        }
     }
 </script>
 @endsection

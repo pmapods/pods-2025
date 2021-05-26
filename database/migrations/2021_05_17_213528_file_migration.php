@@ -23,6 +23,7 @@ class FileMigration extends Migration
             $table->increments('id');
             $table->integer('file_category_id')->unsigned();
             $table->string('name');
+            $table->string('filename');
             $table->foreign('file_category_id')->references('id')->on('file_category');
             $table->timestamps();
         });

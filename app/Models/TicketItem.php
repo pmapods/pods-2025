@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Employee;
 
 class TicketItem extends Model
 {
@@ -21,5 +22,13 @@ class TicketItem extends Model
 
     public function ticket_item_file_requirement(){
         return $this->hasMany(TicketItemFileRequirement::class);
+    }
+
+    public function cancelled_by_employee(){
+        if($this->cancelled_by){
+            return Employee::find($this->cancelled_by);
+        }else{
+            return null;
+        }
     }
 }

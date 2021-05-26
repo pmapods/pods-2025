@@ -17,6 +17,7 @@ use App\Models\Authorization;
 use App\Models\TicketAuthorization;
 use App\Models\TicketAdditionalAttachment;
 use App\Models\FileCategory;
+use App\Models\FileCompletement;
 use App\Models\TicketItemFileRequirement;
 use Auth;
 use DB;
@@ -185,11 +186,14 @@ class TicketingController extends Controller
             // update registered files with new data if updated
             foreach($allfiles as $afiles){
                 $tfile = TicketItemFileRequirement::find($afiles['id']);
-                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$tfile->ticket_item->id.'/files/'.$afiles['name'];
+                $ext = pathinfo($afiles['name'], PATHINFO_EXTENSION);
+                $salespointname = str_replace(' ','_',$ticket->salespoint->name);
+                $name = $tfile->file_completement->filename.'_'.$salespointname.'.'.$ext;
+                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$tfile->ticket_item->id.'/files/'.$name;
                 if(str_contains($afiles['file'], 'base64,')){
                     $file = explode('base64,',$afiles['file'])[1];
                     $tfile->path = $path;
-                    $tfile->name = $afiles['name'];
+                    $tfile->name = $name;
                     $tfile->save();
                     Storage::disk('public')->put($path, base64_decode($file));
                 }
@@ -230,11 +234,16 @@ class TicketingController extends Controller
                     }
                     if(isset($item['files'])){
                         foreach($item["files"] as $filereq){
+                            $ext = pathinfo($filereq['name'], PATHINFO_EXTENSION);
+                            $salespointname = str_replace(' ','_',$ticket->salespoint->name);
+                            $filecompletement = FileCompletement::find($filereq['file_completement_id']);
+                            $name = $filecompletement->filename.'_'.$salespointname.'.'.$ext;
+
                             $newfile                        = new TicketItemFileRequirement;
                             $newfile->ticket_item_id        = $newTicketItem->id;
                             $newfile->file_completement_id  = $filereq['file_completement_id'];
-                            $newfile->name                  = $filereq['name'];
-                            $path                           = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$newTicketItem->id.'/files/'.$filereq['name'];
+                            $newfile->name                  = $name;
+                            $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$newTicketItem->id.'/files/'.$name;
                             if(str_contains($filereq['file'], 'http')){
                                 $file = Storage::disk('public')->get(explode('storage',$filereq['file'])[1]);
                                 Storage::disk('public')->put($path, $file);
@@ -250,7 +259,6 @@ class TicketingController extends Controller
                 }
             }
 
-            // TODO daftarin file baru di ticket yang udah ada
             $registereditem = collect($request->item)->filter(function($oitem){
                 if($oitem['id']!="undefined"){
                     return true;
@@ -262,11 +270,16 @@ class TicketingController extends Controller
                 if(isset($reg['files'])){
                     foreach($reg['files'] as $regfile){
                         if($regfile['id']=="undefined"){
+                            $filecompletement = FileCompletement::find($regfile['file_completement_id']);
+                            $ext = pathinfo($regfile['name'], PATHINFO_EXTENSION);
+                            $salespointname = str_replace(' ','_',$ticket->salespoint->name);
+                            $name = $filecompletement->filename.'_'.$salespointname.'.'.$ext;
+
                             $newfile                        = new TicketItemFileRequirement;
                             $newfile->ticket_item_id        = $reg['id'];
                             $newfile->file_completement_id  = $regfile['file_completement_id'];
-                            $newfile->name                  = $regfile['name'];
-                            $path                           = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$reg['id'].'/files/'.$regfile['name'];
+                            $newfile->name                  = $name;
+                            $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$reg['id'].'/files/'.$name;
                             if(str_contains($regfile['file'], 'base64,')){
                                 // base 64 data
                                 $newfile->path = $path;
@@ -482,7 +495,6 @@ class TicketingController extends Controller
     }
 
     public function approveTicket(Request $request){
-        // dd($request);
         try{
             $ticket = Ticket::findOrFail($request->id);
             $updated_at = new Carbon($request->updated_at);
@@ -539,6 +551,23 @@ class TicketingController extends Controller
             }
         }catch (\Exception $ex){
             return back()->with('error','Gagal membatalkan ticket '.$ex->getMessage());
+        }
+    }
+    
+    public function uploadFileRevision(Request $request){
+        try{
+            DB::beginTransaction();
+            $requirement = TicketItemFileRequirement::findOrFail($request->ticket_file_requirement_id);
+            $requirement->status = 0;
+            $requirement->revised_by = Auth::user()->id;
+            $requirement->save();
+            $file = explode('base64,',$request->file)[1];
+            Storage::disk('public')->put($requirement->path, base64_decode($file));
+            DB::commit();
+            return back()->with('success','Berhasil melakukan revisi upload file');
+        }catch(Exception $ex){
+            DB::rollback();
+            return back()->with('error','Gagal melakukan revisi upload file');
         }
     }
 }

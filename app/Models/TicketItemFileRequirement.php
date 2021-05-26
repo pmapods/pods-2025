@@ -23,4 +23,11 @@ class TicketItemFileRequirement extends Model
             return null;
         }
     }
+    public function revised_by_employee(){
+        if($this->rejected_by != null){
+            return Employee::find($this->revised_by);
+        }else{
+            return null;
+        }
+    }
 }

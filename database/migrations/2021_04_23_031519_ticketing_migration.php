@@ -58,6 +58,10 @@ class TicketingMigration extends Migration
             $table->date('expired_date')->nullable();
             $table->double('price');
             $table->integer('count');
+            $table->boolean('isCancelled')->default(false);
+            $table->integer('cancelled_by')->nullable();
+            $table->string('cancelled_on')->nullable();
+            $table->string('cancel_reason')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->softDeletes();
             $table->timestamps();
@@ -81,9 +85,10 @@ class TicketingMigration extends Migration
             $table->tinyInteger('status')->default(0);
             // 0 Pending
             // 1 Approved
-            // -1 need reupload
+            // -1 need revision
             $table->string('reject_notes')->nullable();
             $table->integer('rejected_by')->nullable();
+            $table->integer('revised_by')->nullable();
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->timestamps();
         });
