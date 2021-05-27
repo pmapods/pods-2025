@@ -1,6 +1,12 @@
 @extends('Layout.app')
 @section('local-css')
 <style>
+    .box {
+        box-shadow: 0px 1px 2px rgba(0, 0, 0,0.25);
+        border : 1px solid;
+        border-color: gainsboro;
+        border-radius: 0.5em;
+    }
     .tdbreak{
         /* word-break : break-all; */
     }
@@ -95,23 +101,48 @@
                             <td>{{$item->count}}</td>
                             <td class="rupiah_text">{{$item->price * $item->count}}</td>
                             <td>
+                                @if($item->ticket_item_attachment->count() == 0 && $item->ticket_item_file_requirement->count() == 0)
+                                -
+                                @endif
                                 @if ($item->ticket_item_attachment->count() > 0)
-                                    @foreach ($item->ticket_item_attachment as $attachment)
-                                        <a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">{{$attachment->name}}</a><br>
-                                    @endforeach
-                                @else
-                                    -
+                                    <table class="table table-borderless table-sm">
+                                        <tbody>
+                                            @foreach ($item->ticket_item_attachment as $attachment)
+                                                <tr>
+                                                    @php
+                                                        $naming = "";
+                                                        $filename = explode('.',$attachment->name)[0];
+                                                        switch ($filename) {
+                                                            case 'ba_file':
+                                                                $naming = "berita acara merk/tipe lain";
+                                                                break;
+                                                            
+                                                            case 'old_item':
+                                                                $naming = "foto barang lama untuk replace";
+                                                                break;
+                                                            
+                                                            default:
+                                                                $naming = $filename;
+                                                                break;
+                                                        }
+                                                    @endphp
+                                                    <td width="40%">{{$naming}}</td>
+                                                    <td width="60%" class="tdbreak"><a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 @endif
                                 @if ($item->ticket_item_file_requirement->count() > 0)
-                                    <br>
-                                    <b>Kelengkapan Berkas</b><br>
                                     <table class="table table-borderless table-sm">
-                                        @foreach ($item->ticket_item_file_requirement as $requirement)
-                                            <tr>
-                                                <td width="40%">{{$requirement->file_completement->name}}</td>
-                                                <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
-                                            </tr>
-                                        @endforeach
+                                        <tbody>
+                                            @foreach ($item->ticket_item_file_requirement as $requirement)
+                                                <tr>
+                                                    <td width="40%">{{$requirement->file_completement->name}}</td>
+                                                    <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
                                     </table>
                                 @endif
                             </td>
@@ -120,52 +151,119 @@
                 </tbody>
             </table>
             <h5 class="font-weight-bold">Validasi Kelengkapan Berkas</h5>
-            <div class="row">
-                @foreach($ticket->ticket_item as $item)
-                <div class="col-md-6">
-                    <h5>{{$item->name}}</h5><br>
-                    <table class="table table-sm">
-                        <tbody>
-                        @foreach($item->ticket_item_file_requirement as $requirement)
-                        <tr>
-                            <td width="20%">{{$requirement->file_completement->name}}</td>
-                            <td width="30%" class="tdbreak"><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
-                            @if($requirement->status == 0)
-                            <td colspan="2">
-                                <span class="text-warning">
-                                    Menunggu Proses Validasi Data
-                                </span><br>
-                                @if ($requirement->revised_by != null)
-                                    Revisi oleh : <b>{{$requirement->revised_by_employee()->name}}</b>
+            <div class="row px-2">
+                @php
+                    $count_file = 0;
+                    foreach($ticket->ticket_item as $item){
+                        foreach($item->ticket_item_file_requirement as $requirement){
+                            $count_file++;
+                        }
+                    }
+                @endphp
+                @if ($count_file == 0)
+                    Tidak ada berkas kelengkapan
+                @else
+                    @foreach($ticket->ticket_item as $item)
+                    <div class="col-md-6">
+                        <h5>{{$item->name}}</h5><br>
+                        <table class="table table-sm">
+                            <tbody>
+                            @foreach($item->ticket_item_attachment as $attachment)
+                            @php
+                                $naming = "";
+                                $filename = explode('.',$attachment->name)[0];
+                                switch ($filename) {
+                                    case 'ba_file':
+                                        $naming = "berita acara merk/tipe lain";
+                                        break;
+                                    
+                                    case 'old_item':
+                                        $naming = "foto barang lama untuk replace";
+                                        break;
+                                    
+                                    default:
+                                        $naming = $filename;
+                                        break;
+                                }
+                            @endphp
+                            <tr>
+                                <td width="20%">{{$naming}}</td>
+                                <td width="30%" class="tdbreak"><a href="/storage/{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
+                                @if($attachment->status == 0)
+                                <td colspan="2">
+                                    <span class="text-warning">
+                                        Menunggu Proses Validasi Data
+                                    </span><br>
+                                    @if ($attachment->revised_by != null)
+                                        Revised by : <b>{{$attachment->revised_by_employee()->name}}</b>
+                                    @endif
+                                </td>
                                 @endif
-                            </td>
-                            @endif
-                            @if($requirement->status == 1)
-                            <td colspan="2">
-                                <b class="text-success">Approved</b><br>
-                                {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
-                            </td>
-                            @endif
-                            @if($requirement->status == -1)
-                            <td>
-                                <b class="text-danger">Rejected</b><br>
-                                {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
-                                by <b>{{$requirement->rejected_by_employee()->name}}</b><br>
-                                Alasan : {{$requirement->reject_notes}}
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Perbaikan</button>
-                                <input class="inputFile" type="file" style="display:none;">
-                                <div class="display_field mt-1"></div>
-                                <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$requirement->id}},this)">Upload File Perbaikan</button>
-                            </td>
-                            @endif
-                        </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endforeach
+                                @if($attachment->status == 1)
+                                <td colspan="2">
+                                    <b class="text-success">Confirmed</b><br>
+                                    {{$attachment->updated_at->format('d F Y (H:i)')}}<br>
+                                    Confirmed by <b>{{$attachment->confirmed_by_employee()->name}}</b>
+                                </td>
+                                @endif
+                                @if($attachment->status == -1)
+                                <td>
+                                    <b class="text-danger">Rejected</b><br>
+                                    {{$attachment->updated_at->format('d F Y (H:i)')}}<br>
+                                    by <b>{{$attachment->rejected_by_employee()->name}}</b><br>
+                                    Alasan : {{$attachment->reject_notes}}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Perbaikan</button>
+                                    <input class="inputFile" type="file" style="display:none;">
+                                    <div class="display_field mt-1"></div>
+                                    <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$attachment->id}},'attachment',this)">Upload File Perbaikan</button>
+                                </td>
+                                @endif
+                            </tr>
+                            @endforeach
+                            @foreach($item->ticket_item_file_requirement as $requirement)
+                            <tr>
+                                <td width="20%">{{$requirement->file_completement->name}}</td>
+                                <td width="30%" class="tdbreak"><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                                @if($requirement->status == 0)
+                                <td colspan="2">
+                                    <span class="text-warning">
+                                        Menunggu Proses Validasi Data
+                                    </span><br>
+                                    @if ($requirement->revised_by != null)
+                                        Revised by : <b>{{$requirement->revised_by_employee()->name}}</b>
+                                    @endif
+                                </td>
+                                @endif
+                                @if($requirement->status == 1)
+                                <td colspan="2">
+                                    <b class="text-success">Confirmed</b><br>
+                                    {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
+                                    Confirmed by <b>{{$requirement->confirmed_by_employee()->name}}</b>
+                                </td>
+                                @endif
+                                @if($requirement->status == -1)
+                                <td>
+                                    <b class="text-danger">Rejected</b><br>
+                                    {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
+                                    by <b>{{$requirement->rejected_by_employee()->name}}</b><br>
+                                    Alasan : {{$requirement->reject_notes}}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Perbaikan</button>
+                                    <input class="inputFile" type="file" style="display:none;">
+                                    <div class="display_field mt-1"></div>
+                                    <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$requirement->id}},'file',this)">Upload File Perbaikan</button>
+                                </td>
+                                @endif
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endforeach
+                @endif
             </div>
         </div>
         <div class="col-md-12 box p-3 mt-3">
@@ -200,8 +298,49 @@
             </table>
             @if($ticket->ba_vendor_filename != null && $ticket->ba_vendor_filepath != null)
                 <b> Berita Acara </b><br>
-                <a href="/storage/{{$ticket->ba_vendor_filepath}}" download="{{$ticket->ba_vendor_filename}}">{{$ticket->ba_vendor_filename}}</a>
-
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <td width="20%">Berita acara untuk pengajuan dengan satu vendor</td>
+                                    <td width="30%" class="tdbreak"><a href="/storage/{{$ticket->ba_vendor_filepath}}" download="{{$ticket->ba_vendor_filename}}">tampilkan attachment</a></td>
+                                    @if($ticket->ba_status == 0)
+                                    <td colspan="2">
+                                        <span class="text-warning">
+                                            Menunggu Proses Validasi Data
+                                        </span><br>
+                                        @if ($ticket->ba_revised_by != null)
+                                            Revised by : <b>{{$ticket->ba_revised_by_employee()->name}}</b>
+                                        @endif
+                                    </td>
+                                    @endif
+                                    @if($ticket->ba_status == 1)
+                                    <td colspan="2">
+                                        <b class="text-success">Confirmed</b><br>
+                                        {{$ticket->updated_at->format('d F Y (H:i)')}}<br>
+                                        Confirmed by <b>{{$ticket->ba_confirmed_by_employee()->name}}</b>
+                                    </td>
+                                    @endif
+                                    @if($ticket->ba_status == -1)
+                                    <td>
+                                        <b class="text-danger">Rejected</b><br>
+                                        {{$ticket->updated_at->format('d F Y (H:i)')}}<br>
+                                        by <b>{{$ticket->ba_rejected_by_employee()->name}}</b><br>
+                                        Alasan : {{$ticket->ba_reject_notes}}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Perbaikan</button>
+                                        <input class="inputFile" type="file" style="display:none;">
+                                        <div class="display_field mt-1"></div>
+                                        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$ticket->id}},'vendor',this)">Upload File Perbaikan</button>
+                                    </td>
+                                    @endif
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             @endif
         </div>
         @if ($ticket->ticket_additional_attachment->count() > 0)
@@ -212,16 +351,16 @@
                 @endforeach
             </div>
         @endif
-    </div>
-    
-    <div class="col-md-12  mb-3">
-        <div class="font-weight-bold h5">Urutan Otorisasi</div>
-        <div class="authorization_list_field row row-cols-md-3 row-cols-2 p-3">
-            @foreach ($ticket->ticket_authorization as $author)
-                <div class="mb-3"><span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee->employee_position->name}}</span><br><span>{{$author->as}}</span></div>
-            @endforeach
+        <div class="col-md-12 box p-3 my-3">
+            <div class="font-weight-bold h5">Urutan Otorisasi</div>
+            <div class="authorization_list_field row row-cols-md-3 row-cols-2 p-3">
+                @foreach ($ticket->ticket_authorization as $author)
+                    <div class="mb-3"><span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee->employee_position->name}}</span><br><span>{{$author->as}}</span></div>
+                @endforeach
+            </div>
         </div>
     </div>
+    
 
     <div class="d-flex justify-content-center mt-3 bottom_action">
         @if ($ticket->status == 1)
@@ -324,16 +463,19 @@
         $(el).closest('td').find('.inputFile').click();
     }
 
-    function uploadfile(requirement_id,el){
+    function uploadfile(id,type,el){
         let linkfile = $(el).closest('td').find('.revision_file');
         if(linkfile.length == 0){
             alert('Silahkan pilih file revisi untuk di upload terlebih dahulu');
         }else{
             let inputfield = $('#uploadrevisionform').find('.input_field');
             let file = linkfile.prop('href');
+            let filename = linkfile.text().trim();
             inputfield.empty();
-            inputfield.append('<input type="hidden" name="ticket_file_requirement_id" value="' + requirement_id + '">');
+            inputfield.append('<input type="hidden" name="id" value="' + id + '">');
+            inputfield.append('<input type="hidden" name="type" value="' + type + '">');
             inputfield.append('<input type="hidden" name="file" value="'+file+'">');
+            inputfield.append('<input type="hidden" name="filename" value="'+filename+'">');
             $('#uploadrevisionform').submit();
         }
     }

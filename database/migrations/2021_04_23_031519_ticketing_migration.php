@@ -39,8 +39,18 @@ class TicketingMigration extends Migration
             // 1 waiting for authorization / authorization started
             // 2 finished authorization / waiting for bidding
             // 3 terminated / cancelled
+            
             $table->string('ba_vendor_filename')->nullable();
             $table->string('ba_vendor_filepath')->nullable();
+            $table->tinyInteger('ba_status')->default(0);
+            // 0 Pending
+            // 1 Approved
+            // -1 need revision
+            $table->string('ba_reject_notes')->nullable();
+            $table->integer('ba_rejected_by')->nullable();
+            $table->integer('ba_revised_by')->nullable();
+            $table->integer('ba_confirmed_by')->nullable();
+
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('authorization_id')->references('id')->on('authorization');
             $table->foreign('created_by')->references('id')->on('employee');
@@ -72,6 +82,14 @@ class TicketingMigration extends Migration
             $table->bigInteger('ticket_item_id')->unsigned();
             $table->string('name');
             $table->string('path');
+            $table->tinyInteger('status')->default(0);
+            // 0 Pending
+            // 1 Approved
+            // -1 need revision
+            $table->string('reject_notes')->nullable();
+            $table->integer('rejected_by')->nullable();
+            $table->integer('revised_by')->nullable();
+            $table->integer('confirmed_by')->nullable();
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->timestamps();
         });
@@ -89,6 +107,7 @@ class TicketingMigration extends Migration
             $table->string('reject_notes')->nullable();
             $table->integer('rejected_by')->nullable();
             $table->integer('revised_by')->nullable();
+            $table->integer('confirmed_by')->nullable();
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->timestamps();
         });

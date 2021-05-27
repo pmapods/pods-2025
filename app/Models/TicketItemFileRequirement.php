@@ -30,4 +30,11 @@ class TicketItemFileRequirement extends Model
             return null;
         }
     }
+    public function confirmed_by_employee(){
+        if($this->confirmed_by != null){
+            return Employee::find($this->confirmed_by);
+        }else{
+            return null;
+        }
+    }
 }

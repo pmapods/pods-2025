@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\TicketItem;
 use App\Models\TicketItemFileRequirement;
+use App\Models\TicketItemAttachment;
 use Auth;
 
 class BiddingController extends Controller
@@ -26,10 +27,24 @@ class BiddingController extends Controller
 
     public function confirmFileRequirement(Request $request){
         try{
-            $requirement = TicketItemFileRequirement::findOrFail($request->ticket_file_requirement_id);
-            $requirement->status = 1;
-            $requirement->save();
-            return back()->with('success','Berhasil melakukan apprconfirmove kelengkapan');
+            if($request->type == 'file'){
+                $item = TicketItemFileRequirement::findOrFail($request->id);
+            }else if($request->type == 'attachment'){
+                $item = TicketItemAttachment::findOrFail($request->id);
+            }else{
+                // ba_vendor
+                $ticket = Ticket::findOrFail($request->id);
+            }
+            if($request->type == 'vendor'){
+                $ticket->ba_status = 1;
+                $ticket->ba_confirmed_by = Auth::user()->id;
+                $ticket->save();
+            }else{
+                $item->status = 1;
+                $item->confirmed_by = Auth::user()->id;
+                $item->save();
+            }
+            return back()->with('success','Berhasil melakukan confirm kelengkapan');
         }catch(Exception $ex){
             return back()->with('error','Gagal melakukan confirm kelengkapan');
         }
@@ -37,11 +52,28 @@ class BiddingController extends Controller
 
     public function rejectFileRequirement(Request $request){
         try{
-            $requirement = TicketItemFileRequirement::findOrFail($request->ticket_file_requirement_id);
-            $requirement->status = -1;
-            $requirement->rejected_by = Auth::user()->id;
-            $requirement->reject_notes = $request->reason;
-            $requirement->save();
+            if($request->type == 'file'){
+                // file
+                $item = TicketItemFileRequirement::findOrFail($request->id);
+            }else if($request->type == 'attachment'){
+                // attachment
+                $item = TicketItemAttachment::findOrFail($request->id);
+            }else{
+                // ba_vendor
+                $ticket = Ticket::findOrFail($request->id);
+            }
+            
+            if ($request->type == 'vendor') {
+                $ticket->ba_status = -1;
+                $ticket->ba_rejected_by = Auth::user()->id;
+                $ticket->ba_reject_notes = $request->reason;
+                $ticket->save();
+            }else{
+                $item->status = -1;
+                $item->rejected_by = Auth::user()->id;
+                $item->reject_notes = $request->reason;
+                $item->save();
+            }
             return back()->with('success','Berhasil melakukan reject kelengkapan');
         }catch(Exception $ex){
             return back()->with('error','Gagal melakukan reject kelengkapan');

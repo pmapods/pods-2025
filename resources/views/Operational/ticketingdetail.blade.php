@@ -531,7 +531,7 @@
             let attachments_link = '-';
             item.attachments.forEach(function(attachment,i){
                 if(i==0) attachments_link = "";
-                attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">tampilkan attachment</a><br>';
+                attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><br>';
             });
             let files_data = [];
             item.files.forEach(function(file,i){
@@ -571,20 +571,6 @@
         ticket_additional_attachments.forEach(function(attachment,index){
             $('#attachment_list').append('<div><a class="opt_attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">tampilkan attachment</a><span class="remove_attachment">X</span></div>')
         });
-        // draftbutton
-        // startauthorizationbutton
-        // rejectbutton
-        // approvebutton
-        // if(ticket['status'] == 1){
-        //     $('#draftbutton').hide();
-        //     $('#startauthorizationbutton').hide();
-        // }
-        // if(current_auth){
-        //     if(user['id'] == current_auth['employee_id']){
-        //         $('#rejectbutton').show();
-        //         $('#approvebutton').show();
-        //     }
-        // }
     });
     function deleteTicket(){
         $('#deleteform').submit();

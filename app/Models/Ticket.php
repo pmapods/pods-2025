@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Employee;
 class Ticket extends Model
 {
     use SoftDeletes;
@@ -152,6 +152,28 @@ class Ticket extends Model
             array_push($data,$ticket_vendor);
         }
         return $data;
+    }
+
+    public function ba_rejected_by_employee(){
+        if($this->ba_rejected_by != null){
+            return Employee::find($this->ba_rejected_by);
+        }else{
+            return null;
+        }
+    }
+    public function ba_revised_by_employee(){
+        if($this->ba_rejected_by != null){
+            return Employee::find($this->ba_revised_by);
+        }else{
+            return null;
+        }
+    }
+    public function ba_confirmed_by_employee(){
+        if($this->ba_confirmed_by != null){
+            return Employee::find($this->ba_confirmed_by);
+        }else{
+            return null;
+        }
     }
 
 }

@@ -12,13 +12,13 @@ use App\Models\Vendor;
 use App\Models\Ticket;
 use App\Models\TicketItem;
 use App\Models\TicketItemAttachment;
+use App\Models\TicketItemFileRequirement;
 use App\Models\TicketVendor;
 use App\Models\Authorization;
 use App\Models\TicketAuthorization;
 use App\Models\TicketAdditionalAttachment;
 use App\Models\FileCategory;
 use App\Models\FileCompletement;
-use App\Models\TicketItemFileRequirement;
 use Auth;
 use DB;
 use Storage;
@@ -119,10 +119,12 @@ class TicketingController extends Controller
                 $ticket->code = 'draft_'.date('ymdHi').$ticket->id;
             }
             if($request->ba_vendor_name != null && $request->ba_vendor_file != null){
-                $ticket->ba_vendor_filename = $request->ba_vendor_name;
-                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/'.$request->ba_vendor_name;
+                $salespointname = str_replace(' ','_',$ticket->salespoint->name);
+                $ext = pathinfo($request->ba_vendor_name, PATHINFO_EXTENSION);
+                $ticket->ba_vendor_filename = "berita_acara_vendor_".$salespointname.'.'.$ext;
+                $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/'.$ticket->ba_vendor_filename;
                 
-                if(str_contains($request->ba_vendor_file, 'http')){
+                if(!str_contains($request->ba_vendor_file, 'base64,')){
                     // url
                     $file = Storage::disk('public')->get(explode('storage',$request->ba_vendor_file)[1]);
                     Storage::disk('public')->put($path, $file);
@@ -218,9 +220,12 @@ class TicketingController extends Controller
                         foreach($item["attachments"] as $attachment){
                             $newAttachment = new TicketItemAttachment;
                             $newAttachment->ticket_item_id = $newTicketItem->id;
-                            $newAttachment->name = $attachment['filename'];
-                            $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$newTicketItem->id.'/'.$attachment['filename'];
-                            if(str_contains($attachment['file'], 'http')){
+                            $salespointname = str_replace(' ','_',$ticket->salespoint->name);
+                            $filename = pathinfo($attachment['filename'], PATHINFO_FILENAME);
+                            $ext = pathinfo($attachment['filename'], PATHINFO_EXTENSION);
+                            $newAttachment->name = $filename.'_'.$salespointname.'.'.$ext;
+                            $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$newTicketItem->id.'/'.$newAttachment->name;
+                            if(!str_contains($attachment['file'], 'base64,')){
                                 $file = Storage::disk('public')->get(explode('storage',$attachment['file'])[1]);
                                 Storage::disk('public')->put($path, $file);
                             }else{
@@ -244,7 +249,7 @@ class TicketingController extends Controller
                             $newfile->file_completement_id  = $filereq['file_completement_id'];
                             $newfile->name                  = $name;
                             $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/item'.$newTicketItem->id.'/files/'.$name;
-                            if(str_contains($filereq['file'], 'http')){
+                            if(!str_contains($filereq['file'], 'base64,')){
                                 $file = Storage::disk('public')->get(explode('storage',$filereq['file'])[1]);
                                 Storage::disk('public')->put($path, $file);
                             }else{
@@ -365,7 +370,7 @@ class TicketingController extends Controller
             if(isset($request->opt_attach)){
                 foreach($request->opt_attach as $attach){
                     $path = '/attachments/ticketing/barangjasa/'.$ticket->code.'/optional_attachment/'.$attach['name'];
-                    if(str_contains($attach['file'], 'http')){
+                    if(!str_contains($attach['file'], 'base64,')){
                         // url
                         $replaced = str_replace('%20', ' ', explode('storage',$attach['file'])[1]);;
                         $file = Storage::disk('public')->get($replaced);
@@ -555,14 +560,42 @@ class TicketingController extends Controller
     }
     
     public function uploadFileRevision(Request $request){
+        // dd($request);
         try{
             DB::beginTransaction();
-            $requirement = TicketItemFileRequirement::findOrFail($request->ticket_file_requirement_id);
-            $requirement->status = 0;
-            $requirement->revised_by = Auth::user()->id;
-            $requirement->save();
-            $file = explode('base64,',$request->file)[1];
-            Storage::disk('public')->put($requirement->path, base64_decode($file));
+            if($request->type == 'file'){
+                // file
+                $ticketitem = TicketItemFileRequirement::findOrFail($request->id);
+            }else if($request->type == 'attachment'){
+                // attachment
+                $ticketitem = TicketItemAttachment::findOrFail($request->id);
+            }else{
+                // vendor
+                $ticket = Ticket::findOrFail($request->id);
+            }
+            if($request->type == 'vendor'){
+                $ticket->ba_status      = 0;
+                $ticket->ba_revised_by  = Auth::user()->id;
+                $ticket->save();
+                $file = explode('base64,',$request->file)[1];
+                $newfilename = pathinfo($ticket->ba_vendor_filename, PATHINFO_FILENAME).'.'.pathinfo($request->filename, PATHINFO_EXTENSION);
+                $path = str_replace($ticket->ba_vendor_filename,$newfilename,$ticket->ba_vendor_filepath);
+                $ticket->ba_vendor_filename = $newfilename;
+                $ticket->ba_vendor_filepath = $path;
+                $ticket->save();
+                Storage::disk('public')->put($ticket->ba_vendor_filepath, base64_decode($file));
+            }else{
+                $ticketitem->status = 0;
+                $ticketitem->revised_by = Auth::user()->id;
+                $ticketitem->save();
+                $file = explode('base64,',$request->file)[1];
+                $newfilename = pathinfo($ticketitem->name, PATHINFO_FILENAME).'.'.pathinfo($request->filename, PATHINFO_EXTENSION);
+                $path = str_replace($ticketitem->name,$newfilename,$ticketitem->path);
+                $ticketitem->name = $newfilename;
+                $ticketitem->path = $path;
+                $ticketitem->save();
+                Storage::disk('public')->put($ticketitem->path, base64_decode($file));
+            }
             DB::commit();
             return back()->with('success','Berhasil melakukan revisi upload file');
         }catch(Exception $ex){
