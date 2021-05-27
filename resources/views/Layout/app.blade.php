@@ -43,6 +43,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </li>
     </ul>
     <style>
+      marquee{
+        width: 55vw !important;
+      }
       marquee span{
         color: #ffffff;
         font-size: 2em !important;
@@ -50,7 +53,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       }
     </style>
     <ul class="navbar-nav ml-auto">
-      <marquee width="1000" scrolldelay="60" vspace="0">
+      <marquee scrolldelay="60" vspace="0">
         <span>WEB PURCHASING</span>
       </marquee>
     </ul>
