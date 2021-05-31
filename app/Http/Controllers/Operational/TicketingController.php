@@ -170,13 +170,15 @@ class TicketingController extends Controller
             }
             // get all files from request
             $allfiles =[];
-            foreach($request->item as $item){
-                if(isset($item['files'])){
-                    foreach($item['files'] as $file){
-                        if($file['id'] != "undefined"){
-                            array_push($allfiles,$file);
-                        }
-                    } 
+            if(count($request->item) > 0){
+                foreach($request->item as $item){
+                    if(isset($item['files'])){
+                        foreach($item['files'] as $file){
+                            if($file['id'] != "undefined"){
+                                array_push($allfiles,$file);
+                            }
+                        } 
+                    }
                 }
             }
             $deleted_files = array_diff($registered_file_id,collect($allfiles)->pluck('id')->toArray());

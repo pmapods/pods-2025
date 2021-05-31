@@ -38,10 +38,11 @@ class EmployeeSeeder extends Seeder
             $newEmployee->employee_position_id   = 4;
             $newEmployee->code                   = $code;
             $newEmployee->name                   = $grom;
-            $newEmployee->username               = 'grom'.$key;
+            $newEmployee->username               = 'grom'.($key+1);
             $newEmployee->email                  = $faker->email();
-            $newEmployee->password               = Hash::make('12345678');
+            $newEmployee->password               = Hash::make($newEmployee->username);
             $newEmployee->phone                  = $faker->phoneNumber();
+            $newEmployee->is_password_changed    = true;
             $newEmployee->save();
 
             foreach(Salespoint::all() as $salespoint){
@@ -60,8 +61,9 @@ class EmployeeSeeder extends Seeder
         $newEmployee->name                   = 'Kevin Farel';
         $newEmployee->username               = 'staff1';
         $newEmployee->email                  = 'kevinfarel@gmail.com';
-        $newEmployee->password               = Hash::make('12345678');
+        $newEmployee->password               = Hash::make($newEmployee->username);
         $newEmployee->phone                  = $faker->phoneNumber();
+        $newEmployee->is_password_changed    = true;
         $newEmployee->save();
 
         foreach(Salespoint::all() as $salespoint){
@@ -79,8 +81,9 @@ class EmployeeSeeder extends Seeder
         $newEmployee->name                   = 'Julian';
         $newEmployee->username               = 'rom1';
         $newEmployee->email                  = 'julian@gmail.com';
-        $newEmployee->password               = Hash::make('12345678');
+        $newEmployee->password               = Hash::make($newEmployee->username);
         $newEmployee->phone                  = $faker->phoneNumber();
+        $newEmployee->is_password_changed    = true;
         $newEmployee->save();
 
         foreach(Salespoint::all() as $salespoint){

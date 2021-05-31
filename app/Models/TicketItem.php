@@ -31,4 +31,19 @@ class TicketItem extends Model
             return null;
         }
     }
+
+    public function isFilesChecked(){
+        $flag = true;
+        foreach($this->ticket_item_attachment as $attachment){
+            if($attachment->status != 1){
+                $flag = false;
+            }
+        }
+        foreach($this->ticket_item_file_requirement as $requirement){
+            if($requirement->status != 1){
+                $flag = false;
+            }
+        }
+        return $flag;
+    }
 }

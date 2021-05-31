@@ -81,7 +81,9 @@ class SalesPointController extends Controller
         }
     }
     public function getSalesAuthorization($salespoint_id) {
-        $authorizations = Authorization::where('salespoint_id',$salespoint_id)->get();
+        $authorizations = Authorization::where('salespoint_id',$salespoint_id)
+        ->where('form_type',0)
+        ->get();
         $data = array();
         foreach($authorizations as $authorization){
             $single_data = (object)[];

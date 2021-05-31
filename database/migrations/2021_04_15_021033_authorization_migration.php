@@ -15,10 +15,11 @@ class AuthorizationMigration extends Migration
     {
         Schema::create('authorization', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('salespoint_id')->unsigned();
+            // salespoint_id untuk form pengadaan
+            $table->integer('salespoint_id')->nullable();
             $table->tinyInteger('form_type')->default(0);
             // 0 form pengadaan
-            $table->foreign('salespoint_id')->references('id')->on('salespoint');
+            // 1 form bidding
             $table->timestamps();
         });
 

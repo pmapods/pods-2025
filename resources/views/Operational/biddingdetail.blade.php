@@ -137,7 +137,10 @@
                                 @endif
                             </td>
                             <td>
-                                <button type="button" class="btn btn-primary" onclick="openselectionvendor({{$item->id}})">Seleksi Vendor</button>
+                                <button type="button" 
+                                class="btn btn-primary" 
+                                onclick="openselectionvendor({{$item->id}})"
+                                @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
                             </td>
                         </tr>
                     @endforeach
