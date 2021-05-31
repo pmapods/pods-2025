@@ -109,6 +109,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/confirmticketfilerequirement',[BiddingController::class, 'confirmFileRequirement']);
         Route::patch('/rejectticketfilerequirement',[BiddingController::class, 'rejectFileRequirement']);
         Route::get('/bidding/{ticket_code}/{ticket_item_id}',[BiddingController::class, 'vendorSelectionView']);
+        Route::post('/addbiddingform',[BiddingController::class, 'addBiddingForm']);
 
         // Purchase Requisition
         Route::get('/pr',[PRController::class, 'prView']);

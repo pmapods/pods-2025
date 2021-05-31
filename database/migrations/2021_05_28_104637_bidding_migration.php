@@ -1,0 +1,115 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class BiddingMigration extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('bidding', function (Blueprint $table) {
+            $table->increments('id');
+            $table->bigInteger('ticket_id')->unsigned();
+            $table->bigInteger('ticket_item_id')->unsigned();
+            $table->string('product_name');
+            $table->string('salespoint_name');
+            $table->enum('group', ['asset', 'inventory', 'others']);
+            $table->string('other_name')->nullable();
+
+            $table->string('price_notes');
+            $table->string('ketersediaan_barang_notes');
+            $table->string('ketentuan_bayar_notes');
+            $table->string('others_notes');
+
+            $table->string('optional1_name')->nullable();
+            $table->string('optional2_name')->nullable();
+
+            $table->integer('authorization_id');
+            $table->tinyInteger('status')->default(0);
+            // -1 Rejected
+            // 0 Pending
+            // 1 Approved
+            $table->string('rejected_by')->nullable();
+            $table->string('reject_notes')->nullable();
+
+            $table->string('notes')->nullable();
+            $table->foreign('ticket_id')->references('id')->on('ticket');
+            $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('bidding_detail', function (Blueprint $table){
+            $table->increments('id');
+            $table->integer('bidding_id')->unsigned();
+            $table->bigInteger('ticket_vendor_id')->unsigned();
+            $table->string('address');
+            $table->double('start_harga');
+            $table->double('end_harga');
+            $table->double('start_ppn');
+            $table->double('end_ppn');
+            $table->double('start_ongkir_price');
+            $table->double('end_ongkir_price');
+            $table->double('start_pasang_price');
+            $table->double('end_pasang_price');
+            $table->tinyInteger('price_score');
+
+            $table->string("spesifikasi");
+            $table->string("ready");
+            $table->string("indent");
+            $table->string("garansi");
+            $table->string("bonus");
+            $table->tinyInteger('ketersediaan_barang_score');
+
+            $table->enum('creditcash',['credit','cash']);
+            $table->boolean('menerbitkan_faktur_pajak');
+            $table->tinyInteger('ketentuan_bayar_score');
+
+            $table->integer('masa_berlaku_penawaran');
+            $table->integer('start_lama_pengerjaan');
+            $table->integer('end_lama_pengerjaan');
+            $table->string('optional1_start')->nullable();
+            $table->string('optional1_end')->nullable();
+            $table->string('optional2_start')->nullable();
+            $table->string('optional2_end')->nullable();
+            $table->tinyInteger('others_score');
+            $table->foreign('bidding_id')->references('id')->on('bidding');
+            $table->foreign('ticket_vendor_id')->references('id')->on('ticket_vendor');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('bidding_authorization', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('bidding_id')->unsigned();
+            $table->integer('employee_id')->unsigned();
+            $table->string('employee_name');
+            $table->string('as');
+            $table->string('employee_position');
+            $table->tinyInteger('level');
+            $table->tinyInteger('status')->default(0);
+            // -1 terminate
+            // 0 pending
+            // 1 approved
+            $table->foreign('bidding_id')->references('id')->on('bidding');
+            $table->foreign('employee_id')->references('id')->on('employee');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+    }
+}
