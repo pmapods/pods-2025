@@ -17,9 +17,10 @@ use App\Http\Controllers\Masterdata\BudgetPricingController;
 use App\Http\Controllers\Masterdata\FileCompletementController;
 
 // Operational
-use App\Http\Controllers\Operational\PRController;
 use App\Http\Controllers\Operational\TicketingController;
 use App\Http\Controllers\Operational\BiddingController;
+use App\Http\Controllers\Operational\PRController;
+use App\Http\Controllers\Operational\POController;
 
 Route::get('/', function () {
     return redirect('login');
@@ -110,7 +111,14 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/rejectticketfilerequirement',[BiddingController::class, 'rejectFileRequirement']);
         Route::get('/bidding/{ticket_code}/{ticket_item_id}',[BiddingController::class, 'vendorSelectionView']);
         Route::post('/addbiddingform',[BiddingController::class, 'addBiddingForm']);
+        Route::patch('/approvebidding',[BiddingController::class, 'approveBidding']);
+        Route::patch('/rejectbidding',[BiddingController::class, 'rejectBidding']);
 
         // Purchase Requisition
         Route::get('/pr',[PRController::class, 'prView']);
+        Route::get('/pr/{ticket_code}',[PRController::class, 'prDetailView']);
+
+        // Purchase Order
+        Route::get('/po',[POController::class, 'poView']);
+        Route::get('/po/{ticket_code}',[POController::class, 'podetailView']);
 });

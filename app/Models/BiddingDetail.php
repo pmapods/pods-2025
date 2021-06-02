@@ -14,4 +14,8 @@ class BiddingDetail extends Model
     public function bidding(){
         return $this->belongsTo(Bidding::class);
     }
+
+    public function ticket_vendor(){
+        return $this->belongsTo(TicketVendor::class);
+    }
 }

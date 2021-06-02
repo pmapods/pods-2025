@@ -36,4 +36,8 @@ class TicketVendor extends Model
                 break;
         }
     }
+
+    public function bidding_detail(){
+        return $this->hasOne(BiddingDetail::class);
+    }
 }

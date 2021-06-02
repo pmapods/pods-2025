@@ -54,7 +54,7 @@
                     <td>{{ $authorization->salespoint->region_name() }}</td>
                     <td>{{ $authorization->authorization_detail->first()->employee->name }}</td>
                     <td>{{ $authorization->form_type_name() }}</td>
-                    <td>{{ $authorization->created_at->format('d F Y') }}</td>
+                    <td>{{ $authorization->created_at->translatedFormat('d F Y') }}</td>
                     <td>{{ $authorization->authorization_detail->count() }} Tingkat</td>
                 </tr>
                 @endforeach

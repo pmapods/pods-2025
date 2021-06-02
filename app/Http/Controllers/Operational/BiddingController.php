@@ -19,7 +19,7 @@ use DB;
 class BiddingController extends Controller
 {
     public function biddingView(){
-        $biddings = Ticket::where('status',2)->get();
+        $biddings = Ticket::whereIn('status',[2,3])->get();
         return view('Operational.bidding',compact('biddings'));
     }
 
@@ -91,16 +91,34 @@ class BiddingController extends Controller
         $ticket = Ticket::where('code',$ticket_code)->first();
         $authorizations = Authorization::where('form_type',1)->get();
         // validate kalo misal item sama form codenya sesuai
+        if($ticket_item->bidding){
+            $bidding = $ticket_item->bidding;
+            if($ticket_item->bidding->status == -1){
+                return view('Operational.vendorselection',compact('ticket_item','ticket','authorizations','bidding'));
+            }
+            return view('Operational.vendorselectionresult',compact('ticket_item','ticket','bidding'));
+        }
         return view('Operational.vendorselection',compact('ticket_item','ticket','authorizations'));
     }
 
     public function addBiddingForm(Request $request){
-        // dd($request);
         try {
             DB::beginTransaction();
             $ticket = Ticket::find($request->ticket_id);
             $ticket_item = TicketItem::find($request->ticket_item_id);
-            $newBidding                             = new Bidding;
+            if($ticket_item->bidding){
+                $newBidding = $ticket_item->bidding;
+                // remove old data on detail and authorization
+                foreach($newBidding->bidding_detail as $detail){
+                    $detail->delete();
+                }
+
+                foreach($newBidding->bidding_authorization as $authorization){
+                    $authorization->delete();
+                }
+            }else{
+                $newBidding                         = new Bidding;
+            }
             $newBidding->ticket_id                  = $request->ticket_id;    
             $newBidding->ticket_item_id             = $request->ticket_item_id;            
             $newBidding->product_name               = $ticket_item->name;        
@@ -113,7 +131,10 @@ class BiddingController extends Controller
             $newBidding->others_notes               = $request->keterangan_lain;        
             $newBidding->authorization_id           = $request->authorization_id;
             $newBidding->optional1_name             = $request->optional1_name;     
-            $newBidding->optional2_name             = $request->optional1_name;     
+            $newBidding->optional2_name             = $request->optional2_name;
+            $newBidding->status                     = 0;
+            $newBidding->rejected_by = null;
+            $newBidding->reject_notes = null;
             $newBidding->save();
 
             foreach($request->vendor as $vendor){
@@ -121,7 +142,7 @@ class BiddingController extends Controller
                 $newdetail                            = new BiddingDetail;
                 $newdetail->bidding_id                = $newBidding->id;    
                 $newdetail->ticket_vendor_id          = $selectedticketvendor->id;
-                $newdetail->address                   = ($selectedticketvendor->vendor_id) ? $selectedticketvendor->vendor_id : $vendor['address'];
+                $newdetail->address                   = ($selectedticketvendor->vendor_id) ? $selectedticketvendor->vendor()->address : $vendor['address'];
                 $newdetail->start_harga               = $vendor['harga_awal'];
                 $newdetail->end_harga                 = $vendor['harga_akhir'];
                 $newdetail->start_ppn                 = $vendor['ppn_awal'];
@@ -167,8 +188,75 @@ class BiddingController extends Controller
         } catch (Exception $ex) {
             DB::rollback();
             return redirect('/bidding/'.$ticket->code)->with('error','Gagal membuat form bidding. Silahkan coba kembali atau hubungi admin');
-            //throw $th;
         }
 
+    }
+
+    public function approveBidding(Request $request) {
+        $bidding = Bidding::find($request->bidding_id);
+        $bidding_authorization = BiddingAuthorization::find($request->bidding_authorization_id);
+        if($bidding_authorization->employee_id == Auth::user()->id){
+            $bidding_authorization->status = 1;
+            $bidding_authorization->save();
+            if($bidding->current_authorization() != null){
+                return redirect('/bidding/'.$bidding->ticket->code)->with('success','Otorisasi berhasil, menunggu otorisasi selanjutnya oleh '.$bidding->current_authorization()->employee->name);
+            }else{
+                $bidding->status = 1;
+                $bidding->save();
+                $isvalidated =  $this->validateBiddingDone($bidding->ticket->id);
+                if($isvalidated){
+                    return redirect('/bidding/'.$bidding->ticket->code)->with('success','Seluruh Otorisasi Bidding telah selesai, Silahkan melanjutkan proses di menu Purchase Requistion'); 
+                }
+                return redirect('/bidding/'.$bidding->ticket->code)->with('success','Otorisasi telah selesai');
+            }
+        }else{
+            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Otorisasi login tidak sesuai');
+        }
+    }
+
+    public function rejectBidding(Request $request) {
+        try {
+            DB::beginTransaction();
+            $bidding = Bidding::find($request->bidding_id);
+            $bidding_authorization = BiddingAuthorization::find($request->bidding_authorization_id);
+            if($bidding_authorization->employee_id == Auth::user()->id){
+                $bidding_authorization->status = -1;
+                $bidding_authorization->save();
+
+                $bidding_authorization->bidding->status = -1;
+                $bidding_authorization->bidding->rejected_by = Auth::user()->id;
+                $bidding_authorization->bidding->reject_notes = $request->reason;
+                $bidding_authorization->bidding->save();
+
+                DB::commit();
+                return redirect('/bidding/'.$bidding->ticket->code)->with('success','Berhasil melakukan reject form bidding. Silahkan melakukan pengajuan ulang');
+            }else{
+                 DB::rollback();
+                return redirect('/bidding/'.$bidding->ticket->code)->with('error','Otorisasi login tidak sesuai');
+            }
+        } catch (\Exception $ex) {
+            dd($ex);
+            DB::rollback();
+            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Reject form bidding gagal, silahkan coba kembali atau hubungi admin');
+        }
+    }
+
+    public function validateBiddingDone($ticket_id) {
+        $ticket = Ticket::findOrFail($ticket_id);
+        $flag = true;
+        foreach($ticket->ticket_item as $ticket_item){
+            if(isset($ticket_item->bidding)){
+                if($ticket_item->bidding->status != 1){
+                    $flag = false;
+                }
+            }else{
+                $flag = false;
+            }
+        }
+        if($flag){
+            $ticket->status = 3;
+            $ticket->save();
+        }
+        return $flag;
     }
 }

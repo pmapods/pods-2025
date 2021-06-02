@@ -38,7 +38,8 @@ class TicketingMigration extends Migration
             // 0 draft
             // 1 waiting for authorization / authorization started
             // 2 finished authorization / waiting for bidding
-            // 3 terminated / cancelled
+            // 3 finished bidding / ready for PR
+            // -1 terminated / cancelled
             
             $table->string('ba_vendor_filename')->nullable();
             $table->string('ba_vendor_filepath')->nullable();

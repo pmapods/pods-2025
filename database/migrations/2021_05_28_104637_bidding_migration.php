@@ -85,7 +85,7 @@ class BiddingMigration extends Migration
             $table->timestamps();
         });
 
-        Schema::create('bidding_authorization', function (Blueprint $table) {
+        Schema::create('bidding_authorization', function (Blueprint $table){
             $table->increments('id');
             $table->integer('bidding_id')->unsigned();
             $table->integer('employee_id')->unsigned();

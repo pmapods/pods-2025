@@ -54,7 +54,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </style>
     <ul class="navbar-nav ml-auto">
       <marquee scrolldelay="60" vspace="0">
-        <span>WEB PURCHASING</span>
+        <span>PMA-Purchase Order Digital System</span>
       </marquee>
     </ul>
     <!-- Right navbar links -->
@@ -193,6 +193,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <a href="/pr" class="nav-link">
                           <i class="fad fa-shopping-bag nav-icon"></i>
                           <p>Purchase Requisition</p>
+                      </a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="/po" class="nav-link">
+                          <i class="fad fa-shopping-cart nav-icon"></i>
+                          <p>Purchase Order</p>
                       </a>
                   </li>
               </ul>

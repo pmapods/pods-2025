@@ -10,10 +10,10 @@ class BiddingAuthorization extends Model
     protected $primaryKey = 'id';
 
     public function bidding(){
-        $this->belongsTo(Bidding::class);
+        return $this->belongsTo(Bidding::class);
     }
 
     public function employee(){
-        $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class);
     }
 }

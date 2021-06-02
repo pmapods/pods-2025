@@ -50,7 +50,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label class="required_field">Tanggal Pengajuan</label>
-                <input type="date" class="form-control created_date" value="{{now()->format('Y-m-d')}}" disabled>
+                <input type="date" class="form-control created_date" value="{{now()->translatedFormat('Y-m-d')}}" disabled>
                 <small class="text-danger">* tanggal pengajuan yang tercatat adalah tanggal sistem saat otorisasi dimulai</small>
             </div>
         </div>

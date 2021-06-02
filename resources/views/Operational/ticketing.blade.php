@@ -33,7 +33,6 @@
                     <th>Kode</th>
                     <th>Tanggal Pengajuan</th>
                     <th>Nama Pembuat Form</th>
-                    <th>Nama Pengaju</th>
                     <th>Area</th>
                     <th>Keterangan</th>
                     <th>Tanggal Pengadaan</th>
@@ -47,15 +46,10 @@
                     <tr data-id="{{$ticket->id}}">
                         <td>{{$count+=1}}</td>
                         <td>{{$ticket->code}}</td>
-                        <td>{{$ticket->created_at->format('d F Y (H:i)')}}</td>
+                        <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
                         <td>
                             @if (isset($ticket->created_by))
                                 {{$ticket->created_by_employee->name}}
-                            @endif
-                        </td>
-                        <td>
-                            @if (isset($ticket->authorization_id))
-                                {{$ticket->ticket_authorization->sortBy('level')->first()->employee_name }}
                             @endif
                         </td>
                         <td>
@@ -80,7 +74,7 @@
                         </td>
                         <td>
                             @if (isset($ticket->requirement_date))
-                                {{$ticket->requirement_date}}
+                                {{\Carbon\Carbon::parse($ticket->requirement_date)->translatedFormat('d F Y')}}
                             @endif
                         </td>
                         <td>{{$ticket->status()}}</td>

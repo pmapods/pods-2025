@@ -52,8 +52,7 @@
         <div class="d-flex flex-row">
             <img src="assets/logo.png" width="100" alt="">
             <div class="d-flex flex-column justify-content-center text-light">
-                <span class="h2">Pinus Merah Abadi</span>
-                <span class="h3">(Purchasing)</span>
+                <span class="display-4">PMA-PODS</span>
             </div>
         </div>
     </div>

@@ -58,8 +58,8 @@
                     <td>{{$bid->code}}</td>
                     <td>{{$bid->created_by_employee->name}}</td>
                     <td>{{$bid->salespoint->name}}</td>
-                    <td>{{$bid->updated_at->format('d F Y (H:i)')}}</td>
-                    <td>{{\Carbon\Carbon::parse($bid->requirement_date)->format('d F Y')}}</td>
+                    <td>{{$bid->updated_at->translatedFormat('d F Y (H:i)')}}</td>
+                    <td>{{\Carbon\Carbon::parse($bid->requirement_date)->translatedFormat('d F Y')}}</td>
                 </tr>
                 @endforeach
             </tbody>

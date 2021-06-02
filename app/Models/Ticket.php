@@ -94,6 +94,10 @@ class Ticket extends Model
                 break;
                 
             case '3':
+                return 'Bidding Selesai / Menunggu Proses PR';
+                break;
+                
+            case '-1':
                 return 'Batal';
                 break;
             

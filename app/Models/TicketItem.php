@@ -46,4 +46,8 @@ class TicketItem extends Model
         }
         return $flag;
     }
+
+    public function bidding(){
+        return $this->hasOne(Bidding::class);
+    }
 }

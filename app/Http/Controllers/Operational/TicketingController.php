@@ -423,14 +423,14 @@ class TicketingController extends Controller
             ->withTrashed()
             ->count();
             do {
-                $code = "PCD-".now()->format('ymd').'-'.str_repeat("0", 4-strlen($count_ticket+1)).($count_ticket+1);
+                $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($count_ticket+1)).($count_ticket+1);
                 $count_ticket++;
                 $checkticket = Ticket::where('code',$code)->first();
                 ($checkticket)? $flag = false : $flag = true;
             } while (!$flag);
             $old_code               = $ticket->code;
             $ticket->code           = $code;
-            $ticket->created_at     = Carbon::now()->format('Y-m-d H:i:s');
+            $ticket->created_at     = Carbon::now()->translatedFormat('Y-m-d H:i:s');
             $ticket->created_by     = Auth::user()->id;
             $ticket->status = 1;
             // cari oper semua path kode lama ke kode baru

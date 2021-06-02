@@ -35,11 +35,11 @@
                 <tbody>
                     <tr>
                         <td><b>Tanggal Pengajuan</b></td>
-                        <td>{{$ticket->updated_at->format('d F Y (H:i)')}}</td>
+                        <td>{{$ticket->updated_at->translatedFormat('d F Y (H:i)')}}</td>
                     </tr>
                     <tr>
                         <td><b>Tanggal Pengadaan</b></td>
-                        <td>{{\Carbon\Carbon::parse($ticket->requirement_date)->format('d F Y')}}</td>
+                        <td>{{\Carbon\Carbon::parse($ticket->requirement_date)->translatedFormat('d F Y')}}</td>
                     </tr>
                     <tr>
                         <td><b>Salespoint</b></td>
@@ -137,10 +137,30 @@
                                 @endif
                             </td>
                             <td>
-                                <button type="button" 
-                                class="btn btn-primary" 
-                                onclick="openselectionvendor({{$item->id}})"
-                                @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
+                                @if($item->bidding)
+                                    @if($item->bidding->status == 0 || $item->bidding->status ==1)
+                                        <button type="button" class="btn btn-primary mb-3" onclick="openselectionvendor({{$item->id}})">Tampilkan form seleksi</button><br>
+
+                                        <b>Status Otorisasi</b><br>
+                                        @if($item->bidding->status==0)
+                                            Menunggu Otorisasi oleh <b>{{$item->bidding->current_authorization()->employee->name}}</b>
+                                        @endif
+                                        @if($item->bidding->status==1)
+                                            Otorisasi selesai -- {{$item->bidding->updated_at->translatedFormat('d F Y (H:i)')}}
+                                        @endif
+                                    @endif
+
+                                    @if($item->bidding->status == -1)
+                                        <button type="button" class="btn btn-primary mb-3" onclick="openselectionvendor({{$item->id}})">Revisi form seleksi</button><br>
+
+                                        Otorisasi ditolak oleh <b>{{$item->bidding->rejected_by_employee()->name}}</b><br>
+                                        Alasan : {{$item->bidding->reject_notes}}
+                                    @endif
+                                @else
+                                    <button type="button" class="btn btn-primary" onclick="openselectionvendor({{$item->id}})"
+                                    @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
+                                @endif
+                                
                             </td>
                         </tr>
                     @endforeach
@@ -194,14 +214,14 @@
                                 @if($attachment->status == 1)
                                 <td colspan="2">
                                     <b class="text-success">Confirmed</b><br>
-                                    {{$attachment->updated_at->format('d F Y (H:i)')}}
+                                    {{$attachment->updated_at->translatedFormat('d F Y (H:i)')}}
                                     confirmed by <b>{{$attachment->confirmed_by_employee()->name}}</b>
                                 </td>
                                 @endif 
                                 @if($attachment->status == -1)
                                 <td colspan="2">
                                     <b class="text-danger">Rejected</b><br>
-                                    {{$attachment->updated_at->format('d F Y (H:i)')}}<br>
+                                    {{$attachment->updated_at->translatedFormat('d F Y (H:i)')}}<br>
                                     by <b>{{$attachment->rejected_by_employee()->name}}</b><br>
                                     Alasan : {{$attachment->reject_notes}}
                                 </td>
@@ -221,14 +241,14 @@
                                 @if($requirement->status == 1)
                                 <td colspan="2">
                                     <b class="text-success">Confirmed</b><br>
-                                    {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
+                                    {{$requirement->updated_at->translatedFormat('d F Y (H:i)')}}<br>
                                     confirmed by <b>{{$requirement->confirmed_by_employee()->name}}</b>
                                 </td>
                                 @endif 
                                 @if($requirement->status == -1)
                                 <td colspan="2">
                                     <b class="text-danger">Rejected</b><br>
-                                    {{$requirement->updated_at->format('d F Y (H:i)')}}<br>
+                                    {{$requirement->updated_at->translatedFormat('d F Y (H:i)')}}<br>
                                     by <b>{{$attachment->rejected_by_employee()->name}}</b><br>
                                     Alasan : {{$requirement->reject_notes}}
                                 </td>
@@ -284,14 +304,14 @@
                 @if($ticket->ba_status == 1)
                 <div>
                     <b class="text-success">Confirmed</b><br>
-                    {{$ticket->updated_at->format('d F Y (H:i)')}}
+                    {{$ticket->updated_at->translatedFormat('d F Y (H:i)')}}
                     confirmed by <b>{{$ticket->ba_confirmed_by_employee()->name}}</b>
                 </div>
                 @endif 
                 @if($ticket->ba_status == -1)
                 <div>
                     <b class="text-danger">Rejected</b><br>
-                    {{$ticket->updated_at->format('d F Y (H:i)')}}<br>
+                    {{$ticket->updated_at->translatedFormat('d F Y (H:i)')}}<br>
                     rejected by <b>{{$ticket->ba_rejected_by_employee()->name}}</b><br>
                     Alasan : {{$ticket->ba_reject_notes}}
                 </div>
