@@ -20,6 +20,10 @@ class Employee extends Authenticatable
     	return $this->hasMany(EmployeeLocationAccess::class);
     }
 
+    public function menu_access(){
+        return $this->hasOne(EmployeeMenuAccess::class);
+    }
+
     public function statusName(){
         switch ($this->status){
             case 0:

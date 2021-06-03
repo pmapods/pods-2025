@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\EmployeePosition;
 use App\Models\Employee;
 use App\Models\EmployeeLocationAccess;
+use App\Models\EmployeeMenuAccess;
 use App\Models\SalesPoint;
 use Hash;
 
@@ -41,5 +42,11 @@ class SuperAdminSeeder extends Seeder
             $newAccess->salespoint_id = $salespoint->id;
             $newAccess->save();
         }
+        
+        $access = new EmployeeMenuAccess;
+        $access->employee_id = $employee->id;
+        $access->masterdata = 255;
+        $access->operational = 15;
+        $access->save();
     }
 }

@@ -15,7 +15,7 @@ class isSuperAdmin
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, $menu)
     {
         // check if its superadmin
         if(Auth::user()->id == 1){

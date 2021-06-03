@@ -42,57 +42,73 @@ Route::middleware(['auth'])->group(function () {
     });
     
     Route::get('/dashboard',[DashboardController::class, 'dashboardView']);
-    Route::middleware(['superadmin'])->group(function () {
-        // MASTERDATA
-            // Employee Postion
-            Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
-            Route::post('/addPosition',[EmployeeController::class, 'addEmployeePosition']);
-            Route::patch('/updatePosition',[EmployeeController::class, 'updateEmployeePosition']);
-            Route::delete('/deletePosition',[EmployeeController::class, 'deleteEmployeePosition']);
-        
-            // Employee
-            Route::get('/employee',[EmployeeController::class, 'employeeView']);
-            Route::post('/addEmployee',[EmployeeController::class, 'addEmployee']);
-            Route::patch('/updateEmployee',[EmployeeController::class, 'updateEmployee']);
-            Route::delete('/deleteEmployee',[EmployeeController::class, 'deleteEmployee']);
-            Route::patch('/nonactiveemployee',[EmployeeController::class, 'nonactiveEmployee']);
-            Route::patch('/activeemployee',[EmployeeController::class, 'activeEmployee']);
-        
-            // Employee Access
-            Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
-            Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
-            Route::patch('/updateemployeeaccessdetail',[EmployeeAccessController::class, 'updateemployeeaccessdetail']);
-    
-            // Sales Point
-            Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
-            Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
-            Route::patch('/updatesalespoint',[SalesPointController::class, 'updateSalesPoint']);
-            Route::delete('/deletesalespoint',[SalesPointController::class, 'deleteSalesPoint']);
-        
-            // Authorization
-            Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
-            Route::get('/getauthorizedemployeebysalesPoint/{salespoint_id}',[AuthorizationController::class,'AuthorizedEmployeeBySalesPoint']);
-            Route::post('/addauthorization',[AuthorizationController::class, 'addAuthorization']);
-            Route::patch('/updateauthorization',[AuthorizationController::class, 'updateAuthorization']);
-            Route::delete('/deleteauthorization',[AuthorizationController::class, 'deleteAuthorization']);
-        
-            // VENDOR
-            Route::get('/vendor',[VendorController::class, 'vendorView']);
-            Route::post('/addvendor',[VendorController::class, 'addVendor']);
-            Route::patch('/updatevendor',[VendorController::class, 'updateVendor']);
-            Route::delete('/deletevendor',[VendorController::class, 'deleteVendor']);
-        
-            // Budget Pricing
-            Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
-            Route::post('/addbudget',[BudgetPricingController::class, 'addBudget']);
-            Route::patch('/updatebudget',[BudgetPricingController::class, 'updateBudget']);
-            Route::delete('/deletebudget',[BudgetPricingController::class, 'deleteBudget']);
-
-            // Kelengkapan berkas
-            Route::get('/filecompletement',[FileCompletementController::class, 'fileCompletementView']);
+    // MASTERDATA
+    // Employee Postion
+    Route::middleware(['menu_access:masterdata:1'])->group(function () {
+        Route::get('/employeeposition',[EmployeeController::class, 'employeepostitionView']);
+        Route::post('/addPosition',[EmployeeController::class, 'addEmployeePosition']);
+        Route::patch('/updatePosition',[EmployeeController::class, 'updateEmployeePosition']);
+        Route::delete('/deletePosition',[EmployeeController::class, 'deleteEmployeePosition']);
     });
+
+    // Employee
+    Route::middleware(['menu_access:masterdata:2'])->group(function () {
+        Route::get('/employee',[EmployeeController::class, 'employeeView']);
+        Route::post('/addEmployee',[EmployeeController::class, 'addEmployee']);
+        Route::patch('/updateEmployee',[EmployeeController::class, 'updateEmployee']);
+        Route::delete('/deleteEmployee',[EmployeeController::class, 'deleteEmployee']);
+        Route::patch('/nonactiveemployee',[EmployeeController::class, 'nonactiveEmployee']);
+        Route::patch('/activeemployee',[EmployeeController::class, 'activeEmployee']);
+    });
+    
+    // Sales Point
+    Route::middleware(['menu_access:masterdata:4'])->group(function () {
+        Route::get('/salespoint',[SalesPointController::class, 'salespointView']);
+        Route::post('/addsalespoint',[SalesPointController::class, 'addSalesPoint']);
+        Route::patch('/updatesalespoint',[SalesPointController::class, 'updateSalesPoint']);
+        Route::delete('/deletesalespoint',[SalesPointController::class, 'deleteSalesPoint']);
+    });
+
+    // Employee Access
+    Route::middleware(['menu_access:masterdata:8'])->group(function () {
+        Route::get('/employeeaccess',[EmployeeAccessController::class, 'employeeaccessView']);
+        Route::get('/employeeaccess/{employee_code}',[EmployeeAccessController::class, 'employeeaccessdetailView']);
+        Route::patch('/updateemployeeaccessdetail',[EmployeeAccessController::class, 'updateemployeeaccessdetail']);
+    });
+
+    // Authorization
+    Route::middleware(['menu_access:masterdata:16'])->group(function () {
+        Route::get('/authorization',[AuthorizationController::class, 'authorizationView']);
+        Route::get('/getauthorizedemployeebysalesPoint/{salespoint_id}',[AuthorizationController::class,'AuthorizedEmployeeBySalesPoint']);
+        Route::post('/addauthorization',[AuthorizationController::class, 'addAuthorization']);
+        Route::patch('/updateauthorization',[AuthorizationController::class, 'updateAuthorization']);
+        Route::delete('/deleteauthorization',[AuthorizationController::class, 'deleteAuthorization']);
+    });
+
+    // VENDOR
+    Route::middleware(['menu_access:masterdata:32'])->group(function () {
+        Route::get('/vendor',[VendorController::class, 'vendorView']);
+        Route::post('/addvendor',[VendorController::class, 'addVendor']);
+        Route::patch('/updatevendor',[VendorController::class, 'updateVendor']);
+        Route::delete('/deletevendor',[VendorController::class, 'deleteVendor']);
+    });
+
+    // Budget Pricing
+    Route::middleware(['menu_access:masterdata:64'])->group(function () {
+        Route::get('/budgetpricing',[BudgetPricingController::class, 'budgetpricingView']);
+        Route::post('/addbudget',[BudgetPricingController::class, 'addBudget']);
+        Route::patch('/updatebudget',[BudgetPricingController::class, 'updateBudget']);
+        Route::delete('/deletebudget',[BudgetPricingController::class, 'deleteBudget']);
+    });
+
+    // Kelengkapan berkas
+    Route::middleware(['menu_access:masterdata:128'])->group(function () {
+        Route::get('/filecompletement',[FileCompletementController::class, 'fileCompletementView']);
+    });
+
     // OPERATIONAL
-        // Pengadaan Barang Jasa
+    // Pengadaan Barang Jasa
+    Route::middleware(['menu_access:operational:1'])->group(function () {
         Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
         Route::get('/ticketing/{code}',[TicketingController::class, 'ticketingDetailView']);
         Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
@@ -103,8 +119,10 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/approveticket',[TicketingController::class, 'approveTicket']);
         Route::patch('/rejectticket',[TicketingController::class, 'rejectTicket']);
         Route::patch('/uploadticketfilerevision',[TicketingController::class, 'uploadFileRevision']);
+    });
 
-        // Bidding
+    // Bidding
+    Route::middleware(['menu_access:operational:2'])->group(function () {
         Route::get('/bidding',[BiddingController::class, 'biddingView']);
         Route::get('/bidding/{ticket_code}',[BiddingController::class, 'biddingDetailView']);
         Route::patch('/confirmticketfilerequirement',[BiddingController::class, 'confirmFileRequirement']);
@@ -113,12 +131,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/addbiddingform',[BiddingController::class, 'addBiddingForm']);
         Route::patch('/approvebidding',[BiddingController::class, 'approveBidding']);
         Route::patch('/rejectbidding',[BiddingController::class, 'rejectBidding']);
+    });
 
-        // Purchase Requisition
+    // Purchase Requisition
+    Route::middleware(['menu_access:operational:4'])->group(function () {
         Route::get('/pr',[PRController::class, 'prView']);
         Route::get('/pr/{ticket_code}',[PRController::class, 'prDetailView']);
+    });
 
-        // Purchase Order
+    // Purchase Order
+    Route::middleware(['menu_access:operational:8'])->group(function () {
         Route::get('/po',[POController::class, 'poView']);
         Route::get('/po/{ticket_code}',[POController::class, 'podetailView']);
+    });
 });

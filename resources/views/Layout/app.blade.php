@@ -116,54 +116,70 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 1) != 0)
                     <li class="nav-item">
                         <a href="/employeeposition" class="nav-link">
                             <i class="fad fa-user-cowboy nav-icon"></i>
                             <p>Jabatan</p>
                         </a>
                     </li>
+                    @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 2) != 0)
                     <li class="nav-item">
                         <a href="/employee" class="nav-link">
                             <i class="fad fa-users nav-icon"></i>
                             <p>Karyawan</p>
                         </a>
                     </li>
+                    @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 4) != 0)
                     <li class="nav-item">
                         <a href="/salespoint" class="nav-link">
                             <i class="fad fa-globe-asia nav-icon"></i>
                             <p>Sales Point</p>
                         </a>
                     </li>
+                    @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 8) != 0)
                     <li class="nav-item">
                         <a href="/employeeaccess" class="nav-link">
                             <i class="fad fa-user-unlock nav-icon"></i>
                             <p>Akses Karyawan</p>
                         </a>
                     </li>
+                    @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 16) != 0)
                     <li class="nav-item">
                         <a href="/authorization" class="nav-link">
                             <i class="fad fa-signature nav-icon"></i>
                             <p>Matriks Otorisasi Form</p>
                         </a>
                     </li>
+                    @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 32) != 0)
                     <li class="nav-item">
                         <a href="/vendor" class="nav-link">
                             <i class="fad fa-handshake nav-icon"></i>
                             <p>Vendor</p>
                         </a>
                     </li>
+                    @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 64) != 0)
                     <li class="nav-item">
                         <a href="/budgetpricing" class="nav-link">
                             <i class="fad fa-calculator nav-icon"></i>
                             <p>Budget Pricing</p>
                         </a>
                     </li>
+                    @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 128) != 0)
                     <li class="nav-item">
                       <a href="/filecompletement" class="nav-link">
                           <i class="fad fa-folders nav-icon"></i>
                           <p>Kelengkapan Berkas</p>
                       </a>
                     </li>
+                    @endif
                 </ul>
             </li>
             @endif
@@ -177,30 +193,38 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </p>
               </a>
               <ul class="nav nav-treeview">
+                  @if(((Auth::user()->menu_access->operational ?? 0) & 1) != 0)
                   <li class="nav-item">
                       <a href="/ticketing" class="nav-link">
                           <i class="fad fa-ticket nav-icon"></i>
                           <p>Pengadaan</p>
                       </a>
                   </li>
+                  @endif
+                  @if(((Auth::user()->menu_access->operational ?? 0) & 2) != 0)
                   <li class="nav-item">
                       <a href="/bidding" class="nav-link">
                           <i class="fad fa-less-than-equal nav-icon"></i>
                           <p>Bidding</p>
                       </a>
                   </li>
+                  @endif
+                  @if(((Auth::user()->menu_access->operational ?? 0) & 4) != 0)
                   <li class="nav-item">
                       <a href="/pr" class="nav-link">
                           <i class="fad fa-shopping-bag nav-icon"></i>
                           <p>Purchase Requisition</p>
                       </a>
                   </li>
+                  @endif
+                  @if(((Auth::user()->menu_access->operational ?? 0) & 8) != 0)
                   <li class="nav-item">
                       <a href="/po" class="nav-link">
                           <i class="fad fa-shopping-cart nav-icon"></i>
                           <p>Purchase Order</p>
                       </a>
                   </li>
+                  @endif
               </ul>
             </li>
         </ul>

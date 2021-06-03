@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\SalesPoint;
 use App\Models\Employee;
 use App\Models\EmployeeLocationAccess;
+use App\Models\EmployeeMenuAccess;
+
+use DB;
 
 class EmployeeAccessController extends Controller
 {
@@ -25,6 +28,7 @@ class EmployeeAccessController extends Controller
 
     public function updateemployeeaccessdetail(Request $request){
         try {
+            DB::beginTransaction();
             $old_access = EmployeeLocationAccess::where('employee_id',$request->employee_id)->get();
             if($old_access){
                 foreach($old_access as $access){
@@ -39,8 +43,20 @@ class EmployeeAccessController extends Controller
                     $newAccess->save();
                 }
             }
+
+            $old_menu_access = EmployeeMenuAccess::where('employee_id',$request->employee_id)->first();
+            if(!$old_menu_access){
+                $old_menu_access =  new EmployeeMenuAccess;
+                $old_menu_access->employee_id = $request->employee_id;
+            }
+            // dd( array_sum($request->masterdata));
+            $old_menu_access->masterdata = array_sum($request->masterdata);
+            $old_menu_access->operational = array_sum($request->operational ?? []);
+            $old_menu_access->save();
+            DB::commit();
             return redirect('/employeeaccess')->with('success','Berhasil update data akses karyawan');
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
+            DB::rollback();
             return redirect('/employeeaccess')->with('error','Gagal update data akses karyawan "'.$ex->getMessage().'"');
         }
         

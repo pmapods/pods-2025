@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\EmployeePosition;
 use App\Models\Salespoint;
 use App\Models\EmployeeLocationAccess;
+use App\Models\EmployeeMenuAccess;
 
 class EmployeeSeeder extends Seeder
 {
@@ -51,6 +52,11 @@ class EmployeeSeeder extends Seeder
                 $newAccess->salespoint_id = $salespoint->id;
                 $newAccess->save();
             }
+            $access = new EmployeeMenuAccess;
+            $access->employee_id = $newEmployee->id;
+            $access->masterdata = 0;
+            $access->operational = 1;
+            $access->save();
         }
 
         $count_employee = Employee::withTrashed()->count() + 1;
@@ -72,6 +78,12 @@ class EmployeeSeeder extends Seeder
             $newAccess->salespoint_id = $salespoint->id;
             $newAccess->save();
         }
+        
+        $access = new EmployeeMenuAccess;
+        $access->employee_id = $newEmployee->id;
+        $access->masterdata = 0;
+        $access->operational = 1;
+        $access->save();
 
         $count_employee = Employee::withTrashed()->count() + 1;
         $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
@@ -92,5 +104,11 @@ class EmployeeSeeder extends Seeder
             $newAccess->salespoint_id = $salespoint->id;
             $newAccess->save();
         }
+        
+        $access = new EmployeeMenuAccess;
+        $access->employee_id = $newEmployee->id;
+        $access->masterdata = 0;
+        $access->operational = 1;
+        $access->save();
     }
 }

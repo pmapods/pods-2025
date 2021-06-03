@@ -47,6 +47,15 @@ class EmployeeMigration extends Migration
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->timestamps();
         });
+
+        Schema::create('employee_menu_access', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('employee_id')->unsigned();
+            $table->integer('masterdata');
+            $table->integer('operational');
+            $table->foreign('employee_id')->references('id')->on('employee');
+            $table->timestamps();
+        });
     }
 
     /**
