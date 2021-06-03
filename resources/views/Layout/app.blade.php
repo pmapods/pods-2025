@@ -31,7 +31,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
   @yield('local-css')
 </head>
-<body class="hold-transition">
+<body class="sidebar-collapse layout-fixed layout-navbar-fixed sidebar-mini">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -44,11 +44,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </ul>
     <style>
       marquee{
-        width: 55vw !important;
+        width: 60vw !important;
       }
       marquee span{
         color: #ffffff;
-        font-size: 2em !important;
+        font-size: 1.5em !important;
         font-weight: bold;
       }
     </style>
@@ -88,10 +88,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-light-navy elevation-4">
     <!-- Brand Logo -->
-    <a href="" class="brand-link navbar-light">
-      <center>
-          <img src="/assets/logo.png" width="85%">
-      </center>
+    <a href="/dashboard" class="brand-link elevation-4" style="background-color: #FFF">
+      <img src="/assets/logo.png" alt="PMA Logo" class="brand-image" style="opacity: .8">
+      <span class="brand-text font-weight-bold">PMA-PODS</span>
     </a>
 
     <!-- Sidebar -->

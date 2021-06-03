@@ -4,6 +4,9 @@ html{
 .main-sidebar{
     background-color: #A01E2A;
 }
+.brand-text{
+    color: #A01E2A;
+}
 .nav-link{
     color: #FFFFFF !important;
 }
@@ -17,7 +20,7 @@ html{
     background-color: #A01E2A;
 }
 
-.main-sidebar, .main-sidebar::before {
+/* .main-sidebar, .main-sidebar::before {
     transition: margin-left .3s ease-in-out,width .3s ease-in-out;
     width: 300px;
 }
@@ -29,7 +32,7 @@ html{
         transition: margin-left .3s ease-in-out;
         margin-left: 300px;
     }
-}
+} */
 
 /* add required text after  label */
 .required_field::after {

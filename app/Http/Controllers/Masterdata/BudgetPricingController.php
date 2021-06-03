@@ -30,6 +30,7 @@ class BudgetPricingController extends Controller
             $newBudget->budget_pricing_category_id = $request->budget_pricing_category_id;
             $newBudget->code                       = $code;
             $newBudget->name                       = $request->name;
+            $newBudget->uom                        = $request->uom;
             $newBudget->injs_min_price             = ($request->injs_min_price > 0) ? $request->injs_min_price : null;
             $newBudget->injs_max_price             = ($request->injs_max_price > 0) ? $request->injs_max_price : null;
             $newBudget->outjs_min_price            = ($request->outjs_min_price > 0) ? $request->outjs_min_price : null;

@@ -62,11 +62,14 @@
                     <th rowspan="2">
                         #
                     </th>
-                    <th rowspan="2" width="80">
+                    <th rowspan="2" width="8%">
                         Kode
                     </th>
                     <th rowspan="2">
                         Nama
+                    </th>
+                    <th rowspan="2">
+                        Satuan
                     </th>
                     <th rowspan="2">
                         Kategori
@@ -99,6 +102,7 @@
                         <td>{{$key+1}}</td>
                         <td>{{$budget->code}}</td>
                         <td>{{$budget->name}}</td>
+                        <td>{{$budget->uom}}</td>
                         <td>{{$budget->budget_pricing_category->name}}</td>
                         <td>
                             {{$budget->brand_list_text()}}
@@ -129,7 +133,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="required_field">Kategori</label>
                             <select class="form-control pricing_category" name="category" required>
@@ -140,10 +144,16 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="required_field">Nama</label>
                             <input type="text" class="form-control" name="name" placeholder="Masukkan nama budget" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="required_field">Satuan</label>
+                            <input type="text" class="form-control" name="uom" placeholder="Masukkan satuan barang" required>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -230,7 +240,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="required_field">Kategori</label>
                             <select class="form-control" name="category" disabled>
@@ -241,10 +251,16 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label class="required_field">Nama</label>
                             <input type="text" class="form-control" name="name" placeholder="Masukkan nama budget" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="required_field">Satuan</label>
+                            <input type="text" class="form-control" name="uom" placeholder="Masukkan satuan barang" readonly>
                         </div>
                     </div>
                     <div class="col-md-6">
