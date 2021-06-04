@@ -55,7 +55,7 @@ class EmployeeSeeder extends Seeder
             $access = new EmployeeMenuAccess;
             $access->employee_id = $newEmployee->id;
             $access->masterdata = 0;
-            $access->operational = 1;
+            $access->operational = 3;
             $access->save();
         }
 
@@ -82,7 +82,7 @@ class EmployeeSeeder extends Seeder
         $access = new EmployeeMenuAccess;
         $access->employee_id = $newEmployee->id;
         $access->masterdata = 0;
-        $access->operational = 1;
+        $access->operational = 3;
         $access->save();
 
         $count_employee = Employee::withTrashed()->count() + 1;
@@ -108,7 +108,7 @@ class EmployeeSeeder extends Seeder
         $access = new EmployeeMenuAccess;
         $access->employee_id = $newEmployee->id;
         $access->masterdata = 0;
-        $access->operational = 1;
+        $access->operational = 3;
         $access->save();
     }
 }

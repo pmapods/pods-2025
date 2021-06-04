@@ -131,6 +131,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/addbiddingform',[BiddingController::class, 'addBiddingForm']);
         Route::patch('/approvebidding',[BiddingController::class, 'approveBidding']);
         Route::patch('/rejectbidding',[BiddingController::class, 'rejectBidding']);
+        Route::patch('/uploadsignedfile',[BiddingController::class, 'uploadSignedFile']);
     });
 
     // Purchase Requisition

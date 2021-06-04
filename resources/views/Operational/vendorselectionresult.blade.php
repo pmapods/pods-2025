@@ -457,53 +457,65 @@
             @endif
         @endif
     </div>
+    <small class="text-danger">*Approval dapat dilakukan setelah melakukan upload file penawaran yang sudah di tanda tangan</small>
 </div>
 
+<b>FILE PENAWARAN YANG SUDAH DI TANDA TANGAN</b>
+<br>
+@if($bidding->signed_filename == null || $bidding->signed_filepath == null)
+    <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Perbaikan</button><br>
+    <input class="inputFile" type="file" style="display:none;">
+    <div class="display_field mt-1"></div>
+    <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$bidding->id}})">Upload File Perbaikan</button><br><br>
+@else
+    <a href="/storage{{$bidding->signed_filepath}}">{{$bidding->signed_filename}}</a><br>
+@endif
+
 <b>ATTACHMENT</b><br>
-@if($bidding->ticket_item->ticket_item_attachment->count() == 0 && $item->ticket_item_file_requirement->count() == 0)
-    -
-    @endif
-    @if ($bidding->ticket_item->ticket_item_attachment->count() > 0)
-        <table class="table table-borderless table-sm">
-            <tbody>
-                @foreach ($bidding->ticket_item->ticket_item_attachment as $attachment)
-                    <tr>
-                        @php
-                            $naming = "";
-                            $filename = explode('.',$attachment->name)[0];
-                            switch ($filename) {
-                                case 'ba_file':
-                                    $naming = "berita acara merk/tipe lain";
-                                    break;
-                                
-                                case 'old_item':
-                                    $naming = "foto barang lama untuk replace";
-                                    break;
-                                
-                                default:
-                                    $naming = $filename;
-                                    break;
-                            }
-                        @endphp
-                        <td width="40%">{{$naming}}</td>
-                        <td width="60%" class="tdbreak"><a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-    @if ($bidding->ticket_item->ticket_item_file_requirement->count() > 0)
-        <table class="table table-borderless table-sm">
-            <tbody>
-                @foreach ($bidding->ticket_item->ticket_item_file_requirement as $requirement)
-                    <tr>
-                        <td width="40%">{{$requirement->file_completement->name}}</td>
-                        <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+@if($ticket_item->ticket_item_attachment->count() == 0 && $ticket_item->ticket_item_file_requirement->count() == 0)
+-
+@endif
+@if ($ticket_item->ticket_item_attachment->count() > 0)
+    <table class="table table-borderless table-sm">
+        <tbody>
+            @foreach ($bidding->ticket_item->ticket_item_attachment as $attachment)
+                <tr>
+                    @php
+                        $naming = "";
+                        $filename = explode('.',$attachment->name)[0];
+                        switch ($filename) {
+                            case 'ba_file':
+                                $naming = "berita acara merk/tipe lain";
+                                break;
+                            
+                            case 'old_item':
+                                $naming = "foto barang lama untuk replace";
+                                break;
+                            
+                            default:
+                                $naming = $filename;
+                                break;
+                        }
+                    @endphp
+                    <td width="40%">{{$naming}}</td>
+                    <td width="60%" class="tdbreak"><a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
+@if ($ticket_item->ticket_item_file_requirement->count() > 0)
+    <table class="table table-borderless table-sm">
+        <tbody>
+            @foreach ($bidding->ticket_item->ticket_item_file_requirement as $requirement)
+                <tr>
+                    <td width="40%">{{$requirement->file_completement->name}}</td>
+                    <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
 
 <form action="/approvebidding" method="post" id="approveform">
     @csrf
@@ -521,36 +533,15 @@
     <div class="input_field">
     </div>
 </form>
-
+<form action="/uploadsignedfile" method="post" enctype="multipart/form" id="uploadsignedform">
+    @method('patch')
+    @csrf
+    <div class="input_field"></div>
+</form>
 @endsection
 @section('local-js')
 <script>
     $(document).ready(function() {
-        $('#nilai_harga_0').change(function(){
-            autonumber("#nilai_harga_0");
-        });
-        $('#nilai_ketersediaan_0').change(function(){
-            autonumber("#nilai_ketersediaan_0");
-        });
-        $('#nilai_pembayaran_0').change(function(){
-            autonumber("#nilai_pembayaran_0");
-        });
-        $('#nilai_other_0').change(function(){
-            autonumber("#nilai_other_0");
-        });
-        $('#nilai_harga_1').change(function(){
-            autonumber("#nilai_harga_1");
-        });
-        $('#nilai_ketersediaan_1').change(function(){
-            autonumber("#nilai_ketersediaan_1");
-        });
-        $('#nilai_pembayaran_1').change(function(){
-            autonumber("#nilai_pembayaran_1");
-        });
-        $('#nilai_other_1').change(function(){
-            autonumber("#nilai_other_1");
-        });
-
         $('#select_kelompok').change(function(){
             $('#input_kelompok_lain').val("");
             if($(this).val()=='others'){
@@ -586,6 +577,22 @@
                 $('#selected_vendor').text(name_1);
             }
         });
+
+        $(this).on('change','.inputFile', function(event){
+            var reader = new FileReader();
+            let value = $(this).val();
+            let display_field = $('.display_field');
+            if(validatefilesize(event)){
+                reader.onload = function(e) {
+                    display_field.empty();
+                    let name = value.split('\\').pop().toLowerCase();
+                    display_field.append('<a class="revision_file" href="'+e.target.result+'" download="'+name+'">'+name+'</a>');
+                }
+                reader.readAsDataURL(event.target.files[0]);
+            }else{
+                $(this).val('');
+            }
+        });
     });
 
     function approve(){
@@ -599,6 +606,26 @@
             $('#rejectform').submit();
         }else{
             alert("Alasan harus diisi");
+        }
+    }
+
+    function selectfile(){
+        $('.inputFile').click();
+    }
+
+    function uploadfile(id){
+        let linkfile = $('.revision_file');
+        if(linkfile.length == 0){
+            alert('Silahkan pilih file penawaran yang sudah ditandatangan terlebih dahulu');
+        }else{
+            let inputfield = $('#uploadsignedform').find('.input_field');
+            let file = linkfile.prop('href');
+            let filename = linkfile.text().trim();
+            inputfield.empty();
+            inputfield.append('<input type="hidden" name="bidding_id" value="' + id + '">');
+            inputfield.append('<input type="hidden" name="file" value="'+file+'">');
+            inputfield.append('<input type="hidden" name="filename" value="'+filename+'">');
+            $('#uploadsignedform').submit();
         }
     }
 </script>

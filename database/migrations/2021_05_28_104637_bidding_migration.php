@@ -38,6 +38,9 @@ class BiddingMigration extends Migration
             $table->string('rejected_by')->nullable();
             $table->string('reject_notes')->nullable();
 
+            $table->string('signed_filename')->nullable();
+            $table->string('signed_filepath')->nullable();
+
             $table->string('notes')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');

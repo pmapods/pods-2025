@@ -15,6 +15,7 @@ use App\Models\BiddingDetail;
 use App\Models\BiddingAuthorization;
 use Auth;
 use DB;
+use Storage;
 
 class BiddingController extends Controller
 {
@@ -194,6 +195,9 @@ class BiddingController extends Controller
 
     public function approveBidding(Request $request) {
         $bidding = Bidding::find($request->bidding_id);
+        if($bidding->signed_filename == null || $bidding->signed_filepath == null){
+            return back()->with('error','Harap melakukan upload file penawaran yang sudah di tanda tangan');
+        }
         $bidding_authorization = BiddingAuthorization::find($request->bidding_authorization_id);
         if($bidding_authorization->employee_id == Auth::user()->id){
             $bidding_authorization->status = 1;
@@ -226,6 +230,9 @@ class BiddingController extends Controller
                 $bidding_authorization->bidding->status = -1;
                 $bidding_authorization->bidding->rejected_by = Auth::user()->id;
                 $bidding_authorization->bidding->reject_notes = $request->reason;
+                $bidding_authorization->bidding->signed_filename = null;
+                Storage::disk('public')->delete($bidding_authorization->bidding->signed_filepath);
+                $bidding_authorization->bidding->signed_filepath = null;
                 $bidding_authorization->bidding->save();
 
                 DB::commit();
@@ -235,10 +242,30 @@ class BiddingController extends Controller
                 return redirect('/bidding/'.$bidding->ticket->code)->with('error','Otorisasi login tidak sesuai');
             }
         } catch (\Exception $ex) {
-            dd($ex);
             DB::rollback();
             return redirect('/bidding/'.$bidding->ticket->code)->with('error','Reject form bidding gagal, silahkan coba kembali atau hubungi admin');
         }
+    }
+
+    public function uploadSignedFile(Request $request){
+        try{
+            $bidding = Bidding::findOrFail($request->bidding_id);
+            $salespointname = str_replace(' ','_',$bidding->ticket->salespoint->name);
+            $ext = pathinfo($request->filename, PATHINFO_EXTENSION);
+            $name = "Penawaran_resmi_dari_2_vendor_(dilengkapi_KTP_dan_NPWP)_".$salespointname.'.'.$ext;
+            $path = "/attachments/ticketing/barangjasa/".$bidding->ticket->code.'/item'.$bidding->ticket_item->id.'/files/'.$name;
+        
+            // base 64 data
+            $file = explode('base64,',$request->file)[1];
+            Storage::disk('public')->put($path, base64_decode($file));
+            $bidding->signed_filename = $name;
+            $bidding->signed_filepath = $path;
+            $bidding->save();
+            return back()->with('success','Berhasil upload file penawaran yang sudah ditandatangan, Silahkan melanjutkan proses approval');
+        }catch(\Exception $ex){
+            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Gagal upload file penawaran yang ditandatangan');
+        }
+
     }
 
     public function validateBiddingDone($ticket_id) {

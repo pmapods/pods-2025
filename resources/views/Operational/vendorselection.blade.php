@@ -83,34 +83,35 @@
             <div class="col-md-4 mt-3">
                 <input type="text" class="form-control" value="{{$ticket_item->name}}" readonly>
             </div>
-    
+
             <div class="col-md-2 mt-3">Area / Salespoint</div>
             <div class="col-md-4 mt-3">
                 <input type="text" class="form-control" value="{{$ticket->salespoint->name}}" readonly>
             </div>
-    
+
             <div class="col-md-2 mt-3">Tanggal Seleksi</div>
             <div class="col-md-4 mt-3">
                 <input type="text" class="form-control" value="{{now()->translatedFormat('d F Y')}}" readonly>
             </div>
-    
+
             <div class="col-md-2 mt-3">Kelompok</div>
             <div class="col-md-4 mt-3">
                 <div class="form-group">
-                  <select class="form-control" id="select_kelompok" name="group">
-                    <option value="asset">Asset</option>
-                    <option value="inventory">Inventaris</option>
-                    <option value="others">Lain-Lain</option>
-                  </select>
-                  <input type="text" class="form-control mt-2" name="others_name" placeholder="isi nama Kelompok Lain" id="input_kelompok_lain" style="display: none">
+                    <select class="form-control" id="select_kelompok" name="group">
+                        <option value="asset">Asset</option>
+                        <option value="inventory">Inventaris</option>
+                        <option value="others">Lain-Lain</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" name="others_name" placeholder="isi nama Kelompok Lain"
+                        id="input_kelompok_lain" style="display: none">
                 </div>
             </div>
         </div>
         @php
-            $vendors = $ticket->ticket_vendor;
+        $vendors = $ticket->ticket_vendor;
         @endphp
         @foreach ($vendors as $key=>$vendor)
-            <input type="hidden" name="vendor[{{$key}}][ticket_vendor_id]" value="{{$vendor->id}}">
+        <input type="hidden" name="vendor[{{$key}}][ticket_vendor_id]" value="{{$vendor->id}}">
         @endforeach
         <table class="table table-bordered" id="form_table">
             <thead>
@@ -118,56 +119,53 @@
                     <th class="text-center" rowspan="5" class="text-center">No</th>
                     <th class="text-center" rowspan="5" class="text-center">Penilaian</th>
                     <th class="text-center" rowspan="5" class="text-center">Bobot</th>
-                    @for($i=0; $i<2; $i++)
-                        <th colspan="3" class="text-center" id="vendor_name_{{$i}}">
-                            {{($vendors->get($i)) ? $vendors->get($i)->name : '-'}}
+                    @for($i=0; $i<2; $i++) <th colspan="3" class="text-center" id="vendor_name_{{$i}}">
+                        {{($vendors->get($i)) ? $vendors->get($i)->name : '-'}}
                         </th>
-                    @endfor
-                    <th class="text-center" rowspan="5" class="text-center">Keterangan</th>
+                        @endfor
+                        <th class="text-center" rowspan="5" class="text-center">Keterangan</th>
                 </tr>
                 <tr>
-                    @for($i=0; $i<2; $i++)
-                        <th>Alamat</th>
+                    @for($i=0; $i<2; $i++) <th>Alamat</th>
                         <th colspan="2">
                             @if ($vendors->get($i))
-                                @if ($vendors->get($i)->type == 0) 
-                                    {{$vendors->get($i)->vendor()->address}}
-                                @else
-                                    <textarea class="form-control" name="vendor[{{$i}}][address]" rows="3">{{$address[$i] ?? '-'}}</textarea>
-                                @endif
+                            @if ($vendors->get($i)->type == 0)
+                            {{$vendors->get($i)->vendor()->address}}
                             @else
-                                -
+                            <textarea class="form-control" name="vendor[{{$i}}][address]"
+                                rows="3">{{$address[$i] ?? '-'}}</textarea>
+                            @endif
+                            @else
+                            -
                             @endif
                         </th>
-                    @endfor
+                        @endfor
                 </tr>
                 <tr>
-                    @for($i=0; $i<2; $i++)
-                        <th>PIC</th>
+                    @for($i=0; $i<2; $i++) <th>PIC</th>
                         <th colspan="2">
                             @if ($vendors->get($i))
-                                {{$vendors->get($i)->salesperson}}
+                            {{$vendors->get($i)->salesperson}}
                             @else
-                                -
+                            -
                             @endif
                         </th>
-                    @endfor
+                        @endfor
                 </tr>
                 <tr>
-                    @for($i=0; $i<2; $i++)
-                        <th>Telp/HP</th>
+                    @for($i=0; $i<2; $i++) <th>Telp/HP</th>
                         <th colspan="2">
                             @if ($vendors->get($i))
-                                @if ($vendors->get($i)->type == 0)
-                                    {{$vendors->get($i)->vendor()->phone}}
-                                @else
-                                    {{$vendors->get($i)->phone}}
-                                @endif   
+                            @if ($vendors->get($i)->type == 0)
+                            {{$vendors->get($i)->vendor()->phone}}
                             @else
-                                -
+                            {{$vendors->get($i)->phone}}
+                            @endif
+                            @else
+                            -
                             @endif
                         </th>
-                    @endfor
+                        @endfor
                 </tr>
                 <tr>
                     <th>Proposal Awal</th>
@@ -180,324 +178,351 @@
             </thead>
             <tbody>
                 {{-- price --}}
-                <tr class="table-success"><td colspan="10"><b>Price</b></td></tr>
+                <tr class="table-success">
+                    <td colspan="10"><b>Price</b></td>
+                </tr>
                 <tr>
                     <td>1</td>
                     <td>Harga</td>
                     <td class="text-center" rowspan="4">5</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td>
+                    @for ($i=0; $i<2; $i++) <td>
                         @if($vendors->get($i))
-                            <input type="text" class="form-control rupiah" name="vendor[{{$i}}][harga_awal]" value="{{$start_harga[$i] ?? 0}}">
+                        <input type="text" class="form-control rupiah" name="vendor[{{$i}}][harga_awal]"
+                            value="{{$start_harga[$i] ?? 0}}">
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    <td>
-                        @if($vendors->get($i))
-                            <input type="text" class="form-control rupiah" name="vendor[{{$i}}][harga_akhir]" value="{{$end_harga[$i] ?? 0}}">
-                        @else
+                        </td>
+                        <td>
+                            @if($vendors->get($i))
+                            <input type="text" class="form-control rupiah" name="vendor[{{$i}}][harga_akhir]"
+                                value="{{$end_harga[$i] ?? 0}}">
+                            @else
                             -
-                        @endif
-                    </td>
-                    <td class="text-center" rowspan="4">
-                        @if($vendors->get($i))
-                            <input type="number" class="form-control nilai" min="0" max="5" name="vendor[{{$i}}][nilai_harga]" id="nilai_harga_{{$i}}"  value="{{$price_score[$i] ?? 0}}">
-                        @else
+                            @endif
+                        </td>
+                        <td class="text-center" rowspan="4">
+                            @if($vendors->get($i))
+                            <input type="number" class="form-control nilai" min="0" max="5"
+                                name="vendor[{{$i}}][nilai_harga]" id="nilai_harga_{{$i}}"
+                                value="{{$price_score[$i] ?? 0}}">
+                            @else
                             -
-                        @endif
-                    </td>
-                    @endfor
-                    <td class="text-center" rowspan="4">
-                        <textarea class="form-control" name="keterangan_harga" rows="10">{{$price_notes ?? '-'}}</textarea>
-                    </td>
+                            @endif
+                        </td>
+                        @endfor
+                        <td class="text-center" rowspan="4">
+                            <textarea class="form-control" name="keterangan_harga"
+                                rows="10">{{$price_notes ?? '-'}}</textarea>
+                        </td>
                 </tr>
                 <tr>
                     <td>2</td>
                     <td>PPN</td>
-                    @for ($i=0; $i<2; $i++)
-                        <td>
-                            @if($vendors->get($i))
-                                <input type="text" class="form-control rupiah" name="vendor[{{$i}}][ppn_awal]" value="{{$start_ppn[$i] ?? 0}}">
-                            @else
-                                -
-                            @endif
+                    @for ($i=0; $i<2; $i++) <td>
+                        @if($vendors->get($i))
+                        <input type="text" class="form-control rupiah" name="vendor[{{$i}}][ppn_awal]"
+                            value="{{$start_ppn[$i] ?? 0}}">
+                        @else
+                        -
+                        @endif
                         </td>
                         <td>
                             @if($vendors->get($i))
-                                <input type="text" class="form-control rupiah" name="vendor[{{$i}}][ppn_akhir]" value="{{$end_ppn[$i] ?? 0}}">
+                            <input type="text" class="form-control rupiah" name="vendor[{{$i}}][ppn_akhir]"
+                                value="{{$end_ppn[$i] ?? 0}}">
                             @else
-                                -
+                            -
                             @endif
                         </td>
-                    @endfor
+                        @endfor
                 </tr>
                 <tr>
                     <td>3</td>
                     <td>Ongkos Kirim</td>
-                    @for ($i=0; $i<2; $i++)
-                        <td>
-                            @if($vendors->get($i))
-                                <input type="text" class="form-control rupiah" name="vendor[{{$i}}][send_fee_awal]" value="{{$start_ongkir_price[$i] ?? 0}}">
-                            @else
-                                -
-                            @endif
+                    @for ($i=0; $i<2; $i++) <td>
+                        @if($vendors->get($i))
+                        <input type="text" class="form-control rupiah" name="vendor[{{$i}}][send_fee_awal]"
+                            value="{{$start_ongkir_price[$i] ?? 0}}">
+                        @else
+                        -
+                        @endif
                         </td>
                         <td>
                             @if($vendors->get($i))
-                                <input type="text" class="form-control rupiah" name="vendor[{{$i}}][send_fee_akhir]" value="{{$end_ongkir_price[$i] ?? 0}}">
+                            <input type="text" class="form-control rupiah" name="vendor[{{$i}}][send_fee_akhir]"
+                                value="{{$end_ongkir_price[$i] ?? 0}}">
                             @else
-                                -
+                            -
                             @endif
                         </td>
-                    @endfor
+                        @endfor
                 </tr>
                 <tr>
                     <td>4</td>
                     <td>Ongkos Pasang</td>
-                    @for ($i=0; $i<2; $i++)
-                        <td>
-                            @if($vendors->get($i))
-                                <input type="text" class="form-control rupiah" name="vendor[{{$i}}][apply_fee_awal]" value="{{$start_pasang_price[$i] ?? 0}}">
-                            @else
-                                -
-                            @endif
+                    @for ($i=0; $i<2; $i++) <td>
+                        @if($vendors->get($i))
+                        <input type="text" class="form-control rupiah" name="vendor[{{$i}}][apply_fee_awal]"
+                            value="{{$start_pasang_price[$i] ?? 0}}">
+                        @else
+                        -
+                        @endif
                         </td>
                         <td>
                             @if($vendors->get($i))
-                                <input type="text" class="form-control rupiah" name="vendor[{{$i}}][apply_fee_akhir]" value="{{$end_pasang_price[$i] ?? 0}}">
+                            <input type="text" class="form-control rupiah" name="vendor[{{$i}}][apply_fee_akhir]"
+                                value="{{$end_pasang_price[$i] ?? 0}}">
                             @else
-                                -
+                            -
                             @endif
                         </td>
-                    @endfor
+                        @endfor
                 </tr>
-    
+
                 {{-- Ketersediaan  Barang --}}
-                <tr class="table-success"><td colspan="10"><b>Ketersediaan Barang</b></td></tr>
+                <tr class="table-success">
+                    <td colspan="10"><b>Ketersediaan Barang</b></td>
+                </tr>
                 <tr>
                     <td>5</td>
                     <td>Spesifikasi (merk/type)</td>
                     <td class="text-center" rowspan="5">3</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][specs]" value="{{$spesifikasi[$i] ?? '-'}}">
+                        <input type="text" class="form-control" name="vendor[{{$i}}][specs]"
+                            value="{{$spesifikasi[$i] ?? '-'}}">
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    <td class="text-center" rowspan="5">
-                        @if($vendors->get($i))
-                            <input type="number" class="form-control nilai" min="0" max="3" name="vendor[{{$i}}][nilai_ketersediaan]" id="nilai_ketersediaan_{{$i}}" value="{{$ketersediaan_barang_score[$i] ?? 0}}">
-                        @else
+                        </td>
+                        <td class="text-center" rowspan="5">
+                            @if($vendors->get($i))
+                            <input type="number" class="form-control nilai" min="0" max="3"
+                                name="vendor[{{$i}}][nilai_ketersediaan]" id="nilai_ketersediaan_{{$i}}"
+                                value="{{$ketersediaan_barang_score[$i] ?? 0}}">
+                            @else
                             -
-                        @endif
-                    </td>
-                    @endfor
-                    <td class="text-center" rowspan="5">
-                        <textarea class="form-control" name="keterangan_ketersediaan" rows="12">{{$ketersediaan_barang_notes ?? '-'}}</textarea>
-                    </td>
+                            @endif
+                        </td>
+                        @endfor
+                        <td class="text-center" rowspan="5">
+                            <textarea class="form-control" name="keterangan_ketersediaan"
+                                rows="12">{{$ketersediaan_barang_notes ?? '-'}}</textarea>
+                        </td>
                 </tr>
                 <tr>
                     <td>6</td>
                     <td>Ready</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][ready]" value="{{$ready[$i] ?? '-'}}">
+                        <input type="text" class="form-control" name="vendor[{{$i}}][ready]"
+                            value="{{$ready[$i] ?? '-'}}">
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    @endfor
+                        </td>
+                        @endfor
                 </tr>
                 <tr>
                     <td>7</td>
                     <td>Indent</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][indent]" value="{{$indent[$i] ?? '-'}}">
+                        <input type="text" class="form-control" name="vendor[{{$i}}][indent]"
+                            value="{{$indent[$i] ?? '-'}}">
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    @endfor
+                        </td>
+                        @endfor
                 </tr>
                 <tr>
                     <td>8</td>
                     <td>Barang bergaransi</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][garansi]" value="{{$garansi[$i] ?? '-'}}">
+                        <input type="text" class="form-control" name="vendor[{{$i}}][garansi]"
+                            value="{{$garansi[$i] ?? '-'}}">
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    @endfor
+                        </td>
+                        @endfor
                 </tr>
                 <tr>
                     <td>9</td>
                     <td>Bonus</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][bonus]" value="{{$bonus[$i] ?? '-'}}">
+                        <input type="text" class="form-control" name="vendor[{{$i}}][bonus]"
+                            value="{{$bonus[$i] ?? '-'}}">
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    @endfor
+                        </td>
+                        @endfor
                 </tr>
-    
+
                 {{-- Ketentuan Pembayaran --}}
-                <tr class="table-success"><td colspan="10"><b>Ketentuan Pembayaran</b></td></tr>
+                <tr class="table-success">
+                    <td colspan="10"><b>Ketentuan Pembayaran</b></td>
+                </tr>
                 <tr>
                     <td>10</td>
                     <td>Credit / Cash</td>
                     <td class="text-center" rowspan="2">2</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
-                            <select class="form-control" name="vendor[{{$i}}][cc]">
-                                <option @if($creditcash[$i] ?? '' == 'credit') selected @endif value="credit">Credit</option>
-                                <option @if($creditcash[$i] ?? '' == 'cash') selected @endif value="cash">Cash</option>
-                            </select>
+                        <select class="form-control" name="vendor[{{$i}}][cc]">
+                            <option @if($creditcash[$i] ?? ''=='credit' ) selected @endif value="credit">Credit</option>
+                            <option @if($creditcash[$i] ?? ''=='cash' ) selected @endif value="cash">Cash</option>
+                        </select>
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    <td class="text-center" rowspan="2">
-                        @if($vendors->get($i))
-                            <input type="number" class="form-control nilai" min="0" max="2" name="vendor[{{$i}}][nilai_pembayaran]" id="nilai_pembayaran_{{$i}}" value="{{$ketentuan_bayar_score[$i] ?? 0}}">
-                        @else
+                        </td>
+                        <td class="text-center" rowspan="2">
+                            @if($vendors->get($i))
+                            <input type="number" class="form-control nilai" min="0" max="2"
+                                name="vendor[{{$i}}][nilai_pembayaran]" id="nilai_pembayaran_{{$i}}"
+                                value="{{$ketentuan_bayar_score[$i] ?? 0}}">
+                            @else
                             -
-                        @endif
-                    </td>
-                    @endfor
-                    <td class="text-center" rowspan="2">
-                        <textarea class="form-control" rows="5" name="keterangan_pembayaran">{{$ketentuan_bayar_notes ?? '-'}}</textarea>
-                    </td>
+                            @endif
+                        </td>
+                        @endfor
+                        <td class="text-center" rowspan="2">
+                            <textarea class="form-control" rows="5"
+                                name="keterangan_pembayaran">{{$ketentuan_bayar_notes ?? '-'}}</textarea>
+                        </td>
                 </tr>
                 <tr>
                     <td>11</td>
                     <td>Menerbitkan Faktur Pajak</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
                         <select class="form-control" name="vendor[{{$i}}][pajak]">
-                            <option @if($menerbitkan_faktur_pajak[$i] ?? -1 == 0) selected @endif value="0">Tidak</option>
-                            <option @if($menerbitkan_faktur_pajak[$i] ?? -1 == 0) selected @endif value="1">Ya</option>
+                            <option @if($menerbitkan_faktur_pajak[$i] ?? -1==0) selected @endif value="0">Tidak</option>
+                            <option @if($menerbitkan_faktur_pajak[$i] ?? -1==0) selected @endif value="1">Ya</option>
                         </select>
                         @else
-                            -
+                        -
                         @endif
-                    </td>
-                    @endfor
+                        </td>
+                        @endfor
                 </tr>
-            
+
                 {{-- Informasi lain-Lain --}}
-                <tr class="table-success"><td colspan="10"><b>Informasi Lain-lain</b></td></tr>
+                <tr class="table-success">
+                    <td colspan="10"><b>Informasi Lain-lain</b></td>
+                </tr>
                 <tr>
                     <td>12</td>
                     <td>Masa berlaku penawaran</td>
                     <td class="text-center" rowspan="4">2</td>
-                    @for ($i=0; $i<2; $i++)
-                    <td colspan="2">
+                    @for ($i=0; $i<2; $i++) <td colspan="2">
                         @if($vendors->get($i))
                         <div class="input-group">
-                            <input type="number" class="form-control" min="0" name="vendor[{{$i}}][period]" value="{{$masa_berlaku_penawaran[$i] ?? 0}}">
+                            <input type="number" class="form-control" min="0" name="vendor[{{$i}}][period]"
+                                value="{{$masa_berlaku_penawaran[$i] ?? 0}}">
                             <span class="input-group-text">Hari</span>
                         </div>
                         @else
-                            -
-                        @endif                  
-                    </td>
-                    <td class="text-center" rowspan="4">
-                        @if($vendors->get($i))
-                            <input type="number" class="form-control nilai" min="0" max="2" name="vendor[{{$i}}][nilai_other]" id="nilai_other_{{$i}}" value="{{$others_score[$i] ?? 0}}">
-                        @else
-                            -
+                        -
                         @endif
-                    </td>
-                    @endfor
-                    <td class="text-center" rowspan="4">
-                        <textarea class="form-control" rows="10" name="keterangan_lain">{{$keterangan_lain ?? '-'}}</textarea>
-                    </td>
+                        </td>
+                        <td class="text-center" rowspan="4">
+                            @if($vendors->get($i))
+                            <input type="number" class="form-control nilai" min="0" max="2"
+                                name="vendor[{{$i}}][nilai_other]" id="nilai_other_{{$i}}"
+                                value="{{$others_score[$i] ?? 0}}">
+                            @else
+                            -
+                            @endif
+                        </td>
+                        @endfor
+                        <td class="text-center" rowspan="4">
+                            <textarea class="form-control" rows="10"
+                                name="keterangan_lain">{{$keterangan_lain ?? '-'}}</textarea>
+                        </td>
                 </tr>
                 <tr>
                     <td>13</td>
                     <td>Lama Pengerjaan</td>
-                    @for ($i=0; $i<2; $i++)
-                        <td>
-                            @if($vendors->get($i))
-                            <div class="input-group">
-                                <input type="number" class="form-control" min="0" name="vendor[{{$i}}][time_awal]" value="{{$start_lama_pengerjaan[$i] ?? 0}}">
-                                <span class="input-group-text">Hari</span>
-                            </div>
-                            @else
-                                -
-                            @endif
+                    @for ($i=0; $i<2; $i++) <td>
+                        @if($vendors->get($i))
+                        <div class="input-group">
+                            <input type="number" class="form-control" min="0" name="vendor[{{$i}}][time_awal]"
+                                value="{{$start_lama_pengerjaan[$i] ?? 0}}">
+                            <span class="input-group-text">Hari</span>
+                        </div>
+                        @else
+                        -
+                        @endif
                         </td>
                         <td>
                             @if($vendors->get($i))
                             <div class="input-group">
-                                <input type="number" class="form-control" min="0" name="vendor[{{$i}}][time_akhir]" value="{{$end_lama_pengerjaan[$i] ?? 0}}">
+                                <input type="number" class="form-control" min="0" name="vendor[{{$i}}][time_akhir]"
+                                    value="{{$end_lama_pengerjaan[$i] ?? 0}}">
                                 <span class="input-group-text">Hari</span>
                             </div>
                             @else
-                                -
+                            -
                             @endif
                         </td>
-                    @endfor
+                        @endfor
                 </tr>
-                
+
                 <tr>
                     <td>14</td>
                     <td>
-                        <input type="text" class="form-control" name="optional1_name" value="{{$optional1_name ?? '-'}}">
+                        <input type="text" class="form-control" name="optional1_name"
+                            value="{{$optional1_name ?? '-'}}">
                     </td>
-                    @for ($i=0; $i<2; $i++)
-                        <td>
-                            @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][optional1_awal]" value="{{$optional1_start[$i] ?? '-'}}">
-                            @else
-                                -
-                            @endif
+                    @for ($i=0; $i<2; $i++) <td>
+                        @if($vendors->get($i))
+                        <input type="text" class="form-control" name="vendor[{{$i}}][optional1_awal]"
+                            value="{{$optional1_start[$i] ?? '-'}}">
+                        @else
+                        -
+                        @endif
                         </td>
                         <td>
                             @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][optional1_akhir]" value="{{$optional1_end[$i] ?? '-'}}">
+                            <input type="text" class="form-control" name="vendor[{{$i}}][optional1_akhir]"
+                                value="{{$optional1_end[$i] ?? '-'}}">
                             @else
-                                -
+                            -
                             @endif
                         </td>
-                    @endfor
+                        @endfor
                 </tr>
-                
+
                 <tr>
                     <td>15</td>
                     <td>
-                        <input type="text" class="form-control" name="optional2_name" value="{{$optional2_name ?? '-'}}">
+                        <input type="text" class="form-control" name="optional2_name"
+                            value="{{$optional2_name ?? '-'}}">
                     </td>
-                    @for ($i=0; $i<2; $i++)
-                        <td>
-                            @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][optional2_awal]" value="{{$optional2_start[$i] ?? '-'}}">
-                            @else
-                                -
-                            @endif
+                    @for ($i=0; $i<2; $i++) <td>
+                        @if($vendors->get($i))
+                        <input type="text" class="form-control" name="vendor[{{$i}}][optional2_awal]"
+                            value="{{$optional2_start[$i] ?? '-'}}">
+                        @else
+                        -
+                        @endif
                         </td>
                         <td>
                             @if($vendors->get($i))
-                            <input type="text" class="form-control" name="vendor[{{$i}}][optional2_akhir]" value="{{$optional2_end[$i] ?? '-'}}">
+                            <input type="text" class="form-control" name="vendor[{{$i}}][optional2_akhir]"
+                                value="{{$optional2_end[$i] ?? '-'}}">
                             @else
-                                -
+                            -
                             @endif
                         </td>
-                    @endfor
+                        @endfor
                 </tr>
                 <tr>
                     <td class="empty_column" colspan="3"></td>
@@ -520,68 +545,71 @@
         </ol>
 
         <div class="form-group">
-          <label class="required_field">Pilih Otorisasi</label>
-          <select class="form-control" name="authorization_id" required>
-              <option value="">-- Pilih Otorisasi --</option>
-              @foreach ($authorizations as $authorization)
-              @php
-                  $list= $authorization->authorization_detail;
-                  $string = "";
-                  foreach ($list as $key=>$author){
-                      $string = $string.$author->employee->name;
-                      if(count($list)-1 != $key){
-                          $string = $string.' -> ';
-                      }
-                  }
-              @endphp
-                  <option value="{{ $authorization->id }}">{{$string}}</option>
-              @endforeach
-          </select>
+            <label class="required_field">Pilih Otorisasi</label>
+            <select class="form-control" name="authorization_id" required>
+                <option value="">-- Pilih Otorisasi --</option>
+                @foreach ($authorizations as $authorization)
+                @php
+                $list= $authorization->authorization_detail;
+                $string = "";
+                foreach ($list as $key=>$author){
+                $string = $string.$author->employee->name;
+                if(count($list)-1 != $key){
+                $string = $string.' -> ';
+                }
+                }
+                @endphp
+                <option value="{{ $authorization->id }}">{{$string}}</option>
+                @endforeach
+            </select>
         </div>
         <b>ATTACHMENT</b><br>
-        @if($bidding->ticket_item->ticket_item_attachment->count() == 0 && $item->ticket_item_file_requirement->count() == 0)
-            -
-            @endif
-            @if ($bidding->ticket_item->ticket_item_attachment->count() > 0)
+            @if($ticket_item->ticket_item_attachment->count() > 0 || $ticket_item->ticket_item_file_requirement->count() > 0)
+                @if ($ticket_item->ticket_item_attachment->count() > 0)
                 <table class="table table-borderless table-sm">
                     <tbody>
                         @foreach ($bidding->ticket_item->ticket_item_attachment as $attachment)
-                            <tr>
-                                @php
-                                    $naming = "";
-                                    $filename = explode('.',$attachment->name)[0];
-                                    switch ($filename) {
-                                        case 'ba_file':
-                                            $naming = "berita acara merk/tipe lain";
-                                            break;
-                                        
-                                        case 'old_item':
-                                            $naming = "foto barang lama untuk replace";
-                                            break;
-                                        
-                                        default:
-                                            $naming = $filename;
-                                            break;
-                                    }
-                                @endphp
-                                <td width="40%">{{$naming}}</td>
-                                <td width="60%" class="tdbreak"><a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
-                            </tr>
+                        <tr>
+                            @php
+                            $naming = "";
+                            $filename = explode('.',$attachment->name)[0];
+                            switch ($filename) {
+                            case 'ba_file':
+                            $naming = "berita acara merk/tipe lain";
+                            break;
+
+                            case 'old_item':
+                            $naming = "foto barang lama untuk replace";
+                            break;
+
+                            default:
+                            $naming = $filename;
+                            break;
+                            }
+                            @endphp
+                            <td width="40%">{{$naming}}</td>
+                            <td width="60%" class="tdbreak"><a href="/storage{{$attachment->path}}"
+                                    download="{{$attachment->name}}">tampilkan attachment</a></td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
-            @endif
-            @if ($bidding->ticket_item->ticket_item_file_requirement->count() > 0)
+                @endif
+                @if ($ticket_item->ticket_item_file_requirement->count() > 0)
                 <table class="table table-borderless table-sm">
                     <tbody>
                         @foreach ($item->ticket_item_file_requirement as $requirement)
-                            <tr>
-                                <td width="40%">{{$requirement->file_completement->name}}</td>
-                                <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
-                            </tr>
+                        <tr>
+                            <td width="40%">{{$requirement->file_completement->name}}</td>
+                            <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}"
+                                    download="{{$requirement->name}}">tampilkan attachment</a></td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
+                @endif
+            @else
+            -
             @endif
         <center>
             <button type="submit" class="btn btn-primary">Buat Form Bidding</button>
@@ -600,29 +628,8 @@
         }
     });
     $(document).ready(function() {
-        $('#nilai_harga_0').change(function(){
-            autonumber("#nilai_harga_0");
-        });
-        $('#nilai_ketersediaan_0').change(function(){
-            autonumber("#nilai_ketersediaan_0");
-        });
-        $('#nilai_pembayaran_0').change(function(){
-            autonumber("#nilai_pembayaran_0");
-        });
-        $('#nilai_other_0').change(function(){
-            autonumber("#nilai_other_0");
-        });
-        $('#nilai_harga_1').change(function(){
-            autonumber("#nilai_harga_1");
-        });
-        $('#nilai_ketersediaan_1').change(function(){
-            autonumber("#nilai_ketersediaan_1");
-        });
-        $('#nilai_pembayaran_1').change(function(){
-            autonumber("#nilai_pembayaran_1");
-        });
-        $('#nilai_other_1').change(function(){
-            autonumber("#nilai_other_1");
+        $('input[type="number"]').change(function(){
+            autonumber($(this));
         });
 
         $('#select_kelompok').change(function(){
