@@ -78,17 +78,18 @@
                         <th>Jumlah</th>
                         <th>Total</th>
                         <th>Attachment</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($ticket->ticket_item as $item)
-                        <tr>
+                        <tr class="@if($item->isCancelled) table-danger @endif">
                             <td>{{$item->name}}</td>
                             <td>{{$item->brand}}</td>
                             <td>{{$item->type}}</td>
                             <td class="rupiah_text">{{$item->price}}</td>
-                            <td>{{$item->count}}</td>
+                            <td>{{$item->count}} {{$item->budget_pricing->uom ?? ''}}</td>
                             <td class="rupiah_text">{{$item->price * $item->count}}</td>
                             <td>
                                 @if($item->ticket_item_attachment->count() == 0 && $item->ticket_item_file_requirement->count() == 0)
@@ -137,30 +138,48 @@
                                 @endif
                             </td>
                             <td>
-                                @if($item->bidding)
-                                    @if($item->bidding->status == 0 || $item->bidding->status ==1)
-                                        <button type="button" class="btn btn-primary mb-3" onclick="openselectionvendor({{$item->id}})">Tampilkan form seleksi</button><br>
-
-                                        <b>Status Otorisasi</b><br>
-                                        @if($item->bidding->status==0)
-                                            Menunggu Otorisasi oleh <b>{{$item->bidding->current_authorization()->employee->name}}</b>
+                                @if(!$item->isCancelled)
+                                    @if($item->bidding)
+                                        @if($item->bidding->status == 0 || $item->bidding->status ==1)
+                                            <b>Status Otorisasi</b><br>
+                                            @if($item->bidding->status==0)
+                                                Menunggu Otorisasi oleh <b>{{$item->bidding->current_authorization()->employee->name}}</b>
+                                            @endif
+                                            @if($item->bidding->status==1)
+                                                Otorisasi selesai -- {{$item->bidding->updated_at->translatedFormat('d F Y (H:i)')}}
+                                            @endif
                                         @endif
-                                        @if($item->bidding->status==1)
-                                            Otorisasi selesai -- {{$item->bidding->updated_at->translatedFormat('d F Y (H:i)')}}
+
+                                        @if($item->bidding->status == -1)
+                                            Otorisasi ditolak oleh <b>{{$item->bidding->rejected_by_employee()->name}}</b><br>
+                                            Alasan : {{$item->bidding->reject_notes}}
                                         @endif
-                                    @endif
-
-                                    @if($item->bidding->status == -1)
-                                        <button type="button" class="btn btn-primary mb-3" onclick="openselectionvendor({{$item->id}})">Revisi form seleksi</button><br>
-
-                                        Otorisasi ditolak oleh <b>{{$item->bidding->rejected_by_employee()->name}}</b><br>
-                                        Alasan : {{$item->bidding->reject_notes}}
                                     @endif
                                 @else
-                                    <button type="button" class="btn btn-primary" onclick="openselectionvendor({{$item->id}})"
-                                    @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
+                                    Dibatalkan oleh <b>{{$item->cancelled_by_employee()->name}}</b><br>
+                                    Alasan : {{$item->cancel_reason}}
                                 @endif
-                                
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap">
+                                    @if(!$item->isCancelled)
+                                        @if($item->bidding)
+                                            @if($item->bidding->status == 0 || $item->bidding->status ==1)
+                                                <button type="button" class="btn btn-primary btn-sm mr-auto" onclick="openselectionvendor({{$item->id}})">Tampilkan form seleksi</button>
+                                            @endif
+        
+                                            @if($item->bidding->status == -1)
+                                                <button type="button" class="btn btn-primary btn-sm mr-auto" onclick="openselectionvendor({{$item->id}})">Revisi form seleksi</button><br>
+                                            @endif
+                                        @else
+                                            <button type="button" class="btn btn-primary mr-auto" onclick="openselectionvendor({{$item->id}})"
+                                            @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
+                                        @endif
+                                        @if($item->bidding->status != 1)
+                                        <button type="button" class="btn btn-danger btn-sm mr-auto" onclick="removeitem({{$item->id}})">Hapus Item</button>
+                                        @endif
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -171,7 +190,6 @@
                 @php
                     $count_file = 0;
                     foreach($ticket->ticket_item as $titem){
-                        // dd($titem->ticket_item_attachments->count());
                         $count_file += $titem->ticket_item_attachment->count();
                         $count_file += $titem->ticket_item_file_requirement->count();
                     }
@@ -327,6 +345,12 @@
             </div>
         @endif
     </div>
+    <center>
+        @if($ticket->status == 2)
+        <button type="button" class="btn btn-danger" onclick="terminateticket()">Batalkan Pengadaan</button>
+        @endif
+
+    </center>
 </div>
 <form action="/confirmticketfilerequirement" method="post" id="confirmform">
     @csrf
@@ -339,6 +363,16 @@
     @method('patch')
     <div class="input_list">
     </div>
+</form>
+<form action="/removeticketitem" method="post" id="removeitemform">
+    @csrf
+    @method('delete')
+    <div class="input_list"></div>
+</form>
+<form action="/terminateticket" method="post" id="terminateform">
+    @csrf
+    @method('patch')
+    <input type="hidden" name="ticket_id" value="{{$ticket->id}}">
 </form>
 @endsection
 @section('local-js')
@@ -356,13 +390,41 @@
     function reject(id,type) {
         var reason = prompt("Harap memasukan alasan penolakan");
         $('#rejectform .input_list').empty();
-        if (reason != null || reason != "") {
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return
+            }
             $('#rejectform .input_list').append('<input type="hidden" name="id" value="' + id + '">');
             $('#rejectform .input_list').append('<input type="hidden" name="type" value="' + type + '">');
             $('#rejectform .input_list').append('<input type="hidden" name="reason" value="' + reason + '">');
             $('#rejectform').submit();
-        } else {
-            alert("Alasan harus diisi")
+        }
+    }
+
+    function removeitem(id){
+        var reason = prompt("Harap memasukan alasan penghapusan item");
+        $('#removeitemform .input_list').empty();
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return
+            }
+            $('#removeitemform .input_list').append('<input type="hidden" name="ticket_item_id" value="' + id + '">');
+            $('#removeitemform .input_list').append('<input type="hidden" name="reason" value="' + reason + '">');
+            $('#removeitemform').submit();
+        }
+    }
+
+    function terminateticket(){
+        var reason = prompt("PERHATIAN ! Dengan membatalkan pengadaan. Area tidak dapat melakukan revisi terhadap pengadaan ini. Masukkan alasan pembatalan pengadaan");
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return
+            }
+            $('#terminateform').append('<input type="hidden" name="reason" value="' + reason + '">');
+            $('#terminateform').submit();
         }
     }
 </script>

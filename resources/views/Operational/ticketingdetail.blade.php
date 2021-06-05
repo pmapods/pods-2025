@@ -406,18 +406,6 @@
     @csrf
     <input type="hidden" name="code" class="ticket_code">
 </form>
-<form action="/approveticket" method="post" id="approveform">
-    @method('patch')
-    @csrf
-    <input type="hidden" name="id" class="ticket_id">    
-    <input type="hidden" name="updated_at" class="updated_at">
-</form>
-<form action="/rejectticket" method="post" id="refectform">
-    @method('patch')
-    @csrf
-    <input type="hidden" name="id" class="ticket_id">    
-    <input type="hidden" name="updated_at" class="updated_at">
-</form>
 
 <!-- Modal -->
 <div class="modal fade" id="filesmodal" tabindex="-1" role="dialog" aria-hidden="true">

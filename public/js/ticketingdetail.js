@@ -801,11 +801,13 @@ function approve(){
 
 function reject(){
     var reason = prompt("Harap memasukan alasan penolakan");
-  if (reason != null || reason != "") {
-    $('#rejectform').append('<input type="hidden" name="reason" value="'+reason+'">');
+  if (reason != null) {
+    if(reason.trim() == ''){
+        alert("Alasan Harus diisi");
+        return;
+    }
+    $('#rejectform .input_field').append('<input type="hidden" name="reason" value="'+reason+'">');
     $('#rejectform').submit();
-  }else{
-      alert("Alasan harus diisi")
   }
 }
 

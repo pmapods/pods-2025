@@ -89,16 +89,17 @@
                         <th>Jumlah</th>
                         <th width="10%">Total</th>
                         <th>Attachment</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($ticket->ticket_item as $item)
-                        <tr>
+                        <tr class="@if($item->isCancelled) table-danger @endif">
                             <td>{{$item->name}}</td>
                             <td>{{$item->brand}}</td>
                             <td>{{$item->type}}</td>
                             <td class="rupiah_text">{{$item->price}}</td>
-                            <td>{{$item->count}}</td>
+                            <td>{{$item->count}}  {{$item->budget_pricing->uom ?? ''}}</td>
                             <td class="rupiah_text">{{$item->price * $item->count}}</td>
                             <td>
                                 @if($item->ticket_item_attachment->count() == 0 && $item->ticket_item_file_requirement->count() == 0)
@@ -144,6 +145,12 @@
                                             @endforeach
                                         </tbody>
                                     </table>
+                                @endif
+                            </td>
+                            <td>
+                                @if($item->isCancelled)
+                                Item telah dihapus oleh <b>{{$item->cancelled_by_employee()->name}}</b><br>
+                                Alasan : {{$item->cancel_reason}}
                                 @endif
                             </td>
                         </tr>
@@ -371,19 +378,6 @@
         @endif
     </div>
 </div>
-<form action="/approveticket" method="post" id="approveform">
-    @method('patch')
-    @csrf
-    <input type="hidden" name="id" value="{{$ticket->id}}">    
-    <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
-</form>
-<form action="/rejectticket" method="post" id="refectform">
-    @method('patch')
-    @csrf
-    <input type="hidden" name="id" value="{{$ticket->id}}">    
-    <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
-</form>
-
 <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -442,6 +436,19 @@
     @csrf
     <div class="input_field"></div>
 </form>
+<form action="/approveticket" method="post" id="approveform">
+    @method('patch')
+    @csrf
+    <input type="hidden" name="id" value="{{$ticket->id}}">    
+    <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
+</form>
+<form action="/rejectticket" method="post" id="rejectform">
+    @method('patch')
+    @csrf
+    <input type="hidden" name="id" value="{{$ticket->id}}">    
+    <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
+</form>
+
 @endsection
 @section('local-js')
 <script>
@@ -451,11 +458,13 @@
 
     function reject() {
         var reason = prompt("Harap memasukan alasan penolakan");
-        if (reason != null || reason != "") {
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return;
+            }
             $('#rejectform').append('<input type="hidden" name="reason" value="' + reason + '">');
             $('#rejectform').submit();
-        } else {
-            alert("Alasan harus diisi")
         }
     }
 

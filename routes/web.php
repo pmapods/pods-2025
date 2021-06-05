@@ -127,11 +127,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bidding/{ticket_code}',[BiddingController::class, 'biddingDetailView']);
         Route::patch('/confirmticketfilerequirement',[BiddingController::class, 'confirmFileRequirement']);
         Route::patch('/rejectticketfilerequirement',[BiddingController::class, 'rejectFileRequirement']);
+        Route::delete('/removeticketitem',[BiddingController::class, 'removeTicketItem']);
         Route::get('/bidding/{ticket_code}/{ticket_item_id}',[BiddingController::class, 'vendorSelectionView']);
         Route::post('/addbiddingform',[BiddingController::class, 'addBiddingForm']);
         Route::patch('/approvebidding',[BiddingController::class, 'approveBidding']);
         Route::patch('/rejectbidding',[BiddingController::class, 'rejectBidding']);
         Route::patch('/uploadsignedfile',[BiddingController::class, 'uploadSignedFile']);
+        Route::patch('/terminateticket',[BiddingController::class, 'terminateTicket']);
     });
 
     // Purchase Requisition

@@ -87,6 +87,30 @@ class BiddingController extends Controller
         }
     }
 
+    public function removeTicketItem(Request $request){
+        try{
+            DB::beginTransaction();
+            $ticket_item                = TicketItem::find($request->ticket_item_id);
+            $ticket_item->isCancelled   = true;
+            $ticket_item->cancelled_by  = Auth::user()->id;
+            $ticket_item->cancel_reason = $request->reason;
+            $ticket_item->save();
+            
+            $isvalidated =  $this->validateBiddingDone($ticket_item->ticket->id);
+            if($isvalidated){
+                DB::commit();
+                return redirect('/bidding/'.$ticket_item->ticket->code)->with('success','Berhasil Menghapus item, seluruh otorisasi Bidding telah selesai, Silahkan melanjutkan proses di menu Purchase Requistion'); 
+            }else{
+                DB::commit();
+                return back()->with('success','Berhasil menghapus item.');
+            }
+        }catch(\Exception $ex){
+            DB::rollback();
+            dd($ex);
+            return back()->with('error','Gagal menghapus item '.$ex->getMessage());
+        } 
+    }
+
     public function vendorSelectionView($ticket_code, $ticket_item_id){
         $ticket_item = TicketItem::find($ticket_item_id);
         $ticket = Ticket::where('code',$ticket_code)->first();
@@ -271,7 +295,8 @@ class BiddingController extends Controller
     public function validateBiddingDone($ticket_id) {
         $ticket = Ticket::findOrFail($ticket_id);
         $flag = true;
-        foreach($ticket->ticket_item as $ticket_item){
+        // dd($ticket->ticket_item->where('isCancelled','!=',true));
+        foreach($ticket->ticket_item->where('isCancelled','!=',true) as $ticket_item){
             if(isset($ticket_item->bidding)){
                 if($ticket_item->bidding->status != 1){
                     $flag = false;
@@ -285,5 +310,22 @@ class BiddingController extends Controller
             $ticket->save();
         }
         return $flag;
+    }
+
+    public function terminateTicket(Request $request){
+        try {
+            $ticket = Ticket::findOrFail($request->ticket_id);
+            if($ticket->status==3){
+                return back()->with('error','Ticket yang sudah mencapai proses PR tidak dapat dibatalkan');
+            }
+            $ticket->status = -1;
+            $ticket->terminated_by = Auth::user()->id;
+            $ticket->termination_reason = $request->reason;
+            $ticket->save();
+            return redirect('/bidding')->with('success','Berhasil membatalkan pengadaan '.$ticket->code);
+        } catch (\Exception $ex) {
+            dd($ex);
+            return back('/bidding')->with('error','Gagal membatalkan pengadaan '.$ex->getMessage());
+        }
     }
 }

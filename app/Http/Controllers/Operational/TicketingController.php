@@ -26,10 +26,20 @@ use Carbon\Carbon;
 
 class TicketingController extends Controller
 {
-    public function ticketingView(){
+    public function ticketingView(Request $request){
         // show ticket liat based on auth access area
         $access = Auth::user()->location_access->pluck('salespoint_id');
-        $tickets = Ticket::whereIn('salespoint_id',$access)->get()->sortByDesc('created_at');
+        if($request->input('status') == -1){
+            $tickets = Ticket::whereIn('salespoint_id',$access)
+            ->where('status',-1)
+            ->get()
+            ->sortByDesc('created_at');
+        }else{
+            $tickets = Ticket::whereIn('salespoint_id',$access)
+            ->where('status','!=',-1)
+            ->get()
+            ->sortByDesc('created_at');
+        }
         
         return view('Operational.ticketing',compact('tickets'));
     }
@@ -170,7 +180,7 @@ class TicketingController extends Controller
             }
             // get all files from request
             $allfiles =[];
-            if(count($request->item) > 0){
+            if(count($request->item ?? []) > 0){
                 foreach($request->item as $item){
                     if(isset($item['files'])){
                         foreach($item['files'] as $file){
@@ -548,7 +558,7 @@ class TicketingController extends Controller
             $ticket = Ticket::findOrFail($request->id);
             $updated_at = new Carbon($request->updated_at);
             if ($updated_at == $ticket->updated_at) {
-                $ticket->status = 3;
+                $ticket->status = -1;
                 $ticket->terminated_by = Auth::user()->id;
                 $ticket->termination_reason = $request->reason;
                 $ticket->save();

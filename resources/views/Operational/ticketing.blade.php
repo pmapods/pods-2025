@@ -8,12 +8,12 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Pengadaan Barang Jasa</h1>
+                <h1 class="m-0 text-dark">Pengadaan Barang Jasa @if(request()->get('status') == -1) (History) @endif</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Operasional</li>
-                    <li class="breadcrumb-item active">Pengadaan Barang Jasa</li>
+                    <li class="breadcrumb-item active">Pengadaan Barang Jasa @if(request()->get('status') == -1) (History) @endif</li>
                 </ol>
             </div>
         </div>
@@ -21,6 +21,11 @@
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectTicketModal">
                 Tambah Pengadaan Baru
             </button>
+            @if(request()->get('status') == -1)
+                <a href="/ticketing" class="btn btn-primary ml-2">Pengadaan Aktif</a>
+            @else
+                <a href="/ticketing?status=-1" class="btn btn-info ml-2">History</a>
+            @endif
         </div>
     </div>
 </div>

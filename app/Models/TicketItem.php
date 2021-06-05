@@ -24,6 +24,11 @@ class TicketItem extends Model
         return $this->hasMany(TicketItemFileRequirement::class);
     }
 
+    public function budget_pricing(){
+        // hanya untuk barang terdaftar
+        return $this->belongsTo(BudgetPricing::class);
+    }
+
     public function cancelled_by_employee(){
         if($this->cancelled_by){
             return Employee::find($this->cancelled_by);

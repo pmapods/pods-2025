@@ -71,7 +71,7 @@ class TicketingMigration extends Migration
             $table->integer('count');
             $table->boolean('isCancelled')->default(false);
             $table->integer('cancelled_by')->nullable();
-            $table->string('cancelled_on')->nullable();
+            // $table->string('cancelled_on')->nullable();
             $table->string('cancel_reason')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->softDeletes();
