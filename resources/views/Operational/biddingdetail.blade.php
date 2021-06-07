@@ -175,7 +175,7 @@
                                             <button type="button" class="btn btn-primary mr-auto" onclick="openselectionvendor({{$item->id}})"
                                             @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
                                         @endif
-                                        @if($item->bidding->status != 1)
+                                        @if(($item->bidding->status ?? 0) != 1)
                                         <button type="button" class="btn btn-danger btn-sm mr-auto" onclick="removeitem({{$item->id}})">Hapus Item</button>
                                         @endif
                                     @endif
@@ -347,9 +347,8 @@
     </div>
     <center>
         @if($ticket->status == 2)
-        <button type="button" class="btn btn-danger" onclick="terminateticket()">Batalkan Pengadaan</button>
+        <button type="button" class="btn btn-danger mt-3" onclick="terminateticket()">Batalkan Pengadaan</button>
         @endif
-
     </center>
 </div>
 <form action="/confirmticketfilerequirement" method="post" id="confirmform">

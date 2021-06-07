@@ -39,67 +39,104 @@
             <thead class="text-center">
                 <tr>
                     <td class="font-weight-bold">No</td>
-                    <td class="font-weight-bold">Nama Barang</td>
+                    <td class="font-weight-bold" width="15%">Nama Barang</td>
                     <td class="font-weight-bold" width='10%'>Satuan</td>
-                    <td class="font-weight-bold">Qty</td>
+                    <td class="font-weight-bold" width="8%">Qty</td>
                     <td class="font-weight-bold">Harga Satuan (Rp)</td>
-                    <td class="font-weight-bold">Total Harga</td>
+                    <td class="font-weight-bold" width="10%">Total Harga</td>
                     <td class="font-weight-bold">Tgl Set Up</td>
                     <td class="font-weight-bold">Keterangan</td>
                 </tr>
             </thead>
             <tbody class="text-center">
+                @php $grandtotal=0; @endphp
                 @foreach ($ticket->ticket_item as $key=>$item)
                 <tr>
-                    <td>{{$key+1}}</td>
+                    <td rowspan="3">{{$key+1}}</td>
                     <td>
-                        {{$item->name}}<br>
-                        <div class="text-info">
-                            Ongkos Kirim<br>
-                            Ongkos Pasang
-                        </div>
+                        {{$item->name}}
                     </td>
-                    <td><input type="text" class="form-control"></td>
-                    <td>{{$item->count}}</td>
+                    <td rowspan="3">{{$item->budget_pricing->uom}}</td>
+                    <td rowspan="3">
+                        <input type="number" class="form-control nilai qty item{{$key}}" min="0" max="{{$item->count}}" 
+                        value="{{$item->count}}"
+                        onchange="refreshItemTotal(this)">
+                    </td>
                     @php
-                        $total =0;
-                        $total += $item->bidding->selected_vendor()->end_harga;
-                        $total += $item->bidding->selected_vendor()->end_ppn;
+                        $total = 0;
+                        $total += $item->bidding->selected_vendor()->end_harga * $item->count;
                         $total += $item->bidding->selected_vendor()->end_ongkir_price;
                         $total += $item->bidding->selected_vendor()->end_pasang_price;
                     @endphp
                     <td>
-                        <input type="text" class="form-control rupiah" name="" id="" aria-describedby="helpId" placeholder="" value="{{$item->bidding->selected_vendor()->end_harga}}"><br>
-                        <span class="rupiah_text text-info">{{$item->bidding->selected_vendor()->end_ongkir_price}}</span><br>
-                        <span class="rupiah_text text-info">{{$item->bidding->selected_vendor()->end_pasang_price}}</span>
+                        <input type="text" class="form-control rupiah item{{$key}}" 
+                        data-max="{{$item->bidding->selected_vendor()->end_harga}}" 
+                        value="{{$item->bidding->selected_vendor()->end_harga}}"
+                        onchange="refreshItemTotal(this)">
                     </td>
-                    <td class="rupiah_text">
+                    <td rowspan="3" class="rupiah_text item{{$key}} total" data-total="{{$total}}">
                         {{$total}}
                     </td>
-                    <td>-</td>
-                    <td>{{$item->bidding->price_notes}}</td>
+                    <td rowspan="3">
+                        <input class="form-control" type="date">
+                    </td>
+                    <td rowspan="3">notes bidding harga : {{$item->bidding->price_notes}}</td>
+                </tr>
+                <tr>
+                    <td>Ongkos Kirim</td>
+                    <td>
+                        <input type="text" class="form-control rupiah item{{$key}}" 
+                        data-max="{{$item->bidding->selected_vendor()->end_ongkir_price}}" 
+                        value="{{$item->bidding->selected_vendor()->end_ongkir_price}}"
+                        onchange="refreshItemTotal(this)">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ongkos Pasang</td>
+                    <td>
+                        <input type="text" class="form-control rupiah item{{$key}}" 
+                        data-max="{{$item->bidding->selected_vendor()->end_pasang_price}}" 
+                        value="{{$item->bidding->selected_vendor()->end_pasang_price}}"
+                        onchange="refreshItemTotal(this)">
+                    </td>
                 </tr>
                 @php
-                    $total = $item->count * $item->bidding->selected_vendor()->start_harga;
+                    $grandtotal += $total;
                 @endphp
                 @endforeach
                 <tr>
                     <td colspan="5"><b>Total</b></td>
-                    <td class="rupiah_text">{{$total}}</td>
-                    <td></td>
-                    <td></td>
+                    <td class="rupiah_text grandtotal" data-grandtotal="{{$grandtotal}}">{{$grandtotal}}</td>
+                    <td colspan="2"></td>
                 </tr>
             </tbody>
         </table>
         <div class="form-group">
             <label for="">Pilih Otorisasi</label>
-            <select class="form-control">
+            <select class="form-control select2">
                     <option value="">Pilih Otorisasi</option>
                     <option>Kevin -> Fahmi -> Yohan -> Wiwik Wijaya -> James Arthur -> Wiwik Wijaya -> CM</option>
                     <option>Kevin -> Fahmi -> Yohan -> Wiwik Wijaya -> James Arthur -> Wiwik Wijaya</option>
             </select>
         </div>
-        <center>
+        <center><h4>Otorisasi</h4><center>
+            @php
+                $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
+                $collection = $ticket->ticket_authorization->slice(1)->all();
+                $values = collect($collection)->values();
+            @endphp
+        <div class="d-flex align-items-center justify-content-center">
+            @foreach ($values->all() as $key =>$author)
+                <div class="mr-3">
+                    <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee->employee_position->name}}</span><br>
+                    <span>{{$default_as[$key]}}</span>
+                </div>
+                @if($key < $values->count()-1)
+                <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
+                @endif
+            @endforeach
+        </div>
+        <center class="mt-3">
             <button type="button" class="btn btn-primary">Mulai Otorisasi Form Bidding</button>
             <button type="button" class="btn btn-primary">Cetak PR</button>
         </center>
@@ -109,5 +146,45 @@
 @endsection
 @section('local-js')
 <script>
+    $(document).ready(function(){
+        $('input[type="number"]').change(function(){
+            autonumber($(this));
+        });
+        $('.rupiah').each(function(){
+            let index = $('.rupiah').index($(this));
+            let max = $(this).data('max');
+            let rupiahElement  = autoNumeric_field[index];
+            rupiahElement.update({"maximumValue" : max});
+        });
+    });
+
+    function refreshItemTotal(this_el){
+        let classes = $(this_el).prop('class').split(' ');
+        classes = classes.filter(function(item){
+            if(item.includes('item')){
+                return true;
+            }else{
+                return false;
+            }
+        });
+        let itemindex = classes[0].replace('item','');
+        let qty = $('.item'+itemindex+':eq(0)').val();
+        let price = autoNumeric_field[$('.rupiah').index($('.item'+itemindex+':eq(1)'))].get();
+        let ongkir = autoNumeric_field[$('.rupiah').index($('.item'+itemindex+':eq(3)'))].get();
+        let ongpas = autoNumeric_field[$('.rupiah').index($('.item'+itemindex+':eq(4)'))].get();
+        let total = (qty * parseFloat(price)) + parseFloat(ongkir) + parseFloat(ongpas);
+        $('.item'+itemindex+':eq(2)').text(setRupiah(total));
+        $('.item'+itemindex+':eq(2)').data('total',total);
+        refreshGrandTotal();
+    }
+
+    function refreshGrandTotal() {
+        let grandtotal = 0;
+        $('.total').each(function(){
+            grandtotal += parseFloat($(this).data('total'));
+        });
+        $('.grandtotal').text(setRupiah(grandtotal));
+        $('.grandtotal').data('grandtotal',grandtotal);
+    }
 </script>
 @endsection

@@ -22,26 +22,30 @@ class EmployeeSeeder extends Seeder
     {
         $faker = Faker::create('id_ID');
 
-        //add staff and grom
+        //area position
         $positions = ['Staff','ROM','GROM'];
+        $position_ids = [];
         foreach ($positions as $position){
             $newposition = new EmployeePosition;
             $newposition->name = $position;
             $newposition->save();
+            array_push($position_ids,$newposition->id);
         }
 
-        $groms = ['Hafid Fauzi','Rudy Maryadin'];
-        foreach ($groms as $key => $grom){
+        // AREA EMPLOYEE
+        $area_employees = ['Kevin','Julian','Hafid Fauzi'];
+        $usernames = ['staff','rom','grom'];
+        foreach ($area_employees as $key => $area_employee){
             $count_employee = Employee::withTrashed()->count() + 1;
             $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
 
             $newEmployee                         = new Employee;
-            $newEmployee->employee_position_id   = 4;
+            $newEmployee->employee_position_id   = $position_ids[$key];
             $newEmployee->code                   = $code;
-            $newEmployee->name                   = $grom;
-            $newEmployee->username               = 'grom'.($key+1);
+            $newEmployee->name                   = $area_employee;
+            $newEmployee->username               = $usernames[$key];
             $newEmployee->email                  = $faker->email();
-            $newEmployee->password               = Hash::make($newEmployee->username);
+            $newEmployee->password               = Hash::make($usernames[$key]);
             $newEmployee->phone                  = $faker->phoneNumber();
             $newEmployee->is_password_changed    = true;
             $newEmployee->save();
@@ -55,60 +59,50 @@ class EmployeeSeeder extends Seeder
             $access = new EmployeeMenuAccess;
             $access->employee_id = $newEmployee->id;
             $access->masterdata = 0;
-            $access->operational = 3;
+            $access->operational = 1;
             $access->save();
         }
 
-        $count_employee = Employee::withTrashed()->count() + 1;
-        $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
-        $newEmployee                         = new Employee;
-        $newEmployee->employee_position_id   = 2;
-        $newEmployee->code                   = $code;
-        $newEmployee->name                   = 'Kevin Farel';
-        $newEmployee->username               = 'staff1';
-        $newEmployee->email                  = 'kevinfarel@gmail.com';
-        $newEmployee->password               = Hash::make($newEmployee->username);
-        $newEmployee->phone                  = $faker->phoneNumber();
-        $newEmployee->is_password_changed    = true;
-        $newEmployee->save();
-
-        foreach(Salespoint::all() as $salespoint){
-            $newAccess = new EmployeeLocationAccess;
-            $newAccess->employee_id = $newEmployee->id;
-            $newAccess->salespoint_id = $salespoint->id;
-            $newAccess->save();
+        // Purchasing position
+        $positions = ['Purchasing Staff','Purchasing SPV','Purchasing Manager'];
+        $position_ids = [];
+        foreach ($positions as $position){
+            $newposition = new EmployeePosition;
+            $newposition->name = $position;
+            $newposition->save();
+            array_push($position_ids,$newposition->id);
         }
-        
-        $access = new EmployeeMenuAccess;
-        $access->employee_id = $newEmployee->id;
-        $access->masterdata = 0;
-        $access->operational = 3;
-        $access->save();
 
-        $count_employee = Employee::withTrashed()->count() + 1;
-        $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
-        $newEmployee                         = new Employee;
-        $newEmployee->employee_position_id   = 3;
-        $newEmployee->code                   = $code;
-        $newEmployee->name                   = 'Julian';
-        $newEmployee->username               = 'rom1';
-        $newEmployee->email                  = 'julian@gmail.com';
-        $newEmployee->password               = Hash::make($newEmployee->username);
-        $newEmployee->phone                  = $faker->phoneNumber();
-        $newEmployee->is_password_changed    = true;
-        $newEmployee->save();
+        // PURCHASING EMPLOYEE
+        $purchasing_employees = ['Deny Rachmat','Anugrah Purnama','Tirani Susanti'];
+        $usernames = ['purchasing1','purchasing2','purchasing3'];
+        foreach ($purchasing_employees as $key => $purchasing_employee){
+            $count_employee = Employee::withTrashed()->count() + 1;
+            $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
 
-        foreach(Salespoint::all() as $salespoint){
-            $newAccess = new EmployeeLocationAccess;
-            $newAccess->employee_id = $newEmployee->id;
-            $newAccess->salespoint_id = $salespoint->id;
-            $newAccess->save();
+            $newEmployee                         = new Employee;
+            $newEmployee->employee_position_id   = $position_ids[$key];
+            $newEmployee->code                   = $code;
+            $newEmployee->name                   = $purchasing_employee;
+            $newEmployee->username               = $usernames[$key];
+            $newEmployee->email                  = $faker->email();
+            $newEmployee->password               = Hash::make($usernames[$key]);
+            $newEmployee->phone                  = $faker->phoneNumber();
+            $newEmployee->is_password_changed    = true;
+            $newEmployee->save();
+
+            foreach(Salespoint::all() as $salespoint){
+                $newAccess = new EmployeeLocationAccess;
+                $newAccess->employee_id = $newEmployee->id;
+                $newAccess->salespoint_id = $salespoint->id;
+                $newAccess->save();
+            }
+            $access = new EmployeeMenuAccess;
+            $access->employee_id = $newEmployee->id;
+            $access->masterdata = 0;
+            $access->operational = 6;
+            $access->save();
         }
-        
-        $access = new EmployeeMenuAccess;
-        $access->employee_id = $newEmployee->id;
-        $access->masterdata = 0;
-        $access->operational = 3;
-        $access->save();
+
     }
 }

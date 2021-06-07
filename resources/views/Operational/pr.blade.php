@@ -44,6 +44,7 @@
             </thead>
             <tbody>
                 @foreach ($tickets as $key => $ticket)
+                <tr>
                     <td>{{$key+1}}</td>
                     <td>{{$ticket->code}}</td>
                     <td>{{$ticket->salespoint->name}}</td>
@@ -52,6 +53,7 @@
                         Menunggu untuk dibuat PR<br>
                         Menunggu Otorisasi PR
                     </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>

@@ -16,14 +16,14 @@ $(document).ready(function(){
         decimalCharacter: ",",
         digitGroupSeparator: ".",
         emptyInputBehavior: "zero",
+        minimumValue: 0,
         unformatOnSubmit: true,
     });
 
     // rupiahtext formatter
-    new AutoNumeric.multiple('.rupiah_text', {
-        currencySymbol: "Rp ",
-        decimalCharacter: ",",
-        digitGroupSeparator: ".",
+    $('.rupiah_text').each(function(){
+        let value = parseFloat($(this).text().trim());
+        $(this).text(setRupiah(value));
     });
 
     // Selection search with select2
@@ -94,6 +94,8 @@ function autonumber(el) {
         $(el).val(min);
     } else if($(el).val() == ""){
         $(el).val(0);
+    }else{
+        $(el).val(parseInt($(el).val()));
     }
 }
 
