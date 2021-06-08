@@ -35,6 +35,10 @@ class Ticket extends Model
         return $this->belongsTo(Salespoint::class);
     }
 
+    public function pr(){
+        return $this->hasOne(Pr::class);
+    }
+
     public function item_type(){
         switch ($this->item_type) {
             case '0':
@@ -95,6 +99,18 @@ class Ticket extends Model
                 
             case '3':
                 return 'Bidding Selesai / Menunggu Proses PR';
+                break;
+
+            case '4':
+                return 'PR sudah dibuat, Menunggu otorisasi';
+                break;
+
+            case '5':
+                return 'PR selesai otorisasi, Menunggu update kelengkapan nomor asset';
+                break;
+
+            case '6':
+                return 'PR selesai. Menunggu proses PO';
                 break;
                 
             case '-1':

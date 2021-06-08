@@ -29,6 +29,10 @@ class TicketItem extends Model
         return $this->belongsTo(BudgetPricing::class);
     }
 
+    public function pr_detail(){
+        return $this->hasOne(PrDetail::class);
+    }
+
     public function cancelled_by_employee(){
         if($this->cancelled_by){
             return Employee::find($this->cancelled_by);

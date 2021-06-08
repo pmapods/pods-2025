@@ -35,6 +35,9 @@
     </div>
 </div>
 @php
+    for($i = 0; $i < $ticket->ticket_vendor->count(); $i++){
+        $start_harga[$i] = $ticket_item->price;
+    }
     if(isset($bidding)){
         foreach ($bidding->bidding_detail as $key=>$detail){
             $address[$key] = $detail->address;

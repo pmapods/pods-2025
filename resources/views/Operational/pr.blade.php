@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Operasional</h1>
+                <h1 class="m-0 text-dark">Purchase Requisition</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -50,7 +50,11 @@
                     <td>{{$ticket->salespoint->name}}</td>
                     <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
                     <td>
-                        Menunggu untuk dibuat PR
+                        {{$ticket->status()}}
+                        @if(isset($ticket->pr) && (($ticket->pr->status ?? '') == -1))
+                            <br><span class="text-danger">Otorisasi ditolak oleh <b>{{$ticket->pr->rejected_by_employee()->name}}</b><br>
+                            Alasan :{{$ticket->pr->reject_reason}}</span>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

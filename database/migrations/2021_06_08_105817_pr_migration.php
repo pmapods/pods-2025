@@ -16,12 +16,14 @@ class PrMigration extends Migration
         Schema::create('pr', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('ticket_id')->unsigned();
-            $table->tinyInteger('status');
+            $table->integer('created_by');
+            $table->tinyInteger('status')->default(0);
             // 0 Menunggu proses otorisasi
             // 1 proses otorisasi selesai
             // 2 nomor asset sudah di update / ready for po
             // -1 rejected
-            $table->integer('created_by');
+            $table->integer('rejected_by')->nullable();
+            $table->string('reject_reason')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->softDeletes();
             $table->timestamps();
@@ -36,7 +38,8 @@ class PrMigration extends Migration
             $table->double('ongkir');
             $table->double('ongpas');
             $table->date('setup_date')->nullable();
-            $table->string('notes');
+            $table->string('notes')->nullable();
+            $table->string('asset_number')->nullable();
             $table->foreign('pr_id')->references('id')->on('pr');
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->softDeletes();

@@ -29,6 +29,7 @@
     @csrf
     <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
     <input type="hidden" name="ticket_id" value="{{$ticket->id}}">
+    <input type="hidden" name="pr_id" value="{{$ticket->pr->id ?? -1}}">
     <input type="hidden" name="_method">
     <div class="content-body border border-dark p-2">
         <div class="d-flex flex-column">
@@ -39,7 +40,7 @@
                 <i class="fal @if($ticket->budget_type==0) fa-check-square @else fa-square @endif mr-1" aria-hidden="true"></i>Budget
                 <i class="fal @if($ticket->budget_type==1) fa-check-square @else fa-square @endif ml-5 mr-1" aria-hidden="true"></i>Non Budget
             </div>
-            <span>Tanggal : {{now()->translatedFormat('Y-m-d')}}</span>
+            <span>Tanggal : {{($ticket->pr) ? $ticket->pr->created_at->format('Y-m-d') : now()->translatedFormat('Y-m-d')}}</span>
             <table class="table table-bordered">
                 <thead class="text-center">
                     <tr>
@@ -56,43 +57,62 @@
                 <tbody class="text-center">
                     @php $grandtotal=0; @endphp
                     @foreach ($ticket->ticket_item->where('isCancelled','!=',true) as $key=>$item)
+                    @if (isset($item->pr_detail))
+                        <input type="hidden" name="item[{{$key}}][pr_detail_id]" value="{{$item->pr_detail->id}}">
+                    @else
+                        <input type="hidden" name="item[{{$key}}][ticket_item_id]" value="{{ $item->id }}">
+                    @endif
                     <tr>
                         <td rowspan="3">{{$key+1}}</td>
                         <td>
                             {{$item->name}}
                         </td>
-                        <td rowspan="3">{{$item->budget_pricing->uom}}</td>
+                        <td rowspan="3">{{$item->budget_pricing->uom ?? '-'}}</td>
                         <td rowspan="3">
                             <input type="number" class="form-control nilai qty item{{$key}}" min="0" max="{{$item->count}}" 
-                            value="{{$item->count}}"
+                            value="{{($item->pr_detail)?$item->pr_detail->qty:$item->count}}"
                             onchange="refreshItemTotal(this)"
                             name="item[{{$key}}][qty]">
+                            <small class="text-secondary">max: {{$item->count}}</small>
                         </td>
                         @php
                             $total = 0;
-                            $total += $item->bidding->selected_vendor()->end_harga * $item->count;
-                            $total += $item->bidding->selected_vendor()->end_ongkir_price;
-                            $total += $item->bidding->selected_vendor()->end_pasang_price;
+                            if($item->pr_detail){
+                                $total += $item->pr_detail->qty * $item->pr_detail->price;
+                                $total += $item->pr_detail->ongkir;
+                                $total += $item->pr_detail->ongpas;
+                                if($item->pr_detail->qty == 0){
+                                    $total = 0;
+                                }
+                            }else{
+                                $total += $item->bidding->selected_vendor()->end_harga * $item->count;
+                                $total += $item->bidding->selected_vendor()->end_ongkir_price;
+                                $total += $item->bidding->selected_vendor()->end_pasang_price;
+                                if($item->count == 0){
+                                    $total = 0;
+                                }
+                            }
                         @endphp
                         <td>
                             <input type="text" class="form-control rupiah item{{$key}}" 
                             data-max="{{$item->bidding->selected_vendor()->end_harga}}" 
-                            value="{{$item->bidding->selected_vendor()->end_harga}}"
+                            value="{{($item->pr_detail)?$item->pr_detail->price:$item->bidding->selected_vendor()->end_harga}}"
                             onchange="refreshItemTotal(this)"
                             name="item[{{$key}}][price]">
+                            <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_harga}}</span></small>
                         </td>
                         <td rowspan="3" class="rupiah_text item{{$key}} total" data-total="{{$total}}">
                             {{$total}}
                         </td>
                         <td rowspan="3">
-                            <input class="form-control" type="date" name="item[{{$key}}][setup_date]">
+                            <input class="form-control" type="date" name="item[{{$key}}][setup_date]" value="{{($item->pr_detail)?$item->pr_detail->setup_date : null}}">
                         </td>
                         <td rowspan="3" class="text-justify">
                             <div class="d-flex flex-column">
                                 <b>notes bidding harga</b>
                                 <span>{{$item->bidding->price_notes}}</span>
                                 <b>Keterangan</b>
-                                <textarea class="form-control" rows="3" placeholder="keterangan tambahan" name="item[{{$key}}][notes]"></textarea>
+                                <textarea class="form-control" rows="3" placeholder="keterangan tambahan" name="item[{{$key}}][notes]">{{($item->pr_detail)?$item->pr_detail->notes:''}}</textarea>
                             </div>
                         </td>
                     </tr>
@@ -101,9 +121,10 @@
                         <td>
                             <input type="text" class="form-control rupiah item{{$key}}" 
                             data-max="{{$item->bidding->selected_vendor()->end_ongkir_price}}" 
-                            value="{{$item->bidding->selected_vendor()->end_ongkir_price}}"
+                            value="{{($item->pr_detail)?$item->pr_detail->ongkir:$item->bidding->selected_vendor()->end_ongkir_price}}"
                             onchange="refreshItemTotal(this)"
                             name="item[{{$key}}][ongkir]">
+                            <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_ongkir_price}}</span></small>
                         </td>
                     </tr>
                     <tr>
@@ -111,10 +132,12 @@
                         <td>
                             <input type="text" class="form-control rupiah item{{$key}}" 
                             data-max="{{$item->bidding->selected_vendor()->end_pasang_price}}" 
-                            value="{{$item->bidding->selected_vendor()->end_pasang_price}}"
+                            value="{{($item->pr_detail)?$item->pr_detail->ongpas:$item->bidding->selected_vendor()->end_pasang_price}}"
                             onchange="refreshItemTotal(this)"
                             name="item[{{$key}}][ongpas]">
+                            <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_pasang_price}}</span></small>
                         </td>
+
                     </tr>
                     @php
                         $grandtotal += $total;
@@ -127,6 +150,7 @@
                     </tr>
                 </tbody>
             </table>
+            @if ($ticket->status < 4)
             <div class="form-group">
                 <label for="">Pilih Otorisasi</label>
                 <select class="form-control select2 authorization_select2" required name="pr_authorization_id">
@@ -147,6 +171,7 @@
                     @endforeach
                 </select>
             </div>
+            @endif
             <center><h4>Otorisasi</h4><center>
             @php
                 $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
@@ -167,12 +192,37 @@
                     @endforeach
                 </div>
                 <div class="d-flex align-items-center justify-content-center" id="authorization_field">
-    
+                    @if($ticket->status > 3)
+                        <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
+                        @foreach($ticket->pr->pr_authorizations as $key =>$author)
+                            <div class="mr-3">
+                                <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br>
+                                @if ($author->status == 1)
+                                    <span class="text-success">Approved</span><br>
+                                    <span class="text-success">{{$author->updated_at->translatedFormat('d F Y (H:i)')}}</span><br>
+                                @endif
+                                @if(($ticket->pr->current_authorization()->employee_id ?? -1) == $author->employee_id)
+                                    <span class="text-warning">Menunggu Otorisasi</span><br>
+                                @endif
+                                <span>{{$author->as}}</span>
+                            </div>
+                            @if($key != $ticket->pr->pr_authorizations->count()-1)
+                                <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
+                            @endif
+                        @endforeach
+                    @endif
                 </div>
             </div>
-            <center class="mt-3">
-                <button type="button" class="btn btn-primary" onclick="startAuthorization()">Mulai Otorisasi Form PR</button>
-            </center>
+            <div class="d-flex justify-content-center mt-3">
+                @if ($ticket->status == 3)
+                    <button type="button" class="btn btn-primary" onclick="startAuthorization()">Mulai Otorisasi Form PR</button>
+                @else
+                    @if(($ticket->pr->current_authorization()->employee_id ?? -1) == Auth::user()->id)
+                        <button type="button" class="btn btn-success" onclick="approve()">Approve</button>
+                        <button type="button" class="btn btn-danger ml-2" onclick="reject()">Reject</button>
+                    @endif
+                @endif
+            </div>
     </div>
 </form>
 @endsection
@@ -248,7 +298,45 @@
         $('form').prop('action','/addnewpr');
         $('form').prop('method','POST');
         $('form input[name="_method"]').val('POST');
+        $('.rupiah').each(function(){
+            let index = $('.rupiah').index($(this));
+            let rupiahElement  = autoNumeric_field[index];
+            rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
+        });
         $('form').submit();
     }
+
+    function approve(){
+        $('form').prop('action','/approvepr');
+        $('form').prop('method','POST');
+        $('form input[name="_method"]').val('PATCH');
+        $('.rupiah').each(function(){
+            let index = $('.rupiah').index($(this));
+            let rupiahElement  = autoNumeric_field[index];
+            rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
+        });
+        $('form').submit();
+    }
+
+    function reject(){
+        var reason = prompt("Harap memasukan alasan penolakan");
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return;
+            }
+            $('form').append('<input type="hidden" name="reason" value="' + reason + '">');
+            $('form').prop('action','/rejectpr');
+            $('form').prop('method','POST');
+            $('form input[name="_method"]').val('PATCH');
+            $('.rupiah').each(function(){
+                let index = $('.rupiah').index($(this));
+                let rupiahElement  = autoNumeric_field[index];
+                rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
+            });
+            $('form').submit();
+        }
+    }
+
 </script>
 @endsection

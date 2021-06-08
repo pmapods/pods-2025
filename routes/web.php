@@ -141,6 +141,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pr',[PRController::class, 'prView']);
         Route::get('/pr/{ticket_code}',[PRController::class, 'prDetailView']);
         Route::post('/addnewpr',[PRController::class, 'addNewPR']);
+        Route::patch('/approvepr',[PRController::class, 'approvePR']);
+        Route::patch('/rejectpr',[PRController::class, 'rejectPR']);
+        Route::post('/submitassetnumber',[PRController::class, 'submitAssetNumber']);
     });
 
     // Purchase Order

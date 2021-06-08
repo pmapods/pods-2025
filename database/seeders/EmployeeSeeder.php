@@ -129,6 +129,7 @@ class EmployeeSeeder extends Seeder
                 $newAccess->salespoint_id = $salespoint->id;
                 $newAccess->save();
             }
+            
             $access = new EmployeeMenuAccess;
             $access->employee_id = $newEmployee->id;
             $access->masterdata = 0;
