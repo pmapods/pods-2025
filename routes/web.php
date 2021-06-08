@@ -140,6 +140,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['menu_access:operational:4'])->group(function () {
         Route::get('/pr',[PRController::class, 'prView']);
         Route::get('/pr/{ticket_code}',[PRController::class, 'prDetailView']);
+        Route::post('/addnewpr',[PRController::class, 'addNewPR']);
     });
 
     // Purchase Order

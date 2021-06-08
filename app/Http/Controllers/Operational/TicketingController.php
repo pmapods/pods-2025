@@ -367,7 +367,7 @@ class TicketingController extends Controller
                     $newTicketAuthorization->employee_id        = $detail->employee_id;
                     $newTicketAuthorization->employee_name      = $detail->employee->name;
                     $newTicketAuthorization->as                 = $detail->sign_as;
-                    $newTicketAuthorization->employee_position  = $detail->employee->employee_position->name;
+                    $newTicketAuthorization->employee_position  = $detail->employee_position->name;
                     $newTicketAuthorization->level              = $detail->level;
                     $newTicketAuthorization->save();
                 }

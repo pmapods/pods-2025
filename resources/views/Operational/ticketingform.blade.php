@@ -362,7 +362,7 @@
             <div class="font-weight-bold h5">Urutan Otorisasi</div>
             <div class="authorization_list_field row row-cols-md-3 row-cols-2 p-3">
                 @foreach ($ticket->ticket_authorization as $author)
-                    <div class="mb-3"><span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee->employee_position->name}}</span><br><span>{{$author->as}}</span></div>
+                    <div class="mb-3"><span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br><span>{{$author->as}}</span></div>
                 @endforeach
             </div>
         </div>

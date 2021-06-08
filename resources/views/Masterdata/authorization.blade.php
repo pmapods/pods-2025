@@ -39,12 +39,12 @@
         <table id="authorDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr>
-                    <td>Salespoint</td>
-                    <td>Region</td>
-                    <td>Orang Pertama</td>
-                    <td>Jenis Form</td>
-                    <td>Tanggal Dibuat</td>
-                    <td>Tingkat</td>
+                    <th>Salespoint</th>
+                    <th>Region</th>
+                    <th>Orang Pertama</th>
+                    <th>Jenis Form</th>
+                    <th>Tanggal Dibuat</th>
+                    <th>Tingkat</th>
                 </tr>
             </thead>
             <tbody>
@@ -104,6 +104,7 @@
                                 <option value="">-- Pilih Jenis Form --</option>
                                 <option value="0">Form Pengadaan</option>
                                 <option value="1">Form Bidding</option>
+                                <option value="2">Form PR</option>
                             </select>
                         </div>
                     </div>
@@ -125,7 +126,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label>Pilih Karyawan</label>
                             <select class="form-control select2 employee_select2" name="employee_id" disabled>
@@ -135,7 +136,18 @@
                                 didaftarkan</small>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Jabatan</label>
+                            <select class="form-control select2 position_select2 position_text">
+                                <option value="">-- Pilih --</option>
+                                @foreach ($positions as $position)
+                                    <option value="{{ $position->id }}">{{ $position->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>Sebagai</label>
                             <select class="form-control as_text" disabled>
@@ -220,7 +232,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label>Pilih Karyawan</label>
                             <select class="form-control select2 employee_select2" name="employee_id" disabled>
@@ -230,10 +242,21 @@
                                 didaftarkan</small>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Jabatan</label>
+                            <select class="form-control select2 position_select2 position_text">
+                                <option value="">-- Pilih --</option>
+                                @foreach ($positions as $position)
+                                    <option value="{{ $position->id }}">{{ $position->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>Sebagai</label>
-                            <select class="form-control as_text">
+                            <select class="form-control as_text" disabled>
                                 <option value="">-- Pilih --</option>
                             </select>
                         </div>
@@ -274,6 +297,7 @@
 <script>
     let formpengadaan = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     let formbidding = ['Diajukan Oleh','Diperiksa Oleh','Disetujui Oleh'];
+    let formpr = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -282,6 +306,7 @@
             let list = $(this).data('list');
             let salespoint = modal.find('.salespoint_select2');
             let employee_select = modal.find('.employee_select2');
+            let position_select = modal.find('.position_select2');
             let form_type = modal.find('select[name="form_type"]');
             let table_level = modal.find('.table_level');
             modal.find('input[name="authorization_id"]').val(data.id);
@@ -293,7 +318,7 @@
 
             table_level.find('tbody').empty();
             list.forEach((item, index) => {
-                table_level.find('tbody').append('<tr data-id="' + item.id + '" data-as="' + item.as_text + '"><td>' + item.name + '</td><td>' + item.position + '</td><td>' + item.as_text + '</td><td class="level"></td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+                table_level.find('tbody').append('<tr data-id="' + item.id + '" data-as="' + item.as_text + '" data-position="'+item.position_id+'"><td>' + item.name + '</td><td>' + item.position + '</td><td>' + item.as_text + '</td><td class="level"></td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
             })
             tableRefreshed(table_level);
             modal.modal('show');
@@ -313,7 +338,9 @@
                 case "1":
                     value_array = formbidding;
                     break;
-
+                case "2":
+                    value_array = formpr;
+                    break;
                 default:
                     return;
                     break;
@@ -354,7 +381,7 @@
                     let data = response.data;
                     employee_select.prop('disabled', false);
                     data.forEach(single_data => {
-                        let option_text = single_data.name + ' -- ' + single_data.position;
+                        let option_text = single_data.name;
                         var newOption = new Option(option_text, single_data.id, false, true);
                         employee_select.append(newOption);
                         if (selected_id.includes(single_data.id)) {
@@ -375,24 +402,28 @@
         $('.add_new_level').on('click', function () {
             let closestmodal = $(this).closest('.modal');
             let employee_select = closestmodal.find('.employee_select2');
+            let position_select = closestmodal.find('.position_select2');
             let as_text = closestmodal.find('.as_text');
             let table_level = closestmodal.find('.table_level');
 
 
             // check if all required field were selected
-            if (employee_select.val() == "" || as_text.val() == "") {
-                alert('Karyawan harus dipilih dan input sebagai harus dipilih');
+            if (employee_select.val() == "" || as_text.val() == "" || position_select.val() == "") {
+                alert('"Karyawan", "Jabatan" dan pilihan "Sebagai" harus dipilih');
             } else {
                 let id = employee_select.val();
-                let name = employee_select.find('option:selected').text().split('--')[0].trim();
-                let position = employee_select.find('option:selected').text().split('--')[1].trim();
+                let name = employee_select.find('option:selected').text().trim();
+                let position_id = position_select.val();
+                let position = position_select.find('option:selected').text().trim();
 
-                table_level.find('tbody').append('<tr data-id="' + id + '" data-as="' + as_text.val() + '"><td>' + name + '</td><td>' + position + '</td><td>' + as_text.val() + '</td><td class="level"></td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+                table_level.find('tbody').append('<tr data-id="' + id + '" data-as="' + as_text.val() + '" data-position="' + position_id + '"><td>' + name + '</td><td>' + position + '</td><td>' + as_text.val() + '</td><td class="level"></td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
 
                 employee_select.find('option:selected').prop('disabled', true);
                 employee_select.val('');
-                as_text.val('');
                 employee_select.trigger('change');
+                position_select.val('');
+                position_select.trigger('change');
+                as_text.val('');
                 tableRefreshed($(this));
             }
         });
@@ -452,10 +483,12 @@
             list_count++;
             let id = $(el).data('id');
             let as = $(el).data('as');
+            let position = $(el).data('position');
             let level = parseInt($(el).find('.level').text().trim());
             authorizationlist.push({
                 "id": id,
                 "as": as,
+                "position": position,
                 "level": level
             })
         });
@@ -470,9 +503,10 @@
         inputfield.append('<input type="hidden" name="salespoint" value="' + salespoint + '">');
         inputfield.append('<input type="hidden" name="form_type" value="' + form_type + '">');
         authorizationlist.forEach((item, index) => {
-            inputfield.append('<input type="hidden" name="authorization[' + index + '][id]" value="' + item.id + '">')
-            inputfield.append('<input type="hidden" name="authorization[' + index + '][as]" value="' + item.as + '">')
-            inputfield.append('<input type="hidden" name="authorization[' + index + '][level]" value="' + item.level + '">')
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][id]" value="' + item.id + '">');
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][position]" value="' + item.position + '">');
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][as]" value="' + item.as + '">');
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][level]" value="' + item.level + '">');
         });
         form.submit();
     }
@@ -496,10 +530,12 @@
             list_count++;
             let id = $(el).data('id');
             let as = $(el).data('as');
+            let position = $(el).data('position');
             let level = parseInt($(el).find('.level').text().trim());
             authorizationlist.push({
                 "id": id,
                 "as": as,
+                "position": position,
                 "level": level
             })
         });
@@ -514,9 +550,10 @@
         inputfield.append('<input type="hidden" name="salespoint" value="' + salespoint + '">');
         inputfield.append('<input type="hidden" name="form_type" value="' + form_type + '">');
         authorizationlist.forEach((item, index) => {
-            inputfield.append('<input type="hidden" name="authorization[' + index + '][id]" value="' + item.id + '">')
-            inputfield.append('<input type="hidden" name="authorization[' + index + '][as]" value="' + item.as + '">')
-            inputfield.append('<input type="hidden" name="authorization[' + index + '][level]" value="' + item.level + '">')
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][id]" value="' + item.id + '">');
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][position]" value="' + item.position + '">');
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][as]" value="' + item.as + '">');
+            inputfield.append('<input type="hidden" name="authorization[' + index + '][level]" value="' + item.level + '">');
         });
         form.submit();
     }

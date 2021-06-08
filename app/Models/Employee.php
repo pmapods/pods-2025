@@ -12,10 +12,6 @@ class Employee extends Authenticatable
     protected $table = 'employee';
     protected $primaryKey = 'id';
 
-    public function employee_position(){
-        return $this->belongsTo(EmployeePosition::class);
-    }
-
     public function location_access(){
     	return $this->hasMany(EmployeeLocationAccess::class);
     }

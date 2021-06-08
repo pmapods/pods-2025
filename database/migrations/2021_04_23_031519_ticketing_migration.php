@@ -14,7 +14,7 @@ class TicketingMigration extends Migration
     public function up()
     {
         Schema::create('ticket', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('code')->nullable();
             // PCD-YYMMDD-0001
             $table->date('requirement_date')->nullable();
@@ -39,6 +39,10 @@ class TicketingMigration extends Migration
             // 1 waiting for authorization / authorization started
             // 2 finished authorization / waiting for bidding
             // 3 finished bidding / ready for PR
+            // 4 PR Created / Waiting for pr authorization
+            // 5 PR authorization finished / menunggu kelengkapan data nomor asset
+            // 6 Proses PR selesai / Ready for PO
+            
             // -1 terminated / cancelled
             
             $table->string('ba_vendor_filename')->nullable();
@@ -60,8 +64,8 @@ class TicketingMigration extends Migration
         });
 
         Schema::create('ticket_item', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('ticket_id')->unsigned();
+            $table->increments('id');
+            $table->integer('ticket_id')->unsigned();
             $table->integer('budget_pricing_id')->nullable();
             $table->string('name');
             $table->string('brand')->nullable();
@@ -79,8 +83,8 @@ class TicketingMigration extends Migration
         });
 
         Schema::create('ticket_item_attachment', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('ticket_item_id')->unsigned();
+            $table->increments('id');
+            $table->integer('ticket_item_id')->unsigned();
             $table->string('name');
             $table->string('path');
             $table->tinyInteger('status')->default(0);
@@ -96,9 +100,9 @@ class TicketingMigration extends Migration
         });
 
         Schema::create('ticket_item_file_requirement', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('ticket_item_id')->unsigned();
-            $table->bigInteger('file_completement_id');
+            $table->increments('id');
+            $table->integer('ticket_item_id')->unsigned();
+            $table->integer('file_completement_id');
             $table->string('name');
             $table->string('path');
             $table->tinyInteger('status')->default(0);
@@ -114,8 +118,8 @@ class TicketingMigration extends Migration
         });
 
         Schema::create('ticket_vendor', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('ticket_id')->unsigned();
+            $table->increments('id');
+            $table->integer('ticket_id')->unsigned();
             $table->integer('vendor_id')->nullable();
             $table->string('name');
             $table->string('salesperson');
@@ -129,8 +133,8 @@ class TicketingMigration extends Migration
         });
 
         Schema::create('ticket_additional_attachment', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('ticket_id')->unsigned();
+            $table->increments('id');
+            $table->integer('ticket_id')->unsigned();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->string('name');
             $table->string('path');
@@ -138,8 +142,8 @@ class TicketingMigration extends Migration
         });
 
         Schema::create('ticket_authorization', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('ticket_id')->unsigned();
+            $table->increments('id');
+            $table->integer('ticket_id')->unsigned();
             $table->integer('employee_id')->unsigned();
             $table->string('employee_name');
             $table->string('as');

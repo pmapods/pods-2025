@@ -92,7 +92,7 @@ class SalesPointController extends Controller
             foreach($authorization->authorization_detail->sortBy('level') as $detail){
                 $single_detail = (object)[];
                 $single_detail->name = $detail->employee->name;
-                $single_detail->position = $detail->employee->employee_position->name;
+                $single_detail->position = $detail->employee_position->name;
                 $single_detail->as = $detail->sign_as;
                 $single_detail->level = $detail->level;
                 array_push($single_data->detail,$single_detail);

@@ -36,14 +36,14 @@ class Authorization extends Model
         // id
         // as_text
         // name
-        // position
         $data = [];
         foreach ($this->authorization_detail as $list){
             $authorlist = [
                 "id" => $list->employee->id,
                 "as_text" => $list->sign_as,
+                "position_id" => $list->employee_position_id,
+                "position" => $list->employee_position->name,
                 "name" => $list->employee->name,
-                "position" => $list->employee->employee_position->name,
             ];
             array_push($data,$authorlist);
         }

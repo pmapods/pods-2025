@@ -50,8 +50,7 @@
                     <td>{{$ticket->salespoint->name}}</td>
                     <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
                     <td>
-                        Menunggu untuk dibuat PR<br>
-                        Menunggu Otorisasi PR
+                        Menunggu untuk dibuat PR
                     </td>
                 </tr>
                 @endforeach

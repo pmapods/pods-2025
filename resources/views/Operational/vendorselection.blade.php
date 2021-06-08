@@ -549,17 +549,17 @@
             <select class="form-control" name="authorization_id" required>
                 <option value="">-- Pilih Otorisasi --</option>
                 @foreach ($authorizations as $authorization)
-                @php
-                $list= $authorization->authorization_detail;
-                $string = "";
-                foreach ($list as $key=>$author){
-                $string = $string.$author->employee->name;
-                if(count($list)-1 != $key){
-                $string = $string.' -> ';
-                }
-                }
-                @endphp
-                <option value="{{ $authorization->id }}">{{$string}}</option>
+                    @php
+                    $list= $authorization->authorization_detail;
+                    $string = "";
+                    foreach ($list as $key=>$author){
+                        $string = $string.$author->employee->name;
+                        if(count($list)-1 != $key){
+                            $string = $string.' -> ';
+                        }
+                    }
+                    @endphp
+                    <option value="{{ $authorization->id }}">{{$string}}</option>
                 @endforeach
             </select>
         </div>

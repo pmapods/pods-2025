@@ -31,17 +31,14 @@
         <table id="employeeaccessDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
-                    <th>
+                    <th width="5%">
                         #
                     </th>
-                    <th>
+                    <th width="10%">
                         Kode
                     </th>
                     <th>
                         Nama
-                    </th>
-                    <th>
-                        Jabatan
                     </th>
                 </tr>
             </thead>
@@ -51,7 +48,6 @@
                         <td>{{$key+1}}</td>
                         <td>{{$employee->code}}</td>
                         <td>{{$employee->name}}</td>
-                        <td>{{$employee->employee_position->name}}</td>
                     </tr>
                 @endforeach
             </tbody>

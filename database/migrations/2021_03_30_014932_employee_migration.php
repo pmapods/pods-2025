@@ -22,7 +22,6 @@ class EmployeeMigration extends Migration
         //daftar karyawan
         Schema::create('employee', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('employee_position_id')->unsigned();
             $table->string('code')->unique();
             $table->string('name');
             $table->string('username')->unique();
@@ -33,14 +32,13 @@ class EmployeeMigration extends Migration
             // 0 Active
             // 1 Non Active
             $table->boolean('is_password_changed')->default(0);
-            $table->foreign('employee_position_id')->references('id')->on('employee_position');
             $table->softDeletes();
             $table->timestamps();
         });
 
         // daftar akses tiap karyawan bisa di salespoint mana  aja
         Schema::create('employee_location_access',function (Blueprint $table){
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->integer('employee_id')->unsigned();
             $table->integer('salespoint_id')->unsigned();
             $table->foreign('employee_id')->references('id')->on('employee');

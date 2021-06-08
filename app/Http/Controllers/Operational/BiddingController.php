@@ -204,7 +204,7 @@ class BiddingController extends Controller
                 $newauthorization->employee_id       = $detail->employee_id;
                 $newauthorization->employee_name     = $detail->employee->name;
                 $newauthorization->as                = $detail->sign_as;
-                $newauthorization->employee_position = $detail->employee->employee_position->name;
+                $newauthorization->employee_position = $detail->employee_position->name;
                 $newauthorization->level             = $detail->level;
                 $newauthorization->save();
             }

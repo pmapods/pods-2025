@@ -26,7 +26,6 @@ class SuperAdminSeeder extends Seeder
 
         // tambah satu user super admin
         $employee                         = new Employee;
-        $employee->employee_position_id   = $employeeposition->id;
         $employee->code                   = 'EMP-00001';
         $employee->name                   = 'Admin';
         $employee->username               = 'superadmin';

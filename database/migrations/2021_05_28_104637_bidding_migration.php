@@ -15,8 +15,8 @@ class BiddingMigration extends Migration
     {
         Schema::create('bidding', function (Blueprint $table) {
             $table->increments('id');
-            $table->bigInteger('ticket_id')->unsigned();
-            $table->bigInteger('ticket_item_id')->unsigned();
+            $table->integer('ticket_id')->unsigned();
+            $table->integer('ticket_item_id')->unsigned();
             $table->string('product_name');
             $table->string('salespoint_name');
             $table->enum('group', ['asset', 'inventory', 'others']);
@@ -51,7 +51,7 @@ class BiddingMigration extends Migration
         Schema::create('bidding_detail', function (Blueprint $table){
             $table->increments('id');
             $table->integer('bidding_id')->unsigned();
-            $table->bigInteger('ticket_vendor_id')->unsigned();
+            $table->integer('ticket_vendor_id')->unsigned();
             $table->string('address');
             $table->double('start_harga');
             $table->double('end_harga');

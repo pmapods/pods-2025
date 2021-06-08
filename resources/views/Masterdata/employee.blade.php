@@ -19,9 +19,6 @@
             </div>
         </div>
         <div class="d-flex justify-content-end mt-4">
-            {{-- <button type="button" class="btn btn-info" data-toggle="modal" data-target="#switchEmployeeModal">
-                Pindah Karyawan
-            </button> --}}
             <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#addEmployeeModal">
                 Tambah Karyawan
             </button>
@@ -49,9 +46,6 @@
                         Email
                     </th>
                     <th>
-                        Jabatan
-                    </th>
-                    <th>
                         Status
                     </th>
                 </tr>
@@ -64,7 +58,6 @@
                         <td>{{$employee->name}}</td>
                         <td>{{$employee->username}}</td>
                         <td>{{$employee->email}}</td>
-                        <td>{{$employee->employee_position->name}}</td>
                         <td>{{$employee->statusName()}}</td>
                     </tr> 
                 @endforeach
@@ -87,21 +80,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="form-group">
                               <label class="required_field">Nama Karyawan</label>
                               <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="required_field">Pilih Jabatan</label>
-                              <select class="form-control select2" name="position" required>
-                                <option value="">-- Pilih Jabatan --</option>
-                                @foreach ($positions as $position)
-                                    <option value="{{ $position->id }}">{{$position->name }}</option>
-                                @endforeach
-                              </select>
                             </div>
                         </div>
                         <div class="col-12">
@@ -164,21 +146,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="form-group">
                               <label class="required_field">Nama Karyawan</label>
                               <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="required_field">Pilih Jabatan</label>
-                              <select class="form-control select2" name="position" required>
-                                <option value="">-- Pilih Jabatan --</option>
-                                @foreach ($positions as $position)
-                                    <option value="{{ $position->id }}">{{$position->name }}</option>
-                                @endforeach
-                              </select>
                             </div>
                         </div>
                         <div class="col-12">
@@ -213,11 +184,13 @@
         <form action="/nonactiveemployee" method="post" id="nonactiveform">
             @csrf
             @method('patch')
+            <input type="hidden" name="updated_at">
             <input type="hidden" name="employee_id">
         </form>
         <form action="/activeemployee" method="post" id="activeform">
             @csrf
             @method('patch')
+            <input type="hidden" name="updated_at">
             <input type="hidden" name="employee_id">
         </form>
     </div>
@@ -292,7 +265,9 @@
         $('#employeeDT tbody').on('click', 'tr', function () {
             let modal = $("#editEmployeeModal");
             let data = $(this).data('employee');
+            console.log(data);
             modal.find('input[name="employee_id"]').val(data['id']);
+            modal.find('input[name="updated_at"]').val(data['updated_at']);
             modal.find('input[name="name"]').val(data['name']);
             modal.find('select[name="position"]').val(data['employee_position_id']);
             modal.find('select[name="position"]').trigger('change');

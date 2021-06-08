@@ -428,7 +428,7 @@
     <div class="d-flex align-items-center justify-content-center">
         @foreach ($bidding->bidding_authorization as $key =>$author)
             <div class="mr-3">
-                <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee->employee_position->name}}</span><br>
+                <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br>
                 <span>{{$author->as}}</span>
                 <br>
                 @if($bidding->current_authorization() != null)
@@ -450,10 +450,18 @@
         @endforeach
     </div>
     <div class="d-flex justify-content-center align-items-center mt-3">
+        @php
+            if($bidding->signed_filename == null || $bidding->signed_filepath == null){
+                $isSignedUploaded = false;
+            }else{
+                $isSignedUploaded = true;
+            }
+        @endphp
         @if($bidding->current_authorization() != null)
             @if(Auth::user()->id == $bidding->current_authorization()->employee->id)
             <button type="button" class="btn btn-danger mr-2" onclick="reject()">Reject</button>
-            <button type="button" class="btn btn-success" onclick="approve()">Approve</button>
+            <button type="button" class="btn btn-success" onclick="approve()"
+            @if(!$isSignedUploaded) disabled @endif>Approve</button>
             @endif
         @endif
     </div>

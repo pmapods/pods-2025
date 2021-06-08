@@ -21,13 +21,15 @@ class AuthorizationSeeder extends Seeder
         $newAuthorization->form_type      = 0;
         $newAuthorization->save();
         $employee_ids = [2,3,4];
+        $position_ids = [2,3,4];
         $as = ['Pengaju','Atasan Langsung','Atasan Tidak Langsung'];
         foreach ($employee_ids as $key=>$id){
-            $detail                    = new AuthorizationDetail;
-            $detail->authorization_id  = $newAuthorization->id;
-            $detail->employee_id       = $id;
-            $detail->sign_as           = $as[$key];
-            $detail->level             = $key+1;
+            $detail                         = new AuthorizationDetail;
+            $detail->authorization_id       = $newAuthorization->id;
+            $detail->employee_id            = $id;
+            $detail->employee_position_id   = $position_ids[$key];
+            $detail->sign_as                = $as[$key];
+            $detail->level                  = $key+1;
             $detail->save();
         }
 
@@ -36,14 +38,34 @@ class AuthorizationSeeder extends Seeder
         $newAuthorization->salespoint_id  = 1;
         $newAuthorization->form_type      = 1;
         $newAuthorization->save();
-        $as = ['Diajukan Oleh','Diperiksa Oleh','Disetujui Oleh'];
         $employee_ids = [5,6,7];
+        $position_ids = [5,6,7];
+        $as = ['Diajukan Oleh','Diperiksa Oleh','Disetujui Oleh'];
         foreach ($employee_ids as $key=>$id){
-            $detail                    = new AuthorizationDetail;
-            $detail->authorization_id  = $newAuthorization->id;
-            $detail->employee_id       = $id;
-            $detail->sign_as           = $as[$key];
-            $detail->level             = $key+1;
+            $detail                         = new AuthorizationDetail;
+            $detail->authorization_id       = $newAuthorization->id;
+            $detail->employee_id            = $id;
+            $detail->employee_position_id   = $position_ids[$key];
+            $detail->sign_as                = $as[$key];
+            $detail->level                  = $key+1;
+            $detail->save();
+        }
+
+        // pr 
+        $newAuthorization                 = new Authorization;
+        $newAuthorization->salespoint_id  = 1;
+        $newAuthorization->form_type      = 2;
+        $newAuthorization->save();
+        $employee_ids = [8,9,10,11];
+        $position_ids = [8,9,10,11];
+        $as = ['Diperiksa Oleh','Disetujui Oleh','Disetujui Oleh','Disetujui Oleh'];
+        foreach ($employee_ids as $key=>$id){
+            $detail                         = new AuthorizationDetail;
+            $detail->authorization_id       = $newAuthorization->id;
+            $detail->employee_id            = $id;
+            $detail->employee_position_id   = $position_ids[$key];
+            $detail->sign_as                = $as[$key];
+            $detail->level                  = $key+1;
             $detail->save();
         }
     }

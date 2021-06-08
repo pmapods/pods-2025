@@ -27,10 +27,12 @@ class AuthorizationMigration extends Migration
             $table->increments('id');
             $table->integer('authorization_id')->unsigned();
             $table->integer('employee_id')->unsigned();
+            $table->integer('employee_position_id')->unsigned();
             $table->string('sign_as');
             $table->integer('level');
             $table->foreign('authorization_id')->references('id')->on('authorization');
             $table->foreign('employee_id')->references('id')->on('employee');
+            $table->foreign('employee_position_id')->references('id')->on('employee_position');
             $table->timestamps();
         });
     }

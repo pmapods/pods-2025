@@ -11,6 +11,7 @@ use Crypt;
 use Auth;
 use Hash;
 use DB;
+use Carbon\Carbon;
 
 use App\Models\EmployeePosition;
 use App\Models\Employee;
@@ -52,18 +53,15 @@ class EmployeeController extends Controller
 
     // EMPLOYEE
     public function employeeView(){
-        $employees = Employee::whereNotIn('employee_position_id',[1])->get();;
-        $positions = EmployeePosition::whereNotIn('id',[1])->get();
-        return view('Masterdata.employee',compact('employees','positions'));
+        $employees = Employee::where('id','!=',1)->get();
+        return view('Masterdata.employee',compact('employees'));
     }
 
     public function addEmployee(Request $request){
         try {
             $count_employee = Employee::withTrashed()->count() + 1;
             $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
-
             $newEmployee                         = new Employee;
-            $newEmployee->employee_position_id   = $request->position;
             $newEmployee->code                   = $code;
             $newEmployee->name                   = $request->name;
             $newEmployee->username               = $request->username;
@@ -81,7 +79,6 @@ class EmployeeController extends Controller
     public function updateEmployee(Request $request){
         try {
             $employee                       = Employee::findOrFail($request->employee_id);
-            $employee->employee_position_id = $request->position;
             $employee->phone                = $request->phone;
             $employee->name                 = $request->name;
             $employee->save();
@@ -94,6 +91,9 @@ class EmployeeController extends Controller
     public function activeEmployee(Request $request){
         try{
             $employee =  Employee::findOrFail($request->employee_id);
+            if(new Carbon($employee->updated_at) != new Carbon($request->updated_at)){
+                return back()->with('error','Employee sudah di update sebelumnya. Silahkan coba kembali.');
+            }
             $employee->status = 0;
             $employee->save();
             return back()->with('success','berhasil diaktifkan');
@@ -105,6 +105,9 @@ class EmployeeController extends Controller
     public function nonactiveEmployee(Request $request){
         try{
             $employee           = Employee::findOrFail($request->employee_id);
+            if(new Carbon($employee->updated_at) != new Carbon($request->updated_at)){
+                return back()->with('error','Employee sudah di update sebelumnya. Silahkan coba kembali.');
+            }
             $employee->status   = 1;
             $employee->save();
             return back()->with('success','berhasil di non aktifkan');

@@ -172,7 +172,7 @@
                                                 <button type="button" class="btn btn-primary btn-sm mr-auto" onclick="openselectionvendor({{$item->id}})">Revisi form seleksi</button><br>
                                             @endif
                                         @else
-                                            <button type="button" class="btn btn-primary mr-auto" onclick="openselectionvendor({{$item->id}})"
+                                            <button type="button" class="btn btn-primary mr-auto btn-sm" onclick="openselectionvendor({{$item->id}})"
                                             @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
                                         @endif
                                         @if(($item->bidding->status ?? 0) != 1)

@@ -24,23 +24,20 @@ class EmployeeSeeder extends Seeder
 
         //area position
         $positions = ['Staff','ROM','GROM'];
-        $position_ids = [];
         foreach ($positions as $position){
             $newposition = new EmployeePosition;
             $newposition->name = $position;
             $newposition->save();
-            array_push($position_ids,$newposition->id);
         }
 
         // AREA EMPLOYEE
         $area_employees = ['Kevin','Julian','Hafid Fauzi'];
-        $usernames = ['staff','rom','grom'];
+        $usernames = ['area1','area2','area3'];
         foreach ($area_employees as $key => $area_employee){
             $count_employee = Employee::withTrashed()->count() + 1;
             $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
 
             $newEmployee                         = new Employee;
-            $newEmployee->employee_position_id   = $position_ids[$key];
             $newEmployee->code                   = $code;
             $newEmployee->name                   = $area_employee;
             $newEmployee->username               = $usernames[$key];
@@ -65,12 +62,10 @@ class EmployeeSeeder extends Seeder
 
         // Purchasing position
         $positions = ['Purchasing Staff','Purchasing SPV','Purchasing Manager'];
-        $position_ids = [];
         foreach ($positions as $position){
             $newposition = new EmployeePosition;
             $newposition->name = $position;
             $newposition->save();
-            array_push($position_ids,$newposition->id);
         }
 
         // PURCHASING EMPLOYEE
@@ -81,7 +76,6 @@ class EmployeeSeeder extends Seeder
             $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
 
             $newEmployee                         = new Employee;
-            $newEmployee->employee_position_id   = $position_ids[$key];
             $newEmployee->code                   = $code;
             $newEmployee->name                   = $purchasing_employee;
             $newEmployee->username               = $usernames[$key];
@@ -104,5 +98,42 @@ class EmployeeSeeder extends Seeder
             $access->save();
         }
 
+        // PR Position
+        $positions = ['NOM','NFAM','Head Of Ops','CM'];
+        foreach ($positions as $position){
+            $newposition = new EmployeePosition;
+            $newposition->name = $position;
+            $newposition->save();
+        }
+
+        // PR Employee
+        $pr_employees = ["James Arthur","windy","Yulita Adrianto ","Hafid Fauzi Sophian"];
+        $usernames = ['pr1','pr2','pr3','pr4'];
+        foreach ($pr_employees as $key => $pr_employee){
+            $count_employee = Employee::withTrashed()->count() + 1;
+            $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
+
+            $newEmployee                         = new Employee;
+            $newEmployee->code                   = $code;
+            $newEmployee->name                   = $pr_employee;
+            $newEmployee->username               = $usernames[$key];
+            $newEmployee->email                  = $faker->email();
+            $newEmployee->password               = Hash::make($usernames[$key]);
+            $newEmployee->phone                  = $faker->phoneNumber();
+            $newEmployee->is_password_changed    = true;
+            $newEmployee->save();
+
+            foreach(Salespoint::all() as $salespoint){
+                $newAccess = new EmployeeLocationAccess;
+                $newAccess->employee_id = $newEmployee->id;
+                $newAccess->salespoint_id = $salespoint->id;
+                $newAccess->save();
+            }
+            $access = new EmployeeMenuAccess;
+            $access->employee_id = $newEmployee->id;
+            $access->masterdata = 0;
+            $access->operational = 5;
+            $access->save();
+        }
     }
 }

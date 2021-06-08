@@ -71,8 +71,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Button trigger modal -->
           <a href="#">
             <span class="dropdown-header font-weight-bolder">
-              {{Auth::user()->name}}<br>
-              {{Auth::user()->employee_position->name}}
+              {{Auth::user()->name}}
             </span>
           </a>
 
@@ -105,7 +104,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
             {{-- MASTERDATA --}}
-            @if(Auth::user()->employee_position->name == 'Super Admin')
+            @if(Auth::user()->code == 'EMP-00001')
             <li class="nav-item has-treeview menu-close">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-database"></i>

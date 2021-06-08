@@ -30,23 +30,19 @@
         <table id="employeeposDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
-                    <th>
+                    <th width="5%">
                         #
                     </th>
                     <th>
                         {{__('Nama Jabatan')}}
                     </th>
-                    <th>
-                        {{__('Jumlah Karyawan terkait jabatan')}}
-                    </th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($positions as $key=>$position)
-                    <tr data-position="{{$position}}" data-employee_count="{{$position->employees->count()}}">
+                    <tr data-position="{{$position}}">
                         <td>{{$key+1}}</td>
                         <td>{{$position->name}}</td>
-                        <td>{{$position->employees->count()}} Karyawan</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -132,22 +128,8 @@
         $('#employeeposDT tbody').on('click', 'tr', function () {
             let updatemodal = $('#detailPositionModal');
             let data = $(this).data('position');
-            let count_employee = $(this).data('employee_count');
             updatemodal.find('input[name="position_id"]').val(data['id']);
             updatemodal.find('input[name="name"]').val(data['name']);
-            // kalo masih ada employee disable tombol hapus
-            if(count_employee>0){
-                updatemodal.find('.delete_button').prop('disabled',true);
-            }else{
-                updatemodal.find('.delete_button').prop('disabled',false);
-            }
-
-            // kalo superadmin matiin akses update delete
-            if(data['id']==1){
-                updatemodal.find('.modal-footer').hide();
-            }else{
-                updatemodal.find('.modal-footer').show();
-            }
             $('#detailPositionModal').modal('show');
         });
     })

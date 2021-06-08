@@ -25,124 +25,156 @@
         </div>
     </div>
 </div>
-<div class="content-body border border-dark p-2">
-    <div class="d-flex flex-column">
-        <span>PT. PINUS MERAH ABADI</span>
-        <span>CABANG / DEPO : {{$ticket->salespoint->name}}</span>
-        <h4 class="align-self-center font-weight-bold">PURCHASE REQUISITION (PR) - MANUAL</h4>
-        <div class="align-self-end">
-            <i class="fal @if($ticket->budget_type==0) fa-check-square @else fa-square @endif mr-1" aria-hidden="true"></i>Budget
-            <i class="fal @if($ticket->budget_type==1) fa-check-square @else fa-square @endif ml-5 mr-1" aria-hidden="true"></i>Non Budget
-        </div>
-        <span>Tanggal : {{now()->translatedFormat('Y-m-d')}}</span>
-        <table class="table table-bordered">
-            <thead class="text-center">
-                <tr>
-                    <td class="font-weight-bold">No</td>
-                    <td class="font-weight-bold" width="15%">Nama Barang</td>
-                    <td class="font-weight-bold" width='10%'>Satuan</td>
-                    <td class="font-weight-bold" width="8%">Qty</td>
-                    <td class="font-weight-bold">Harga Satuan (Rp)</td>
-                    <td class="font-weight-bold" width="10%">Total Harga</td>
-                    <td class="font-weight-bold">Tgl Set Up</td>
-                    <td class="font-weight-bold">Keterangan</td>
-                </tr>
-            </thead>
-            <tbody class="text-center">
-                @php $grandtotal=0; @endphp
-                @foreach ($ticket->ticket_item as $key=>$item)
-                <tr>
-                    <td rowspan="3">{{$key+1}}</td>
-                    <td>
-                        {{$item->name}}
-                    </td>
-                    <td rowspan="3">{{$item->budget_pricing->uom}}</td>
-                    <td rowspan="3">
-                        <input type="number" class="form-control nilai qty item{{$key}}" min="0" max="{{$item->count}}" 
-                        value="{{$item->count}}"
-                        onchange="refreshItemTotal(this)">
-                    </td>
+<form action="">
+    @csrf
+    <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
+    <input type="hidden" name="ticket_id" value="{{$ticket->id}}">
+    <input type="hidden" name="_method">
+    <div class="content-body border border-dark p-2">
+        <div class="d-flex flex-column">
+            <span>PT. PINUS MERAH ABADI</span>
+            <span>CABANG / DEPO : {{$ticket->salespoint->name}}</span>
+            <h4 class="align-self-center font-weight-bold">PURCHASE REQUISITION (PR) - MANUAL</h4>
+            <div class="align-self-end">
+                <i class="fal @if($ticket->budget_type==0) fa-check-square @else fa-square @endif mr-1" aria-hidden="true"></i>Budget
+                <i class="fal @if($ticket->budget_type==1) fa-check-square @else fa-square @endif ml-5 mr-1" aria-hidden="true"></i>Non Budget
+            </div>
+            <span>Tanggal : {{now()->translatedFormat('Y-m-d')}}</span>
+            <table class="table table-bordered">
+                <thead class="text-center">
+                    <tr>
+                        <td class="font-weight-bold">No</td>
+                        <td class="font-weight-bold" width="15%">Nama Barang</td>
+                        <td class="font-weight-bold" width='10%'>Satuan</td>
+                        <td class="font-weight-bold required_field" width="8%">Qty</td>
+                        <td class="font-weight-bold required_field">Harga Satuan (Rp)</td>
+                        <td class="font-weight-bold" width="10%">Total Harga</td>
+                        <td class="font-weight-bold optional_field">Tgl Set Up</td>
+                        <td class="font-weight-bold">Keterangan</td>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    @php $grandtotal=0; @endphp
+                    @foreach ($ticket->ticket_item->where('isCancelled','!=',true) as $key=>$item)
+                    <tr>
+                        <td rowspan="3">{{$key+1}}</td>
+                        <td>
+                            {{$item->name}}
+                        </td>
+                        <td rowspan="3">{{$item->budget_pricing->uom}}</td>
+                        <td rowspan="3">
+                            <input type="number" class="form-control nilai qty item{{$key}}" min="0" max="{{$item->count}}" 
+                            value="{{$item->count}}"
+                            onchange="refreshItemTotal(this)"
+                            name="item[{{$key}}][qty]">
+                        </td>
+                        @php
+                            $total = 0;
+                            $total += $item->bidding->selected_vendor()->end_harga * $item->count;
+                            $total += $item->bidding->selected_vendor()->end_ongkir_price;
+                            $total += $item->bidding->selected_vendor()->end_pasang_price;
+                        @endphp
+                        <td>
+                            <input type="text" class="form-control rupiah item{{$key}}" 
+                            data-max="{{$item->bidding->selected_vendor()->end_harga}}" 
+                            value="{{$item->bidding->selected_vendor()->end_harga}}"
+                            onchange="refreshItemTotal(this)"
+                            name="item[{{$key}}][price]">
+                        </td>
+                        <td rowspan="3" class="rupiah_text item{{$key}} total" data-total="{{$total}}">
+                            {{$total}}
+                        </td>
+                        <td rowspan="3">
+                            <input class="form-control" type="date" name="item[{{$key}}][setup_date]">
+                        </td>
+                        <td rowspan="3" class="text-justify">
+                            <div class="d-flex flex-column">
+                                <b>notes bidding harga</b>
+                                <span>{{$item->bidding->price_notes}}</span>
+                                <b>Keterangan</b>
+                                <textarea class="form-control" rows="3" placeholder="keterangan tambahan" name="item[{{$key}}][notes]"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ongkos Kirim</td>
+                        <td>
+                            <input type="text" class="form-control rupiah item{{$key}}" 
+                            data-max="{{$item->bidding->selected_vendor()->end_ongkir_price}}" 
+                            value="{{$item->bidding->selected_vendor()->end_ongkir_price}}"
+                            onchange="refreshItemTotal(this)"
+                            name="item[{{$key}}][ongkir]">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ongkos Pasang</td>
+                        <td>
+                            <input type="text" class="form-control rupiah item{{$key}}" 
+                            data-max="{{$item->bidding->selected_vendor()->end_pasang_price}}" 
+                            value="{{$item->bidding->selected_vendor()->end_pasang_price}}"
+                            onchange="refreshItemTotal(this)"
+                            name="item[{{$key}}][ongpas]">
+                        </td>
+                    </tr>
                     @php
-                        $total = 0;
-                        $total += $item->bidding->selected_vendor()->end_harga * $item->count;
-                        $total += $item->bidding->selected_vendor()->end_ongkir_price;
-                        $total += $item->bidding->selected_vendor()->end_pasang_price;
+                        $grandtotal += $total;
                     @endphp
-                    <td>
-                        <input type="text" class="form-control rupiah item{{$key}}" 
-                        data-max="{{$item->bidding->selected_vendor()->end_harga}}" 
-                        value="{{$item->bidding->selected_vendor()->end_harga}}"
-                        onchange="refreshItemTotal(this)">
-                    </td>
-                    <td rowspan="3" class="rupiah_text item{{$key}} total" data-total="{{$total}}">
-                        {{$total}}
-                    </td>
-                    <td rowspan="3">
-                        <input class="form-control" type="date">
-                    </td>
-                    <td rowspan="3">notes bidding harga : {{$item->bidding->price_notes}}</td>
-                </tr>
-                <tr>
-                    <td>Ongkos Kirim</td>
-                    <td>
-                        <input type="text" class="form-control rupiah item{{$key}}" 
-                        data-max="{{$item->bidding->selected_vendor()->end_ongkir_price}}" 
-                        value="{{$item->bidding->selected_vendor()->end_ongkir_price}}"
-                        onchange="refreshItemTotal(this)">
-                    </td>
-                </tr>
-                <tr>
-                    <td>Ongkos Pasang</td>
-                    <td>
-                        <input type="text" class="form-control rupiah item{{$key}}" 
-                        data-max="{{$item->bidding->selected_vendor()->end_pasang_price}}" 
-                        value="{{$item->bidding->selected_vendor()->end_pasang_price}}"
-                        onchange="refreshItemTotal(this)">
-                    </td>
-                </tr>
-                @php
-                    $grandtotal += $total;
-                @endphp
-                @endforeach
-                <tr>
-                    <td colspan="5"><b>Total</b></td>
-                    <td class="rupiah_text grandtotal" data-grandtotal="{{$grandtotal}}">{{$grandtotal}}</td>
-                    <td colspan="2"></td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="form-group">
-            <label for="">Pilih Otorisasi</label>
-            <select class="form-control select2">
+                    @endforeach
+                    <tr>
+                        <td colspan="5"><b>Total</b></td>
+                        <td class="rupiah_text grandtotal" data-grandtotal="{{$grandtotal}}">{{$grandtotal}}</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-group">
+                <label for="">Pilih Otorisasi</label>
+                <select class="form-control select2 authorization_select2" required name="pr_authorization_id">
                     <option value="">Pilih Otorisasi</option>
-                    <option>Kevin -> Fahmi -> Yohan -> Wiwik Wijaya -> James Arthur -> Wiwik Wijaya -> CM</option>
-                    <option>Kevin -> Fahmi -> Yohan -> Wiwik Wijaya -> James Arthur -> Wiwik Wijaya</option>
-            </select>
-        </div>
-        <center><h4>Otorisasi</h4><center>
+                    @foreach ($authorizations as $authorization)
+                        @php
+                            $list= $authorization->authorization_detail;
+                            $string = "";
+                            foreach ($list as $key=>$author){
+                                $string = $string.$author->employee->name;
+                                $open = $author->employee_position;
+                                if(count($list)-1 != $key){
+                                    $string = $string.' -> ';
+                                }
+                            }
+                        @endphp
+                        <option value="{{ $authorization->id }}" data-list="{{ $list }}">{{$string}}</option>
+                    @endforeach
+                </select>
+            </div>
+            <center><h4>Otorisasi</h4><center>
             @php
                 $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
                 $collection = $ticket->ticket_authorization->slice(1)->all();
                 $values = collect($collection)->values();
             @endphp
-        <div class="d-flex align-items-center justify-content-center">
-            @foreach ($values->all() as $key =>$author)
-                <div class="mr-3">
-                    <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee->employee_position->name}}</span><br>
-                    <span>{{$default_as[$key]}}</span>
+            <div class="d-flex justify-content-center">
+                <div class="d-flex align-items-center justify-content-center">
+                    @foreach ($values->all() as $key =>$author)
+                        <div class="mr-3">
+                            <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br>
+                            <span class="font-weight-bold text-success">Approved</span><br>
+                            <span>{{$default_as[$key]}}</span>
+                        </div>
+                        @if($key < $values->count()-1)
+                        <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
+                        @endif
+                    @endforeach
                 </div>
-                @if($key < $values->count()-1)
-                <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
-                @endif
-            @endforeach
-        </div>
-        <center class="mt-3">
-            <button type="button" class="btn btn-primary">Mulai Otorisasi Form Bidding</button>
-            <button type="button" class="btn btn-primary">Cetak PR</button>
-        </center>
+                <div class="d-flex align-items-center justify-content-center" id="authorization_field">
     
-</div>
-
+                </div>
+            </div>
+            <center class="mt-3">
+                <button type="button" class="btn btn-primary" onclick="startAuthorization()">Mulai Otorisasi Form PR</button>
+            </center>
+    </div>
+</form>
 @endsection
 @section('local-js')
 <script>
@@ -155,6 +187,19 @@
             let max = $(this).data('max');
             let rupiahElement  = autoNumeric_field[index];
             rupiahElement.update({"maximumValue" : max});
+        });
+        $('.authorization_select2').change(function(){
+            let list = $(this).find('option:selected').data('list');
+            $('#authorization_field').empty();
+            if(list !== undefined){
+                $('#authorization_field').append('<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>')
+                list.forEach(function(item,index){
+                    $('#authorization_field').append('<div class="mr-3"><span class="font-weight-bold">'+item.employee.name+' -- '+item.employee_position.name+'</span><br><span>'+item.sign_as+'</span></div>');
+                    if(index != list.length -1){
+                        $('#authorization_field').append('<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>');
+                    }
+                });
+            }
         });
     });
 
@@ -173,6 +218,18 @@
         let ongkir = autoNumeric_field[$('.rupiah').index($('.item'+itemindex+':eq(3)'))].get();
         let ongpas = autoNumeric_field[$('.rupiah').index($('.item'+itemindex+':eq(4)'))].get();
         let total = (qty * parseFloat(price)) + parseFloat(ongkir) + parseFloat(ongpas);
+
+        if(qty < 1){
+            total = 0;
+            $('.item'+itemindex+':eq(1)').prop('disabled', true);
+            $('.item'+itemindex+':eq(3)').prop('disabled', true);
+            $('.item'+itemindex+':eq(4)').prop('disabled', true);
+        }else{
+            $('.item'+itemindex+':eq(1)').prop('disabled', false);
+            $('.item'+itemindex+':eq(3)').prop('disabled', false);
+            $('.item'+itemindex+':eq(4)').prop('disabled', false);
+        }
+
         $('.item'+itemindex+':eq(2)').text(setRupiah(total));
         $('.item'+itemindex+':eq(2)').data('total',total);
         refreshGrandTotal();
@@ -185,6 +242,13 @@
         });
         $('.grandtotal').text(setRupiah(grandtotal));
         $('.grandtotal').data('grandtotal',grandtotal);
+    }
+
+    function startAuthorization(){
+        $('form').prop('action','/addnewpr');
+        $('form').prop('method','POST');
+        $('form input[name="_method"]').val('POST');
+        $('form').submit();
     }
 </script>
 @endsection

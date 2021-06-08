@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SalesPoint;
 use App\Models\Employee;
+use App\Models\EmployeePosition;
 use App\Models\EmployeeLocationAccess;
 use App\Models\Authorization;
 use App\Models\AuthorizationDetail;
@@ -16,8 +17,9 @@ class AuthorizationController extends Controller
     public function authorizationView(){
         $salespoints = SalesPoint::all();
         $regions = $salespoints->groupBy('region');
+        $positions = EmployeePosition::where('id','!=',1)->get();
         $authorizations = Authorization::all();
-        return view('Masterdata.authorization',compact('regions','authorizations'));
+        return view('Masterdata.authorization',compact('regions','authorizations','positions'));
     }
 
     public function addAuthorization(Request $request){
@@ -28,11 +30,12 @@ class AuthorizationController extends Controller
             $newAuthorization->form_type      = $request->form_type;
             $newAuthorization->save();
             foreach ($request->authorization as $data){
-                $detail                    = new AuthorizationDetail;
-                $detail->authorization_id  = $newAuthorization->id;
-                $detail->employee_id       = $data['id'];
-                $detail->sign_as           = $data['as'];
-                $detail->level             = $data['level'];
+                $detail                         = new AuthorizationDetail;
+                $detail->authorization_id       = $newAuthorization->id;
+                $detail->employee_id            = $data['id'];
+                $detail->employee_position_id   = $data['position'];
+                $detail->sign_as                = $data['as'];
+                $detail->level                  = $data['level'];
                 $detail->save();
             }
             DB::commit();
@@ -55,11 +58,12 @@ class AuthorizationController extends Controller
                 $old->delete();
             }
             foreach ($request->authorization as $data){
-                $detail                    = new AuthorizationDetail;
-                $detail->authorization_id  = $authorization->id;
-                $detail->employee_id       = $data['id'];
-                $detail->sign_as           = $data['as'];
-                $detail->level             = $data['level'];
+                $detail                         = new AuthorizationDetail;
+                $detail->authorization_id       = $authorization->id;
+                $detail->employee_id            = $data['id'];
+                $detail->employee_position_id   = $data['position'];
+                $detail->sign_as                = $data['as'];
+                $detail->level                  = $data['level'];
                 $detail->save();
             }
             DB::commit();
@@ -87,7 +91,9 @@ class AuthorizationController extends Controller
     }
 
     public function AuthorizedEmployeeBySalesPoint($salespoint_id){
-        $employeeaccess = EmployeeLocationAccess::where('salespoint_id',$salespoint_id)->get();
+        $employeeaccess = EmployeeLocationAccess::where('salespoint_id',$salespoint_id)
+        ->where('employee_id','!=',1)
+        ->get();
         $employees = $employeeaccess->pluck('employee_id');
         $data = array();
         foreach($employees as $employee){
@@ -95,7 +101,6 @@ class AuthorizationController extends Controller
             $single_data = (object)[];
             $single_data->id = $selected_employee->id;
             $single_data->name = $selected_employee->name;
-            $single_data->position = $selected_employee->employee_position->name;
             array_push($data,$single_data);
         }
         return response()->json([
