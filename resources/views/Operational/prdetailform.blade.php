@@ -146,7 +146,7 @@
                     <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
                     @foreach($ticket->pr->pr_authorizations as $key =>$author)
                         <div class="mr-3">
-                            <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br>
+                            <span class="font-weight-bold">{{$author->employee_name}} -- {{$author->employee_position}}</span><br>
                             @if ($author->status == 1)
                                 <span class="text-success">Approved</span><br>
                                 <span class="text-success">{{$author->updated_at->translatedFormat('d F Y (H:i)')}}</span><br>
@@ -168,6 +168,7 @@
                     <button type="submit" class="btn btn-primary ml-3">Submit Nomor Asset</button>
                 @endif
             </div>
+        </div>
     </div>
 </form>
 @endsection

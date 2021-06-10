@@ -601,7 +601,7 @@
                 @if ($ticket_item->ticket_item_file_requirement->count() > 0)
                 <table class="table table-borderless table-sm">
                     <tbody>
-                        @foreach ($item->ticket_item_file_requirement as $requirement)
+                        @foreach ($ticket_item->ticket_item_file_requirement as $requirement)
                         <tr>
                             <td width="40%">{{$requirement->file_completement->name}}</td>
                             <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}"

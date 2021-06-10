@@ -276,7 +276,7 @@ class BiddingController extends Controller
             $bidding = Bidding::findOrFail($request->bidding_id);
             $salespointname = str_replace(' ','_',$bidding->ticket->salespoint->name);
             $ext = pathinfo($request->filename, PATHINFO_EXTENSION);
-            $name = "Penawaran_resmi_dari_2_vendor_(dilengkapi_KTP_dan_NPWP)_".$salespointname.'.'.$ext;
+            $name = "Penawaran_resmi_dari_2_vendor_(dilengkapi_KTP_dan_NPWP)_SIGNED_".$salespointname.'.'.$ext;
             $path = "/attachments/ticketing/barangjasa/".$bidding->ticket->code.'/item'.$bidding->ticket_item->id.'/files/'.$name;
         
             // base 64 data

@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Operasional</h1>
+                <h1 class="m-0 text-dark">Purchase Order</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -27,12 +27,6 @@
                 <tr role="row">
                     <th>
                         #
-                    </th>
-                    <th>
-                        No PR SAP 
-                    </th>
-                    <th>
-                        No PO SAP 
                     </th>
                     <th>
                         Kode Tiket
@@ -54,13 +48,11 @@
             <tbody>
                 @foreach ($tickets as $key => $ticket)
                     <td>{{$key+1}}</td>
-                    <td>{{$ticket->po->pr ?? '-'}}</td>
-                    <td>-</td>
                     <td>{{$ticket->code}}</td>
                     <td>{{$ticket->salespoint->name}}</td>
                     <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
-                    <td>{{now()->translatedFormat('d F Y (H:i)')}}</td>
-                    <td>Menunggu untuk penambahan kelengkapan data PO</td>
+                    <td>{{$ticket->pr->last_authorization()->updated_at->translatedFormat('d F Y (H:i)')}}</td>
+                    <td>{{$ticket->status()}}</td>
                 @endforeach
             </tbody>
         </table>
@@ -73,7 +65,7 @@
     $(document).ready(function(){
         var table = $('#poDT').DataTable(datatable_settings);
         $('#poDT tbody').on('click', 'tr', function () {
-            window.location.href = '/po/'+$(this).find('td:eq(3)').text().trim();
+            window.location.href = '/po/'+$(this).find('td:eq(1)').text().trim();
         });
     })
 </script>

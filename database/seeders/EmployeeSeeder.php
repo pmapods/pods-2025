@@ -11,6 +11,8 @@ use App\Models\Salespoint;
 use App\Models\EmployeeLocationAccess;
 use App\Models\EmployeeMenuAccess;
 
+use Schema;
+
 class EmployeeSeeder extends Seeder
 {
     /**
@@ -94,7 +96,7 @@ class EmployeeSeeder extends Seeder
             $access = new EmployeeMenuAccess;
             $access->employee_id = $newEmployee->id;
             $access->masterdata = 0;
-            $access->operational = 6;
+            $access->operational = 15;
             $access->save();
         }
 

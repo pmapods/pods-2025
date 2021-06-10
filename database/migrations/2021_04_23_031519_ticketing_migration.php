@@ -42,6 +42,7 @@ class TicketingMigration extends Migration
             // 4 PR Created / Waiting for pr authorization
             // 5 PR authorization finished / menunggu kelengkapan data nomor asset
             // 6 Proses PR selesai / Ready for PO
+            // 7 Closed PO / Finished
             
             // -1 terminated / cancelled
             

@@ -149,6 +149,10 @@ Route::middleware(['auth'])->group(function () {
     // Purchase Order
     Route::middleware(['menu_access:operational:8'])->group(function () {
         Route::get('/po',[POController::class, 'poView']);
-        Route::get('/po/{ticket_code}',[POController::class, 'podetailView']);
+        Route::get('/po/{ticket_code}',[POController::class, 'poDetailView']);
+        Route::post('/submitPO',[POController::class, 'submitPO']);
+        Route::post('/printPO',[POController::class, 'printPO']);
+        Route::patch('/uploadinternalsignedfile',[POController::class, 'uploadInternalSignedFile']);
+        Route::patch('/confirmposigned',[POController::class, 'confirmPosigned']);
     });
 });

@@ -16,6 +16,10 @@ class TicketVendor extends Model
         return $this->belongsTo(Ticket::class);
     }
 
+    public function po(){
+        return $this->hasOne(Po::class);
+    }
+
     public function vendor(){
         if($this->vendor_id != null){
             return Vendor::find($this->vendor_id);
@@ -37,7 +41,14 @@ class TicketVendor extends Model
         }
     }
 
-    public function bidding_detail(){
-        return $this->hasOne(BiddingDetail::class);
+    public function selected_items(){
+        // return seluruh prdetail yang terpilih by ticket vendor berkaitan
+        $selected_items = [];
+        foreach ($this->ticket->ticket_item as $item){
+            if($item->bidding->selected_vendor()->ticket_vendor->id == $this->id){
+                array_push($selected_items,$item->pr_detail);
+            }
+        }
+        return $selected_items;
     }
 }

@@ -35,14 +35,8 @@ class Pr extends Model
 
     public function last_authorization(){
         $queue = $this->pr_authorizations->where('status',1)->sortByDesc('level');
-        if($last){
-            $last = $queue->first();
-        }
-        if($this->status != 1){
-            return null;
-        }else{
-            return $last;
-        }
+        $last = $queue->first();
+        return $last;
     }
 
     public function rejected_by_employee(){

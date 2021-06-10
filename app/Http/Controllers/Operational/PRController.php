@@ -30,7 +30,7 @@ class PRController extends Controller
                 return back()->with('error',"Ticket tidak ditemukan");
             }
             $authorizations = Authorization::where('form_type',2)->get();
-            if($ticket->pr->status <1 || !isset($ticket->pr)){
+            if($ticket->status < 5){
                 return view('Operational.prdetail',compact('ticket','authorizations'));
             }else{
                 return view('Operational.prdetailform',compact('ticket','authorizations'));
@@ -128,17 +128,23 @@ class PRController extends Controller
                 $authorization->status = 1;
                 $authorization->save();
 
-                $pr->status = 1;
-                $pr->save();
-
-                $ticket = $pr->ticket;
-                $ticket->status = 5;
-                $ticket->save();
+                if($pr->current_authorization() == null){
+                    $pr->status = 1;
+                    $pr->save();
+    
+                    $ticket = $pr->ticket;
+                    $ticket->status = 5;
+                    $ticket->save();
+                }
+                DB::commit();
+                if ($pr->current_authorization() == null) {
+                    return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selesai, Silahkan mengajukan nomor asset dan mengupdate nomor asset');
+                }else{
+                    return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi dilanjutkan');
+                }
             }else{
-                throw new Exception("Otorisasi saat ini dan akun login tidak sesuai");
+                throw new \Exception("Otorisasi saat ini dan akun login tidak sesuai");
             }
-            DB::commit();
-            return back()->with('success','Berhasil Melakukan Approve PR');
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -167,7 +173,7 @@ class PRController extends Controller
                 $ticket->status = 3;
                 $ticket->save();
             }else{
-                throw new Exception("Otorisasi saat ini dan akun login tidak sesuai");
+                throw new \Exception("Otorisasi saat ini dan akun login tidak sesuai");
             }
             DB::commit();
             return redirect('/pr')->with('success','Berhasil Melakukan Reject PR. Silahkan membuat form PR baru');
@@ -184,7 +190,7 @@ class PRController extends Controller
             $ticket = Ticket::findOrFail($request->ticket_id);
             $pr = Pr::findOrFail($request->pr_id);
             if($ticket->status > 5){
-                throw new Exception("Ticket sudah di update sebelumnya.");
+                throw new \Exception("Ticket sudah di update sebelumnya.");
             }else{
                 foreach($request->item as $key => $item){
                     $pr_detail = PrDetail::findOrFail($item['pr_detail_id']);
