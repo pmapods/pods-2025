@@ -14,1978 +14,296 @@ class SalespointSeeder extends Seeder
      */
     public function run()
     {
-        DB::unprepared("/* INSERT QUERY NO: 1 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DAAN MOGOT', 1001000, 1, 0, 1, 0
-        );
-
-        /* INSERT QUERY NO: 2 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JABODETABEK', 1000913, 1, 0, 1, 0
-        );
-
-        /* INSERT QUERY NO: 3 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KARAWANG', 1000720, 1, 0, 1, 0
-        );
-
-        /* INSERT QUERY NO: 4 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BOGOR', 1000681, 1, 0, 1, 0
-        );
-
-        /* INSERT QUERY NO: 5 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MEDAN BARAT', 1000697, 1, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 6 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BINJAI', 1000810, 0, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 7 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PANGKALAN BRANDAN', 1001050, 2, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 8 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MEDAN TIMUR', 1000570, 1, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 9 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MEDAN UTARA', 1000894, 0, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 10 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'RANTAU PRAPAT', 1000888, 1, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 11 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MEDAN SELATAN', 1000770, 0, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 12 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KISARAN', 1000889, 0, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 13 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PADANG SIDEMPUAN', 1000814, 1, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 14 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PANYABUNGAN', 1000962, 2, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 15 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SIBORONG-BORONG', 1001013, 0, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 16 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SIBOLGA', 1000956, 2, 1, 1, 1
-        );
-
-        /* INSERT QUERY NO: 17 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MEDAN', 1000689, 1, 0, 1, 1
-        );
-
-        /* INSERT QUERY NO: 18 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PADANG UTARA', 1000946, 1, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 19 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PADANG SELATAN', 1000749, 2, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 20 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PADANG PARIAMAN', 1000943, 2, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 21 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PASAMAN BARAT', 1000916, 0, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 22 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SOLOK', 1000787, 1, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 23 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MUARA BUNGO', 1000886, 0, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 24 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SOLOK SELATAN', 1001026, 2, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 25 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BUKIT TINGGI', 1000751, 1, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 26 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PAYAKUMBUH', 1000862, 0, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 27 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BATUSANGKAR', 1001035, 2, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 28 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JAMBI', 1000599, 1, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 29 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANGKO', 1000887, 0, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 30 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JAMBI BARAT', 1001006, 0, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 31 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BENGKULU', 1000669, 1, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 32 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MUKO-MUKO', 1000982, 2, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 33 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MANNA', 1000983, 2, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 34 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LUBUK LINGGAU', 1000758, 0, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 35 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LAHAT', 1000818, 0, 1, 1, 2
-        );
-
-        /* INSERT QUERY NO: 36 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JAMBI', 1000621, 1, 0, 1, 2
-        );
-
-        /* INSERT QUERY NO: 37 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BUKIT TINGGI', 1000890, 1, 0, 1, 2
-        );
-
-        /* INSERT QUERY NO: 38 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PALEMBANG ILIR', 1000640, 1, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 39 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PALEMBANG ULU', 1000821, 0, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 40 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BELITUNG', 1000902, 2, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 41 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SEKAYU', 1000959, 2, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 42 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PRABUMULIH', 1000782, 1, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 43 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BATURAJA', 1000816, 2, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 44 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KAYUAGUNG', 1000941, 0, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 45 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MARTAPURA', 1000981, 0, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 46 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PRINGSEWU', 1000854, 0, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 47 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KALIANDA', 1000997, 2, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 48 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KOTABUMI', 1000835, 1, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 49 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'METRO', 1000743, 0, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 50 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TULANG BAWANG', 1000863, 0, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 51 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LIWA', 1000877, 2, 1, 1, 3
-        );
-
-        /* INSERT QUERY NO: 52 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LAMPUNG', 1000685, 1, 0, 1, 3
-        );
-
-        /* INSERT QUERY NO: 53 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PALEMBANG', 1000686, 1, 0, 1, 3
-        );
-
-        /* INSERT QUERY NO: 54 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TIGARAKSA', 1000677, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 55 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CURUG SERPONG', 1000904, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 56 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'RANGKAS BITUNG', 1000851, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 57 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MALINGPING', 1000799, 2, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 58 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CILEGON', 1000846, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 59 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PANDEGLANG', 1000705, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 60 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PANIMBANG', 1000991, 2, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 61 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TANGERANG KOTA', 1000589, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 62 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KRONJO', 1001015, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 63 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TELUK NAGA', 1000938, 2, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 64 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JAKARTA BARAT', 1000454, 1, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 65 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIPONDOH', 1000733, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 66 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JOGLO', 1000719, 0, 1, 1, 5
-        );
-
-        /* INSERT QUERY NO: 67 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SERANG', 1000791, 1, 0, 1, 5
-        );
-
-        /* INSERT QUERY NO: 68 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JAKUTPUS', 1000457, 1, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 69 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KLENDER', 1000800, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 70 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PADEMANGAN', 1000935, 2, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 71 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CILANDAK', 1000876, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 72 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JAKARTA TIMUR', 1000453, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 73 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KRANJI', 1000804, 1, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 74 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PONDOK GEDE', 1000969, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 75 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIKARANG UTARA', 1000692, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 76 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BEKASI', 1000588, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 77 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIBITUNG', 1001017, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 78 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KARAWANG', 1000581, 1, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 79 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'RENGASDENGKLOK', 1000805, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 80 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIKAMPEK', 1000885, 0, 1, 1, 6
-        );
-
-        /* INSERT QUERY NO: 81 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BOGOR TIMUR', 1000595, 1, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 82 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIBINONG', 1000912, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 83 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LEUWILIANG', 1000682, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 84 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BOGOR BARAT', 1001011, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 85 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DEPOK', 1000671, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 86 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PARUNG', 1000829, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 87 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TANGERANG SELATAN', 1000657, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 88 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SUKABUMI', 1000597, 1, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 89 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIBADAK', 1000813, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 90 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIAWI', 1000860, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 91 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIANJUR', 1000596, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 92 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CILEUNGSI', 1000711, 0, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 93 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIPANAS', 1000998, 2, 1, 1, 7
-        );
-
-        /* INSERT QUERY NO: 94 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PURWAKARTA', 1000534, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 95 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANDUNG UTARA', 1001022, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 96 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PAMANUKAN', 1000903, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 97 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANDUNG BARAT', 1000528, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 98 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PADALARANG', 1000961, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 99 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KATAPANG BDG', 1001049, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 100 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIMINDI', 1000694, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 101 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANJARAN', 1000668, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 102 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIPARAY', 1000786, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 103 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'GARUT', 1000535, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 104 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MALANGBONG', 1001036, 2, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 105 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANDUNG SELATAN', 1000527, 1, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 106 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SUMEDANG', 1000773, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 107 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SUBANG', 1000533, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 108 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'UJUNGBERUNG', 1000921, 0, 1, 1, 8
-        );
-
-        /* INSERT QUERY NO: 109 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PLUMBON', 1000838, 1, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 110 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIREBON KOTA', 1000713, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 111 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LOSARI', 1001004, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 112 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAJALENGKA', 1000745, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 113 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KUNINGAN', 1000769, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 114 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TALAGA', 1000972, 2, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 115 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JATIBARANG', 1000537, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 116 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANJAR', 1000695, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 117 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'CIAMIS', 1000865, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 118 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAJENANG', 1000866, 2, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 119 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TASIKMALAYA UTARA', 1000536, 1, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 120 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TASIKMALAYA SELATAN', 1001052, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 121 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PURWOKERTO', 1000602, 1, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 122 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PURBALINGGA', 1000960, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 123 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'WANGON', 1000706, 0, 1, 1, 9
-        );
-
-        /* INSERT QUERY NO: 124 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PURWOKERTO', 1000615, 1, 0, 1, 9
-        );
-
-        /* INSERT QUERY NO: 125 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SEMARANG BARAT', 1000586, 1, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 126 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'WELERI', 1000847, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 127 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'UNGARAN', 1001029, 2, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 128 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SEMARANG TIMUR', 1000823, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 129 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JEPARA', 1000896, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 130 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DEMAK', 1000992, 2, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 131 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PURWODADI', 1000833, 2, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 132 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KUDUS', 1000646, 1, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 133 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JUWANA', 1000834, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 134 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BLORA', 1000753, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 135 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LASEM', 1000965, 2, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 136 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PEKALONGAN', 1000736, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 137 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PEMALANG', 1000881, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 138 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BATANG TULIS', 1001030, 2, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 139 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TEGAL', 1000734, 1, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 140 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BREBES', 1000798, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 141 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SLAWI', 1001059, 0, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 142 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BUMIAYU', 1000945, 2, 1, 1, 10
-        );
-
-        /* INSERT QUERY NO: 143 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KUDUS', 1000647, 1, 0, 1, 10
-        );
-
-        /* INSERT QUERY NO: 144 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TEGAL', 1000735, 1, 0, 1, 10
-        );
-
-        /* INSERT QUERY NO: 145 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'YOGYA BANTUL', 1000658, 1, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 146 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'YOGYA SLEMAN', 1000867, 0, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 147 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'WONOGIRI', 1000771, 2, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 148 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'YOGYA GN KIDUL', 1000990, 2, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 149 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SOLO', 1000660, 1, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 150 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KARANGANYAR', 1000884, 0, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 151 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BOYOLALI', 1000964, 2, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 152 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SRAGEN', 1000914, 2, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 153 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAGELANG', 1000698, 0, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 154 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SALATIGA', 1000824, 2, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 155 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TEMANGGUNG', 1000942, 0, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 156 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KLATEN', 1000825, 0, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 157 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KEBUMEN', 1000699, 0, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 158 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANJARNEGARA', 1000752, 0, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 159 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PURWOREJO', 1000883, 2, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 160 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KROYA', 1000989, 2, 1, 1, 11
-        );
-
-        /* INSERT QUERY NO: 161 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SOLO', 1000661, 1, 0, 1, 11
-        );
-
-        /* INSERT QUERY NO: 162 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SURABAYA UTARA', 1000708, 1, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 163 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SURABAYA PUSEL', 1000932, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 164 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SURABAYA BARAT', 1000583, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 165 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PAMEKASAN', 1000832, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 166 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SUMENEP', 1000952, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 167 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SAMPANG', 1001037, 2, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 168 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANGKALAN', 1000841, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 169 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PROBOLINGGO', 1000653, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 170 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LUMAJANG', 1000861, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 171 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JEMBER', 1000650, 1, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 172 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BONDOWOSO', 1000973, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 173 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'GEDANGAN', 1001010, 1, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 174 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PASURUAN', 1000849, 0, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 175 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PANDAAN', 1001005, 2, 1, 1, 12
-        );
-
-        /* INSERT QUERY NO: 176 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KEDIRI', 1000664, 1, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 177 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TULUNG AGUNG', 1000757, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 178 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BLITAR', 1000871, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 179 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'GRESIK', 1000755, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 180 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'LAMONGAN', 1001018, 2, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 181 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BOJONEGORO', 1000728, 2, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 182 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TUBAN', 1000858, 2, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 183 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BABAT', 1000987, 2, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 184 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MADIUN', 1000737, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 185 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAWI', 1000905, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 186 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PONOROGO', 1000954, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 187 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TRENGGALEK', 1001043, 2, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 188 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MALANG UTARA', 1000580, 1, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 189 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MALANG BARAT', 1000918, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 190 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MALANG SELATAN', 1000802, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 191 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DAMPIT', 1001051, 2, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 192 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MOJOKERTO', 1000850, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 193 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'JOMBANG', 1000648, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 194 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'NGANJUK', 1000949, 0, 1, 1, 13
-        );
-
-        /* INSERT QUERY NO: 195 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DENPASAR', 1000637, 1, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 196 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KLUNGKUNG', 1000693, 2, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 197 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SINGARAJA', 1000732, 0, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 198 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TABANAN', 1000830, 2, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 199 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANYUWANGI', 1000652, 0, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 200 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SITUBONDO', 1000911, 0, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 201 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'GENTENG', 1001040, 0, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 202 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MATARAM', 1000788, 0, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 203 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SELONG', 1000790, 0, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 204 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PRAYA', 1000957, 0, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 205 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KUPANG', 1000908, 1, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 206 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'ATAMBUA', 1000996, 2, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 207 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PONTIANAK TIMUR', 1000774, 1, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 208 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SINTANG', 1000937, 0, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 209 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SANGGAU', 1000936, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 210 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PONTIANAK BARAT', 1000974, 1, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 211 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KETAPANG', 1000995, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 212 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SINGKAWANG', 1000857, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 213 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SAMBAS', 1001038, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 214 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SAMARINDA SELATAN', 1000808, 1, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 215 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TENGGARONG', 1000967, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 216 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SAMARINDA UTARA', 1000975, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 217 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BONTANG', 1000926, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 218 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BALIKPAPAN', 1000811, 0, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 219 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TANAH GROGOT', 1001002, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 220 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SAMPIT', 1001023, 1, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 221 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PALANGKARAYA', 1000840, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 222 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PANGKALANBUN', 1001024, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 223 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANJARMASIN SELATAN', 1000826, 1, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 224 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANJARMASIN KOTA', 1001014, 0, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 225 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANJARBARU', 1000919, 1, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 226 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BATULICIN', 1000842, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 227 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KOTABARU', 1000893, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 228 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BARABAI', 1000984, 0, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 229 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TANJUNG TABALONG', 1000985, 2, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 230 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANJARMASIN', 1000827, 1, 0, 0, 4
-        );
-
-        /* INSERT QUERY NO: 231 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAKASSAR UTARA', 1000559, 1, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 232 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAROS', 1000950, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 233 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAKASSAR SELATAN', 1000929, 0, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 234 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SUNGGUMINASA', 1000690, 1, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 235 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SENGKANG', 1001020, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 236 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BULUKUMBA', 1001021, 0, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 237 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TAKALAR', 1001003, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 238 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BONE', 1001019, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 239 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PARE-PARE', 1000796, 1, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 240 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'WONOMULYO', 1000906, 0, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 241 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAMUJU', 1001044, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 242 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SIDRAP', 1001025, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 243 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PALOPO', 1001016, 1, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 244 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'RANTEPAO', 1000986, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 245 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MANGKUTANA', 1001067, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 246 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PALU', 1000795, 1, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 247 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'AMBON', 1000898, 0, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 248 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PARIGI PALU', 1000940, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 249 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KENDARI', 1000843, 1, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 250 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KOLAKA', 1000920, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 251 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BAU-BAU', 1000994, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 252 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MANADO', 1000729, 1, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 253 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MANADO BARAT', 1000933, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 254 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'GORONTALO', 1000731, 0, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 255 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MARISA', 1000852, 2, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 256 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'KUTACANE', 1001053, 3, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 257 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TEBING TINGGI', 1001069, 3, 1, 0, 4
-        );
-
-        /* INSERT QUERY NO: 258 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SIDIKALANG', 1001073, 3, 1, 0, 4
-        );
-
-        /* INSERT QUERY NO: 259 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'UJUNG BATU', 1000163, 3, 1, 0, 7
-        );
-
-        /* INSERT QUERY NO: 260 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TEMBILAHAN', 1000856, 3, 1, 0, 8
-        );
-
-        /* INSERT QUERY NO: 261 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TELUK KUANTAN', 1001054, 3, 1, 0, 9
-        );
-
-        /* INSERT QUERY NO: 262 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DUMAI', 1000160, 3, 1, 0, 8
-        );
-
-        /* INSERT QUERY NO: 263 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BENGKALIS', 1000779, 3, 1, 0, 10
-        );
-
-        /* INSERT QUERY NO: 264 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PEKANBARU 2', 1000820, 3, 1, 0, 11
-        );
-
-        /* INSERT QUERY NO: 265 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SIAK', 1000853, 3, 1, 0, 12
-        );
-
-        /* INSERT QUERY NO: 266 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BAGAN SIAPIAPI', 1000880, 3, 1, 0, 13
-        );
-
-        /* INSERT QUERY NO: 267 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DURI', 1001041, 3, 1, 0, 13
-        );
-
-        /* INSERT QUERY NO: 268 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TANJUNG BATU', 1000488, 3, 1, 0, 13
-        );
-
-        /* INSERT QUERY NO: 269 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TANJUNG BALAI', 1000489, 3, 1, 0, 13
-        );
-
-        /* INSERT QUERY NO: 270 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BATAM', 1000600, 3, 1, 0, 12
-        );
-
-        /* INSERT QUERY NO: 271 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'TANJUNG PINANG', 1000601, 3, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 272 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BANGKA', 1000783, 3, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 273 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MUNTOK', 1001027, 3, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 274 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BIMA', 1000739, 3, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 275 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'SUMBAWA', 1000748, 3, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 276 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'RUTENG', 1000897, 3, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 277 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'DOMPU', 1000977, 3, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 278 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'WAINGAPU', 1001009, 3, 1, 0, 15
-        );
-
-        /* INSERT QUERY NO: 279 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'MAUMERE', 1001065, 3, 1, 0, 14
-        );
-
-        /* INSERT QUERY NO: 280 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'ENDE', 1001082, 3, 1, 0, 16
-        );
-
-        /* INSERT QUERY NO: 281 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'PEKANBARU', 1000172, 3, 0, 0, 16
-        );
-
-        /* INSERT QUERY NO: 282 */
-        INSERT INTO salespoint(name, code, status, trade_type, isJawaSumatra, region)
-        VALUES
-        (
-        'BATAM', 1000634, 3, 0, 0, 16
-        );");
+        DB::unprepared("
+        INSERT INTO salespoint (name,code,status,trade_type,isJawaSumatra,region,address) VALUES
+            ('DAAN MOGOT',1001000,1,0,1,0,'Jl. Komplek Pergudangan Km 19,8 No D8  Kel Poris Gaga Kec Batu Ceper Tangerang Banten'),
+            ('JABODETABEK',1000913,1,0,1,0,'Jl. Raya Bekasi Km23.5  No 08 Cakung Jakarta Timur'),
+            ('KARAWANG',1000720,1,0,1,0,'Jl. Raya Klari  Km. 01, Desa Gintungkerta, Kec. Klari'),
+            ('BOGOR',1000681,1,0,1,0,'Jl. Raya Pemda No 88 Rt/Rw 22/8 Kel. Pasir Jambu Kec. Sukaraja Bogor Sukaraja Jawa Barat'),
+            ('MEDAN BARAT',1000697,1,1,1,1,'Jl. Jend. Gatot Subroto, Komp. Pergudangan Prima Cetre No. G 5, Kel. Sei Kambing'),
+            ('BINJAI',1000810,0,1,1,1,'Jl. Harapan No 1-4 Desa Puji Mulyo Kec Sunggal Kab Deli Serdang Prov Sumut'),
+            ('PANGKALAN BRANDAN',1001050,2,1,1,1,'Jl. Lintas Medan - Tanjung Pura Lingkungan Ii (Depan Perumahan Pelawi Garden) Kel Pelawi Utara Kec Babalan Kab Langkat Prov Sumut'),
+            ('MEDAN TIMUR',1000570,1,1,1,1,'Jl. Letda Sujono Komplek Pergudangan  Intan  , Block C No.7 - 8 - 9  Kec. Percut Sei Tuan - Medan (Sumatera Utara)'),
+            ('MEDAN UTARA',1000894,0,1,1,1,'Jl. Yos Sudarso Km 11,5 Pergudangan Komplek Jade City Blok A No 8E - 8F, Kecamatan Medan Deli , Medan'),
+            ('RANTAU PRAPAT',1000888,1,1,1,1,'Jl. Hm Said, Kelurahan Perdamean, Kecamatan Rantau Selatan, Kabupaten Labuhan Batu-Sumatera Utara (Belakang Alfamidi Sigambal), Rantau Prapat - Sumut'),
+            ('MEDAN SELATAN',1000770,0,1,1,1,'Jl Sm Raja Km 10,8 Komp Pergudangan Amplas Trade Center (Atc) Blok Damar No 1 - 2 Kec Medan Amplas, Kel Timbang Deli'),
+            ('KISARAN',1000889,0,1,1,1,'Jl Jend Sudirman Dusun V Bunut Kel Desa Sidomulyo Kec Pulo Branding, Kab Asahan Prov Sumut'),
+            ('PADANG SIDEMPUAN',1000814,1,1,1,1,'Jl. H.T Rizal Nurdin Km 8,5 Manuggang Julu, Pergudangan Omco, Depan Pesantren Al-Anshor, Kecamatan Padang Sidimpuan Tenggara, Kota Padang Sidimpuan'),
+            ('PANYABUNGAN',1000962,2,1,1,1,'Jl. Wiliam Iskandar, Kelurahan Dalang Lidang, Kecamatan Panyabungan, Kabupaten Mandailing Natal- Sumatera Utara'),
+            ('SIBORONG-BORONG',1001013,0,1,1,1,'Komp Pergudangan Marttex No. 007 Kel Pohan Tonga Siborong Borong '),
+            ('SIBOLGA',1000956,2,1,1,1,'Jln. Oswald Siahaan No.27E (Depan Gardu Pln) - Gudang Nabati, Kel. Aek Tolang, Kec. Pandan, Kab. Tapanuli Tengah, Kota Sibolga'),
+            ('MEDAN',1000689,1,0,1,1,'Jl. Letda Sujono Komplek Pergudangan  Intan  , Block C No. 6  Kec. Percut Sei Tuan - Medan (Sumatera Utara)'),
+            ('PADANG UTARA',1000946,1,1,1,2,'Jl. By Pass Km. 8 Kayu Gadang, Kelurahan Pasar Ambacang, Kecamatan Kuranji, Kota Padang, Sumatera Barat'),
+            ('PADANG SELATAN',1000749,2,1,1,2,'Jl Baru Perumnas Indarung, Ruko No 6 - 8, Kelurahan Indarung, Kecamatan Lubuk Kilangan, Kota Padang'),
+            ('PADANG PARIAMAN',1000943,2,1,1,2,'Jl. Sentot Ali Basa Kel. Jati Hilir Kec. Pariaman Tengah, Kota Pariaman, Sumatera Barat'),
+            ('PASAMAN BARAT',1000916,0,1,1,2,'Jl. Jorong Bandarejo Dusun Ii Kel Lingkuang Aua Kecamatan Pasaman Barat , Kodya Pasaman Barat - Sumatera Barat '),
+            ('SOLOK',1000787,1,1,1,2,'Jl. Raya Solok No 63 Panyakalan Kel. Nagari Panyakalan Kecamatan Kubung - Solok  Kp. 27361'),
+            ('MUARA BUNGO',1000886,0,1,1,2,'Jl. Lintas Sumatera Km-8 Kelurahan Sungai Mengkuang, Kecamatan Rimbo Tengah Kabupaten Muara Bungo- Jambi, Kode Pos 37211'),
+            ('SOLOK SELATAN',1001026,2,1,1,2,'Jl. Batang Laweh, Kel. Pasir Talang, Kec. Sungai Pagu, Kab. Solok Selatan, Sumatera Barat'),
+            ('BUKIT TINGGI',1000751,1,1,1,2,'Jl Raya Bukittinggi Km 5 Jorong Pgrm Nagari Gadut, Kecamatan Tilatang Kamang, Kabupaten Agam'),
+            ('PAYAKUMBUH',1000862,0,1,1,2,'Jl. By Pass Diponegoro, Kel. Kubu Gadang, Kec. Payakumbuh Barat, Kota Payakumbuh, Sumatera Barat'),
+            ('BATUSANGKAR',1001035,2,1,1,2,'Jl. Raya Nagari Padang Magek Kel. Padang Magek Selatan Kec Rambatan Kab Tanah Datar Sumbar 27271 '),
+            ('JAMBI',1000599,1,1,1,2,'Jl. Rb Siagian No. 68D Rt. 01 Kel. Talang Bakung Kec. Paal Merah Kota Jambi'),
+            ('BANGKO',1000887,0,1,1,2,'Jl. Mentawak  Kel.Mentawak Kec Nalo Tantan Kab Bangko Prop Jambi'),
+            ('JAMBI BARAT',1001006,0,1,1,2,'Jl. Jambi Muaro Bulian Km 12 Rt. 07 Rw. 01 Dusun Kenali Kecil Desa Mendalo Darat Kec. Jaluko Kab. Muaro Jambi'),
+            ('BENGKULU',1000669,1,1,1,2,'Jl. Re Martadinata 10. Kelurahan Muara Dua. Kec. Kampung Melayu. Bengkulu'),
+            ('MUKO-MUKO',1000982,2,1,1,2,'Jl. Raya Bengkulu-Padang, Desa Lubuk Sanai Iii, Kec. Xiv Koto, Kabupaten Muko-Muko'),
+            ('MANNA',1000983,2,1,1,2,'Jl. Jenderal Ahmad Yani Rt 06 Kel.Ibul Kec.Kota Manna Kabupaten Bengkulu Selatan Propinsi Bengkulu'),
+            ('LUBUK LINGGAU',1000758,0,1,1,2,'Jl. Hm. Suharto Lubuk Kupang Rt. 03 Kec.  Lubuklinggau Selatan I Kota Lubuklinggau'),
+            ('LAHAT',1000818,0,1,1,2,'Jl. Lintas Lubuk Beringin Kel. Pagar Agung Kec. Lahat Kabupate Lahat'),
+            ('JAMBI',1000621,1,0,1,2,'Jl. Jambi Muaro Bulian Km 12 Rt. 07 Rw. 01 Dusun Kenali Kecil Desa Mendalo Darat Kec. Jaluko Kab. Muaro Jambi'),
+            ('BUKIT TINGGI',1000890,1,0,1,2,'Jl Raya Bukittinggi Km 5 Jorong Pgrm Nagari Gadut, Kecamatan Tilatang Kamang, Kabupaten Agam'),
+            ('PALEMBANG ILIR',1000640,1,1,1,3,'Jl. Letkol Adrianz No. 999 Sukabangun2 Kel Sukajaya Kec Sukarami Palembang'),
+            ('PALEMBANG ULU',1000821,0,1,1,3,'Jl.Pangeran Ratu Rt 030 Rw 009 Kel.15 Ulu Kec.Jakabaring Palembang'),
+            ('BELITUNG',1000902,2,1,1,3,'Jl. Ahmad Dahlan Rt. 12 Rw. 05 Kel. Pangkallalng, Kec. Tanjungpandan, Kab. Belitung. 33412'),
+            ('SEKAYU',1000959,2,1,1,3,'Jl. Lingkar Randik  Rt: 019 Rw: 006 Kel. Serasan Jaya Kec. Sekayu Kab. Musi Banyuasin Sumatera Selatan (Samping Gudang Indomarco). 30711'),
+            ('PRABUMULIH',1000782,1,1,1,3,'Jl. Jend. Sudirman Kel. Cambai Kec. Cambai Kota Prabumulih (Komp. Pergudangan Samping Rm. Siang Malam)'),
+            ('BATURAJA',1000816,2,1,1,3,'Jl. Lintas Tengah Sumatera, Sebelum Simpang 3 Kpr No .16 Rt/Rw 012/005, Kel Sukajadi, Kecamatan Baturaja Timur, Kabupaten Ogan Komering Ulu (Komplek Pergudangan Maranatha)'),
+            ('KAYUAGUNG',1000941,0,1,1,3,'Jl Lintas Timur Lk.Ii Km.65 No.001 Kel. Cintaraja Kec. Kayuagung Kab. Ogan Komering Ilir ( Samping Karaoke Blizt)'),
+            ('MARTAPURA',1000981,0,1,1,3,'Jl. Raya Lintas Tengah Sumatera Desa Kotabaru Barat Kecamatan Martapura Kabupaten Oku Timur Depan Alfamart'),
+            ('PRINGSEWU',1000854,0,1,1,3,'Jl. Raya Danau Lk V, Kel. Pringombo, Kec. Pringsewu, Kab. Pringsewu'),
+            ('KALIANDA',1000997,2,1,1,3,'Jl Trans Sumatra Rt.01 Lk.03 Wai Lubuk Kec. Kalianda Lampung Selatan, Lampung'),
+            ('KOTABUMI',1000835,1,1,1,3,'Jl.Lintas Sumatera Km 9 Dusun Sukajadi Rt. 02 Rw. 03 (Samping Gudang Avian), Desa Bumi Raya Kecamatan Abung Selatan Kab. Lampung Utara. 34581'),
+            ('METRO',1000743,0,1,1,3,'Jl. Merpati Rt.48/Rw.10, Bedeng 29, Kel.Banjar Sari, Kec.Metro Utara, Kotamadya Metro, Pov. Lampung. Kode Pos 34117'),
+            ('TULANG BAWANG',1000863,0,1,1,3,'Jl. Raya Lintas Timur Km 48 No 11, Rt/Rw. 07/04 Kel Banjar Agung, Kec Banjar Agung, Kab. Tulang Bawang, Prov Lampung'),
+            ('LIWA',1000877,2,1,1,3,'Jl.Raden Intan-Sukamenanti Kel.Pasar Liwa Kec.Balik Bukit Kab.Lampung Barat'),
+            ('LAMPUNG',1000685,1,0,1,3,'Jl P. Tirtayasa No.17 Kel Campang Jaya Kec. Sukabumi Bandar Lampung. 35122'),
+            ('PALEMBANG',1000686,1,0,1,3,'Jl. Letkol Adrianz No. 999 Sukabangun2 Kel Sukajaya Kec Sukarami Palembang'),
+            ('TIGARAKSA',1000677,0,1,1,5,'Kp. Matagara Bubuan Rt 01 / 01 Desa Matagara Kecamatan Tigaraksa Kabupaten Tangerang'),
+            ('CURUG SERPONG',1000904,0,1,1,5,'Jl. Diklat Pemda No 18 A Rt 02 Rw 15 Kel Sukabakti Kec Curug Kabupaten Tangerang'),
+            ('RANGKAS BITUNG',1000851,0,1,1,5,'Jl. Raya By Pass Soekarno Hatta Rt 05 Rw 11, Kel. Cijoro Lebak, Kec Rangkas Bitung, Lebak - Banten'),
+            ('MALINGPING',1000799,2,1,1,5,'Jl. Raya Saketi Km 02 Beyeh - Bolang, Kelurahan Bolang, Kecamatan Malingping, Kabupaten Lebak - Banten 42391'),
+            ('CILEGON',1000846,0,1,1,5,'Jl. Seneja Ketileng No 165, Kel Ketileng, Kec Cilegon, Kabupaten Cilegon - Banten'),
+            ('PANDEGLANG',1000705,0,1,1,5,'Jl. Lintas Timur Kp. Samaboa Pabrik Padi H. Ating - Pandeglang'),
+            ('PANIMBANG',1000991,2,1,1,5,'Jl. Raya Panimbang Kampung Bayur Kel. Sidamukti, Kec, Sukaresmi, Kab. Pandeglang, Banten'),
+            ('TANGERANG KOTA',1000589,0,1,1,5,'Jl Aria Kemuning No.38 Kel. Periuk Jaya, Kec. Periuk Tangerang Banten'),
+            ('KRONJO',1001015,0,1,1,5,'Jl. Kampung Kemiri Rt 08 Rw 02 Desa Kemiri Kecamatan Kemiri Kabupaten Tangerang'),
+            ('TELUK NAGA',1000938,2,1,1,5,'Pergudangan Airport City No 101 Blok C 1 C Kelurahan Teluk  Naga Kecamatan Teluk Naga Tengerang Banten 15510'),
+            ('JAKARTA BARAT',1000454,1,1,1,5,'Jl. Rawa Buaya No.01 Rt 001, Kelurahan Rawa Buaya , Kec Cengkareng Jakarta Barat'),
+            ('CIPONDOH',1000733,0,1,1,5,'Jl. Kav Dpr Blok C No 02 Rt 001 Rw 006 Kelurahan Neroktog, Kec Pinang, Kota Tangerang Banten 15145'),
+            ('JOGLO',1000719,0,1,1,5,'Jl. Toa Pekong No.01 Kelurahan Grogol Selatan, Kecamatan Kebayoran Lama, Jakarta Selatan, Dki Jakarta 12220'),
+            ('SERANG',1000791,1,0,1,5,'Jl. Kasemen Warung Jaud Rt 01 Rw 10 Kel. Kasemen Kec. Kasemen Serang Banten'),
+            ('JAKUTPUS',1000457,1,1,1,6,'Jl. Pegangsaan Dua Km 4.5 No 138 Kelapa Gading Jakarta Utara 14250'),
+            ('KLENDER',1000800,0,1,1,6,'Jl. I Gusti Ngurah Rai Sii No C.14 Rt 001 Rw 015 Kelurahan Klender Kecamatan Duren Sawit Jakarta Timur'),
+            ('PADEMANGAN',1000935,2,1,1,6,'Jl. Kencur No. 24 Rt 002 Rw 004 Pademangan Ancol Jakarta Utara 14430'),
+            ('CILANDAK',1000876,0,1,1,6,'Jl. Lebak Bulus Raya No 33'),
+            ('JAKARTA TIMUR',1000453,0,1,1,6,'Jl. Suci No 33. Kel Susukan. Kec Ciracas Jakarta Timur'),
+            ('KRANJI',1000804,1,1,1,6,'Jl. Raya Perjuangan No 18 Rt001 Rw003 Kel Harapan Baru Kec Bekasi Utara Kota Bekasi'),
+            ('PONDOK GEDE',1000969,0,1,1,6,'Jl. Nurul Huda Rt.01 Rw.02 Kec. Bantargebang Kel. Bantargebang Kab. Bekasi'),
+            ('CIKARANG UTARA',1000692,0,1,1,6,'Jln. Arief Rahman Hakim No. 16 Kp. Teleng Desa Karang Baru,Cikarang Utara Kab.  Bekasi'),
+            ('BEKASI',1000588,0,1,1,6,'Jl. Gemalapik Kp.Pasir Konci Rt/Rw 016/006 Desa Pasir Sari Kec. Cikarang Selatan'),
+            ('CIBITUNG',1001017,0,1,1,6,'Jl. Diponegoro Kp Kedung Gede Rt 001 Rw 001 Setia Mekar Tambun Selatan'),
+            ('KARAWANG',1000581,1,1,1,6,'Jl. Raya Klari Km 01 Rt 25 Rw 05 Gintungsalam Gintung Kerta Klari Karawang 41371'),
+            ('RENGASDENGKLOK',1000805,0,1,1,6,'Jl. Karya Bhakti No 06 Dusun Jati Rt 002 Rw 005 Rengasdengklok Karawang'),
+            ('CIKAMPEK',1000885,0,1,1,6,'Jl. By Pass Jomin Dusun Margasari Rt 002 Rw 003 Jomin Barat Kec. Kotabaru'),
+            ('BOGOR TIMUR',1000595,1,1,1,7,'Jl. Raya Pemda No. 88 Rt.02 Rw.08, Kel Pasir Jambu, Kec. Sukaraja, Kab. Bogor'),
+            ('CIBINONG',1000912,0,1,1,7,'Kp Cijujung Rt 07 Rw 06, Kel Cijujung, Kec Sukaraja, Bogor'),
+            ('LEUWILIANG',1000682,0,1,1,7,'Kp. Paku Rt:004 Rw:003 Desa Sadeng Kec. Lw Sadeng. Leuwiliang'),
+            ('BOGOR BARAT',1001011,0,1,1,7,'Jl. Raya Parung No 40 Rt 02 Rw 05 Desa Jampang Kec Kemang'),
+            ('DEPOK',1000671,0,1,1,7,'Jl. Tugu Raya Rt 10 Rw 10,
+        Pergudangan Kubik Logistik,
+        Cimanggis Depok'),
+            ('PARUNG',1000829,0,1,1,7,'Jl.Raya Gn Sindur No 25 Kp Pemagar Sari Rt 002 Rw 001 Desa Parung Kec Parung 16330'),
+            ('TANGERANG SELATAN',1000657,0,1,1,7,'Jl Raya Siliwangi Pondok Benda Pamulang Kel Pondok Benda Kec Pamulang Rt 01 Rw 019 No 71'),
+            ('SUKABUMI',1000597,1,1,1,7,'Jl. Otista No. 195 Rt 01 Rw 06 Kelurahan Gedong Panjang,Kecamatan Citamiang Sukabumi ,Jawa Barat 43144
+        '),
+            ('CIBADAK',1000813,0,1,1,7,'Jl Paku Haji No 63 Rt 24 Rw 10 Kel Parungkuda Kec Parungkuda Sukabumi 43357'),
+            ('CIAWI',1000860,0,1,1,7,'Kp. Bitung Omo Rt 003 Rw 005 Desa Bitung Sari Kecamatan Ciawi Kabupaten Bogor'),
+            ('CIANJUR',1000596,0,1,1,7,'Jl. Raya Bandung Ds Bojong Rt 03/Rw 11 Pergudangan No 8 Kec Karang Tengah'),
+            ('CILEUNGSI',1000711,0,1,1,7,'Kp Gandoang Poncol Rt 03 Rw 10 Desa Gandoang Kec Cileungsi Kab Bogor 168280'),
+            ('CIPANAS',1000998,2,1,1,7,'Jl Raya Cipanas Cipendawa No 9 Rt 02 Rw 08 Pacet Cianjur 43253'),
+            ('PURWAKARTA',1000534,0,1,1,8,'Gg Baing Marzuki Rt08 Rw03, Cipaisan, Purwakarta'),
+            ('BANDUNG UTARA',1001022,0,1,1,8,'Jl. Komodor Udara Supadio No. 16 Kel. Ciroyom Kec. Cicendo Kotamadya Bandung'),
+            ('PAMANUKAN',1000903,0,1,1,8,'Jl Cece Jakaria Rt17/05 Ds Rancasari Kec Pamanukan Kab Subang 41254'),
+            ('BANDUNG BARAT',1000528,0,1,1,8,'Jl. Soekarno Hatta No. 252A Bandung - Kelurahan Kopo - Kec.Bojongloa Kaler - Bandung'),
+            ('PADALARANG',1000961,0,1,1,8,'Jalan Raya Pamuncatan Km 21 Ciburuy Padalarang'),
+            ('KATAPANG BDG',1001049,0,1,1,8,'Jln Raya Soreang Kopo No 212-211 Pangauban Katapang Bandung'),
+            ('CIMINDI',1000694,0,1,1,8,'Jl. Cibaligo No. 76E, Kel. Cigugur, Kec. Cimahi Tengah'),
+            ('BANJARAN',1000668,0,1,1,8,'Jl. Raya Banjaran Km. 12,8, Langonsari, Pameungpeuk, Bandung, Jawa Barat 40376'),
+            ('CIPARAY',1000786,0,1,1,8,'Jl. Manirancan, Rt/Rw : 01/01, Kel. Rancakasumba, Kec. Solokan Jeruk.Kab. Bandung - 40376'),
+            ('GARUT',1000535,0,1,1,8,'Jln Jendral Sudirman No .33 Kp.Babakan Abid,Kel .Suci Kaler, Kec.Karangpawitan, Kab Garut, Jawa Barat (44182)'),
+            ('MALANGBONG',1001036,2,1,1,8,'Jln.Raya Malangbong Tasik No.57 Desa Cinagara Kec. Malangbong'),
+            ('BANDUNG SELATAN',1000527,1,1,1,8,'Jl Soekarno Hatta No 562,Kel Sekejatikec Buah Batu Bandung 40286'),
+            ('SUMEDANG',1000773,0,1,1,8,'Jln. Serma Muchtar No 111 Kel. Situ Kec. Sumedang Utara'),
+            ('SUBANG',1000533,0,1,1,8,'Jl. Raya Cibogo Km 06 Rt/Rw 001/002 Kel. Cibogo Kec. Cibogo Kab.Subang 41285'),
+            ('UJUNGBERUNG',1000921,0,1,1,8,'Jl Rumah Sakit No. 108 Kel Pakemitan Kec. Cinambo Bandun -Komp Pergudangan Pt. Bintang Agung'),
+            ('PLUMBON',1000838,1,1,1,9,'Jl. Fatahillah No. 317 Rt03 Rw03, Blok Atas Angin Perbutulan Sumber, Kab. Cirebon'),
+            ('CIREBON KOTA',1000713,0,1,1,9,'Jl. Angkasa Raya, Penggung Utara, Kel. Kalijaga, Kec. Harjamukti, Cirebon , Jawa Barat.'),
+            ('LOSARI',1001004,0,1,1,9,'Jl. Raya Ciledug Blok Widara Bojongnegara Rt006 Rw004, Ciledug, Cirebon Jawa Barat 45188'),
+            ('MAJALENGKA',1000745,0,1,1,9,'Jl. Cirebon Bandung, Dusun Ciwalur Rt 006 Rw014, Kel. Burujul Kulon, Kec. Jatiwangi, Kab, Majalengka'),
+            ('KUNINGAN',1000769,0,1,1,9,'Jln Mayor Idma Desa Babakan Mulya Rt 011 Rw 008 Kec. Jalaksana Kab. Kuningan Jawabarat 45554'),
+            ('TALAGA',1000972,2,1,1,9,'Jl. Raya Sindang Kelurahan Sindang Kec Cikijing Kab Majalengka Jawa Barat'),
+            ('JATIBARANG',1000537,0,1,1,9,'Jl. Bypass Kongsi Jaya No 1 Rt 01 Rw 01,Kel Kongsi Jaya, Kec Widasari, Indramayu, Jawa Barat 15271'),
+            ('BANJAR',1000695,0,1,1,9,'Jl. Batulawang No 133 Tanjung Sukur Rt 03/15 Kel Hegrsari Kec Pataruman Kota Banjar'),
+            ('CIAMIS',1000865,0,1,1,9,'Jl. Sindangkasih , Perum Bumi Ar-Rafah Indah, Kel. Sindangkasih, Kec. Sindangkasih, Kab. Ciamis, Jawa Barat'),
+            ('MAJENANG',1000866,2,1,1,9,'Jl. Dr Wahidin Rt 004/ Rw 002 Desa Sindangsari Kec Majenang Kab Cilacap, Jateng'),
+            ('TASIKMALAYA UTARA',1000536,1,1,1,9,'Jln. Ibrahim Adjie Kp. Cipaingeun No.07, Kel Sukamaju Kaler, Kec. Indihiang - Tasikmalaya'),
+            ('TASIKMALAYA SELATAN',1001052,0,1,1,9,'Cibeuti Rt09 Rw 04, Kel Cibeuti, Kec Kawalu, Tasikmalaya'),
+            ('PURWOKERTO',1000602,1,1,1,9,'Jl. Wahid Hasyim No.55 D Purwokerto Kel. Karang Lesem, Kec. Purwokerto Selatan, Banyumas Jawa Tengah'),
+            ('PURBALINGGA',1000960,0,1,1,9,'Jl.Bung Karno Km 1 Rt04 Rw 04 - Kel  Kalikabong - Kalimanah Pbg'),
+            ('WANGON',1000706,0,1,1,9,'Jl. Lingkar Barat No 1, Rt 04 Rw 05, Wangon - Banyumas'),
+            ('PURWOKERTO',1000615,1,0,1,9,'-'),
+            ('SEMARANG BARAT',1000586,1,1,1,10,'Jl. Siliwangi No. 430A Rt/Rw 001/003, Kel Kalibanteng Kulon, Kec. Semarang Barat, Semarang - Jateng'),
+            ('WELERI',1000847,0,1,1,10,'Jl. Bahari, Kel. Karang Anom, Kec. Weleri, Kab. Kendal  - Jawa Tengah'),
+            ('UNGARAN',1001029,2,1,1,10,'Jl. Jend. Sudirman No. 130, Kel. Langensari, Kec. Ungaran Barat, Kab. Semarang –  Jawa Tengah'),
+            ('SEMARANG TIMUR',1000823,0,1,1,10,'Jl. Raya Bandungrejo No 99 Rt05 Rw06, Kec. Mranggen'),
+            ('JEPARA',1000896,0,1,1,10,'Jl. Desa Bawu Rt09/Rw02, Kel. Bawu, Kec. Batealit, Kab. Jepara, Jawa Tengah'),
+            ('DEMAK',1000992,2,1,1,10,'Jl. Raya Demak Kudus No.24, Ds. Mranak, Kec. Wonosalam, Kab. Demak, Jawa Tengah, Kode Pos : 59571'),
+            ('PURWODADI',1000833,2,1,1,10,'Jl. Ahmad Yani Rt02 Rw15, Kel. Kuripan, Kec. Purwodadi, Kab. Grobogan'),
+            ('KUDUS',1000646,1,1,1,10,'Ds. Megawon Rt01 Rw03, Kudus - Jawa Tengah'),
+            ('JUWANA',1000834,0,1,1,10,'Jl, Juwana-Pati Km 5, Kel. Mintomulyo, Kec. Juwana, Jawa Tengah, 59185'),
+            ('BLORA',1000753,0,1,1,10,' Jl. Cendana Rt 01 / Rw 01 Kel. Beran Kec. Blora Blora - Jawa Tengah '),
+            ('LASEM',1000965,2,1,1,10,'Desa Punjulharjo Rt02 Rw04, Kel. Punjulharjo, Kec. Rembang, Kab. Rembang, Jawa Tengah (59219)'),
+            ('PEKALONGAN',1000736,0,1,1,10,'Jl. Raya Tirto, Kel. Bener, Kec. Wiradesa, Kab. Pekalongan, Jawa Tengah'),
+            ('PEMALANG',1000881,0,1,1,10,'Jl. Slamet Riyadi Rt04, Rw04, Kel. Mulyoharjo, Kec. Pemalang, Kab. Pemalang, Jateng'),
+            ('BATANG TULIS',1001030,2,1,1,10,'Jl. Tegalsari, Gg Gagak Rt01 Rw01, Desa Tegalsari, Kandeman, Batang - Jawa Tengah'),
+            ('TEGAL',1000734,1,1,1,10,'Jl. Mataram Rt 003 / Rw 002 Kel. Muara Reja Kec. Tegal Barat Tegal - Jawa Tengah'),
+            ('BREBES',1000798,0,1,1,10,'Jl. Raya Bulakamba Brebes, Kel. Grinting, Kec. Bulakamba, Kab. Brebes, Jawa Tengah'),
+            ('SLAWI',1001059,0,1,1,10,'Jl. Pedagangan, Kel. Pedagangan, Kec. Dukuh Waru, Kab. Tegal, Jawa Tengah'),
+            ('BUMIAYU',1000945,2,1,1,10,'Desa Laren,  Rt 01 Rw 07, Kel. Laren, Kec. Bumiayu, Kab. Brebes, Jawa Tengah'),
+            ('KUDUS',1000647,1,0,1,10,'-'),
+            ('TEGAL',1000735,1,0,1,10,'-'),
+            ('YOGYA BANTUL',1000658,1,1,1,11,'Jl. Parangtritis Km 5,6, Pandes, Panggungharjo, Sewon, Bantul, Yogyakarta'),
+            ('YOGYA SLEMAN',1000867,0,1,1,11,'Jl. Mandungan 2 , Kel. Margoluwih, Kec.Seyegan, Kab. Sleman, Yogyakarta'),
+            ('WONOGIRI',1000771,2,1,1,11,'Dk. Gemantar Rt 003 / Rw 002Kel. Gemantarkec. Selogirikab. Wonogiri Jawa Tengah'),
+            ('YOGYA GN KIDUL',1000990,2,1,1,11,' Jl. Manthous Km 1, Glidag Rt048 Rw009, Logandeng, Kecamatan Playen, Gunung Kidul, Diy, 55861 '),
+            ('SOLO',1000660,1,1,1,11,'Jl. Slamet Riyadi No 133A Kelurahan Kartasura, Kecamatan Kartasura, Kabupaten Sukoharjo Jawa Tengah'),
+            ('KARANGANYAR',1000884,0,1,1,11,'Jl. Papahan, Desa Papahan Rt 09/Rw 08, Kel. Papahan, Kec. Tasikmadu, Kab. Karang Anyar'),
+            ('BOYOLALI',1000964,2,1,1,11,'Jl Perintis Kemerdekaan 17 Ngrancah, Siswodipuran , Boyolali, Kab Boyolali, Jawa Tengah'),
+            ('SRAGEN',1000914,2,1,1,11,'Jl. Margomulyo Rt40/Rw01, Kel. Puro, Kec. Karangmalang, Kab.Sragen'),
+            ('MAGELANG',1000698,0,1,1,11,' Jl. Bimo No. 7, Rt003 Rw001, Kel. Sedayu, Kec. Muntilan, Kab. Magelang, Magelang, Jawa Tengah, 56411 '),
+            ('SALATIGA',1000824,2,1,1,11,'Jl. Marditomo No. 9, Kelurahan Sidorejo Kidul, Kecamatan Tingkir, Kota Salatiga - 50741'),
+            ('TEMANGGUNG',1000942,0,1,1,11,'Jl. Bulu-Parakan, Watukarung, Campursari, Kec. Bulu, Kab. Temanggung 56253'),
+            ('KLATEN',1000825,0,1,1,11,' Jl. Sersan Sadikin, Dusun Tirtomoyo Rt 01 Rw 12, Kel. Gergunung, Kec. Klaten Utara, Kab. Klaten, 57434 '),
+            ('KEBUMEN',1000699,0,1,1,11,' Jl. Arumbinang No. 7 / Jl. Kusuma Ii No. 19  - Kebumen, 54311 '),
+            ('BANJARNEGARA',1000752,0,1,1,11,' Jl. Serma Muklas No.4 Rt08/Rw03, Kel. Kutabanjarnegara, Kec. Banjarnegara, Banjarnegara, Jawa Tengah 53416 '),
+            ('PURWOREJO',1000883,2,1,1,11,' Jl.Kyai Brengkel No 07,Kel (Depan Agen Bus Sumber Alam). Tegalsaari. Kec, Purworejo,Purworejo - Jawa Tengah, 54111 '),
+            ('KROYA',1000989,2,1,1,11,' Jl. Mujur Buntu Rt09 Rw01, Kel. Mujur, Kec. Kroya, Kab. Cilacap, Jateng 53282 '),
+            ('SOLO',1000661,1,0,1,11,'-'),
+            ('SURABAYA UTARA',1000708,1,1,1,12,' Jl. Kedung Cowek No. 169 Surabaya -  60125 '),
+            ('SURABAYA PUSEL',1000932,0,1,1,12,' Jalan Karang Pilang Barat 137 Surabaya - Jawa Timur - 60221 '),
+            ('SURABAYA BARAT',1000583,0,1,1,12,' Jalan Ry Sukomanunggal 179, Sukomanunggal, Surabaya - 60188 '),
+            ('PAMEKASAN',1000832,0,1,1,12,'Jl. Jokotole No 276 Pamekasan'),
+            ('SUMENEP',1000952,0,1,1,12,' Jl Lontar No 5 Kel. Pabian Kec. Sumenep  - Jawa Timur - 69417 '),
+            ('SAMPANG',1001037,2,1,1,12,' Desa Torjun Kel Torjun Kec Sampang Propinsi Jawa Timur - 69270 '),
+            ('BANGKALAN',1000841,0,1,1,12,' Jl Raya Soekarno Hatta No 7 Socah - Bangkalan - 69161 '),
+            ('PROBOLINGGO',1000653,0,1,1,12,'Jl. Brantas Km 04, Kel. Pilang, Kec. Kademangan - Probolinggo'),
+            ('LUMAJANG',1000861,0,1,1,12,' Jl. Jalan Gatot Subroto Rt 01 Rw 12 Propinsi Jawa Timur - 67351 '),
+            ('JEMBER',1000650,1,1,1,12,'Jl. Letjen Sutoyo No. 138, Kel. Kranjingan, Kec. Sumber Sari - Jember'),
+            ('BONDOWOSO',1000973,0,1,1,12,' Jl. Raya Situbondo No. 63 Kel.Tenggarang, Kec Tenggarang Bondowoso-Jawa Timur - 68281 '),
+            ('GEDANGAN',1001010,1,1,1,12,' Komplek Pergudangan Sinar Gedangan B-8 Kel. Gemurung Kec. Gedangan Propinsi Jawa Timur - 61254 '),
+            ('PASURUAN',1000849,0,1,1,12,' Jl. Hang Tuah Tegal Baru Rt04/Rw06, Kel. Ngemplak Rejo, Kec. Purworejo, Pasuruan - Jawa Timur - 67113 '),
+            ('PANDAAN',1001005,2,1,1,12,' Ds Ngulaan Rt 01 Rw 02 Kelurahan Ngadimulyo Kec Sukorejo Pandaan - Pasuruhan –  Jawa Timur - 67161 '),
+            ('KEDIRI',1000664,1,1,1,13,' Jl. Bagawan Tabari Gg. Industri No. 72 Desa Gogorante, Kecamatan Ngasem, Kabupaten Kediri Kode Pos 64181 '),
+            ('TULUNG AGUNG',1000757,0,1,1,13,' Jl. Mayor Sujadi No. 3, Dk. Kudusan Rt 03 Rw 02 Ds. Plosokandang Kec. Kedungwaru, Tulungagung – Jawa Timur Kode Pos 66221 '),
+            ('BLITAR',1000871,0,1,1,13,' Jl Cemara 186 Rt 11 Rw 3 Desa Karangsari Kec Sukorejo Kota Blitar (Depan Pom Karangsari) Kode Pos 66121 '),
+            ('GRESIK',1000755,0,1,1,13,' Jl. Raya Manyar (Pergudangan Mas Karimun) Industrial Business Park B/23 Kel. Manyar Rejo Kec. Manyar Gresik - Jawa Timur Kode Pos 661151 '),
+            ('LAMONGAN',1001018,2,1,1,13,' Jl. Pahlawan Selatan Kel. Sukomulyo, Kec. Lamongan, Provinsi Jawa Timur Kode Pos 62216 '),
+            ('BOJONEGORO',1000728,2,1,1,13,'Jl. Raya Bojonegoro - Cepu Km 17 Talok, Kalitidu, Bojonegoro'),
+            ('TUBAN',1000858,2,1,1,13,' Jl Letda Sucipto No. 17, Mondoan Kecamatan Tuban Propinsi Jawa Timur - Kode Pos 62319 '),
+            ('BABAT',1000987,2,1,1,13,' Jl. Raya Plaosan 73 Babat, Lamongan - Kode Pos 62271 '),
+            ('MADIUN',1000737,0,1,1,13,'Jl. Raya Madiun - Surabaya, No 60. Kel. Tiron, Kec. Madiun, Kab Madiun, Jawa Timur (63151)'),
+            ('MAWI',1000905,0,1,1,13,' Jl.Maospati-Ngawi Rt.08/03 Dusun Gangsir Kel.Mantren Kec.Karangrejo Kab.Magetan-Jatim - Kode Pos 63395 '),
+            ('PONOROGO',1000954,0,1,1,13,'Jl.Raya Ponorogo - Wonogiri, Ds. Gandukepuh - Kec. Sukorejo, Ponorogo'),
+            ('TRENGGALEK',1001043,2,1,1,13,' Jalan Trenggalek-Ponorogo Km.03 Rt.06 Rw.03 Kel Buluagung Kec Karangan Propinsi Jawa Timur - Kode Pos 66361 '),
+            ('MALANG UTARA',1000580,1,1,1,13,' Jl. Tenaga Baru Iv No. 14B Rt.03 Rw.03 Kec. Blimbing, Kel. Blimbing Kotamadya Malang - Jawa Timur - Kode Pos 65125 '),
+            ('MALANG BARAT',1000918,0,1,1,13,'Jl. Raya Kebonagung No. 76, Kel.Kebonagung, Kec. Pakisaji, Kab. Malang, Jawa Timur, 65162'),
+            ('MALANG SELATAN',1000802,0,1,1,13,'Jln. Tanjungsari No 72   Bululawang - Malang Selatan'),
+            ('DAMPIT',1001051,2,1,1,13,' Jl. Raya Pamotan No.186 Rt.03 Rw.02 Kel Pamotan Kec Dampit - Malang Propinsi Jawa Timur - Kode Pos 65181 '),
+            ('MOJOKERTO',1000850,0,1,1,13,'Jl. Raya Pacet Dsn. Lengkong, Ds. Kedunglengkong, Rt 01 Rw 01, Kec. Dlanggu, Kab. Mojokerto, Jawa Timur 61371 '),
+            ('JOMBANG',1000648,0,1,1,13,'Jl Anggrek No 12 Rt 05 Rw 11 Dusun Nglundo  Desa Candimulyo Kecamatan Jombang  Kabupaten Jombang-61419(Pergudangan Depan Kantor Satlantas)'),
+            ('NGANJUK',1000949,0,1,1,13,' Jalan Raya Madiun No 2 Nganjuk Ds. Patranrejo Rt 02 Rw 03 Kec. Berbek - Jawa Timur - Kode Pos 64473 '),
+            ('DENPASAR',1000637,1,1,0,14,' Jln Cargo Pasar Taman Sari No 7, Kelurahan Ubung Kaja, Kecamatan Denpasar Utara, Kodya Denpasar, Bali , 80116'),
+            ('KLUNGKUNG',1000693,2,1,0,14,' Jln Kecubung No.7 , Kelurahan Semarapura Kelod, Kecamatan Klungkung, Kabupaten Klungkung, Bali , 80714'),
+            ('SINGARAJA',1000732,0,1,0,14,' Jalan Sersan I Nengah Mendera, Banjar Dinas Celuk Buluh, Desa Kalibukbuk, Lovina, Buleleng Bali , 81119'),
+            ('TABANAN',1000830,2,1,0,14,' Jl,By Pass Ir Soekarno, Desa Banjar Anyar, Kec Kediri, Tabanan , 82121'),
+            ('BANYUWANGI',1000652,0,1,0,14,' Jl. Argopuro No 24, Lingkungan Sukowidi Rt 01/Rw 05, Kel. Klatak, Kec. Kalipuro - Banyuwangi , 68421'),
+            ('SITUBONDO',1000911,0,1,0,14,' Perum Griya Panji Mulya Rt 001 Rw 012 Desa Curah Jeru Kecamatan Panji Kabupaten Situbondo , 68323'),
+            ('GENTENG',1001040,0,1,0,14,' Jl. Raya Jember No. 39, Dusun Krajan 2, Rt 03 / Rw 04 Desa Setail, Kec. Genteng - Banyuwangi , 68465'),
+            ('MATARAM',1000788,0,1,0,14,' Jln Tgh Ibrahim Kodili No. 88 , Dusun Bengkel Selatan, Kelurahan Bengkel, Kecamatan Labuapi, Kabupaten Lombok Barat, Ntb , 83361'),
+            ('SELONG',1000790,0,1,0,14,' Jln Hasanudin Rt 11, Lingkungan Embung Sari, Kecamatan Selong, Kabupaten Lombok Timur, Ntb , 83611'),
+            ('PRAYA',1000957,0,1,0,14,' Jln Pejanggik, Dusun Tampar Ampar, Kecamatan Praya, Kabupaten Lombok Tengah, Ntb (Samping Bulog Praya) , 83511'),
+            ('KUPANG',1000908,1,1,0,14,' Jln Yos Sudarso-Alak, Rt 2 Rw 2 Kelurahan Namosain Kecamatan Alak, Kabupaten Kupang, Ntt , 85231'),
+            ('ATAMBUA',1000996,2,1,0,14,' Jln Hamengkubuwono Ix No 7, Rt 21 Rw 7,  Komplek Gudang Sumber Timur, Kelurahan Umanen, Kecamatan Atambua Barat , 85713'),
+            ('PONTIANAK TIMUR',1000774,1,1,0,15,'Jl. Adi Sucipto Komplek Pergudangan Bumi Raya Utama No. 5-6, Kel Sungai Raya, Kec Sungai Raya, Kab Kubu Raya'),
+            ('SINTANG',1000937,0,1,0,15,'Jl. Kelam ( Tugu Beji ) Blok D2 - D6 Rt.09/Rw.06 Sintang '),
+            ('SANGGAU',1000936,2,1,0,15,'Jl. Jendral Sudirman Km7 No. 1 - 4 Kecamatan Kapuas, Kelurahan Bunut, Sanggau '),
+            ('PONTIANAK BARAT',1000974,1,1,0,15,'Jl. Komplek Yos Sudarso Komplek Pergudangan Primaco B-3, Kelurahan Sungai Jawi Luar, Kecamatan Pontianak Barat '),
+            ('KETAPANG',1000995,2,1,0,15,'Jl. Gatot Subroto Desa Paya Kumang, Kecamatan Delta Pawan, Kabupaten Ketapang, Kalimantan Barat'),
+            ('SINGKAWANG',1000857,2,1,0,15,'Jl. Tani No.115 Rt.006 Rw.001, Keluarahan Kuala, Kecamatan. Singkawang Barat '),
+            ('SAMBAS',1001038,2,1,0,15,'Jl. Tabrani Ruko Blok M88-L88 Rt 013D Rw 007B, Desa Lumbang, Kec. Sambas, Kab. Sambas, Kalimantan Barat'),
+            ('SAMARINDA SELATAN',1000808,1,1,0,15,'Jl. Ir. Sutami Blok H No. 1 Kelurahan Karang Asam, Kecamatan Sungai Kunjang, Samarinda '),
+            ('TENGGARONG',1000967,2,1,0,15,'Jl. Naga Rt.18 Kelurahan Timbau, Kecamatan Tenggarong, Kabupaten Kutai Kartanegara 75511'),
+            ('SAMARINDA UTARA',1000975,2,1,0,15,'Jl. Kapten Soejono Aj (Jembatan Mahkota 2)No.12  Rt. 25 Kel.Sungai Kapih Kec. Sambutan Samarinda'),
+            ('BONTANG',1000926,2,1,0,15,'Jl.I Abdul Muis  Rt.040 Desa Singa Karti Kelurahan Sangata Utara Belakang Ruko Agen Beras Buana Mekar Samping Hotel Sangatta Prima, Kecamatan Sangata Utara, Kalimantan Timur'),
+            ('BALIKPAPAN',1000811,0,1,0,15,'Jl. Aw. Syahrani Rt.073 No.05 Kelurahan Batu Ampar, Balikpapan Utara '),
+            ('TANAH GROGOT',1001002,2,1,0,15,'Jl. Untung Suropati Rt. 01 Km. 03 Desa Jone Kec. Tanah Grogot Kab. Paser'),
+            ('SAMPIT',1001023,1,1,0,15,'Jl. Suprapto Selatan No.50 Rt.37 Rw.07, Kec.Mentawa Baru Ketapang, Kel.Mentawa Baru Hilir, Sampit -Kalimantan Tengah'),
+            ('PALANGKARAYA',1000840,2,1,0,15,'Jl. G Obos No. 168 (Samping Jl. G.Obos Xixb), Kel. Menteng, Kec. Jekan Raya, Palangkaraya, Kalimantan Tengah - 73111'),
+            ('PANGKALANBUN',1001024,2,1,0,15,'Jl. H M Rafii Kel. Madurejo, Kec. Arut Selatan, Kab. Kotawaringin Barat (Sebelah Kantor Pajak Pratama), Pangkalan Bun 74112'),
+            ('BANJARMASIN SELATAN',1000826,1,1,0,15,'Jl.Gubernur Subarjo No.12 Rt.019 Rw.02 Lingkar Selatan A12 Dan A19 Kelurahan Basirih Selatan, Kecamatan Banjarmasin Selatan, Kota Banjarmasin Kode Pos 70246 Kalimantan Selatan'),
+            ('BANJARMASIN KOTA',1001014,0,1,0,15,'-'),
+            ('BANJARBARU',1000919,1,1,0,15,'Jl. Pariangan No.7 Rt.54 Rw.10 Kel.Loktabat Utara, Kec.Banjarbaru Utara, Kota Banjarbaru, Kalimantan Selatan'),
+            ('BATULICIN',1000842,2,1,0,15,'Jl. Malewa Raya Batulicin Rt.010 Rw.002, Kecamatan Batulicin, Kecmatan Tanah Bumbu'),
+            ('KOTABARU',1000893,2,1,0,15,'Jl. Raya Stagen Km.6 Desa Sungai Taib, Kecamatan Pulau Laut Utara Kabupaten Kotabaru'),
+            ('BARABAI',1000984,0,1,0,15,'Jl. Breg Jend H. Hasan Baseri  No.1-4 Rt.11 Rw.04, Desa Bawan, Kel. Bukat, Kab. Hulu Sungai Tengah'),
+            ('TANJUNG TABALONG',1000985,2,1,0,15,'Jl. Ir Pm Noor No 1 - 4, Rt 002, Kel. Mabuun, Kec. Murung Pudak.'),
+            ('BANJARMASIN',1000827,1,0,0,4,'-'),
+            ('MAKASSAR UTARA',1000559,1,1,0,16,'Jl. Sultan Abdullah No.8, Kelurahan Buloa, Kecamatan, Tallo, Kota Makassar'),
+            ('MAROS',1000950,2,1,0,16,'Jl. Pergudangan Pattene Business Park Blok A No.1 Keluarahan Pabbentengang, Kecamatan Marusu, Kabupaten Maros'),
+            ('MAKASSAR SELATAN',1000929,0,1,0,16,'Jl. Kumala No.138, Rt.003 Rw 006 Kelurahan Jongaya Kecamatan Tamalate, Kota Makassar'),
+            ('SUNGGUMINASA',1000690,1,1,0,16,'Jl. Andi Mappainga Rt 001 / Rw 005, Kel. Barombong, Kec. Tamalate, Kota Makassar, Provinsi Sulawesi Selatan'),
+            ('SENGKANG',1001020,2,1,0,16,'Jl. Veteran No. 8 Kel Bulupabulu, Kec. Tempe, Kab. Wajo - Sengkang, Sulawesi Selatan'),
+            ('BULUKUMBA',1001021,0,1,0,16,'Jl. Dato Tiro No.136B, Poros Bira, Kec. Ujung Bulu, Kel. Kalumeme, Belakang Kantor Garuda Food, Bulukumba'),
+            ('TAKALAR',1001003,2,1,0,16,'Jl. Poros Takalar Jeneponto, Kel. Mangadu, Kec. Mangarabombang'),
+            ('BONE',1001019,2,1,0,16,'Jl. Poros Bone - Makassar, Dusun Woddie, Desa Passippo, Kecamatan Palakka, Kabupaten Bone'),
+            ('PARE-PARE',1000796,1,1,0,16,'Jl. Jend Ahmad Yani Km.6, (Depan Oke Futsal) Kel. Lapadde, Kec. Ujung, Kota Parepare'),
+            ('WONOMULYO',1000906,0,1,0,16,'Jl. Monginsidi/Pengairan Lingkungan 2 Kel. Sidodadi Kec. Wonomulyo Polman'),
+            ('MAMUJU',1001044,2,1,0,16,'Jl. Andi Makkasau, (Perempatan Pasar Baru), Kel. Karema, Kec. Mamuju, 91515 Mamuju - Sulawesi Barat'),
+            ('SIDRAP',1001025,2,1,0,16,'-'),
+            ('PALOPO',1001016,1,1,0,16,'Jl. Islamic Center Palopo (Depan Perum Bsd), Kel. Takkalala, Kec. Wara Selatan, Kota Palopo'),
+            ('RANTEPAO',1000986,2,1,0,16,'Jl Poros Rantepao Palopo, Kel. Ratepaku, Kec Tallunglipu. Toraja Utara'),
+            ('MANGKUTANA',1001067,2,1,0,16,'Jl. Poros Tomoni - Mangkutana Lr Wisma Abadi (Dekat Dealer Yamaha  Dan Waterboom Lestari Part), Kel. Lestari Kec. Tomoni Timur Malili - Sulawesi Selatan'),
+            ('PALU',1000795,1,1,0,16,'Jl. Trans Sulawesi Mamboro, Lorong Samping Spbu Mamboro Gudang I-Ii, Kelurahan Mamboro, Kecamatan Palu Utara, Sulawesi Tengah. 94148'),
+            ('AMBON',1000898,0,1,0,16,'Jl. Laksda Leo Wattimena Komp.Pergudangan Mars Blok B1&B2 Kel. Passo Kec. Baguala Kota Ambon Provinsi Maluku'),
+            ('PARIGI PALU',1000940,2,1,0,16,'Jl. Trans Sulawesi, Kec. Parigi Tengah, Kel. Maesa, Kab. Parigi Moutong, Sulawesi Tengah'),
+            ('KENDARI',1000843,1,1,0,16,'Jl. Patimura Kompleks Pergudangan Puuwatu Indah Block B9 & B10, Kel. Watulondo, Kec. Puuwatu, Kendari, Sulewesi Tenggara'),
+            ('KOLAKA',1000920,2,1,0,16,'Jl. Abadi, Kel. Mangolo, Depan Sd N 2 Mangolo, Kab.Kolaka');
+        INSERT INTO salespoint VALUES
+            ('BAU-BAU',1000994,2,1,0,16,'Jl. Dayanu Iksanuddin, Kel. Katobengke, Kec. Betoambari, (Depan Sma 3 Baubau), Bau Bau, Sulawesi Tenggara'),
+            ('MANADO',1000729,1,1,0,16,'Jl. Raya Manado Bitung Km.10 Blok B1-B2, Komp. Pergudangan Pabrik Oxygen Citra Alam, Desa Watutumou, Kec. Kalawat, Minahasa Utara - Manado, Sulawesi Utara - 95378'),
+            ('MANADO BARAT',1000933,2,1,0,16,'Jl. Pasar Baru, Desa Waleure, Kecamatan Langowan Timur, Kab. Minahasa. 95694
+        (Samping Toko Bangunan Immanuel)'),
+            ('GORONTALO',1000731,0,1,0,16,'Jl. Solo, Desa Timuato, Kompleks Pergudangan Tri Galaxi Blok D1&D2, Kec. Telaga Biru, Kab. Gorontalo'),
+            ('MARISA',1000852,2,1,0,16,'Jl. Trans Sulawesi, Buntulia Jaya Depan Hotel Irene, Kec. Duhiadaa, Kab. Pohuwato, Marisa - Gorontalo'),
+            ('KUTACANE',1001053,3,1,0,15,'IDR / SUBDIST'),
+            ('TEBING TINGGI',1001069,3,1,0,4,'IDR / SUBDIST'),
+            ('SIDIKALANG',1001073,3,1,0,4,'IDR / SUBDIST'),
+            ('UJUNG BATU',1000163,3,1,0,7,'IDR / SUBDIST'),
+            ('TEMBILAHAN',1000856,3,1,0,8,'IDR / SUBDIST'),
+            ('TELUK KUANTAN',1001054,3,1,0,9,'IDR / SUBDIST'),
+            ('DUMAI',1000160,3,1,0,8,'IDR / SUBDIST'),
+            ('BENGKALIS',1000779,3,1,0,10,'IDR / SUBDIST'),
+            ('PEKANBARU 2',1000820,3,1,0,11,'IDR / SUBDIST'),
+            ('SIAK',1000853,3,1,0,12,'IDR / SUBDIST'),
+            ('BAGAN SIAPIAPI',1000880,3,1,0,13,'IDR / SUBDIST'),
+            ('DURI',1001041,3,1,0,13,'IDR / SUBDIST'),
+            ('TANJUNG BATU',1000488,3,1,0,13,'IDR / SUBDIST'),
+            ('TANJUNG BALAI',1000489,3,1,0,13,'IDR / SUBDIST'),
+            ('BATAM',1000600,3,1,0,12,'IDR / SUBDIST'),
+            ('TANJUNG PINANG',1000601,3,1,0,14,'IDR / SUBDIST'),
+            ('BANGKA',1000783,3,1,0,14,'IDR / SUBDIST'),
+            ('MUNTOK',1001027,3,1,0,14,'IDR / SUBDIST'),
+            ('BIMA',1000739,3,1,0,16,'IDR / SUBDIST'),
+            ('SUMBAWA',1000748,3,1,0,16,'IDR / SUBDIST'),
+            ('RUTENG',1000897,3,1,0,15,'IDR / SUBDIST'),
+            ('DOMPU',1000977,3,1,0,15,'IDR / SUBDIST'),
+            ('WAINGAPU',1001009,3,1,0,15,'IDR / SUBDIST'),
+            ('MAUMERE',1001065,3,1,0,14,'IDR / SUBDIST'),
+            ('ENDE',1001082,3,1,0,16,'IDR / SUBDIST'),
+            ('PEKANBARU',1000172,3,0,0,16,'IDR / SUBDIST'),
+            ('BATAM',1000634,3,0,0,16,'IDR / SUBDIST');
+        
+        ");
     }
 }

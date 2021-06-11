@@ -31,6 +31,7 @@ class BudgetPricingController extends Controller
             $newBudget->code                       = $code;
             $newBudget->name                       = $request->name;
             $newBudget->uom                        = $request->uom;
+            $newBudget->isAsset                    = $request->isAsset;
             $newBudget->injs_min_price             = ($request->injs_min_price > 0) ? $request->injs_min_price : null;
             $newBudget->injs_max_price             = ($request->injs_max_price > 0) ? $request->injs_max_price : null;
             $newBudget->outjs_min_price            = ($request->outjs_min_price > 0) ? $request->outjs_min_price : null;
@@ -66,6 +67,8 @@ class BudgetPricingController extends Controller
         try {
             DB::beginTransaction();
             $budget = BudgetPricing::findOrFail($request->id);
+            $budget->isAsset = $request->isAsset;
+            $budget->uom            = $request->uom;
             $budget->injs_min_price = ($request->injs_min_price > 0) ? $request->injs_min_price : null;
             $budget->injs_max_price = ($request->injs_max_price > 0) ? $request->injs_max_price : null;
             $budget->outjs_min_price = ($request->outjs_min_price > 0) ? $request->outjs_min_price : null;

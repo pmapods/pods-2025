@@ -113,6 +113,10 @@ class Ticket extends Model
                 return 'PR selesai. Menunggu proses PO';
                 break;
                 
+            case '7':
+                return 'Closed PO';
+                break;
+                
             case '-1':
                 return 'Batal';
                 break;

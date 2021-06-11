@@ -20,13 +20,13 @@ class DatabaseSeeder extends Seeder
             SalespointSeeder::class,
             SuperAdminSeeder::class,
             BudgetCategorySeeder::class,
+            BudgetSeeder::class,
             FileCompletementSeeder::class,
+            VendorSeeder::class,
         ];
         $dev_array = [
             EmployeeSeeder::class,
             AuthorizationSeeder::class,
-            VendorSeeder::class,
-            BudgetSeeder::class,
         ];
         if(App::environment('local')) {
             $seeder_array = array_merge($seeder_array,$dev_array);

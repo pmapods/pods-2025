@@ -12,14 +12,12 @@ use App\Models\Authorization;
 
 class SalesPointController extends Controller
 {
-    public function salespointView()
-    {
+    public function salespointView(){
         $salespoints = SalesPoint::all();
         return view('Masterdata.salespoint', compact('salespoints'));
     }
     
-    public function addSalesPoint(Request $request)
-    {
+    public function addSalesPoint(Request $request){
         try{
             $checksalespoint = SalesPoint::where('code', $request->code)->first();
             if($checksalespoint){
@@ -32,7 +30,7 @@ class SalesPointController extends Controller
                 $newSalesPoint->status         = $request->status;
                 $newSalesPoint->trade_type     = $request->trade_type;
                 $newSalesPoint->isJawaSumatra  = $request->isJawaSumatra;
-                $newSalesPoint->grom           = $request->grom;
+                $newSalesPoint->address        = $request->address ?? null;
                 $newSalesPoint->save();
 
                 // give new salespoint access to admin
@@ -57,13 +55,14 @@ class SalesPointController extends Controller
             $salespoint->status         = $request->status;
             $salespoint->trade_type     = $request->trade_type;
             $salespoint->isJawaSumatra  = $request->isJawaSumatra;
-            $salespoint->grom           = $request->grom;
+            $salespoint->address        = $request->address ?? null;
             $salespoint->save();
             return back()->with('success','Berhasil memperbarui data sales point '.$request->name);
         } catch (\Exception $ex) {
             return back()->with('error','Gagal memperbarui data salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
         }
     }
+
     public function deleteSalesPoint(Request $request){
         try {
             $salespoint           = Salespoint::findOrFail($request->salespoint_id);
@@ -80,6 +79,7 @@ class SalesPointController extends Controller
             return back()->with('error','Gagal menghapus salespoint, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
         }
     }
+
     public function getSalesAuthorization($salespoint_id) {
         $authorizations = Authorization::where('salespoint_id',$salespoint_id)
         ->where('form_type',0)

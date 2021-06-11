@@ -71,6 +71,9 @@
                     <th rowspan="2">
                         Satuan
                     </th>
+                    <th rowspan="2" width="8%">
+                        Jenis Asset
+                    </th>
                     <th rowspan="2">
                         Kategori
                     </th>
@@ -103,6 +106,7 @@
                         <td>{{$budget->code}}</td>
                         <td>{{$budget->name}}</td>
                         <td>{{$budget->uom}}</td>
+                        <td>{{($budget->isAsset) ? 'asset' : 'non asset'}}</td>
                         <td>{{$budget->budget_pricing_category->name}}</td>
                         <td>
                             {{$budget->brand_list_text()}}
@@ -133,7 +137,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Kategori</label>
                             <select class="form-control pricing_category" name="category" required>
@@ -144,13 +148,24 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Nama</label>
                             <input type="text" class="form-control" name="name" placeholder="Masukkan nama budget" required>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="required_field">Jenis Asset</label>
+                            <select class="form-control" name="isAsset" required>
+                                <option value="">-- Pilih Jenis Asset --</option>
+                                <option value="0">non asset</option>
+                                <option value="1">asset</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Satuan</label>
                             <input type="text" class="form-control" name="uom" placeholder="Masukkan satuan barang" required>
@@ -240,7 +255,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Kategori</label>
                             <select class="form-control" name="category" disabled>
@@ -251,16 +266,27 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Nama</label>
                             <input type="text" class="form-control" name="name" placeholder="Masukkan nama budget" readonly>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="required_field">Jenis Asset</label>
+                            <select class="form-control" name="isAsset" required>
+                                <option value="">-- Pilih Jenis Asset --</option>
+                                <option value="0">non asset</option>
+                                <option value="1">asset</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Satuan</label>
-                            <input type="text" class="form-control" name="uom" placeholder="Masukkan satuan barang" readonly>
+                            <input type="text" class="form-control" name="uom" placeholder="Masukkan satuan barang" required>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -355,7 +381,9 @@
             let types =  $(this).data('type');
             let id = modal.find('input[name="id"]');
             let category = modal.find('select[name="category"]');
+            let isAsset = modal.find('select[name="isAsset"]');
             let name = modal.find('input[name="name"]');
+            let uom = modal.find('input[name="uom"]');
             let brand_list_container = modal.find('.brand_list_container');
             let type_list_container = modal.find('.type_list_container');
             let injs_min = modal.find('input[name="injs_min_price"]');
@@ -368,7 +396,9 @@
             let outjs_max_field = autoNumeric_field[$('.rupiah').index(outjs_max)];
             id.val(data['id']);
             name.val(data['name']);
+            uom.val(data['uom']);
             category.val(data['budget_pricing_category_id']);
+            isAsset.val(data['isAsset']);
             let category_code =  modal.find('select[name="category"]').find('option:selected').data('code');
             // if jasa change harga maksimum to optional
             if(category_code == "JS"){
@@ -459,7 +489,9 @@
     function addBudget(el){
         let closestmodal = $(el).closest('.modal');
         let category = closestmodal.find('select[name="category"]');
+        let isAsset = closestmodal.find('select[name="isAsset"]');
         let name = closestmodal.find('input[name="name"]');
+        let uom = closestmodal.find('input[name="uom"]');
         let injs_min = closestmodal.find('input[name="injs_min_price"]');
         let injs_max = closestmodal.find('input[name="injs_max_price"]');
         let outjs_min = closestmodal.find('input[name="outjs_min_price"]');
@@ -473,8 +505,16 @@
             alert('Kategori harus diisi');
             return;
         }
+        if(isAsset.val()==""){
+            alert('Jenis Asset harus diisi');
+            return;
+        }
         if(name.val()==""){
             alert('Nama harus diisi');
+            return;
+        }
+        if(name.val()==""){
+            alert('Satuan harus diisi');
             return;
         }
         if(category.find('option:selected').data('code') != "JS"){
@@ -489,7 +529,9 @@
         }
         closestmodal.find('.input_field').empty();
         closestmodal.find('.input_field').append('<input type="hidden" name="budget_pricing_category_id" value="'+category.val()+'">');
+        closestmodal.find('.input_field').append('<input type="hidden" name="isAsset" value="'+isAsset.val()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="name" value="'+name.val()+'">');
+        closestmodal.find('.input_field').append('<input type="hidden" name="uom" value="'+uom.val()+'">');
         closestmodal.find('.brand_list').each((index,el)=>{
             closestmodal.find('.input_field').append('<input type="hidden" name="brand[]" value="'+$(el).find('.brand_text').text().trim()+'">');
         });
@@ -505,7 +547,9 @@
     function updateBudget(el){
         let closestmodal = $(el).closest('.modal');
         let category = closestmodal.find('select[name="category"]');
+        let isAsset = closestmodal.find('select[name="isAsset"]');
         let name = closestmodal.find('input[name="name"]');
+        let uom = closestmodal.find('input[name="uom"]');
         let brand = closestmodal.find('textarea[name="brand"]');
         let type = closestmodal.find('textarea[name="type"]');
         let injs_min = closestmodal.find('input[name="injs_min_price"]');
@@ -521,8 +565,16 @@
             alert('Kategori harus diisi');
             return;
         }
+        if(isAsset.val()==""){
+            alert('Jenis Asset harus diisi');
+            return;
+        }
         if(name.val()==""){
             alert('Nama harus diisi');
+            return;
+        }
+        if(uom.val()==""){
+            alert('Satuan harus diisi');
             return;
         }
         if(category.find('option:selected').data('code') != "JS"){
@@ -537,7 +589,9 @@
         }
         closestmodal.find('.input_field').empty();
         closestmodal.find('.input_field').append('<input type="hidden" name="budget_pricing_category_id" value="'+category.val()+'">');
+        closestmodal.find('.input_field').append('<input type="hidden" name="isAsset" value="'+isAsset.val()+'">');
         closestmodal.find('.input_field').append('<input type="hidden" name="name" value="'+name.val()+'">');
+        closestmodal.find('.input_field').append('<input type="hidden" name="uom" value="'+uom.val()+'">');
         closestmodal.find('.brand_list').each((index,el)=>{
             closestmodal.find('.input_field').append('<input type="hidden" name="brand[]" value="'+$(el).find('.brand_text').text().trim()+'">');
         });

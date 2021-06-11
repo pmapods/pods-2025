@@ -33,6 +33,7 @@ class BudgetMigration extends Migration
             // harga luar jawa
             $table->double('outjs_min_price')->nullable();
             $table->double('outjs_max_price')->nullable();
+            $table->boolean('isAsset');
             $table->foreign('budget_pricing_category_id')->references('id')->on('budget_pricing_category');
             $table->softDeletes();
             $table->timestamps();

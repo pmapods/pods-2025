@@ -33,13 +33,13 @@
                     <th>
                         #
                     </th>
-                    <th>
+                    <th width="12%">
                         {{__('Kode Sales Point')}}
                     </th>
                     <th>
                         {{__('Nama Area')}}
                     </th>
-                    <th>
+                    <th width="10%">
                         {{__('Region')}}
                     </th>
                     <th>
@@ -47,6 +47,9 @@
                     </th>
                     <th>
                         Jawa Sumatra
+                    </th>
+                    <th>
+                        Alamat
                     </th>
                 </tr>
             </thead>
@@ -59,6 +62,7 @@
                     <td>{{$salespoint->region_name()}}</td>
                     <td>{{$salespoint->status_name()}}</td>
                     <td>{{$salespoint->jawasumatra()}}</td>
+                    <td>{{$salespoint->address}}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -156,12 +160,12 @@
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
-                                <label class="optional_field">Nama GROM</label>
-                                <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
+                              <label for="optional_field">Alamat</label>
+                              <textarea class="form-control" name="address" rows="3"></textarea>
                             </div>
-                        </div> --}}
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -264,12 +268,12 @@
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
-                                <label class="required_field">Nama GROM</label>
-                                <input type="text" class="form-control" name="grom" placeholder="Masukkan Nama GROM area">
+                              <label for="optional_field">Alamat</label>
+                              <textarea class="form-control" name="address" rows="3"></textarea>
                             </div>
-                        </div> --}}
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -303,7 +307,7 @@
             modal.find('select[name="status"]').val(data['status']);
             modal.find('select[name="trade_type"]').val(data['trade_type']);
             modal.find('select[name="isJawaSumatra"]').val(data['isJawaSumatra']);
-            modal.find('input[name="grom"]').val(data['grom']);
+            modal.find('textarea[name="address"]').val(data['address']);
             modal.modal('show');
         });
     })

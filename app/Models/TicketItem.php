@@ -59,4 +59,8 @@ class TicketItem extends Model
     public function bidding(){
         return $this->hasOne(Bidding::class);
     }
+
+    public function selected_po(){
+        return $this->bidding->selected_vendor()->ticket_vendor->po;
+    }
 }

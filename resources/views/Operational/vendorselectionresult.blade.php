@@ -471,10 +471,10 @@
 <b>FILE PENAWARAN YANG SUDAH DI TANDA TANGAN</b>
 <br>
 @if($bidding->signed_filename == null || $bidding->signed_filepath == null)
-    <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Perbaikan</button><br>
+    <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Penawaran Yang sudah di tandatangan</button><br>
     <input class="inputFile" type="file" style="display:none;">
     <div class="display_field mt-1"></div>
-    <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$bidding->id}})">Upload File Perbaikan</button><br><br>
+    <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$bidding->id}})">Upload File penawaran</button><br><br>
 @else
     <a href="/storage{{$bidding->signed_filepath}}">{{$bidding->signed_filename}}</a><br>
 @endif

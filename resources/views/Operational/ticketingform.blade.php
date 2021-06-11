@@ -82,14 +82,15 @@
             <table class="table table-bordered table_item">
                 <thead>
                     <tr>
-                        <th width="10%">Nama Item</th>
-                        <th width="10%">Merk</th>
-                        <th width="10%">Type</th>
+                        <th width="8%">Nama Item</th>
+                        <th width="7%">Merk</th>
+                        <th width="7%">Type</th>
                         <th width="10%">Harga Satuan</th>
                         <th>Jumlah</th>
                         <th width="10%">Total</th>
-                        <th>Attachment</th>
-                        <th>Status</th>
+                        <th width="20%">Attachment</th>
+                        <th width="10%">Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -146,11 +147,34 @@
                                         </tbody>
                                     </table>
                                 @endif
+                                @if($ticket->status > 5)
+                                    @if(($item->selected_po()->status ?? -1)>2)
+                                        <b>File PO</b><br>
+                                        @php
+                                            // dd($item->selected_po()->external_signed_filepath);
+                                            $filename = explode('/',$item->selected_po()->external_signed_filepath);
+                                            $filename = $filename[count($filename)-1];
+                                        @endphp
+                                        <a class="uploaded_file" href="/storage{{$item->selected_po()->external_signed_filepath}}" download="{{$filename}}">Tampilkan dokumen Supplier Signed</a>
+                                    @endif
+                                @endif
                             </td>
                             <td>
                                 @if($item->isCancelled)
                                 Item telah dihapus oleh <b>{{$item->cancelled_by_employee()->name}}</b><br>
                                 Alasan : {{$item->cancel_reason}}
+                                @endif
+                                @if($ticket->status > 5)
+                                    @if(($item->selected_po()->status ?? -1)>2)
+                                        Po sudah terbit, Menunggu konfirmasi penerimaan barang
+                                    @endif
+                                @endif
+                            </td>
+                            <td>
+                                @if($ticket->status > 5)
+                                    @if(($item->selected_po()->status ?? -1)>2)
+                                        <button type="button" class="btn btn-success">Confirm</button>
+                                    @endif
                                 @endif
                             </td>
                         </tr>
