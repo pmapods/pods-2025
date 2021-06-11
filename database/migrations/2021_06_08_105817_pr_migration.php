@@ -25,7 +25,7 @@ class PrMigration extends Migration
             $table->integer('rejected_by')->nullable();
             $table->string('reject_reason')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 
@@ -42,7 +42,7 @@ class PrMigration extends Migration
             $table->string('asset_number')->nullable();
             $table->foreign('pr_id')->references('id')->on('pr');
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 
@@ -68,7 +68,7 @@ class PrMigration extends Migration
             // 1 approved
             $table->foreign('pr_id')->references('id')->on('pr');
             $table->foreign('employee_id')->references('id')->on('employee');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
     }

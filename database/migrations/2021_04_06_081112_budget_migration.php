@@ -17,7 +17,7 @@ class BudgetMigration extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('code')->unique();
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 
@@ -35,7 +35,7 @@ class BudgetMigration extends Migration
             $table->double('outjs_max_price')->nullable();
             $table->boolean('isAsset');
             $table->foreign('budget_pricing_category_id')->references('id')->on('budget_pricing_category');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 

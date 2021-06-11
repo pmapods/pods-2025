@@ -44,7 +44,7 @@ class BiddingMigration extends Migration
             $table->string('notes')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 
@@ -84,7 +84,7 @@ class BiddingMigration extends Migration
             $table->tinyInteger('others_score');
             $table->foreign('bidding_id')->references('id')->on('bidding');
             $table->foreign('ticket_vendor_id')->references('id')->on('ticket_vendor');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 

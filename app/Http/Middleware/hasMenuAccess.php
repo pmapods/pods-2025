@@ -18,8 +18,10 @@ class hasMenuAccess
     public function handle(Request $request, Closure $next, $access)
     {
         $access = explode(':',$access);
+        $menu_access = intval($access[1]);
         if($access[0] == 'masterdata'){
-            if(((Auth::user()->menu_access->masterdata ?? 0) & $access[1]) != 0){
+            $emp_access = intval(Auth::user()->menu_access->masterdata ?? 0);
+            if(($emp_access & $menu_access) != 0){
                 return $next($request);
             }else{
                 return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi admin untuk mendapatkan akses');
@@ -27,7 +29,8 @@ class hasMenuAccess
         }
         
         if($access[0] == 'operational'){
-            if(((Auth::user()->menu_access->operational ?? 0) & $access[1]) != 0){
+            $emp_access = intval(Auth::user()->menu_access->operational ?? 0);
+            if(($emp_access & $menu_access) != 0){
                 return $next($request);
             }else{
                 return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi admin untuk mendapatkan akses');

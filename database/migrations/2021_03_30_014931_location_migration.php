@@ -47,7 +47,7 @@ class LocationMigration extends Migration
             $table->boolean('isJawaSumatra');
             $table->string('address')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+            $table->SoftDeletes();
         });
     }
 

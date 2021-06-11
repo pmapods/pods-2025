@@ -16,7 +16,7 @@ class EmployeeMigration extends Migration
         Schema::create('employee_position', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
         //daftar karyawan
@@ -32,7 +32,7 @@ class EmployeeMigration extends Migration
             // 0 Active
             // 1 Non Active
             $table->boolean('is_password_changed')->default(0);
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 

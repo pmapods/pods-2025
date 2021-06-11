@@ -60,7 +60,7 @@ class TicketingMigration extends Migration
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('authorization_id')->references('id')->on('authorization');
             $table->foreign('created_by')->references('id')->on('employee');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 
@@ -79,7 +79,7 @@ class TicketingMigration extends Migration
             // $table->string('cancelled_on')->nullable();
             $table->string('cancel_reason')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 
@@ -129,7 +129,7 @@ class TicketingMigration extends Migration
             // 0 Registered Vendor
             // 1 One Time Vendor
             $table->foreign('ticket_id')->references('id')->on('ticket');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
 

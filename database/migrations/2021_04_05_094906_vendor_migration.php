@@ -27,7 +27,7 @@ class VendorMigration extends Migration
             // 0 active
             // 1 non active
             $table->foreign('city_id')->references('id')->on('regencies');
-            $table->softDeletes();
+            $table->SoftDeletes();
             $table->timestamps();
         });
     }

@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\softDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BudgetPricingCategory extends Model
 {
-    use softDeletes;
+    use SoftDeletes;
     protected $table = 'budget_pricing_category';
     protected $primaryKey = 'id';
 

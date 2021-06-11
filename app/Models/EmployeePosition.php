@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\softDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EmployeePosition extends Model
 {
-    use softDeletes;
+    use SoftDeletes;
     protected $table = 'employee_position';
     protected $primaryKey = 'id';
 }

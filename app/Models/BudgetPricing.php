@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\softDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
 class BudgetPricing extends Model
 {
-    use softDeletes;
+    use SoftDeletes;
     protected $table = 'budget_pricing';
     protected $primaryKey = 'id';
 
