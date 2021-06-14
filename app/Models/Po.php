@@ -16,4 +16,8 @@ class Po extends Model
     public function created_by_employee(){
         return $this->belongsTo(Employee::class,'created_by','id');
     }
+
+    public function po_authorization(){
+        return $this->hasMany(PoAuthorization::class);
+    }
 }

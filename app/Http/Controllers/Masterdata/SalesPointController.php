@@ -65,7 +65,7 @@ class SalesPointController extends Controller
 
     public function deleteSalesPoint(Request $request){
         try {
-            $salespoint           = Salespoint::findOrFail($request->salespoint_id);
+            $salespoint           = SalesPoint::findOrFail($request->salespoint_id);
             $salespoint->delete();
 
             // remove semua akses di salespoint terkait

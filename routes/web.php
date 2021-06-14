@@ -154,5 +154,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/printPO',[POController::class, 'printPO']);
         Route::patch('/uploadinternalsignedfile',[POController::class, 'uploadInternalSignedFile']);
         Route::patch('/confirmposigned',[POController::class, 'confirmPosigned']);
+        Route::post('/sendemail',[POController::class, 'sendEmail']);
     });
 });

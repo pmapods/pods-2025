@@ -25,7 +25,12 @@ class Authorization extends Model
             case 1:
                 return 'Form Bidding';
                 break;
-            
+            case 2:
+                return 'Form PR';
+                break;
+            case 3:
+                return 'Form PO';
+                break;
             default:
                 return 'form_type_undefined';
                 break;

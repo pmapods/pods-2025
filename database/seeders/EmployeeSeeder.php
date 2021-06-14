@@ -7,7 +7,7 @@ use Hash;
 use Illuminate\Database\Seeder;
 use App\Models\Employee;
 use App\Models\EmployeePosition;
-use App\Models\Salespoint;
+use App\Models\SalesPoint;
 use App\Models\EmployeeLocationAccess;
 use App\Models\EmployeeMenuAccess;
 
@@ -49,7 +49,7 @@ class EmployeeSeeder extends Seeder
             $newEmployee->is_password_changed    = true;
             $newEmployee->save();
 
-            foreach(Salespoint::all() as $salespoint){
+            foreach(SalesPoint::all() as $salespoint){
                 $newAccess = new EmployeeLocationAccess;
                 $newAccess->employee_id = $newEmployee->id;
                 $newAccess->salespoint_id = $salespoint->id;
@@ -87,7 +87,7 @@ class EmployeeSeeder extends Seeder
             $newEmployee->is_password_changed    = true;
             $newEmployee->save();
 
-            foreach(Salespoint::all() as $salespoint){
+            foreach(SalesPoint::all() as $salespoint){
                 $newAccess = new EmployeeLocationAccess;
                 $newAccess->employee_id = $newEmployee->id;
                 $newAccess->salespoint_id = $salespoint->id;
@@ -125,7 +125,7 @@ class EmployeeSeeder extends Seeder
             $newEmployee->is_password_changed    = true;
             $newEmployee->save();
 
-            foreach(Salespoint::all() as $salespoint){
+            foreach(SalesPoint::all() as $salespoint){
                 $newAccess = new EmployeeLocationAccess;
                 $newAccess->employee_id = $newEmployee->id;
                 $newAccess->salespoint_id = $salespoint->id;

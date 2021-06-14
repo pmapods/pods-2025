@@ -105,6 +105,7 @@
                                 <option value="0">Form Pengadaan</option>
                                 <option value="1">Form Bidding</option>
                                 <option value="2">Form PR</option>
+                                <option value="3">Form PO</option>
                             </select>
                         </div>
                     </div>
@@ -124,6 +125,8 @@
                                     <td colspan="5">Otorasi belum dipilih</td>
                                 </tr>
                             </tbody>
+                            <tfoot>
+                            </tfoot>
                         </table>
                     </div>
                     <div class="col-md-4">
@@ -211,9 +214,12 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="required_field">Jenis Form</label>
-                            <select class="form-control form_type" name="form_type" disabled>
+                            <select class="form-control form_type" name="form_type" required disabled>
                                 <option value="">-- Pilih Jenis Form --</option>
                                 <option value="0">Form Pengadaan</option>
+                                <option value="1">Form Bidding</option>
+                                <option value="2">Form PR</option>
+                                <option value="3">Form PO</option>
                             </select>
                         </div>
                     </div>
@@ -230,6 +236,8 @@
                             </thead>
                             <tbody>
                             </tbody>
+                            <tfoot>
+                            </tfoot>
                         </table>
                     </div>
                     <div class="col-md-4">
@@ -298,6 +306,7 @@
     let formpengadaan = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     let formbidding = ['Diajukan Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formpr = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
+    let formpo = ['Dibuat Oleh','Diperiksa dan disetujui oleh'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -331,6 +340,7 @@
             as_text.find('option').remove();
             as_text.append('<option value="">-- Pilih --</option>');
             let value_array = [];
+            closestmodal.find('.table_level tfoot').empty();
             switch ($(this).val()) {
                 case "0":
                     value_array = formpengadaan;
@@ -340,6 +350,11 @@
                     break;
                 case "2":
                     value_array = formpr;
+                    break;
+                case "3":
+                    value_array = formpo;
+                    console.log('im triggered');
+                    closestmodal.find('.table_level tfoot').append('<tr class="table-secondary"><td>-</td><td>Supplier PIC</td><td>Konfirmasi Supplier</td><td></td><td>-</td></tr>')
                     break;
                 default:
                     return;

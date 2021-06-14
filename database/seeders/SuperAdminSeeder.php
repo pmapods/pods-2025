@@ -35,7 +35,7 @@ class SuperAdminSeeder extends Seeder
         $employee->save();
 
         // kasih full akses untuk ke seluruh area
-        foreach(Salespoint::all() as $salespoint){
+        foreach(SalesPoint::all() as $salespoint){
             $newAccess = new EmployeeLocationAccess;
             $newAccess->employee_id = $employee->id;
             $newAccess->salespoint_id = $salespoint->id;

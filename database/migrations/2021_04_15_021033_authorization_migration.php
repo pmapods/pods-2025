@@ -20,6 +20,8 @@ class AuthorizationMigration extends Migration
             $table->tinyInteger('form_type')->default(0);
             // 0 form pengadaan
             // 1 form bidding
+            // 2 form pr
+            // 3 form po
             $table->timestamps();
         });
 

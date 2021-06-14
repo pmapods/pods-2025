@@ -32,7 +32,7 @@ class Ticket extends Model
     }
 
     public function salespoint(){
-        return $this->belongsTo(Salespoint::class);
+        return $this->belongsTo(SalesPoint::class);
     }
 
     public function pr(){
