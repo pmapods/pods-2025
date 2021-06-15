@@ -42,6 +42,7 @@ $(document).ready(function(){
 });
 
 function setRupiah(amount) {
+    amount = parseFloat(amount);
     amount = amount.toFixed(2);
     var isNegative = false;
     if(Number(amount) < 0) {

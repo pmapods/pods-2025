@@ -23,6 +23,10 @@
     .tdbreak{
         /* word-break : break-all; */
     }
+    .other_attachments tr td:first-of-type{
+        overflow-wrap: anywhere;
+        max-width: 300px;
+    }
 </style>
 @endsection
 
@@ -432,7 +436,7 @@
                         </thead>
                         <tbody>
                         @foreach ($filecategory->file_completements as $file_completement)
-                            <tr data-file_completement_id="{{$file_completement->id}}">
+                            <tr data-file_completement_id="{{$file_completement->id}}" data-name="{{$file_completement->name}}">
                                 <td class="align-middle">
                                     <input type="checkbox" class="file_check">
                                 </td>
@@ -509,7 +513,7 @@
             }
         },1500);
         if(ticket_items.length > 0){
-            $('.table_item tbody').empty();
+            $('.table_item tbody:eq(0)').empty();
         }
         ticket_items.forEach(function(item,index){
             let naming = item.name;
@@ -522,19 +526,26 @@
                 attachments_link  += '<a class="attachment" href="/storage'+attachment.path+'" download="'+attachment.name+'">'+attachment.name+'</a><br>';
             });
             let files_data = [];
+            let other_attachment ="<table class='other_attachments small table table-sm table-borderless'><tbody>";
             item.files.forEach(function(file,i){
                 let data;
                 data = {
                     id: file.id,
                     file_completement_id: file.file_completement_id,
                     file: '/storage/'+file.path,
+                    filename: file.name,
                     name: file.name
                 };
+                other_attachment += "<tr><td>"+data.filename+"</td>"
+                other_attachment += "<td><a href='"+data.file+"' download='"+data.name+"'>tampilkan</a></td></tr>";
                 files_data.push(data);
             });
-            $('.table_item tbody').append('<tr class="item_list" data-files="'+files_data+'" data-id="' + item.id + '" data-budget_pricing_id="'+ item.budget_pricing_id+'" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+            other_attachment += "</tbody></table>";
+            attachments_link += other_attachment;
 
-            $('.table_item tbody tr').last().data('files',files_data);
+            $('.table_item tbody:eq(0)').append('<tr class="item_list" data-id="' + item.id + '" data-budget_pricing_id="'+ item.budget_pricing_id+'" data-name="' + item.name + '" data-price="' + item.price + '" data-count="' + item.count + '" data-brand="' + item.brand + '" data-type="' + item.type + '" data-expired="'+item.expired_date+'"><td>'+naming+'</td><td>' + item.brand + '</td><td>' + item.type + '</td><td>' + setRupiah(item.price) + '</td><td>' + item.count + '</td><td>' + setRupiah(item.count * item.price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+
+            $('.table_item tbody:eq(0) .item_list').last().data('files',files_data);
         });
         $('.reason').val(ticket.reason);
         if(ticket_vendors.length > 0){

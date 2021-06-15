@@ -7,6 +7,7 @@ var temp_nonbudget_olditem_extension = null;
 
 var temp_olditem_file = null;
 var temp_olditem_extension = null;
+
 $(document).ready(function () {
     // set minimal tanggal pengadaan 14 setelah tanggal pengajuan
     tableVendorRefreshed();
@@ -392,6 +393,7 @@ $(document).ready(function () {
         parent.find('.file_check:checked').each(function(){
             let tr = $(this).closest('tr');
             let file_completement_id = tr.data('file_completement_id');
+            let file_name = tr.data('name');
             let id = tr.data('id');
             if(tr.find('.file_url').prop('download')!=""){
                 let data;
@@ -399,7 +401,8 @@ $(document).ready(function () {
                     id: id,
                     file_completement_id: file_completement_id,
                     file: tr.find('.file_url').prop('href'),
-                    name: tr.find('.file_url').prop('download')
+                    name: tr.find('.file_url').prop('download'),
+                    filename: file_name,
                 };
                 data_files.push(data);
                 count++;
@@ -411,6 +414,14 @@ $(document).ready(function () {
         }
         let position = parent.find('.itempos').val();
         $('.item_list').eq(position).data('files',data_files);
+        let attachment_string ="<table class='other_attachments small table table-sm table-borderless'><tbody>";
+        data_files.forEach((data,index)=>{
+            attachment_string += "<tr><td>"+data.filename+"</td>"
+            attachment_string += "<td><a href='"+data.file+"' download='"+data.name+"'>tampilkan</a></td></tr>";
+        });
+        attachment_string += "</tbody></table>";
+        $('.item_list').eq(position).find('td').eq(6).find('.other_attachments').remove();
+        $('.item_list').eq(position).find('td').eq(6).append(attachment_string);
         resetfilesmodal();
         $('#filesmodal').modal('hide');
     });
@@ -527,7 +538,8 @@ function addBudgetItem(el) {
     if(budget_expired_date.val()!=""){
         naming = name+'<br>(expired : '+budget_expired_date.val()+')';
     }
-    table_item.find('tbody').append('<tr class="item_list" data-budget_pricing_id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+    // tbody eq(0) supaya ga nyasar ke table other attachment
+    table_item.find('tbody:eq(0)').append('<tr class="item_list" data-budget_pricing_id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
     
     select_item.val("");
     select_item.trigger('change');
@@ -597,7 +609,7 @@ function addNonBudgetItem(){
     if(!$('.nonbudget_olditem_field').is(':visible')){
         attachments_link = '-';
     }
-    $('.table_item').find('tbody').append('<tr class="item_list" data-name="' + name + '" data-brand="' + brand + '" data-type="' + type + '" data-price="' + price.get() + '" data-count="' + count + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+    $('.table_item tbody:eq(0)').find('tbody').append('<tr class="item_list" data-name="' + name + '" data-brand="' + brand + '" data-type="' + type + '" data-price="' + price.get() + '" data-count="' + count + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
   
     $('.input_nonbudget_name').val('');
     $('.input_nonbudget_brand').val('');
@@ -628,7 +640,7 @@ function tableRefreshed() {
     let budget_select = $('.budget_type');
     // check table level if table has data / tr or not
     let row_count = 0;
-    table_item.find('tbody tr').not('.empty_row').each(function () {
+    table_item.find('tbody:eq(0) tr').not('.empty_row').each(function () {
         row_count++;
     });
     if (row_count > 0) {
@@ -644,7 +656,7 @@ function tableRefreshed() {
         item_select.prop('disabled',false);
         request_select.prop('disabled',false);
         budget_select.prop('disabled',false);
-        table_item.find('tbody').append('<tr class="empty_row text-center"><td colspan="8">Item belum dipilih</td></tr>');
+        table_item.find('tbody:eq(0)').append('<tr class="empty_row text-center"><td colspan="8">Item belum dipilih</td></tr>');
     }
 }
 
