@@ -151,9 +151,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/po',[POController::class, 'poView']);
         Route::get('/po/{ticket_code}',[POController::class, 'poDetailView']);
         Route::post('/submitPO',[POController::class, 'submitPO']);
-        Route::post('/printPO',[POController::class, 'printPO']);
+        Route::get('/printPO',[POController::class, 'printPO']);
         Route::patch('/uploadinternalsignedfile',[POController::class, 'uploadInternalSignedFile']);
+        Route::patch('/rejectposigned',[POController::class, 'rejectPosigned']);
         Route::patch('/confirmposigned',[POController::class, 'confirmPosigned']);
         Route::post('/sendemail',[POController::class, 'sendEmail']);
     });
 });
+// Purchase Order
+Route::get('/signpo/{po_upload_request_id}',[POController::class,'poUploadRequestView']);
+Route::post('/uploadsigneddocument',[POController::class,'poUploadRequest']);

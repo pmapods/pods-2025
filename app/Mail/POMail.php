@@ -35,5 +35,9 @@ class POMail extends Mailable
                         ->view('mail.posignedrequest')
                         ->attachFromStorageDisk('public',$this->data['po']->internal_signed_filepath);
         }
+        if($this->type == 'posignedreject'){
+            return $this->subject('Penolakan Upload Tanda tangan Basah')
+                        ->view('mail.posignedreject');
+        }
     }
 }

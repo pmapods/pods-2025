@@ -86,16 +86,16 @@
                                 <tr>
                                     <td>{{$item->ticket_item->name}}</td>
                                     <td>{{$item->qty}} {{($item->ticket_item->budget_pricing->uom ?? '')}}</td>
-                                    <td class="rupiah">{{$item->price}}</td>
-                                    <td class="rupiah text-right">{{$item->qty*$item->price}}</td>
+                                    <td class="rupiah_text">{{$item->price}}</td>
+                                    <td class="rupia_text text-right">{{$item->qty*$item->price}}</td>
                                     @php $total += $item->qty*$item->price; @endphp
                                 </tr>
                                 @if($item->ongkir > 0)
                                     <tr>
                                         <td>Ongkir {{$item->ticket_item->name}}</td>
                                         <td>1</td>
-                                        <td class="rupiah">{{$item->ongkir}}</td>
-                                        <td class="rupiah text-right">{{$item->ongkir}}</td>
+                                        <td class="rupiah_text">{{$item->ongkir}}</td>
+                                        <td class="rupiah_text text-right">{{$item->ongkir}}</td>
                                         @php $total += $item->ongkir; @endphp
                                     </tr>
                                 @endif
@@ -103,8 +103,8 @@
                                     <tr>
                                         <td>Ongpas {{$item->ticket_item->name}}</td>
                                         <td>1</td>
-                                        <td class="rupiah">{{$item->ongpas}}</td>
-                                        <td class="rupiah text-right">{{$item->ongpas}}</td>
+                                        <td class="rupiah_text">{{$item->ongpas}}</td>
+                                        <td class="rupiah_text text-right">{{$item->ongpas}}</td>
                                         @php $total += $item->ongpas; @endphp
                                     </tr>
                                 @endif
@@ -115,7 +115,7 @@
                         <tbody>
                             <tr>
                                 <td>Total</td>
-                                <td class="font-weight-bold rupiah text-right">{{$total}}</td>
+                                <td class="font-weight-bold rupiah_text text-right">{{$total}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -219,30 +219,33 @@
                         @php
                             $names = ["Dibuat Oleh","Diperiksa dan disetujui oleh","Konfirmasi Supplier"];
                             $enames = ["Created by","Checked and Approval by","Supplier Confirmation"];
-                            $authorizations = $vendor->po->po_authorization;
-                            dd($authorizations);
-                            // array_push($authorizations,$vendor->ticket->ticket_item->first()->bidding->bidding_authorization->first());
-                            // array_push($authorizations,$vendor->ticket->ticket_item->first()->bidding->bidding_authorization->last());
+                            $po_authorizations = $vendor->po->po_authorization;
+                            $authorizations =[];
+                            foreach ($po_authorizations as $po_authorization){
+                                $auth = new \stdClass();
+                                $auth->employee_name = $po_authorization->employee_name;
+                                $auth->employee_position = $po_authorization->employee_position;
+                                array_push($authorizations,$auth);
+                            }
+                            $auth = new \stdClass();
+                            $auth->employee_name = $vendor->po->supplier_pic_name;
+                            $auth->employee_position = $vendor->po->supplier_pic_position;
+                            array_push($authorizations,$auth);
                         @endphp
-                        @for($i=0;$i<count($names);$i++)
+                        @foreach($authorizations as $key=>$authorization)
                             <div class="col-md-4 px-1">
                                 <div class="border border-dark d-flex flex-column">
                                     <div class="text-center small">
-                                        {{$names[$i]}}<br>
-                                        <i>{{$enames[$i]}}</i>
+                                        {{$names[$key]}}<br>
+                                        <i>{{$enames[$key]}}</i>
                                         <hr>
                                     </div>
                                     <div class="sign_space"></div>
-                                    @if($i<2)
-                                        <span class="align-self-center text-uppercase">{{$authorizations[$i]->employee_name}}</span>
-                                        <span class="align-self-center">{{$authorizations[$i]->employee_position}}</span>
-                                    @else
-                                        <span class="align-self-center text-uppercase">{{$vendor->salesperson}}</span>
-                                        <span class="align-self-center">Supplier PIC</span>
-                                    @endif
+                                    <span class="align-self-center text-uppercase">{{$authorization->employee_name}}</span>
+                                    <span class="align-self-center">{{$authorization->employee_position}}</span>
                                 </div>
                             </div>
-                        @endfor
+                        @endforeach
                     </div>
                     @endif
                     @if(($vendor->po->status ?? -1) == 0)
@@ -265,21 +268,32 @@
                             @endphp
                             <a class="uploaded_file" href="/storage{{$vendor->po->internal_signed_filepath}}" download="{{$filename}}">Tampilkan dokumen Internal Signed</a>
                         @endif
-                        
+                        @if(($vendor->po->status ?? -1) == 1)
+                            <span>status : {{($vendor->po->po_upload_request()->isOpened == false) ? 'Link Upload File belum dibuka' : 'Link Upload File sudah dibuka'}}</span>
+                        @endif
                         @if(($vendor->po->status ?? -1) > 1)
                             @php
-                                $filename = explode('/',$vendor->po->external_signed_filepath);
-                                $filename = $filename[count($filename)-1];
+                                $filename = pathinfo($vendor->po->po_upload_request()->filepath)['basename'];
                             @endphp
-                            <a class="uploaded_file" href="/storage{{$vendor->po->external_signed_filepath}}" download="{{$filename}}">Tampilkan dokumen Supplier Signed</a>
+                            <a class="uploaded_file" href="/storage/{{$vendor->po->po_upload_request()->filepath}}" download="{{$filename}}">Tampilkan dokumen Supplier Signed</a>
                         @endif
                     </div>
+                    
+                    @php
+                        $toEmail = ($vendor->vendor()->email ?? '');
+                    @endphp
+                    @if($vendor->po->status == 0)
+                        <div class="form-group">
+                          <label class="required_field">Masukkan Email Tujuan</label>
+                          <input type="text" class="form-control" id="sendMail" value="{{$toEmail}}" placeholder="supplieremail@example.com">
+                        </div>
+                    @endif
                     <div class="align-self-center mt-3 button_field">
                         @if($vendor->po)
                             @if($vendor->po->status == 0)
-                                <button type="button" class="btn btn-info" onclick="print({{$vendor->po->id}})">Cetak PO</button>
+                                <button type="button" class="btn btn-info" onclick="window.open('/printPO?code={{$vendor->po->no_po_sap}}')">Cetak PO</button>
                                 <button type="button" class="btn btn-primary select_file_button" onclick="selectfile()">Pilih Dokumen</button>
-                                <button type="button" class="btn btn-success upload_button" onclick="uploadfile({{$vendor->po->id}})" style="display:none">Upload File Perbaikan</button>
+                                <button type="button" class="btn btn-success upload_button" onclick="uploadfile({{$vendor->po->id}})" style="display:none">Upload File</button>
                                 <input class="inputFile" type="file" style="display:none;">
                             @endif
                             
@@ -288,7 +302,7 @@
                             @endif
 
                             @if($vendor->po->status == 2)
-                                <button type="button" class="btn btn-danger" onclick="">Reject</button>
+                                <button type="button" class="btn btn-danger" onclick="reject({{$vendor->po->id}},'{{$toEmail}}','{{$vendor->po->no_po_sap}}','{{$vendor->po->po_upload_request()->id}}')">Reject</button>
                                 <button type="button" class="btn btn-success" onclick="confirm({{$vendor->po->id}})">Confirm</button>
                             @endif
                         @else
@@ -301,11 +315,6 @@
         @endforeach
     </div>
 </div>
-
-<form action="/printPO" method="post" id="printform">
-    @csrf
-    <input type="hidden" name="po_id">
-</form>
 
 <form action="/uploadinternalsignedfile" method="post" enctype="multipart/form" id="uploadsignedform">
     @method('patch')
@@ -341,6 +350,40 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-info">Kirim Email</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rejectsignedpo" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header table-danger">
+                <h5 class="modal-title">Reject PO (<span class="no_po_sap"></span>) External Signed</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <form action="/rejectposigned" method="post">
+                @csrf
+                @method('patch')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="required_field">Alasan penolakan</label>
+                        <textarea class="form-control" name="reason" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="required_field">Email yang dituju</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="text-danger font-weight-bold">* Link baru untuk perbaikan data akan dikirimkan ke email yang di input beserta dengan alasan</div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="po_id">
+                    <input type="hidden" name="po_upload_request_id">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Reject</button>
                 </div>
             </form>
         </div>
@@ -384,20 +427,17 @@
                 }
             }
         })
-    })
-    function print(po_id){
-        $('#printform').find('input[name="po_id"]').val(po_id);
-        $('#printform').submit();
-        $('button').prop('disabled',false);
-        $('#printform fa-spinner-third').remove();
-    }
+    });
     function selectfile(){
         $('.inputFile').click();
     }
     function uploadfile(id){
         let linkfile = $('.uploaded_file');
+        let email = $('#sendMail').val();
         if(linkfile.length == 0){
             alert('Silahkan pilih file dokument po yang sudah ditandatangan terlebih dahulu');
+        }else if(email == "" || !isEmail(email)){
+            alert('Email tidak valid');
         }else{
             let inputfield = $('#uploadsignedform').find('.input_field');
             let file = linkfile.prop('href');
@@ -406,12 +446,23 @@
             inputfield.append('<input type="hidden" name="po_id" value="' + id + '">');
             inputfield.append('<input type="hidden" name="file" value="'+file+'">');
             inputfield.append('<input type="hidden" name="filename" value="'+filename+'">');
+            inputfield.append('<input type="hidden" name="email" value="'+email+'">');
             $('#uploadsignedform').submit();
         }
     }
     function confirm(po_id){
         $('#confirmsignedform').find('input[name="po_id"]').val(po_id);
         $('#confirmsignedform').submit();
+    }
+    function reject(po_id,email,no_po_sap,po_upload_request_id){
+        $('#rejectsignedpo textarea[name="reason"]').val('');
+        $('#rejectsignedpo input[name="reason"]').val('');
+        $('#rejectsignedpo input[name="email"]').val('');
+        $('#rejectsignedpo .no_po_sap').text(no_po_sap);
+        $('#rejectsignedpo input[name="email"]').val(email);
+        $('#rejectsignedpo input[name="po_id"]').val(po_id);
+        $('#rejectsignedpo input[name="po_upload_request_id"]').val(po_upload_request_id);
+        $('#rejectsignedpo').modal('show');
     }
     function send_email(po_id,vendor_name,no_sap){
         $('#sendEmailModal input[name="po_id"]').val(po_id);

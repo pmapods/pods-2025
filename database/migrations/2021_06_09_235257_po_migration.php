@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 class PoMigration extends Migration
 {
     /**
@@ -55,11 +56,11 @@ class PoMigration extends Migration
         });
 
         Schema::create('po_upload_request', function (Blueprint $table){
-            $table->uuid('id');
+            $table->uuid('id')->primary();
             $table->integer('po_id')->unsigned();
             $table->string('vendor_name');
             $table->string('vendor_pic');
-            $table->string('filepath');
+            $table->string('filepath')->nullable();
             $table->tinyInteger('status')->default(0);
             // 0 new
             // 1 uploaded
