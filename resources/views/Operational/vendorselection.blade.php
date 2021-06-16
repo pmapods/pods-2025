@@ -571,7 +571,7 @@
                 @if ($ticket_item->ticket_item_attachment->count() > 0)
                 <table class="table table-borderless table-sm">
                     <tbody>
-                        @foreach ($bidding->ticket_item->ticket_item_attachment as $attachment)
+                        @foreach ($ticket_item->ticket_item_attachment as $attachment)
                         <tr>
                             @php
                             $naming = "";
