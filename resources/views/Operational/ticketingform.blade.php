@@ -103,9 +103,6 @@
                             <td>{{$item->count}}  {{$item->budget_pricing->uom ?? ''}}</td>
                             <td class="rupiah_text">{{$item->price * $item->count}}</td>
                             <td>
-                                @if($item->ticket_item_attachment->count() == 0 && $item->ticket_item_file_requirement->count() == 0)
-                                -
-                                @endif
                                 @if ($item->ticket_item_attachment->count() > 0)
                                     <table class="table table-borderless table-sm">
                                         <tbody>
@@ -149,13 +146,18 @@
                                 @endif
                                 @if($ticket->status > 5)
                                     @if(($item->selected_po()->status ?? -1)>2)
-                                        <b>File PO</b><br>
                                         @php
-                                            // dd($item->selected_po()->external_signed_filepath);
-                                            $filename = explode('/',$item->selected_po()->external_signed_filepath);
-                                            $filename = $filename[count($filename)-1];
+                                            $filename = pathinfo($item->selected_po()->external_signed_filepath)['basename'];
                                         @endphp
-                                        <a class="uploaded_file" href="/storage{{$item->selected_po()->external_signed_filepath}}" download="{{$filename}}">Tampilkan dokumen Supplier Signed</a>
+                                        <a class="uploaded_file" href="/storage/{{$item->selected_po()->external_signed_filepath}}" download="{{$filename}}">Tampilkan PO</a><br>
+                                    @endif
+                                    @if ($item->isFinished)
+                                        @php
+                                            $lpb_filename = pathinfo($item->lpb_filepath)['basename'];
+                                            $invoice_filename = pathinfo($item->invoice_filepath)['basename'];
+                                        @endphp
+                                        <a class="uploaded_file" href="/storage/{{$item->lpb_filepath}}" download="{{$lpb_filename}}">Tampilkan dokumen LPB</a><br>
+                                        <a class="uploaded_file" href="/storage/{{$item->invoice_filepath}}" download="{{$invoice_filename}}">Tampilkan dokumen Invoice</a><br>
                                     @endif
                                 @endif
                             </td>
@@ -166,14 +168,30 @@
                                 @endif
                                 @if($ticket->status > 5)
                                     @if(($item->selected_po()->status ?? -1)>2)
-                                        Po sudah terbit, Menunggu konfirmasi penerimaan barang
+                                        @if($item->isFinished)
+                                            Selesai
+                                        @else
+                                            Po sudah terbit, Menunggu konfirmasi penerimaan barang
+                                        @endif
                                     @endif
                                 @endif
                             </td>
                             <td>
                                 @if($ticket->status > 5)
-                                    @if(($item->selected_po()->status ?? -1)>2)
-                                        <button type="button" class="btn btn-success">Confirm</button>
+                                    @if(($item->selected_po()->status ?? -1)>2 && !$item->isFinished)
+                                        <form action="/uploadconfirmationfile" method="post" enctype="multipart/form-data">
+                                            @csrf
+                                            <input type="hidden" name="ticket_item_id" value="{{$item->id}}">
+                                            <div class="form-group">
+                                              <label class="required_field">Pilih File LPB</label>
+                                              <input type="file" class="form-control-file form-control-sm validatefilesize" name="lpb" required>
+                                            </div>
+                                            <div class="form-group">
+                                              <label class="required_field">Pilih File Invoice</label>
+                                              <input type="file" class="form-control-file form-control-sm validatefilesize" name="invoice" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                                        </form>
                                     @endif
                                 @endif
                             </td>
@@ -525,6 +543,11 @@
                 }
                 reader.readAsDataURL(event.target.files[0]);
             }else{
+                $(this).val('');
+            }
+        });
+        $('.validatefilesize').change(function(event){
+            if(!validatefilesize(event)){
                 $(this).val('');
             }
         });

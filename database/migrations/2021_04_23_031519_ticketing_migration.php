@@ -57,6 +57,7 @@ class TicketingMigration extends Migration
             $table->integer('ba_revised_by')->nullable();
             $table->integer('ba_confirmed_by')->nullable();
 
+            $table->date('finished_date')->nullable();
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('authorization_id')->references('id')->on('authorization');
             $table->foreign('created_by')->references('id')->on('employee');
@@ -74,8 +75,12 @@ class TicketingMigration extends Migration
             $table->date('expired_date')->nullable();
             $table->double('price');
             $table->integer('count');
+            $table->string('lpb_filepath')->nullable();
+            $table->string('invoice_filepath')->nullable();
             $table->boolean('isCancelled')->default(false);
+            $table->boolean('isFinished')->default(false);
             $table->integer('cancelled_by')->nullable();
+            $table->integer('confirmed_by')->nullable();
             // $table->string('cancelled_on')->nullable();
             $table->string('cancel_reason')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');

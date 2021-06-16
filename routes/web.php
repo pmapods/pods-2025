@@ -119,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/approveticket',[TicketingController::class, 'approveTicket']);
         Route::patch('/rejectticket',[TicketingController::class, 'rejectTicket']);
         Route::patch('/uploadticketfilerevision',[TicketingController::class, 'uploadFileRevision']);
+        Route::post('/uploadconfirmationfile',[TicketingController::class, 'uploadConfirmationFile']);
     });
 
     // Bidding

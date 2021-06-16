@@ -32,11 +32,12 @@ class TicketingController extends Controller
         if($request->input('status') == -1){
             $tickets = Ticket::whereIn('salespoint_id',$access)
             ->where('status',-1)
+            ->orWhere('status',7)
             ->get()
             ->sortByDesc('created_at');
         }else{
             $tickets = Ticket::whereIn('salespoint_id',$access)
-            ->where('status','!=',-1)
+            ->whereNotIn('status',[-1,7])
             ->get()
             ->sortByDesc('created_at');
         }
@@ -613,6 +614,61 @@ class TicketingController extends Controller
         }catch(Exception $ex){
             DB::rollback();
             return back()->with('error','Gagal melakukan revisi upload file');
+        }
+    }
+
+    public function uploadConfirmationFile(Request $request){
+        try {
+            DB::beginTransaction();
+            $ticket_item = TicketItem::findOrFail($request->ticket_item_id);
+            $lpbfile = $request->file()['lpb'];
+            $invoicefile = $request->file()['invoice'];
+            $lpb_ext = pathinfo($lpbfile->getClientOriginalName(),PATHINFO_EXTENSION);
+            $invoice_ext = pathinfo($invoicefile->getClientOriginalName(),PATHINFO_EXTENSION);
+            $salespoint = $ticket_item->ticket->salespoint;
+            $salespointname = str_replace(' ','_',$salespoint->name);
+            $code = $ticket_item->ticket->code;
+
+            $path = 'attachments/ticketing/barangjasa/'.$code.'/item'.$ticket_item->id.'/LPB_'.$salespointname.'.'.$lpb_ext;
+            $info = pathinfo($path);
+            $lpb_path = $lpbfile->storeAs($info['dirname'],$info['basename'],'public');
+
+            $path = 'attachments/ticketing/barangjasa/'.$code.'/item'.$ticket_item->id.'/INVOICE_'.$salespointname.'.'.$invoice_ext;
+            $info = pathinfo($path);
+            $invoice_path = $invoicefile->storeAs($info['dirname'],$info['basename'],'public');
+
+            $ticket_item->lpb_filepath = $lpb_path;
+            $ticket_item->invoice_filepath = $invoice_path;
+            $ticket_item->isFinished = true;
+            $ticket_item->confirmed_by = Auth::user()->id;
+            $ticket_item->save();
+
+            $ticket = $ticket_item->ticket;
+            $isTicketFinished = $this->isTicketFinished($ticket->id);
+            if($isTicketFinished){
+                $ticket->status = 7;
+                $ticket->finished_date = now()->format('Y-m-d');
+                $ticket->save();
+            }
+            DB::commit();
+            return back()->with('success','Berhasil konfirmasi barang');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('Gagal melakukan konfirmasi penerimaan barang '.$ex->getMessage());
+        }
+    }
+
+    public function isTicketFinished($ticket_id){
+        $ticket = Ticket::findOrFail($ticket_id);
+        $unfisinished_count = 0;
+        foreach($ticket->ticket_item as $item){
+            if(!$item->isFinished) $unfisinished_count++;
+        }
+        if($unfisinished_count > 0){
+            return false;
+        }else{
+            return true;
         }
     }
 }
