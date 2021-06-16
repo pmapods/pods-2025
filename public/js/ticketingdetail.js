@@ -609,7 +609,7 @@ function addNonBudgetItem(){
     if(!$('.nonbudget_olditem_field').is(':visible')){
         attachments_link = '-';
     }
-    $('.table_item tbody:eq(0)').find('tbody').append('<tr class="item_list" data-name="' + name + '" data-brand="' + brand + '" data-type="' + type + '" data-price="' + price.get() + '" data-count="' + count + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i></td></tr>');
+    $('.table_item tbody:eq(0)').append('<tr class="item_list" data-name="' + name + '" data-brand="' + brand + '" data-type="' + type + '" data-price="' + price.get() + '" data-count="' + count + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
   
     $('.input_nonbudget_name').val('');
     $('.input_nonbudget_brand').val('');
