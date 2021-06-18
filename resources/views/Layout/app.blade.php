@@ -225,6 +225,37 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   @endif
               </ul>
             </li>
+            
+            {{-- Monitoring --}}
+            <li class="nav-item has-treeview menu-close">
+              <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-eye"></i>
+                  <p>
+                      Monitoring
+                      <i class="right fas fa-angle-left"></i>
+                  </p>
+              </a>
+              <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                      <a href="/ticketmonitoring" class="nav-link">
+                          <i class="fad fa-ticket nav-icon"></i>
+                          <p>Monitor Pengadaan</p>
+                      </a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="/securitymonitoring" class="nav-link">
+                          <i class="fad fa-shield nav-icon"></i>
+                          <p>Monitor Security</p>
+                      </a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="/fleetmonitoring" class="nav-link">
+                          <i class="fad fa-truck-container nav-icon"></i>
+                          <p>Monitor Armada</p>
+                      </a>
+                  </li>
+              </ul>
+            </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

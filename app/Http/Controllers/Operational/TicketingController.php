@@ -90,9 +90,12 @@ class TicketingController extends Controller
             // show file completement data
             $filecategories = FileCategory::all();
             return view('Operational.ticketingdetail',compact('available_salespoints','budget_category_items','vendors','filecategories'));
-        }else{
-            return back()->with('error','Terjadi Kesalahan silahakan mencoba lagi');
         }
+        if($request->ticketing_type == '1'){
+            return view('Operational.securitydetail');
+        }
+        return back()->with('error','Terjadi Kesalahan silahakan mencoba lagi');
+        
     }
 
     public function deleteTicket(Request $request){

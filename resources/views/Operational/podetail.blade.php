@@ -87,7 +87,7 @@
                                     <td>{{$item->ticket_item->name}}</td>
                                     <td>{{$item->qty}} {{($item->ticket_item->budget_pricing->uom ?? '')}}</td>
                                     <td class="rupiah_text">{{$item->price}}</td>
-                                    <td class="rupia_text text-right">{{$item->qty*$item->price}}</td>
+                                    <td class="rupiah_text text-right">{{$item->qty*$item->price}}</td>
                                     @php $total += $item->qty*$item->price; @endphp
                                 </tr>
                                 @if($item->ongkir > 0)
@@ -282,7 +282,7 @@
                     @php
                         $toEmail = ($vendor->vendor()->email ?? '');
                     @endphp
-                    @if($vendor->po->status == 0)
+                    @if(($vendor->po->status ?? -1) == 0)
                         <div class="form-group">
                           <label class="required_field">Masukkan Email Tujuan</label>
                           <input type="text" class="form-control" id="sendMail" value="{{$toEmail}}" placeholder="supplieremail@example.com">

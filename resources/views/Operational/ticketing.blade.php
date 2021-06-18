@@ -119,14 +119,14 @@
                     <div class="form-check">
                         <label class="form-check-label">
                         <input type="radio" class="form-check-input" name="ticketing_type" value="1">
-                        Pengadaan 1
+                        Pengadaan Security
                       </label>
                     </div>
                     
                     <div class="form-check">
                         <label class="form-check-label">
                         <input type="radio" class="form-check-input" name="ticketing_type" value="2">
-                        Pengadaan 2
+                        Pengadaan Armada
                       </label>
                     </div>
                 </div>
