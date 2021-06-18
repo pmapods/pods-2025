@@ -218,7 +218,7 @@
                         </div>
                         <div class="form-group input_budget_type_field" style="display: none">
                             <label class="required_field">Nama Tipe Lain</label>
-                            <input class="form-control input_budget_type">
+                            <textarea class="form-control input_budget_type" rows="2"></textarea>
                         </div>
                     </div>
                     <div class="col-12 budget_ba_field" style="display: none">
@@ -270,8 +270,8 @@
                     </div>
                     <div class="col-6">
                         <div class="form-group">
-                            <label class="required_field">Tipe</label>
-                            <input type="text" class="form-control input_nonbudget_type">
+                          <label for="required_field">Tipe</label>
+                          <textarea class="form-control input_nonbudget_type" rows="2"></textarea>
                         </div>
                     </div>
                 </div>

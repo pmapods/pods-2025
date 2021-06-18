@@ -37,8 +37,14 @@ class PrMigration extends Migration
             $table->double('price');
             $table->double('ongkir');
             $table->double('ongpas');
+            $table->string('uom');
             $table->date('setup_date')->nullable();
             $table->string('notes')->nullable();
+            $table->string('isAsset')->nullable();
+
+            $table->boolean('has_ppn')->nullable();
+            $table->boolean('ppn_percentage')->nullable();
+            
             $table->string('asset_number')->nullable();
             $table->foreign('pr_id')->references('id')->on('pr');
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');

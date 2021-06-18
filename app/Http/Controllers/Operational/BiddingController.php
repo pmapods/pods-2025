@@ -219,7 +219,7 @@ class BiddingController extends Controller
 
     public function approveBidding(Request $request) {
         $bidding = Bidding::find($request->bidding_id);
-        if($bidding->signed_filename == null || $bidding->signed_filepath == null){
+        if(($bidding->signed_filename == null || $bidding->signed_filepath == null) && $bidding->current_authorization()->level == 2 && Auth::user()->id == $bidding->current_authorization()->employee->id){
             return back()->with('error','Harap melakukan upload file penawaran yang sudah di tanda tangan');
         }
         $bidding_authorization = BiddingAuthorization::find($request->bidding_authorization_id);
@@ -275,14 +275,12 @@ class BiddingController extends Controller
         try{
             $bidding = Bidding::findOrFail($request->bidding_id);
             $salespointname = str_replace(' ','_',$bidding->ticket->salespoint->name);
-            $ext = pathinfo($request->filename, PATHINFO_EXTENSION);
-            $name = "Penawaran_resmi_dari_2_vendor_(dilengkapi_KTP_dan_NPWP)_SIGNED_".$salespointname.'.'.$ext;
+            $newext = pathinfo($request->file('file')->getClientOriginalName(), PATHINFO_EXTENSION);
+            $name = "Penawaran_resmi_dari_2_vendor_(dilengkapi_KTP_dan_NPWP)_SIGNED_".$salespointname.'.'.$newext;
             $path = "/attachments/ticketing/barangjasa/".$bidding->ticket->code.'/item'.$bidding->ticket_item->id.'/files/'.$name;
-        
-            // base 64 data
-            $file = explode('base64,',$request->file)[1];
-            Storage::disk('public')->put($path, base64_decode($file));
-            $bidding->signed_filename = $name;
+            $file = pathinfo($path);
+            $path = $request->file('file')->storeAs($file['dirname'],$file['basename'],'public');
+            $bidding->signed_filename = $file['basename'];
             $bidding->signed_filepath = $path;
             $bidding->save();
             return back()->with('success','Berhasil upload file penawaran yang sudah ditandatangan, Silahkan melanjutkan proses approval');

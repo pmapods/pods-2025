@@ -150,10 +150,14 @@ $(document).ready(function () {
         if (type === '0') {
             // budget
             $('.budget_item_adder').removeClass('d-none');
+            $('.budget_item_adder').find('input textarea').val('');
+            $('.budget_item_adder').find('select').val("");
+            $('.budget_item_adder').find('select').trigger('change');
 
         } else if (type === '1') {
             // non budget
             $('.nonbudget_item_adder').removeClass('d-none');
+            $('.budget_item_adder').find('input textarea').val('');
         }
     });
 

@@ -47,12 +47,14 @@
             </thead>
             <tbody>
                 @foreach ($tickets as $key => $ticket)
+                <tr>
                     <td>{{$key+1}}</td>
                     <td>{{$ticket->code}}</td>
                     <td>{{$ticket->salespoint->name}}</td>
                     <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
                     <td>{{$ticket->pr->last_authorization()->updated_at->translatedFormat('d F Y (H:i)')}}</td>
                     <td>{{$ticket->status()}}</td>
+                </tr>
                 @endforeach
             </tbody>
         </table>

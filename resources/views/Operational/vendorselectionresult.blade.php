@@ -231,7 +231,7 @@
                     <td rowspan="5">-</td>
                 @endif
                 <td class="text-center" rowspan="5">
-                    {{$bidding->ketentuan_bayar_notes}}
+                    {{$bidding->ketersediaan_barang_notes}}
                 </td>
             </tr>
             <tr>
@@ -451,38 +451,49 @@
     </div>
     <div class="d-flex justify-content-center align-items-center mt-3">
         @php
-            if($bidding->signed_filename == null || $bidding->signed_filepath == null){
-                $isSignedUploaded = false;
+            if(($bidding->signed_filename == null || $bidding->signed_filepath == null) && $bidding->current_authorization()->level == 2 && Auth::user()->id == $bidding->current_authorization()->employee->id){
+                $needUploadSigned = true;
             }else{
-                $isSignedUploaded = true;
+                $needUploadSigned = false;
             }
         @endphp
         @if($bidding->current_authorization() != null)
             @if(Auth::user()->id == $bidding->current_authorization()->employee->id)
             <button type="button" class="btn btn-danger mr-2" onclick="reject()">Reject</button>
             <button type="button" class="btn btn-success" onclick="approve()"
-            @if(!$isSignedUploaded) disabled @endif>Approve</button>
+            @if($needUploadSigned) disabled @endif>Approve</button>
             @endif
         @endif
     </div>
-    <small class="text-danger">*Approval dapat dilakukan setelah melakukan upload file penawaran yang sudah di tanda tangan</small>
 </div>
 
-<b>FILE PENAWARAN YANG SUDAH DI TANDA TANGAN</b>
-<br>
-@if($bidding->signed_filename == null || $bidding->signed_filepath == null)
-    <button type="button" class="btn btn-info btn-sm mt-2" onclick="selectfile(this)">Pilih File Penawaran Yang sudah di tandatangan</button><br>
-    <input class="inputFile" type="file" style="display:none;">
-    <div class="display_field mt-1"></div>
-    <button type="button" class="btn btn-primary btn-sm mt-2" onclick="uploadfile({{$bidding->id}})">Upload File penawaran</button><br><br>
-@else
-    <a href="/storage{{$bidding->signed_filepath}}">{{$bidding->signed_filename}}</a><br>
+@if ($needUploadSigned) 
+<div class="row">
+    <div class="col-md-4">
+        <form action="/uploadsignedfile" method="post" enctype="multipart/form-data">
+            @method('patch')
+            @csrf
+            <div class="form-group">
+                <label class="required_field">FILE PENAWARAN YANG SUDAH DI TANDA TANGAN</label>
+                <input type="file" class="form-control-file validatefilesize" name="file" accept="image/*,application/pdf" required>
+                <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
+            </div>
+            <input type="hidden" name="bidding_id" value="{{$bidding->id}}">
+            <button type="submit" class="btn btn-primary btn-sm">Upload File penawaran</button><br><br>
+        </form>
+    </div>
+</div>
+@endif
+
+@if($bidding->signed_filename != null || $bidding->signed_filepath == null)
+    <a href="/storage/{{$bidding->signed_filepath}}" target="_blank">{{$bidding->signed_filename}}</a><br>
 @endif
 
 <b>ATTACHMENT</b><br>
 @if($ticket_item->ticket_item_attachment->count() == 0 && $ticket_item->ticket_item_file_requirement->count() == 0)
 -
 @endif
+
 @if ($ticket_item->ticket_item_attachment->count() > 0)
     <table class="table table-borderless table-sm">
         <tbody>
@@ -512,6 +523,7 @@
         </tbody>
     </table>
 @endif
+
 @if ($ticket_item->ticket_item_file_requirement->count() > 0)
     <table class="table table-borderless table-sm">
         <tbody>
@@ -533,6 +545,7 @@
     <div class="input_field">
     </div>
 </form>
+
 <form action="/rejectbidding" method="post" id="rejectform">
     @csrf
     @method('patch')
@@ -541,11 +554,7 @@
     <div class="input_field">
     </div>
 </form>
-<form action="/uploadsignedfile" method="post" enctype="multipart/form" id="uploadsignedform">
-    @method('patch')
-    @csrf
-    <div class="input_field"></div>
-</form>
+
 @endsection
 @section('local-js')
 <script>
@@ -601,6 +610,12 @@
                 $(this).val('');
             }
         });
+
+        $('.validatefilesize').change(function(event){
+            if(!validatefilesize(event)){
+                $(this).val('');
+            }
+        });
     });
 
     function approve(){
@@ -621,22 +636,6 @@
 
     function selectfile(){
         $('.inputFile').click();
-    }
-
-    function uploadfile(id){
-        let linkfile = $('.revision_file');
-        if(linkfile.length == 0){
-            alert('Silahkan pilih file penawaran yang sudah ditandatangan terlebih dahulu');
-        }else{
-            let inputfield = $('#uploadsignedform').find('.input_field');
-            let file = linkfile.prop('href');
-            let filename = linkfile.text().trim();
-            inputfield.empty();
-            inputfield.append('<input type="hidden" name="bidding_id" value="' + id + '">');
-            inputfield.append('<input type="hidden" name="file" value="'+file+'">');
-            inputfield.append('<input type="hidden" name="filename" value="'+filename+'">');
-            $('#uploadsignedform').submit();
-        }
     }
 </script>
 @endsection
