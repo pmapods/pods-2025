@@ -270,7 +270,7 @@
                     </div>
                     <div class="col-6">
                         <div class="form-group">
-                          <label for="required_field">Tipe</label>
+                          <label class="required_field">Tipe</label>
                           <textarea class="form-control input_nonbudget_type" rows="2"></textarea>
                         </div>
                     </div>

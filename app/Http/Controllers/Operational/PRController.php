@@ -15,11 +15,17 @@ use App\Models\PrAuthorization;
 use App\Models\PrDetail;
 class PRController extends Controller
 {
-    public function prView(){
+    public function prView(Request $request){
         $salespoint_ids = Auth::user()->location_access->pluck('salespoint_id');
-        $tickets = Ticket::whereIn('status',[3,4,5])
-        ->whereIn('salespoint_id',$salespoint_ids)
-        ->get();
+        if($request->input('status') == -1){
+            $tickets = Ticket::where('status','>',5)
+            ->whereIn('salespoint_id',$salespoint_ids)
+            ->get();
+        }else{
+            $tickets = Ticket::whereIn('status',[3,4,5])
+            ->whereIn('salespoint_id',$salespoint_ids)
+            ->get();
+        }
         return view('Operational.pr', compact('tickets'));
     }
 
@@ -90,6 +96,7 @@ class PRController extends Controller
                 $detail->pr_id          = $pr->id;
                 $detail->ticket_item_id = $item["ticket_item_id"];
                 $detail->qty            = $item["qty"];
+                $detail->uom            = $item["uom"];
                 $detail->price          = $item["price"] ?? 0;
                 $detail->ongkir         = $item["ongkir"] ?? 0;
                 $detail->ongpas         = $item["ongpas"] ?? 0;
@@ -194,7 +201,8 @@ class PRController extends Controller
             }else{
                 foreach($request->item as $key => $item){
                     $pr_detail = PrDetail::findOrFail($item['pr_detail_id']);
-                    $pr_detail->asset_number = $item['asset_number'];
+                    $pr_detail->isAsset = ($item['asset_number']) ? true : false;
+                    $pr_detail->asset_number = $item['asset_number'] ?? null;
                     $pr_detail->save();
                 }
                 $pr->status = 2;

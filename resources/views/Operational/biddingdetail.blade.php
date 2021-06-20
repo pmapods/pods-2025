@@ -69,17 +69,17 @@
         <div class="col-md-12 box p-3 mt-3">
             <h5 class="font-weight-bold ">Daftar Barang</h5>
             <table class="table table-bordered table_item">
-                <thead>
+                <thead class="table-secondary">
                     <tr>
                         <th>Nama Item</th>
                         <th>Merk</th>
                         <th>Type</th>
-                        <th>Harga Satuan</th>
+                        <th width="15%">Harga Satuan</th>
                         <th>Jumlah</th>
-                        <th>Total</th>
-                        <th>Attachment</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                        <th width="15%">Total</th>
+                        <th width="15%">Attachment</th>
+                        <th width="10%">Status</th>
+                        <th width="8%">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -176,7 +176,7 @@
                                             @if(!$item->isFilesChecked()) disabled @endif>Seleksi Vendor</button>
                                         @endif
                                         @if(($item->bidding->status ?? 0) != 1)
-                                        <button type="button" class="btn btn-danger btn-sm mr-auto" onclick="removeitem({{$item->id}})">Hapus Item</button>
+                                        <button type="button" class="btn btn-danger btn-sm mr-auto mt-1" onclick="removeitem({{$item->id}})">Hapus Item</button>
                                         @endif
                                     @endif
                                 </div>

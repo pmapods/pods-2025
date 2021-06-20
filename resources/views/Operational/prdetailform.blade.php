@@ -85,16 +85,41 @@
                             {{$item->pr_detail->setup_date}}
                         </td>
                         <td rowspan="3" class="text-justify">
-                            <div class="d-flex flex-column">
+                            <div class="d-flex flex-column asset_field">
                                 <b>notes bidding harga</b>
                                 <span>{{$item->bidding->price_notes}}</span>
+                                <b>notes keterangan barang</b>
+                                <span>{{$item->bidding->ketersediaan_barang_notes}}</span>
                                 <b>Keterangan</b>
-                                <span>{{$item->pr_detail->notes}}</span>
-                                <b class="">Nomor Asset</b>
+                                <span>{{$item->pr_detail->notes ?? '-'}}</span>
                                 @if($ticket->status <6)
-                                <input type="text" class="form-control" name="item[{{$key}}][asset_number]" required>
+                                    @if ($ticket->budget_type==0)
+                                        <div class="form-group">
+                                            <label class="required_field">Nomor Asset</label>
+                                            <input type="text" class="form-control assetnumber_input" 
+                                            placeholder="Masukkan nomor asset" 
+                                            name="item[{{$key}}][asset_number]"
+                                            required>
+                                        </div>
+                                    @endif
+                                    @if ($ticket->budget_type==1)
+                                    <div class="form-check form-check-inline mt-3">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input assetnumber_check" type="checkbox"> Apakah Asset ?
+                                        </label>
+                                    </div>
+                                        <div class="form-group d-none">
+                                            <label class="required_field">Nomor Asset</label>
+                                            <input type="text" class="form-control assetnumber_input" 
+                                            placeholder="Masukkan nomor asset" 
+                                            name="item[{{$key}}][asset_number]">
+                                        </div>
+                                    @endif
                                 @else
-                                {{$item->pr_detail->asset_number}}
+                                @if ($item->pr_detail->asset_number)
+                                    <b>Nomor Asset</b>
+                                    <span>{{$item->pr_detail->asset_number}}</span>
+                                @endif
                                 @endif                
                             </div>
                         </td>
@@ -197,6 +222,19 @@
                 });
             }
         });
+        $('.assetnumber_check').change(function(){
+            if($(this).prop('checked')){
+                $(this).closest('.asset_field').find('.assetnumber_input').closest('.form-group').removeClass('d-none');
+                $(this).closest('.asset_field').find('.assetnumber_input').prop('required',true);
+            }else{
+                $(this).closest('.asset_field').find('.assetnumber_input').closest('.form-group').addClass('d-none');
+                $(this).closest('.asset_field').find('.assetnumber_input').prop('required',false);
+            }
+            $(this).closest('.asset_field').find('.assetnumber_input').val('');
+        });
+//         asset_field
+// assetnumber_check
+// assetnumber_input
     });
 
     function refreshItemTotal(this_el){

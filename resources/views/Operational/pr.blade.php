@@ -9,18 +9,27 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Purchase Requisition</h1>
+                <h1 class="m-0 text-dark">Purchase Requisition @if(request()->get('status') == -1)(History)@endif</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Operasional</li>
-                    <li class="breadcrumb-item active">Purchase Requisition</li>
+                    <li class="breadcrumb-item active">
+                        Purchase Requisition @if(request()->get('status') == -1)(History)@endif
+                    </li>
                 </ol>
             </div>
         </div>
     </div>
 </div>
 <div class="content-body px-4">
+    <div class="d-flex justify-content-end mb-2">
+        @if(request()->get('status') == -1)
+            <a href="/pr" class="btn btn-primary ml-2">PR dalam Proses</a>
+        @else
+            <a href="/pr?status=-1" class="btn btn-info ml-2">History</a>
+        @endif
+    </div>
     <div class="table-responsive">
         <table id="prDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>

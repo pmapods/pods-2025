@@ -25,6 +25,16 @@
         </div>
     </div>
 </div>
+@php
+    $isReadonly ='readonly';
+    if($ticket->status != 3){
+        if(($ticket->pr->current_authorization()->employee_id ?? -1) == Auth::user()->id){
+            $isReadonly ='';
+        }
+    }else{
+        $isReadonly ='';
+    }
+@endphp
 <form action="">
     @csrf
     <input type="hidden" name="updated_at" value="{{$ticket->updated_at}}">
@@ -46,7 +56,7 @@
                     <tr>
                         <td class="font-weight-bold">No</td>
                         <td class="font-weight-bold" width="15%">Nama Barang</td>
-                        <td class="font-weight-bold" width='10%'>Satuan</td>
+                        <td class="font-weight-bold required_field" width='10%'>Satuan</td>
                         <td class="font-weight-bold required_field" width="8%">Qty</td>
                         <td class="font-weight-bold required_field">Harga Satuan (Rp)</td>
                         <td class="font-weight-bold" width="10%">Total Harga</td>
@@ -64,15 +74,20 @@
                     @endif
                     <tr>
                         <td rowspan="3">{{$key+1}}</td>
-                        <td>
-                            {{$item->name}}
+                        <td>{{$item->name}}</td>
+                        <td rowspan="3">
+                            @if($ticket->budget_type==0)
+                                {{$item->budget_pricing->uom ?? ''}}
+                                <input type="hidden" name="item[{{$key}}][uom]" value="{{$item->budget_pricing->uom}}">
+                            @else
+                                <input type="text" class="form-control" name="item[{{$key}}][uom]" value="{{($item->pr_detail)?$item->pr_detail->uom:''}}" required {{$isReadonly}}>
+                            @endif
                         </td>
-                        <td rowspan="3">{{$item->budget_pricing->uom ?? '-'}}</td>
                         <td rowspan="3">
                             <input type="number" class="form-control nilai qty item{{$key}}" min="0" max="{{$item->count}}" 
                             value="{{($item->pr_detail)?$item->pr_detail->qty:$item->count}}"
                             onchange="refreshItemTotal(this)"
-                            name="item[{{$key}}][qty]">
+                            name="item[{{$key}}][qty]" {{$isReadonly}}>
                             <small class="text-secondary">max: {{$item->count}}</small>
                         </td>
                         @php
@@ -98,21 +113,30 @@
                             data-max="{{$item->bidding->selected_vendor()->end_harga}}" 
                             value="{{($item->pr_detail)?$item->pr_detail->price:$item->bidding->selected_vendor()->end_harga}}"
                             onchange="refreshItemTotal(this)"
-                            name="item[{{$key}}][price]">
+                            name="item[{{$key}}][price]"
+                            {{$isReadonly}}>
                             <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_harga}}</span></small>
                         </td>
                         <td rowspan="3" class="rupiah_text item{{$key}} total" data-total="{{$total}}">
                             {{$total}}
                         </td>
                         <td rowspan="3">
-                            <input class="form-control" type="date" name="item[{{$key}}][setup_date]" value="{{($item->pr_detail)?$item->pr_detail->setup_date : null}}">
+                            <input class="form-control" type="date" 
+                            name="item[{{$key}}][setup_date]" 
+                            value="{{($item->pr_detail)?$item->pr_detail->setup_date : null}}"
+                            {{$isReadonly}}>
                         </td>
                         <td rowspan="3" class="text-justify">
                             <div class="d-flex flex-column">
-                                <b>notes bidding harga</b>
+                                <label>notes bidding harga</label>
                                 <span>{{$item->bidding->price_notes}}</span>
-                                <b>Keterangan</b>
-                                <textarea class="form-control" rows="3" placeholder="keterangan tambahan" name="item[{{$key}}][notes]">{{($item->pr_detail)?$item->pr_detail->notes:''}}</textarea>
+                                <label>notes bidding barang</label>
+                                <span>{{$item->bidding->ketersediaan_barang_notes}}</span>
+                                <label class="optional_field">Keterangan</label>
+                                <textarea class="form-control" rows="3" 
+                                placeholder="keterangan tambahan" 
+                                name="item[{{$key}}][notes]"
+                                {{$isReadonly}}>{{($item->pr_detail)?$item->pr_detail->notes:''}}</textarea>
                             </div>
                         </td>
                     </tr>
@@ -123,7 +147,8 @@
                             data-max="{{$item->bidding->selected_vendor()->end_ongkir_price}}" 
                             value="{{($item->pr_detail)?$item->pr_detail->ongkir:$item->bidding->selected_vendor()->end_ongkir_price}}"
                             onchange="refreshItemTotal(this)"
-                            name="item[{{$key}}][ongkir]">
+                            name="item[{{$key}}][ongkir]"
+                            {{$isReadonly}}>
                             <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_ongkir_price}}</span></small>
                         </td>
                     </tr>
@@ -134,7 +159,8 @@
                             data-max="{{$item->bidding->selected_vendor()->end_pasang_price}}" 
                             value="{{($item->pr_detail)?$item->pr_detail->ongpas:$item->bidding->selected_vendor()->end_pasang_price}}"
                             onchange="refreshItemTotal(this)"
-                            name="item[{{$key}}][ongpas]">
+                            name="item[{{$key}}][ongpas]"
+                            {{$isReadonly}}>
                             <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_pasang_price}}</span></small>
                         </td>
 
@@ -214,6 +240,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-center mt-3">
+                <button type="submit" class="d-none">hidden_submit_button</button>
                 @if ($ticket->status == 3)
                     <button type="button" class="btn btn-primary" onclick="startAuthorization()">Mulai Otorisasi Form PR</button>
                 @else
@@ -298,12 +325,15 @@
         $('form').prop('action','/addnewpr');
         $('form').prop('method','POST');
         $('form input[name="_method"]').val('POST');
-        $('.rupiah').each(function(){
-            let index = $('.rupiah').index($(this));
-            let rupiahElement  = autoNumeric_field[index];
-            rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
-        });
-        $('form').submit();
+        // $('.rupiah').each(function(){
+        //     let index = $('.rupiah').index($(this));
+        //     let rupiahElement  = autoNumeric_field[index];
+        //     rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
+        // });
+        $('button[type="submit"]').trigger('click');
+        // console.log($('form').checkValidity());
+
+        // $('form').submit();
     }
 
     function approve(){

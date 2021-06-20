@@ -22,6 +22,7 @@ class PrMigration extends Migration
             // 1 proses otorisasi selesai
             // 2 nomor asset sudah di update / ready for po
             // -1 rejected
+            $table->integer('assetnumber_by')->nullable();
             $table->integer('rejected_by')->nullable();
             $table->string('reject_reason')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
@@ -40,7 +41,7 @@ class PrMigration extends Migration
             $table->string('uom');
             $table->date('setup_date')->nullable();
             $table->string('notes')->nullable();
-            $table->string('isAsset')->nullable();
+            $table->boolean('isAsset')->nullable();
 
             $table->boolean('has_ppn')->nullable();
             $table->boolean('ppn_percentage')->nullable();
