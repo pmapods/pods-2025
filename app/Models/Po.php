@@ -33,4 +33,28 @@ class Po extends Model
     public function po_upload_request(){
         return $this->hasOne(PoUploadRequest::class,'id','po_upload_request_id');
     }
+
+    public function status(){
+        switch ($this->status) {
+            case -1:
+                return 'Draft';
+                break;
+            case 0:
+                return 'PO diterbitkan';
+                break;
+            case 1:
+                return 'Internal sudah TTD';
+                break;
+            case 2:
+                return 'Supplier sudah TTD';
+                break;
+            case 3:
+                return 'Confirmed / Selesai';
+                break;
+            
+            default:
+                return 'status_undefined';
+                break;
+        }
+    }
 }

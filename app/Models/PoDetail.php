@@ -10,4 +10,8 @@ class PoDetail extends Model
     use SoftDeletes;
     protected $primaryKey = 'id';
     protected $table = 'po_detail';
+
+    public function ticket_item(){
+        return $this->belongsTo(TicketItem::class);
+    }
 }

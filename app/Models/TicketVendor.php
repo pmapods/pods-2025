@@ -40,15 +40,4 @@ class TicketVendor extends Model
                 break;
         }
     }
-
-    public function selected_items(){
-        // return seluruh prdetail yang terpilih by ticket vendor berkaitan
-        $selected_items = [];
-        foreach ($this->ticket->ticket_item as $item){
-            if($item->bidding->selected_vendor()->ticket_vendor->id == $this->id){
-                array_push($selected_items,$item->pr_detail);
-            }
-        }
-        return $selected_items;
-    }
 }

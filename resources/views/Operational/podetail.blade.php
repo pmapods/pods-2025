@@ -303,7 +303,6 @@
                             <a class="uploaded_file text-primary" style="cursor:pointer" onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'>Tampilkan dokumen Internal Signed</a>
                         @endif
                         @if($po->status == 1)
-                        {{$po->po_upload_request_id}}
                             <span>status : {{($po->po_upload_request->isOpened == false) ? 'Link Upload File belum dibuka' : 'Link Upload File sudah dibuka'}}</span>
                         @endif
                         @if($po->status == 2)

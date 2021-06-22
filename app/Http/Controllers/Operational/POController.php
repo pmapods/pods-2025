@@ -68,6 +68,7 @@ class POController extends Controller
                     $newDetail = new \stdClass(); 
                     $newDetail->item_name         = $prdetail->ticket_item->name;
                     $newDetail->item_description  = $prdetail->ticket_item->bidding->ketersediaan_barang_notes;
+                    $newDetail->ticket_item_id    = $prdetail->ticket_item->id;
                     $newDetail->qty               = $prdetail->qty;
                     $newDetail->uom               = $prdetail->uom;
                     $newDetail->item_price        = $prdetail->price;
@@ -82,6 +83,7 @@ class POController extends Controller
                         $newDetail = new \stdClass(); 
                         $newDetail->item_name         = 'Ongkir '.$prdetail->ticket_item->name;
                         $newDetail->item_description  = '';
+                        $newDetail->ticket_item_id    = $prdetail->ticket_item->id;
                         $newDetail->qty               = 1;
                         $newDetail->uom               = null;
                         $newDetail->item_price        = $prdetail->ongkir;
@@ -92,6 +94,7 @@ class POController extends Controller
                         $newDetail = new \stdClass(); 
                         $newDetail->item_name         = 'Ongpas '.$prdetail->ticket_item->name;
                         $newDetail->item_description  = '';
+                        $newDetail->ticket_item_id    = $prdetail->ticket_item->id;
                         $newDetail->qty               = 1;
                         $newDetail->uom               = null;
                         $newDetail->item_price        = $prdetail->ongpas;
@@ -99,43 +102,49 @@ class POController extends Controller
                     }
                 }
                 
-                // PPN ITEMS
-                $groupby_ppn_percentage = collect($ppn_items)->groupBy('ppn_percentage');
-                foreach($groupby_ppn_percentage as $lists){
+                if(count($ppn_items)>0){
+                    // PPN ITEMS
+                    $groupby_ppn_percentage = collect($ppn_items)->groupBy('ppn_percentage');
+                    foreach($groupby_ppn_percentage as $lists){
+                        $newPO = new Po;
+                        $newPO->ticket_id        = $ticket->id;
+                        $newPO->ticket_vendor_id = $item['ticket_vendor_id'];
+                        $newPO->has_ppn          = true;
+                        $newPO->ppn_percentage   = $lists[0]->ppn_percentage;
+                        $newPO->save();
+                        foreach($lists as $list){
+                            $podetail = new PoDetail;
+                            $podetail->po_id             = $newPO->id;
+                            $podetail->item_name         = $list->item_name;
+                            $podetail->item_description  = $list->item_description;
+                            $podetail->ticket_item_id    = $list->ticket_item_id;
+                            $podetail->qty               = $list->qty;
+                            $podetail->uom               = $list->uom;
+                            $podetail->item_price        = $list->item_price;
+                            $podetail->save();
+                        }
+                    }
+                }
+
+                // NON PPN ITEM
+                if(count($non_ppn_items)>0){
                     $newPO = new Po;
                     $newPO->ticket_id        = $ticket->id;
                     $newPO->ticket_vendor_id = $item['ticket_vendor_id'];
-                    $newPO->has_ppn          = true;
-                    $newPO->ppn_percentage   = $lists[0]->ppn_percentage;
+                    $newPO->has_ppn          = false;
                     $newPO->save();
-                    foreach($lists as $list){
+    
+                    foreach($non_ppn_items as $list){
                         $podetail = new PoDetail;
                         $podetail->po_id             = $newPO->id;
                         $podetail->item_name         = $list->item_name;
                         $podetail->item_description  = $list->item_description;
+                        $podetail->ticket_item_id    = $list->ticket_item_id;
                         $podetail->qty               = $list->qty;
                         $podetail->uom               = $list->uom;
                         $podetail->item_price        = $list->item_price;
                         $podetail->save();
                     }
-                }
-
-                // NON PPN ITEM
-                $newPO = new Po;
-                $newPO->ticket_id        = $ticket->id;
-                $newPO->ticket_vendor_id = $item['ticket_vendor_id'];
-                $newPO->has_ppn          = false;
-                $newPO->save();
-
-                foreach($non_ppn_items as $list){
-                    $podetail = new PoDetail;
-                    $podetail->po_id             = $newPO->id;
-                    $podetail->item_name         = $list->item_name;
-                    $podetail->item_description  = $list->item_description;
-                    $podetail->qty               = $list->qty;
-                    $podetail->uom               = $list->uom;
-                    $podetail->item_price        = $list->item_price;
-                    $podetail->save();
                 }
             }
             DB::commit();

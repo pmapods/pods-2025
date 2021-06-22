@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Employee;
+use App\Models\PoDetail;
+use App\Models\Po;
 
 class TicketItem extends Model
 {
@@ -60,7 +62,9 @@ class TicketItem extends Model
         return $this->hasOne(Bidding::class);
     }
 
-    public function selected_po(){
-        return $this->bidding->selected_vendor()->ticket_vendor->po;
+    public function po_list(){
+        $podetails = PoDetail::where('ticket_item_id',$this->id)->get();
+        $po_ids = $podetails->pluck('po_id')->unique();
+        return Po::whereIn('id',$po_ids)->get();
     }
 }

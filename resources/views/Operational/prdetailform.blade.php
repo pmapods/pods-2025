@@ -188,7 +188,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-center mt-3">
-                <button type="button" class="btn btn-info">Cetak</button>
+                {{-- <button type="button" class="btn btn-info">Cetak</button> --}}
                 @if($ticket->status <6)
                     <button type="submit" class="btn btn-primary ml-3">Submit Nomor Asset</button>
                 @endif

@@ -55,11 +55,13 @@ class PoMigration extends Migration
             $table->integer('po_id')->unsigned();
             $table->string('item_name');
             $table->string('item_description');
+            $table->integer('ticket_item_id')->unsigned();
             $table->string('uom');
             $table->integer('qty');
             $table->integer('item_price');
             $table->string('delivery_notes')->nullable();
             $table->foreign('po_id')->references('id')->on('po');
+            $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->SoftDeletes();
             $table->timestamps();
         });

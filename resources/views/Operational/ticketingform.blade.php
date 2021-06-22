@@ -10,6 +10,10 @@
     .tdbreak{
         /* word-break : break-all; */
     }
+    a {
+        color: #0069D9 !important;
+        cursor: pointer !important;
+    }
 </style>
 @endsection
 
@@ -88,9 +92,11 @@
                         <th width="10%">Harga Satuan</th>
                         <th>Jumlah</th>
                         <th width="10%">Total</th>
-                        <th width="20%">Attachment</th>
+                        <th>Attachment</th>
+                        @if ($ticket->status != 7 && $ticket->status != -1)
                         <th width="10%">Status</th>
                         <th>Action</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -133,52 +139,59 @@
                                     </table>
                                 @endif
                                 @if ($item->ticket_item_file_requirement->count() > 0)
-                                    <table class="table table-borderless table-sm">
+                                    <table class="table table-borderless table-sm small">
                                         <tbody>
                                             @foreach ($item->ticket_item_file_requirement as $requirement)
                                                 <tr>
                                                     <td width="40%">{{$requirement->file_completement->name}}</td>
-                                                    <td width="60%" class="tdbreak"><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                                                    <td width="60%" class="tdbreak">
+                                                        <a onclick='window.open("/storage/{{$requirement->path}}")'>tampilkan attachment</a></td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 @endif
                                 @if($ticket->status > 5)
-                                    @if(($item->selected_po()->status ?? -1)>2)
-                                        @php
-                                            $filename = pathinfo($item->selected_po()->external_signed_filepath)['basename'];
-                                        @endphp
-                                        <a class="uploaded_file" href="/storage/{{$item->selected_po()->external_signed_filepath}}" download="{{$filename}}">Tampilkan PO</a><br>
-                                    @endif
+                                <table class="table table-borderless table-sm small">
+                                    <thead>
+                                        <tr>
+                                            <th>file po</th>
+                                            <th>status po</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($item->po_list() as $po)
+                                        <tr>
+                                            <td>
+                                                <a class="uploaded_file" onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>PO {{$po->no_po_sap}}</a>
+                                            </td>
+                                            <td>
+                                                {{$po->status()}}
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                                     @if ($item->isFinished)
                                         @php
                                             $lpb_filename = pathinfo($item->lpb_filepath)['basename'];
                                             $invoice_filename = pathinfo($item->invoice_filepath)['basename'];
                                         @endphp
-                                        <a class="uploaded_file" href="/storage/{{$item->lpb_filepath}}" download="{{$lpb_filename}}">Tampilkan dokumen LPB</a><br>
-                                        <a class="uploaded_file" href="/storage/{{$item->invoice_filepath}}" download="{{$invoice_filename}}">Tampilkan dokumen Invoice</a><br>
+                                        <a class="uploaded_file" onclick='window.open("/storage/{{$item->lpb_filepath}}")'>Tampilkan dokumen LPB</a><br>
+                                        <a class="uploaded_file" onclick='window.open("/storage/{{$item->invoice_filepath}}")'>Tampilkan dokumen Invoice</a><br>
                                     @endif
                                 @endif
                             </td>
+                            @if ($ticket->status != 7 && $ticket->status != -1)
                             <td>
                                 @if($item->isCancelled)
                                 Item telah dihapus oleh <b>{{$item->cancelled_by_employee()->name}}</b><br>
                                 Alasan : {{$item->cancel_reason}}
                                 @endif
-                                @if($ticket->status > 5)
-                                    @if(($item->selected_po()->status ?? -1)>2)
-                                        @if($item->isFinished)
-                                            Selesai
-                                        @else
-                                            Po sudah terbit, Menunggu konfirmasi penerimaan barang
-                                        @endif
-                                    @endif
-                                @endif
                             </td>
                             <td>
                                 @if($ticket->status > 5)
-                                    @if(($item->selected_po()->status ?? -1)>2 && !$item->isFinished)
+                                    @if(!$item->isFinished)
                                         <form action="/uploadconfirmationfile" method="post" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="ticket_item_id" value="{{$item->id}}">
@@ -195,6 +208,7 @@
                                     @endif
                                 @endif
                             </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -237,7 +251,7 @@
                             @endphp
                             <tr>
                                 <td width="20%">{{$naming}}</td>
-                                <td width="30%" class="tdbreak"><a href="/storage/{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
+                                <td width="30%" class="tdbreak"><a onclick='window.open("/storage/{{$attachment->path}}")'>tampilkan attachment</a></td>
                                 @if($attachment->status == 0)
                                 <td colspan="2">
                                     <span class="text-warning">
@@ -274,7 +288,9 @@
                             @foreach($item->ticket_item_file_requirement as $requirement)
                             <tr>
                                 <td width="20%">{{$requirement->file_completement->name}}</td>
-                                <td width="30%" class="tdbreak"><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                                <td width="30%" class="tdbreak">
+                                    <a onclick='window.open("/storage/{{$requirement->path}}")'>tampilkan attachment</a>
+                                </td>
                                 @if($requirement->status == 0)
                                 <td colspan="2">
                                     <span class="text-warning">

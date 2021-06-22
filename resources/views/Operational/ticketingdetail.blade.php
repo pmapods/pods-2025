@@ -377,17 +377,6 @@
             </div>
         </div>
     </div>
-    {{-- <div class="col-md-12 mt-3">
-        <h5 class="font-weight-bold optional_field">Attachment Tambahan</h5>
-        <div id="attachment_list">
-
-        </div>
-        <div class="form-group mt-2">
-          <input type="file" class="form-control-file" id="attachment_file_input" accept="image/*,application/pdf,application/vnd.ms-excel">
-          <small class="text-danger">*pdf, xls, jpg, jpeg (MAX 5MB)</small>
-        </div>
-        <button type="button" class="btn btn-primary" onclick="addAttachment()">Tambah</button>
-    </div> --}}
     <div class="d-flex justify-content-center mt-3 bottom_action">
         <button type="button" class="btn btn-info" onclick="addRequest(0)" id="draftbutton">Simpan Sebagai Draft</button>
         <button type="button" class="btn btn-primary" onclick="addRequest(1)" id="startauthorizationbutton">Mulai Otorisasi</button>
