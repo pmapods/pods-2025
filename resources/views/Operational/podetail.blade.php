@@ -38,81 +38,96 @@
 </div>
 <div class="content-body">
     <div class="row">
-        @foreach ($ticket->ticket_vendor as $vendor)
-        @if (count($vendor->selected_items()) < 1)
-            @continue
-        @endif
+        @foreach ($ticket->po as $po)
         <div class="col-md-6 col-12 p-2">
-            <form action="/submitPO" method="post">
+            <form action="/submitPO" method="post" enctype="multipart/form-data">
+                @method('post')
                 @csrf
-                <input type="hidden" name="ticket_vendor_id" value="{{$vendor->id}}">
+                <input type="hidden" name="po_id" value="{{$po->id}}">
+                <input type="hidden" name="updated_at" value="{{$po->updated_at}}">
                 <div class="box d-flex flex-column p-3">
-                    <h4>{{$vendor->name}}</h4>
+                    <h4>{{$po->ticket_vendor->name}}</h4>
                     <div class="row">
                         <div class="col-6 d-flex flex-column">
                             <label class="required_field">Alamat Vendor</label>
-                            @if($vendor->po)
-                                <span>{{$vendor->po->vendor_address}}</span>
+                            @if($po->status != -1)
+                                <span>{{$po->vendor_address}}</span>
                             @else
-                                @if($vendor->type == 0)
-                                <textarea class="form-control" rows="3" placeholder="Masukkan Alamat vendor" name="vendor_address" required>{{$vendor->vendor()->address}}</textarea>
+                                @if($po->ticket_vendor->type == 0)
+                                <textarea class="form-control" rows="3" placeholder="Masukkan Alamat vendor" name="vendor_address" required>{{$po->ticket_vendor->vendor()->address}}</textarea>
                                 @endif
-                                @if($vendor->type == 1)
-                                <textarea class="form-control" rows="3" placeholder="Masukkan Alamat vendor" name="vendor_address" required>{{$vendor->ticket->ticket_item->first()->bidding->bidding_detail->where('ticket_vendor_id',$vendor->id)->first()->address}}</textarea>
+                                @if($po->ticket_vendor->type == 1)
+                                <textarea class="form-control" rows="3" placeholder="Masukkan Alamat vendor" name="vendor_address" required>{{$po->ticket->ticket_item->first()->bidding->bidding_detail->where('ticket_vendor_id',$po->ticket_vendor->id)->first()->address}}</textarea>
                                 @endif
                             @endif
                         </div>
                         <div class="col-6 d-flex flex-column text-right">
                             <label class="required_field">Alamat Kirim / Salespoint</label>
-                            @if($vendor->po)
-                                <span>{{$vendor->po->send_address}}</span>
+                            @if($po->status != -1)
+                                <span>{{$po->send_address}}</span>
                             @else
-                                <textarea class="form-control" rows="3" name="send_address" placeholder="Masukkan Alamat Kirim" required>{{$vendor->ticket->salespoint->address}}</textarea>
+                                <textarea class="form-control" rows="3" name="send_address" placeholder="Masukkan Alamat Kirim" required>{{$po->ticket->salespoint->address}}</textarea>
                             @endif
                         </div>
                     </div>
-                    <table class="table mt-2">
-                        <thead>
-                            <tr>
-                                <th>Nama Barang</th>
-                                <th>Jumlah</th>
-                                <th>Harga/Unit</th>
-                                <th class="text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $total = 0; @endphp
-                            @foreach ($vendor->selected_items() as $item)
+                    <div class="table-responsive mt-2">
+                        <table class="table" style>
+                            <thead>
                                 <tr>
-                                    <td>{{$item->ticket_item->name}}</td>
-                                    <td>{{$item->qty}} {{($item->ticket_item->budget_pricing->uom ?? '')}}</td>
-                                    <td class="rupiah_text">{{$item->price}}</td>
-                                    <td class="rupiah_text text-right">{{$item->qty*$item->price}}</td>
-                                    @php $total += $item->qty*$item->price; @endphp
+                                    <th width="25%">Nama Barang</th>
+                                    <th width="10%">Jumlah</th>
+                                    <th width="20%">Harga/Unit</th>
+                                    <th width="20%" class="text-right">Total</th>
+                                    <th width="25%">Tanggal Kirim</th>
                                 </tr>
-                                @if($item->ongkir > 0)
+                            </thead>
+                            <tbody>
+                                @php
+                                    $total = 0; 
+                                    $subtotal = 0; 
+                                    $ppn = 0; 
+                                @endphp
+                                @foreach ($po->po_detail as $key=>$po_detail)
+                                <input type="hidden" name="po_detail[{{$key}}][id]" value="{{$po_detail->id}}"/>
                                     <tr>
-                                        <td>Ongkir {{$item->ticket_item->name}}</td>
-                                        <td>1</td>
-                                        <td class="rupiah_text">{{$item->ongkir}}</td>
-                                        <td class="rupiah_text text-right">{{$item->ongkir}}</td>
-                                        @php $total += $item->ongkir; @endphp
+                                        <td>
+                                            {{$po_detail->item_name}}<br>
+                                            <span class="small text-secondary">{{$po_detail->item_description}}</span>
+                                        </td>
+                                        <td>{{$po_detail->qty}} {{$po_detail->uom}}</td>
+                                        <td class="rupiah_text">{{$po_detail->item_price}}</td>
+                                        <td class="rupiah_text text-right">{{$po_detail->qty*$po_detail->item_price}}</td>
+                                        <td>
+                                            @if ($po->status != -1)
+                                                {{$po_detail->delivery_notes}}
+                                            @else
+                                                <textarea class="form-control" name="po_detail[{{$key}}][delivery_notes]" placeholder="Notes (Optional)" rows="3"></textarea>
+                                            @endif
+                                        </td>
+                                        @php $subtotal += $po_detail->qty*$po_detail->item_price; @endphp
                                     </tr>
-                                @endif
-                                @if($item->ongpas > 0)
-                                    <tr>
-                                        <td>Ongpas {{$item->ticket_item->name}}</td>
-                                        <td>1</td>
-                                        <td class="rupiah_text">{{$item->ongpas}}</td>
-                                        <td class="rupiah_text text-right">{{$item->ongpas}}</td>
-                                        @php $total += $item->ongpas; @endphp
-                                    </tr>
-                                @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <table class="table table-borderless">
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <table class="table table-borderless table-sm">
                         <tbody>
+                            <tr>
+                                <td>Subtotal</td>
+                                <td class="rupiah_text text-right">{{$subtotal}}</td>
+                            </tr>
+                            @if($po->has_ppn)
+                            @php
+                                $ppn = $subtotal * $po->ppn_percentage / 100;
+                            @endphp
+                            <tr>
+                                <td>PPN ({{$po->ppn_percentage}}%)</td>
+                                <td class="rupiah_text text-right">{{$ppn}}</td>
+                            </tr>
+                            @endif
+                            @php
+                                $total = $subtotal + $ppn;
+                            @endphp
                             <tr>
                                 <td>Total</td>
                                 <td class="font-weight-bold rupiah_text text-right">{{$total}}</td>
@@ -123,14 +138,14 @@
                     <div class="row">
                         <div class="col-md-6 col-12">
                             <div class="form-group">
-                              <label class="required_field">Tanggal Buat PO SAP</label>
-                              <input type="date" class="form-control" name="date_po_sap" value="{{($vendor->po) ? $vendor->po->created_at->format('Y-m-d') : now()->format('Y-m-d')}}" readonly>
+                              <label class="required_field">Tanggal Buat</label>
+                              <input type="date" class="form-control" name="date_po_sap" value="{{($po->status != -1) ? $po->created_at->format('Y-m-d') : now()->format('Y-m-d')}}" readonly>
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
                             <label class="required_field">Pembayaran / Payment</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" placeholder="Hari" name="payment_days" min="0" value="{{($vendor->po) ? $vendor->po->payment_days : 0}}" @if($vendor->po) readonly @else required @endif>
+                                <input type="number" class="form-control" placeholder="Hari" name="payment_days" min="0" value="{{($po->status != -1) ? $po->payment_days : 0}}" @if($po->status != -1) readonly @else required @endif>
                                 <div class="input-group-append">
                                     <div class="input-group-text">Hari / Days</div>
                                 </div>
@@ -139,23 +154,28 @@
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                               <label class="required_field">No PR SAP</label>
-                              <input type="text" class="form-control" name="no_pr_sap" value="{{($vendor->po) ? $vendor->po->no_pr_sap : ''}}" @if($vendor->po) readonly @else required @endif>
+                              <input type="text" class="form-control" name="no_pr_sap" 
+                              value="{{($po->status != -1) ? $po->no_pr_sap : ''}}" 
+                              @if($po->status != -1) readonly @else required @endif>
                             </div>
                         </div>
                         <div class="col-md-6 col-12">
                             <div class="form-group">
                               <label class="required_field">No PO SAP</label>
-                              <input type="text" class="form-control" name="no_po_sap" value="{{($vendor->po) ? $vendor->po->no_po_sap : ''}}" @if($vendor->po) readonly @else required @endif>
+                              <input type="text" class="form-control" name="no_po_sap" 
+                              value="{{($po->status != -1) ? $po->no_po_sap : ''}}" 
+                              @if($po->status != -1) readonly @else required @endif>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                                 <label class="optional_field">Notes</label>
-                                <textarea class="form-control" placeholder="notes" name="notes" rows="3" @if($vendor->po) readonly @endif>{{($vendor->po) ? $vendor->po->notes : ''}}</textarea>
+                                <textarea class="form-control" placeholder="notes" name="notes" rows="3" 
+                                @if($po->status != -1) readonly @endif>{{($po->status != -1) ? $po->notes : ''}}</textarea>
                               </div>
                         </div>
                     </div>
-                    @if(!isset($vendor->po))
+                    @if($po->status == -1)
                     <div class="form-group">
                       <label class="required_field">Pilih Otorisasi</label>
                       <select class="form-control authorization_select2" name="authorization_id" required>
@@ -209,8 +229,12 @@
                                     <hr>
                                 </div>
                                 <div class="sign_space"></div>
-                                <input type="text" class="form-control form-control-sm text-center" name="supplier_pic_name" placeholder="Masukkan nama PIC" required>
-                                <input type="text" class="form-control form-control-sm text-center" name="supplier_pic_position" placeholder="Masukkan posisi PIC (optional)" value="Supplier PIC" required>
+                                <input type="text" class="form-control form-control-sm text-center" 
+                                    name="supplier_pic_name" 
+                                    placeholder="Masukkan nama PIC (optional)">
+                                <input type="text" class="form-control form-control-sm text-center" 
+                                    name="supplier_pic_position" 
+                                    placeholder="Masukkan posisi PIC (optional)">
                             </div>
                         </div>
                     </div>
@@ -219,7 +243,7 @@
                         @php
                             $names = ["Dibuat Oleh","Diperiksa dan disetujui oleh","Konfirmasi Supplier"];
                             $enames = ["Created by","Checked and Approval by","Supplier Confirmation"];
-                            $po_authorizations = $vendor->po->po_authorization;
+                            $po_authorizations = $po->po_authorization;
                             $authorizations =[];
                             foreach ($po_authorizations as $po_authorization){
                                 $auth = new \stdClass();
@@ -228,8 +252,8 @@
                                 array_push($authorizations,$auth);
                             }
                             $auth = new \stdClass();
-                            $auth->employee_name = $vendor->po->supplier_pic_name;
-                            $auth->employee_position = $vendor->po->supplier_pic_position;
+                            $auth->employee_name = $po->supplier_pic_name;
+                            $auth->employee_position = $po->supplier_pic_position;
                             array_push($authorizations,$auth);
                         @endphp
                         @foreach($authorizations as $key=>$authorization)
@@ -241,70 +265,93 @@
                                         <hr>
                                     </div>
                                     <div class="sign_space"></div>
-                                    <span class="align-self-center text-uppercase">{{$authorization->employee_name}}</span>
-                                    <span class="align-self-center">{{$authorization->employee_position}}</span>
+                                    <span class="align-self-center text-uppercase">
+                                        {{$authorization->employee_name}}
+                                        @if ($authorization->employee_name=="")
+                                        {!! "&nbsp;" !!}
+                                        @endif
+                                    </span>
+                                    <span class="align-self-center">
+                                        {{$authorization->employee_position}}
+                                        @if ($authorization->employee_position=="")
+                                        {!! "&nbsp;" !!}
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                     @endif
-                    @if(($vendor->po->status ?? -1) == 0)
+                    @if($po->status == 0)
                     <small class="text-danger">*harap melakukan upload dokumen yang sudah ditanda tangan basah oleh tim internal</small>
                     @endif
                     
-                    @if(($vendor->po->status ?? -1) == 1)
+                    @if($po->status == 1)
                     <small class="text-info">*Menunggu supplier untuk melakukan upload file po yang sudah dilengkapi tanda tangan basah dari supplier bersangkutan</small>
                     @endif
 
-                    @if(($vendor->po->status ?? -1) == 3)
+                    @if($po->status == 3)
                     <small class="text-info">*Menunggu penerimaan barang oleh salespoint/area bersangkutan</small>
                     @endif
                     
                     <div class="display_field my-1 d-flex flex-column">
-                        @if(($vendor->po->status ?? -1) > 0)
+                        @if($po->status == 0)
                             @php
-                                $filename = explode('/',$vendor->po->internal_signed_filepath);
+                                $filename = explode('/',$po->internal_signed_filepath);
                                 $filename = $filename[count($filename)-1];
                             @endphp
-                            <a class="uploaded_file" href="/storage{{$vendor->po->internal_signed_filepath}}" download="{{$filename}}">Tampilkan dokumen Internal Signed</a>
+                            <a class="uploaded_file text-primary" style="cursor:pointer" onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'>Tampilkan dokumen Internal Signed</a>
                         @endif
-                        @if(($vendor->po->status ?? -1) == 1)
-                            <span>status : {{($vendor->po->po_upload_request()->isOpened == false) ? 'Link Upload File belum dibuka' : 'Link Upload File sudah dibuka'}}</span>
+                        @if($po->status == 1)
+                        {{$po->po_upload_request_id}}
+                            <span>status : {{($po->po_upload_request->isOpened == false) ? 'Link Upload File belum dibuka' : 'Link Upload File sudah dibuka'}}</span>
                         @endif
-                        @if(($vendor->po->status ?? -1) > 1)
-                            @php
-                                $filename = pathinfo($vendor->po->po_upload_request()->filepath)['basename'];
-                            @endphp
-                            <a class="uploaded_file" href="/storage/{{$vendor->po->po_upload_request()->filepath}}" download="{{$filename}}">Tampilkan dokumen Supplier Signed</a>
+                        @if($po->status == 2)
+                            <a class="uploaded_file text-primary font-weight-bold" 
+                            style="cursor: pointer;" 
+                            onclick='window.open("/storage/{{$po->po_upload_request->filepath}}")'>
+                                -> Cek dokumen dengan tanda tangan supplier
+                            </a>
+                        @endif
+                        @if($po->status == 3)
+                            <a class="uploaded_file text-primary font-weight-bold" 
+                            style="cursor: pointer;" 
+                            onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
+                                Dokumen PO dengan Tanda Tangan Lengkap
+                            </a>
                         @endif
                     </div>
                     
                     @php
-                        $toEmail = ($vendor->vendor()->email ?? '');
+                        $toEmail = ($po->ticket_vendor->vendor()->email ?? '');
                     @endphp
-                    @if(($vendor->po->status ?? -1) == 0)
+                    @if($po->status == 0)
                         <div class="form-group">
                           <label class="required_field">Masukkan Email Tujuan</label>
-                          <input type="text" class="form-control" id="sendMail" value="{{$toEmail}}" placeholder="supplieremail@example.com">
+                          <input type="text" class="form-control" value="{{$toEmail}}" placeholder="supplieremail@example.com" name="email" required>
+                        </div>
+                        <div class="form-group">
+                          <label class="required_field">Pilih File PO yang sudah di Tanda tangan Internal</label>
+                          <input type="file" class="form-control-file validatefilesize" name="internal_signed_file" accept="image/*,application/pdf" required>
+                          <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
                         </div>
                     @endif
                     <div class="align-self-center mt-3 button_field">
-                        @if($vendor->po)
-                            @if($vendor->po->status == 0)
-                                <button type="button" class="btn btn-info" onclick="window.open('/printPO?code={{$vendor->po->no_po_sap}}')">Cetak PO</button>
-                                <button type="button" class="btn btn-primary select_file_button" onclick="selectfile()">Pilih Dokumen</button>
-                                <button type="button" class="btn btn-success upload_button" onclick="uploadfile({{$vendor->po->id}})" style="display:none">Upload File</button>
-                                <input class="inputFile" type="file" style="display:none;">
+                        @if($po->status != -1)
+                            @if($po->status == 0)
+                                <button type="button" class="btn btn-info" onclick="window.open('/printPO?code={{$po->no_po_sap}}')">Cetak PO</button>
+                                <button type="button" class="btn btn-success" onclick="uploadfile(this)">Upload File</button>
                             @endif
                             
-                            @if($vendor->po->status == 1)
-                                <button type="button" class="btn btn-warning" onclick="send_email({{$vendor->po->id}},'{{$vendor->name}}','{{$vendor->po->no_po_sap}}')">Kirim Ulang Email</button>
+                            @if($po->status == 1)
+                                <button type="button" class="btn btn-warning" onclick="send_email({{$po->id}},'{{$po->ticket_vendor->name}}','{{$po->no_po_sap}}')">Kirim Ulang Email</button>
                             @endif
 
-                            @if($vendor->po->status == 2)
-                                <button type="button" class="btn btn-danger" onclick="reject({{$vendor->po->id}},'{{$toEmail}}','{{$vendor->po->no_po_sap}}','{{$vendor->po->po_upload_request()->id}}')">Reject</button>
-                                <button type="button" class="btn btn-success" onclick="confirm({{$vendor->po->id}})">Confirm</button>
+                            @if($po->status == 2)
+                                <button type="button" class="btn btn-danger" onclick="reject({{$po->id}},'{{$toEmail}}','{{$po->no_po_sap}}','{{$po->po_upload_request->id}}')">Reject</button>
+                                <button type="button" class="btn btn-success" onclick="confirm({{$po->id}})">Confirm</button>
                             @endif
+                            <button type="submit" class="d-none"></button>
                         @else
                             <button type="submit" class="btn btn-primary">Terbitkan PO</button>
                         @endif
@@ -316,22 +363,22 @@
     </div>
 </div>
 
-<form action="/uploadinternalsignedfile" method="post" enctype="multipart/form" id="uploadsignedform">
+<form action="/uploadinternalsignedfile" method="post" enctype="multipart/form-data" id="uploadsignedform">
     @method('patch')
     @csrf
     <div class="input_field"></div>
 </form>
 
-<form action="/confirmposigned" method="post" enctype="multipart/form" id="confirmsignedform">
+<form action="/confirmposigned" method="post" enctype="multipart/form-data" id="confirmsignedform">
     @method('patch')
     @csrf
     <input type="hidden" name="po_id">
 </form>
 
-<div class="modal fade" id="sendEmailModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<div class="modal fade" id="sendEmailModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="/sendemail" method="post" enctype="multipart/form">
+            <form action="/sendemail" method="post" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="po_id">
                 <div class="modal-header table-info">
@@ -393,25 +440,6 @@
 @section('local-js')
 <script>
     $(document).ready(function() {
-        $(this).on('change','.inputFile', function(event){
-            var reader = new FileReader();
-            let value = $(this).val();
-            let display_field = $('.display_field');
-            if(validatefilesize(event)){
-                reader.onload = function(e) {
-                    display_field.empty();
-                    let name = value.split('\\').pop().toLowerCase();
-                    display_field.append('<a class="uploaded_file" href="'+e.target.result+'" download="'+name+'" data-filename="'+name+'">Tampilkan dokumen</a>');
-
-                    $(".select_file_button").text('Pilih Dokumen Ulang')
-                    $(".upload_button").show();
-                }
-                reader.readAsDataURL(event.target.files[0]);
-            }else{
-                $(this).val('');
-            }
-        });
-
         $('.authorization_select2').change(function() {
             let field = $(this).closest('.box').find('.authorization_select_field');
             let selected_option = $(this).find('option:selected').data('list');
@@ -426,29 +454,18 @@
                     field.find('.position'+(i+1)).text(selected_option[i].position);
                 }
             }
-        })
+        });
+        $('.validatefilesize').change(function(event){
+            if(!validatefilesize(event)){
+                $(this).val('');
+            }
+        });
     });
-    function selectfile(){
-        $('.inputFile').click();
-    }
-    function uploadfile(id){
-        let linkfile = $('.uploaded_file');
-        let email = $('#sendMail').val();
-        if(linkfile.length == 0){
-            alert('Silahkan pilih file dokument po yang sudah ditandatangan terlebih dahulu');
-        }else if(email == "" || !isEmail(email)){
-            alert('Email tidak valid');
-        }else{
-            let inputfield = $('#uploadsignedform').find('.input_field');
-            let file = linkfile.prop('href');
-            let filename = linkfile.data('filename');
-            inputfield.empty();
-            inputfield.append('<input type="hidden" name="po_id" value="' + id + '">');
-            inputfield.append('<input type="hidden" name="file" value="'+file+'">');
-            inputfield.append('<input type="hidden" name="filename" value="'+filename+'">');
-            inputfield.append('<input type="hidden" name="email" value="'+email+'">');
-            $('#uploadsignedform').submit();
-        }
+    function uploadfile(el){
+        $(el).closest('form').prop('action','/uploadinternalsignedfile');
+        $(el).closest('form').prop('method','POST');
+        $(el).closest('form').find('input[name="_method"]').val('PATCH');
+        $(el).closest('form').find('button[type="submit"]').trigger('click');
     }
     function confirm(po_id){
         $('#confirmsignedform').find('input[name="po_id"]').val(po_id);

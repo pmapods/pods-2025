@@ -126,7 +126,7 @@
                                                         }
                                                     @endphp
                                                     <td width="40%">{{$naming}}</td>
-                                                    <td width="60%" class="tdbreak"><a href="/storage{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
+                                                    <td width="60%" class="tdbreak"><a href="/storage/{{$attachment->path}}" download="{{$attachment->name}}">tampilkan attachment</a></td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -138,7 +138,7 @@
                                             @foreach ($item->ticket_item_file_requirement as $requirement)
                                                 <tr>
                                                     <td width="40%">{{$requirement->file_completement->name}}</td>
-                                                    <td width="60%" class="tdbreak"><a href="/storage{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                                                    <td width="60%" class="tdbreak"><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -473,7 +473,7 @@
         </div>
     </div>
 </div>
-<form action="/uploadticketfilerevision" method="post" enctype="multipart/form" id="uploadrevisionform">
+<form action="/uploadticketfilerevision" method="post" enctype="multipart/form-data" id="uploadrevisionform">
     @method('patch')
     @csrf
     <div class="input_field"></div>

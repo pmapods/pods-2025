@@ -8,9 +8,13 @@ use Auth;
 use App\Models\Ticket;
 use App\Models\TicketVendor;
 use App\Models\Po;
+use App\Models\PoDetail;
 use App\Models\POUploadRequest; 
 use App\Models\PoAuthorization;
 use App\Models\Authorization; 
+use App\Models\PrDetail; 
+use App\Models\EmployeeLocationAccess;
+use App\Models\Employee;
 use PDF;
 use DB;
 use Storage;
@@ -35,22 +39,131 @@ class POController extends Controller
             if($ticket ==  null){
                 throw new \Exception("Ticket tidak ditemukan");
             }
-            $authorization_list = Authorization::where('form_type',3)->get();
-            return view('Operational.podetail',compact('ticket','authorization_list'));
+            if($ticket->po->count() > 0){
+                $authorization_list = Authorization::where('form_type',3)->get();
+                return view('Operational.podetail',compact('ticket','authorization_list'));
+            }else{
+                return view('Operational.poitemselection',compact('ticket'));
+            }
         } catch (\Exception $ex) {
             return back()->with('error',$ex->getMessage());
+        }
+    }
+
+    public function setupPO(Request $request){
+        try {
+            DB::beginTransaction();
+            $ticket = Ticket::findOrFail($request->ticket_id);
+
+            // sudah di setup po sebelumnnya
+            if($ticket->po->count() > 0){
+                return back()->with('error','PO sudah di setup sebelumnya');
+            }
+            $group_item_by_selected_vendor = collect($request->item)->groupBy('ticket_vendor_id');
+            foreach($group_item_by_selected_vendor as $vendor_items){
+                $ppn_items = [];
+                $non_ppn_items = [];
+                foreach($vendor_items as $item){
+                    $prdetail = PrDetail::findOrFail($item['pr_detail_id']);
+                    $newDetail = new \stdClass(); 
+                    $newDetail->item_name         = $prdetail->ticket_item->name;
+                    $newDetail->item_description  = $prdetail->ticket_item->bidding->ketersediaan_barang_notes;
+                    $newDetail->qty               = $prdetail->qty;
+                    $newDetail->uom               = $prdetail->uom;
+                    $newDetail->item_price        = $prdetail->price;
+                    if($item['ppn_percentage'] == null){
+                        array_push($non_ppn_items,$newDetail);
+                    }else{
+                        $newDetail->ppn_percentage    = $item['ppn_percentage'];
+                        array_push($ppn_items, $newDetail);
+                    }
+                    
+                    if($prdetail->ongkir > 0){
+                        $newDetail = new \stdClass(); 
+                        $newDetail->item_name         = 'Ongkir '.$prdetail->ticket_item->name;
+                        $newDetail->item_description  = '';
+                        $newDetail->qty               = 1;
+                        $newDetail->uom               = null;
+                        $newDetail->item_price        = $prdetail->ongkir;
+                        array_push($non_ppn_items,$newDetail);
+                    }
+                    
+                    if($prdetail->ongpas > 0){
+                        $newDetail = new \stdClass(); 
+                        $newDetail->item_name         = 'Ongpas '.$prdetail->ticket_item->name;
+                        $newDetail->item_description  = '';
+                        $newDetail->qty               = 1;
+                        $newDetail->uom               = null;
+                        $newDetail->item_price        = $prdetail->ongpas;
+                        array_push($non_ppn_items,$newDetail);
+                    }
+                }
+                
+                // PPN ITEMS
+                $groupby_ppn_percentage = collect($ppn_items)->groupBy('ppn_percentage');
+                foreach($groupby_ppn_percentage as $lists){
+                    $newPO = new Po;
+                    $newPO->ticket_id        = $ticket->id;
+                    $newPO->ticket_vendor_id = $item['ticket_vendor_id'];
+                    $newPO->has_ppn          = true;
+                    $newPO->ppn_percentage   = $lists[0]->ppn_percentage;
+                    $newPO->save();
+                    foreach($lists as $list){
+                        $podetail = new PoDetail;
+                        $podetail->po_id             = $newPO->id;
+                        $podetail->item_name         = $list->item_name;
+                        $podetail->item_description  = $list->item_description;
+                        $podetail->qty               = $list->qty;
+                        $podetail->uom               = $list->uom;
+                        $podetail->item_price        = $list->item_price;
+                        $podetail->save();
+                    }
+                }
+
+                // NON PPN ITEM
+                $newPO = new Po;
+                $newPO->ticket_id        = $ticket->id;
+                $newPO->ticket_vendor_id = $item['ticket_vendor_id'];
+                $newPO->has_ppn          = false;
+                $newPO->save();
+
+                foreach($non_ppn_items as $list){
+                    $podetail = new PoDetail;
+                    $podetail->po_id             = $newPO->id;
+                    $podetail->item_name         = $list->item_name;
+                    $podetail->item_description  = $list->item_description;
+                    $podetail->qty               = $list->qty;
+                    $podetail->uom               = $list->uom;
+                    $podetail->item_price        = $list->item_price;
+                    $podetail->save();
+                }
+            }
+            DB::commit();
+            return back()->with('success', 'Berhasil melakukan setting PO. Silahkan melanjutkan penerbitan PO');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            return back()->with('error','Gagal melakukan setting PO. Silahkan hubungi developer atau coba kembali');
         }
     }
 
     public function submitPO(Request $request){
         try {
             DB::beginTransaction();
-            $ticket_vendor = TicketVendor::find($request->ticket_vendor_id);
-            if(isset($ticket_vendor->po)){
-                throw new \Exception("PO sudah di proses sebelumnya oleh ". $ticket_vendor->po->created_by_employee()->name. 'pada '. $ticket_vendor->po->created_at->translatedFormat('d F Y (H:i)'));
+            $po = Po::findOrFail($request->po_id);
+            if($po->status != -1){
+                throw new \Exception("PO sudah di proses sebelumnya oleh ". $po->created_by_employee()->name. 'pada '. $po->created_at->translatedFormat('d F Y (H:i)'));
             }else{
-                $po                         = new Po;
-                $po->ticket_vendor_id       = $request->ticket_vendor_id;
+                $existing_po = Po::where('no_po_sap',$request->no_po_sap)->first();
+                $existing_pr = Po::where('no_pr_sap',$request->no_pr_sap)->first();
+
+                if($existing_pr){
+                    throw new \Exception('Nomor PR SAP '.$request->no_pr_sap.'telah sebelumnya di input di kode pengadaan '.$existing_pr->ticket->code);
+                }
+
+                if($existing_po){
+                    throw new \Exception('Nomor PO SAP '.$request->no_po_sap.'telah sebelumnya di input di kode pengadaan '.$existing_po->ticket->code);
+                }
+
                 $po->vendor_address         = $request->vendor_address;
                 $po->send_address           = $request->send_address;
                 $po->payment_days           = $request->payment_days;
@@ -63,6 +176,15 @@ class POController extends Controller
                 $po->status                 = 0;
                 $po->save();
 
+                foreach($request->po_detail as $po_detail){
+                    $detail = PoDetail::findOrFail($po_detail['id']);
+                    $detail->delivery_notes = $po_detail['delivery_notes'];
+                    $detail->save();
+                }
+
+                foreach($po->po_authorization as $author){
+                    $author->delete();
+                }
                 $authorization = Authorization::findOrFail($request->authorization_id);
                 foreach($authorization->authorization_detail as $authorization){
                     $po_authorization                       = new PoAuthorization;
@@ -79,7 +201,7 @@ class POController extends Controller
             return back()->with('success','Berhasil Menerbitkan PO');
         } catch (\Exception $ex) {
             DB::rollback();
-            return back()->with('error','Gagal Menerbitkan PO');
+            return back()->with('error','Gagal Menerbitkan PO '.$ex->getMessage());
         }
     }
 
@@ -104,15 +226,14 @@ class POController extends Controller
             $po = Po::findOrFail($request->po_id);
             $ticket = $po->ticket_vendor->ticket;
             $salespointname = str_replace(' ','_',$ticket->salespoint->name);
-            $ext = pathinfo($request->filename, PATHINFO_EXTENSION);
+            $ext = pathinfo($request->file('internal_signed_file')->getClientOriginalName(), PATHINFO_EXTENSION);
             $name = $po->no_po_sap."_INTERNAL_SIGNED_".$salespointname.'.'.$ext;
             $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/po/'.$name;
-        
-            // base 64 data
-            $file = explode('base64,',$request->file)[1];
-            Storage::disk('public')->put($path, base64_decode($file));
+            $file = pathinfo($path);
+            $path = $request->file('internal_signed_file')->storeAs($file['dirname'],$file['basename'],'public');
             $po->internal_signed_filepath = $path;
             $po->status = 1;
+            $po->last_mail_send_to = $request->email;
             $po->save();
 
             $po_upload_request               = new POUploadRequest;
@@ -121,6 +242,9 @@ class POController extends Controller
             $po_upload_request->vendor_name  = $po->ticket_vendor->name;
             $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
             $po_upload_request->save();
+
+            $po->po_upload_request_id = $po_upload_request->id;
+            $po->save();
 
             $mail = $request->email;
             $data = array(
@@ -134,7 +258,8 @@ class POController extends Controller
             DB::commit();
             return back()->with('success','Berhasil Upload File Intenal Signed untuk PO '.$po->no_po_sap.' File sudah dikirimkan ke email supplier ('.$mail.') untuk ditandatangan');
         } catch (\Exception $ex) {
-            db::rollback();
+            DB::rollback();
+            dd($ex);
             return back()->with('error','Gagal Upload File '. $ex->getMessage()); 
         }
     }
@@ -145,15 +270,34 @@ class POController extends Controller
             $po = Po::findOrFail($request->po_id);
             $po->status = 3;
             
-            $po_upload_request = $po->po_upload_request();
+            $po_upload_request = $po->po_upload_request;
             $po_upload_request->status = 2;
             $po_upload_request->save();
             
             $po->external_signed_filepath = $po_upload_request->filepath;
             $po->save();
 
+            // send email back to supplier and salespoint
+            $access = EmployeeLocationAccess::where('salespoint_id',$po->ticket->salespoint_id)->get();
+            $employee_salespoint_ids = $access->pluck('employee_id')->unique();
+            $employee_emails = [];
+            foreach ($employee_salespoint_ids as $id){
+                $email = Employee::find($id)->email;
+                array_push($employee_emails,$email);
+            }
+            
+            $mail = $po->last_mail_send_to;
+            $data = array(
+                'po' => $po,
+                'mail' => $mail,
+                'external_signed_filepath' =>  $po_upload_request->filepath
+            );
+            Mail::to($mail)
+            ->cc($employee_emails)
+            ->send(new POMail($data, 'poconfirmed'));
             DB::commit();
-            return back()->with('success','Berhasil melakukan konfirmasi tanda tangan PO '.$po->no_po_sap.' dilanjutkan dengan penerimaan barang di salespoint/area bersangkutan');
+
+            return back()->with('success','Berhasil melakukan konfirmasi tanda tangan Supplier untuk PO '.$po->no_po_sap.' dilanjutkan dengan penerimaan barang di salespoint/area bersangkutan');
         } catch (\Exception $ex) {
             DB::rollback();
             return back()->with('error','Gagal Confirm Signed PO '.$ex->getMessage());
@@ -180,6 +324,9 @@ class POController extends Controller
             $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
             $po_upload_request->save();
 
+            $po->po_upload_request_id = $po_upload_request->id;
+            $po->save();
+
             $mail = $request->email;
             $data = array(
                 'reject_notes' => $request->reason,
@@ -202,7 +349,8 @@ class POController extends Controller
             DB::beginTransaction();
             $po = Po::findOrFail($request->po_id);
 
-            $old_po_upload_request = $po->po_upload_request();
+            $old_po_upload_request = $po->po_upload_request;
+
             if($old_po_upload_request){
                 $old_po_upload_request->isExpired = true;
                 $old_po_upload_request->save();
@@ -216,6 +364,9 @@ class POController extends Controller
             $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
             $po_upload_request->notes        = $po->id;
             $po_upload_request->save();
+
+            $po->po_upload_request_id = $po_upload_request->id;
+            $po->save();
             $mail = $request->email;
             $data = array(
                 'po' => $po,
@@ -238,6 +389,10 @@ class POController extends Controller
             $poupload = POUploadRequest::where('id',$po_upload_request_id)->where('isExpired',false)->first();
             if(!$poupload){
                 throw new \Exception('Document expired or not found');
+            }
+            $active_po = Po::find($poupload->po_id);
+            if($active_po->po_upload_request_id != $poupload->id){
+                throw new \Exception('Link invalid');
             }
             $poupload->isOpened = true;
             $poupload->save();

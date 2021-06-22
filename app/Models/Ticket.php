@@ -39,6 +39,10 @@ class Ticket extends Model
         return $this->hasOne(Pr::class);
     }
 
+    public function po(){
+        return $this->hasMany(Po::class);
+    }
+
     public function item_type(){
         switch ($this->item_type) {
             case '0':

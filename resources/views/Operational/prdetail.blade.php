@@ -325,15 +325,7 @@
         $('form').prop('action','/addnewpr');
         $('form').prop('method','POST');
         $('form input[name="_method"]').val('POST');
-        // $('.rupiah').each(function(){
-        //     let index = $('.rupiah').index($(this));
-        //     let rupiahElement  = autoNumeric_field[index];
-        //     rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
-        // });
         $('button[type="submit"]').trigger('click');
-        // console.log($('form').checkValidity());
-
-        // $('form').submit();
     }
 
     function approve(){

@@ -151,6 +151,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['menu_access:operational:8'])->group(function () {
         Route::get('/po',[POController::class, 'poView']);
         Route::get('/po/{ticket_code}',[POController::class, 'poDetailView']);
+        Route::post('/setupPO',[POController::class, 'setupPO']);
         Route::post('/submitPO',[POController::class, 'submitPO']);
         Route::get('/printPO',[POController::class, 'printPO']);
         Route::patch('/uploadinternalsignedfile',[POController::class, 'uploadInternalSignedFile']);

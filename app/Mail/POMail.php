@@ -39,5 +39,10 @@ class POMail extends Mailable
             return $this->subject('Penolakan Upload Tanda tangan Basah')
                         ->view('mail.posignedreject');
         }
+        if($this->type == 'poconfirmed'){
+            return $this->subject('Konfirmasi Upload Tanda Tangan Basah dari supplier')
+                        ->view('mail.poconfirmed')
+                        ->attachFromStorageDisk('public',$this->data['external_signed_filepath']);
+        }
     }
 }

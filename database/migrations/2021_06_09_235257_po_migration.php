@@ -16,28 +16,51 @@ class PoMigration extends Migration
     {
         Schema::create('po', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('ticket_id')->unsigned();
             $table->integer('ticket_vendor_id')->unsigned();
-            $table->string('vendor_address');
-            $table->string('send_address');
-            $table->integer('payment_days');
-            $table->string('no_pr_sap');
-            $table->string('no_po_sap');
-            $table->string('supplier_pic_name');
-            $table->string('supplier_pic_position');
+            $table->string('vendor_address')->default('unset');
+            $table->string('send_address')->default('unset');
+            $table->integer('payment_days')->default(-1);
+            $table->string('no_pr_sap')->default('unset');
+            $table->string('no_po_sap')->default('unset');
+            $table->string('supplier_pic_name')->default('unset');
+            $table->string('supplier_pic_position')->default('unset');
+
             $table->boolean('has_ppn')->default(false);
             $table->tinyInteger('ppn_percentage')->nullable();
+            
             $table->string('notes')->nullable();
-            $table->integer('created_by');
+            $table->integer('created_by')->default(-1);
             $table->string('internal_signed_filepath')->nullable();
             $table->string('external_signed_filepath')->nullable();
             $table->string('reject_notes')->nullable();
             $table->string('rejected_by')->nullable();
-            $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('status')->default(-1);
+
+            $table->string('last_mail_send_to')->nullable();
+            $table->string('po_upload_request_id')->nullable();
+            // -1 po draft
             // 0 po diterbitkan
             // 1 purchasing sudah upload file tanda tangan basah
             // 2 supplier sudah upload file tanda tangan basah / menunggu approval tanda tangan
             // 3 selesai / tanda tangan lengkap
+            $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->foreign('ticket_vendor_id')->references('id')->on('ticket_vendor');
+            $table->SoftDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('po_detail', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('po_id')->unsigned();
+            $table->string('item_name');
+            $table->string('item_description');
+            $table->string('uom');
+            $table->integer('qty');
+            $table->integer('item_price');
+            $table->string('delivery_notes')->nullable();
+            $table->foreign('po_id')->references('id')->on('po');
+            $table->SoftDeletes();
             $table->timestamps();
         });
 

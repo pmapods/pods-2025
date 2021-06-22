@@ -191,48 +191,47 @@
             </tr>
         </thead>
         <tbody>
-            @php $total = 0; @endphp
-            @foreach ($po->ticket_vendor->selected_items() as $key => $item)
+            @php
+                $total = 0; 
+                $subtotal = 0; 
+                $ppn = 0; 
+            @endphp
+            @foreach ($po->po_detail as $key => $po_detail)
                 <tr>
                     <td>&nbsp; {{$key+1}}</td>
-                    <td>{{$item->ticket_item->name}}</td>
-                    <td>{{$item->qty}} {{($item->ticket_item->budget_pricing->uom ?? '')}}</td>
-                    <td class="rupiah_text">{{setRupiah($item->price)}}</td>
-                    <td class="rupiah_text text-right">{{setRupiah($item->qty*$item->price)}}</td>
-                    <td class="text-center">-</td>
-                    @php $total += $item->qty*$item->price; @endphp
+                    <td>
+                        {{$po_detail->item_name}}<br>
+                        <small>{{$po_detail->item_description}}</small>
+                    </td>
+                    <td>{{$po_detail->qty}} {{($po_detail->uom ?? '')}}</td>
+                    <td class="rupiah_text">{{setRupiah($po_detail->item_price)}}</td>
+                    <td class="rupiah_text text-right">{{setRupiah($po_detail->qty*$po_detail->item_price)}}</td>
+                    <td style="padding-left: 1em">
+                        {{$po_detail->delivery_notes}}
+                    </td>
+                    @php $subtotal += $po_detail->qty*$po_detail->item_price; @endphp
                 </tr>
-                @if($item->ongkir > 0)
-                    <tr>
-                        <td></td>
-                        <td>Ongkos kirim {{$item->ticket_item->name}}</td>
-                        <td>1</td>
-                        <td class="rupiah_text">{{setRupiah($item->ongkir)}}</td>
-                        <td class="rupiah_text text-right">{{setRupiah($item->ongkir)}}</td>
-                        <td class="text-center">-</td>
-                        @php $total += $item->ongkir; @endphp
-                    </tr>
-                @endif
-                @if($item->ongpas > 0)
-                    <tr>
-                        <td></td>
-                        <td>Ongkos Pasang {{$item->ticket_item->name}}</td>
-                        <td>1</td>
-                        <td class="rupiah_text">{{setRupiah($item->ongpas)}}</td>
-                        <td class="rupiah_text text-right">{{setRupiah($item->ongpas)}}</td>
-                        <td class="text-center">-</td>
-                        @php $total += $item->ongpas; @endphp
-                    </tr>
-                @endif
             @endforeach
         </tbody>
         <tfoot>
+            @php
+                $ppn = ($po->ppn_percentage ?? 0)*$subtotal/100;
+                $total = $ppn + $subtotal;
+            @endphp
             <tr>
                 <td colspan="3"></td>
                 <td>Subtotal</td>
-                <td class="text-right">{{setRupiah($total)}}</td>
+                <td class="text-right">{{setRupiah($subtotal)}}</td>
                 <td></td>
             </tr>
+            @if ($ppn > 0)
+            <tr>
+                <td colspan="3"></td>
+                <td>PPN ({{$po->ppn_percentage}}%)</td>
+                <td class="text-right">{{setRupiah($ppn)}}</td>
+                <td></td>
+            </tr>
+            @endif
             <tr>
                 <td colspan="3"></td>
                 <td style="border-bottom: 1px solid #000"><b>Jumlah Total</b></td>
@@ -280,8 +279,18 @@
                         <i>{{$enames[$key]}}</i>
                     </div>
                     <div class="sign_space"></div>
-                    <div class="text-center text-uppercase small">{{$authorization->employee_name}}</div>
-                    <div class="text-center">{{$authorization->employee_position}}</div>
+                    <div class="text-center text-uppercase small">
+                        {{$authorization->employee_name}}
+                        @if ($authorization->employee_name=="")
+                        {!! "&nbsp;" !!}
+                        @endif
+                    </div>
+                    <div class="text-center">
+                        {{$authorization->employee_position}}
+                        @if ($authorization->employee_position=="")
+                        {!! "&nbsp;" !!}
+                        @endif
+                    </div>
                 </div>
             </div>
         @endforeach

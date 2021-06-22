@@ -10,6 +10,14 @@ class Po extends Model
     protected $table = 'po';
     protected $primaryKey = 'id';
 
+    public function ticket(){
+        return $this->belongsTo(Ticket::class);
+    }
+
+    public function po_detail(){
+        return $this->hasMany(PoDetail::class);
+    }
+
     public function ticket_vendor(){
         return $this->belongsTo(TicketVendor::class);
     }
@@ -23,6 +31,6 @@ class Po extends Model
     }
 
     public function po_upload_request(){
-        return POUploadRequest::where('status','!=',-1)->where('isExpired',false)->first();
+        return $this->hasOne(PoUploadRequest::class,'id','po_upload_request_id');
     }
 }
