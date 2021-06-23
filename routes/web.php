@@ -22,6 +22,9 @@ use App\Http\Controllers\Operational\BiddingController;
 use App\Http\Controllers\Operational\PRController;
 use App\Http\Controllers\Operational\POController;
 
+// Monitoring
+use App\Http\Controllers\Monitoring\MonitoringController;
+
 Route::get('/', function () {
     return redirect('login');
 });
@@ -159,7 +162,10 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/confirmposigned',[POController::class, 'confirmPosigned']);
         Route::post('/sendemail',[POController::class, 'sendEmail']);
     });
+
+    // MONITORING
+    Route::get('/ticketmonitoring',[MonitoringController::class, 'ticketMonitoringView']);
 });
-// Purchase Order
-Route::get('/signpo/{po_upload_request_id}',[POController::class,'poUploadRequestView']);
-Route::post('/uploadsigneddocument',[POController::class,'poUploadRequest']);
+    // Purchase Order
+    Route::get('/signpo/{po_upload_request_id}',[POController::class,'poUploadRequestView']);
+    Route::post('/uploadsigneddocument',[POController::class,'poUploadRequest']);
