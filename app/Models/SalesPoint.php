@@ -45,7 +45,7 @@ class SalesPoint extends Model
                 return 'JABAR 2';
                 break;
             case 9:
-                return 'R13 JABAR 3';
+                return 'JABAR 3';
                 break;
             case 10:
                 return 'JATENG 1';

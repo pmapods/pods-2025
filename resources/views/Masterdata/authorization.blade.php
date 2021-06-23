@@ -64,7 +64,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="addAuthorModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+<div class="modal fade" id="addAuthorModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -178,7 +178,8 @@
         </div>
     </form>
 </div>
-<div class="modal fade" id="detailAuthorModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+
+<div class="modal fade" id="detailAuthorModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">

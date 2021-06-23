@@ -149,7 +149,7 @@
                         <div class="col-12">
                             <div class="form-group">
                               <label class="required_field">Nama Karyawan</label>
-                              <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan" readonly>
+                              <input type="text" class="form-control" name="name" placeholder="Masukkan nama karyawan">
                             </div>
                         </div>
                         <div class="col-12">
@@ -161,7 +161,7 @@
                         <div class="col-12">
                             <div class="form-group">
                               <label class="required_field">Email Karyawan</label>
-                              <input type="email" class="form-control" name="email" placeholder="Masukkan nama karyawan" readonly>
+                              <input type="email" class="form-control" name="email" placeholder="Masukkan nama karyawan">
                             </div>
                         </div>
                         <div class="col-12">
@@ -174,7 +174,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    {{-- <button type="submit" class="btn btn-danger" onclick="nonactive()">Delete</button> --}}
+                    <button type="submit" class="btn btn-danger delete-button" onclick="deleteemployee()">Hapus</button>
                     <button type="submit" class="btn btn-danger nonactive-button" onclick="nonactive()">Non Aktifkan</button>
                     <button type="submit" class="btn btn-success active-button" onclick="active()">Aktifkan</button>
                     <button type="submit" class="btn btn-info">Update Karyawan</button>
@@ -190,6 +190,12 @@
         <form action="/activeemployee" method="post" id="activeform">
             @csrf
             @method('patch')
+            <input type="hidden" name="updated_at">
+            <input type="hidden" name="employee_id">
+        </form>
+        <form action="/deleteemployee" method="post" id="deleteform">
+            @csrf
+            @method('delete')
             <input type="hidden" name="updated_at">
             <input type="hidden" name="employee_id">
         </form>
@@ -265,7 +271,6 @@
         $('#employeeDT tbody').on('click', 'tr', function () {
             let modal = $("#editEmployeeModal");
             let data = $(this).data('employee');
-            console.log(data);
             modal.find('input[name="employee_id"]').val(data['id']);
             modal.find('input[name="updated_at"]').val(data['updated_at']);
             modal.find('input[name="name"]').val(data['name']);
@@ -290,10 +295,8 @@
         let message = $('#confpassworderror')
         if(password != confirmpassword){
             message.removeClass('d-none');
-            console.log('not same')
         }else{
             message.addClass('d-none');
-            console.log('same')
         }
     }
     
@@ -305,6 +308,11 @@
     function active(){
         if (confirm('Karyawan akan diaktifkan kembali. Lanjutkan?')) {
             $('#activeform').submit();
+        }
+    }
+    function deleteemployee(){
+        if (confirm('Karyawan yang dihapus tidak dapat dikembalikan. Lanjutkan?')) {
+            $('#deleteform').submit();
         }
     }
 </script>

@@ -27,7 +27,7 @@ class LocationMigration extends Migration
             //  6 DKI
             //  7 JABAR 1
             //  8 JABAR 2
-            //  9 R13 JABAR 3
+            //  9 JABAR 3
             //  10 JATENG 1
             //  11 JATENG 2
             //  12 JATIM 1

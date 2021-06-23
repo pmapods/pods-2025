@@ -212,7 +212,7 @@ class BiddingController extends Controller
             return redirect('/bidding/'.$ticket->code)->with('success','Berhasil membuat form bidding. Harap Menunggu proses otorisasi');
         } catch (Exception $ex) {
             DB::rollback();
-            return redirect('/bidding/'.$ticket->code)->with('error','Gagal membuat form bidding. Silahkan coba kembali atau hubungi admin');
+            return redirect('/bidding/'.$ticket->code)->with('error','Gagal membuat form bidding. Silahkan coba kembali atau hubungi developer');
         }
 
     }
@@ -267,7 +267,7 @@ class BiddingController extends Controller
             }
         } catch (\Exception $ex) {
             DB::rollback();
-            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Reject form bidding gagal, silahkan coba kembali atau hubungi admin');
+            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Reject form bidding gagal, silahkan coba kembali atau hubungi developer');
         }
     }
 

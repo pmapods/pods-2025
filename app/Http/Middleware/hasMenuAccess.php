@@ -24,7 +24,7 @@ class hasMenuAccess
             if(($emp_access & $menu_access) != 0){
                 return $next($request);
             }else{
-                return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi admin untuk mendapatkan akses');
+                return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi developer untuk mendapatkan akses');
             }
         }
         
@@ -33,7 +33,7 @@ class hasMenuAccess
             if(($emp_access & $menu_access) != 0){
                 return $next($request);
             }else{
-                return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi admin untuk mendapatkan akses');
+                return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi developer untuk mendapatkan akses');
             }
         }
     }

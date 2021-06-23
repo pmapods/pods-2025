@@ -38,7 +38,7 @@ class EmployeeController extends Controller
             $position->save();
             return back()->with('success','Berhasil menguban jabatan '.$old_name.' menjadi '.$position->name);
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal mengubah jabatan, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal mengubah jabatan, silahkan coba kembali atau hubungi developer "'.$ex->getMessage().'"');
         }
     }
     public function deleteEmployeePosition(Request $request){
@@ -47,7 +47,7 @@ class EmployeeController extends Controller
             $position->delete();
             return back()->with('success','Berhasil menghapus jabatan '.$position->name);
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal menghapus jabatan, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal menghapus jabatan, silahkan coba kembali atau hubungi developer "'.$ex->getMessage().'"');
         }
     }
 
@@ -61,6 +61,16 @@ class EmployeeController extends Controller
         try {
             $count_employee = Employee::withTrashed()->count() + 1;
             $code = "EMP-".str_repeat("0", 4-strlen($count_employee)).$count_employee;
+
+            $checkEmployee = Employee::where('username',$request->username)->first();
+            if($checkEmployee){
+                return back()->with('error','Username sudah terdaftar sebelum untuk karyawan dengan nama '.$checkEmployee->name);
+            }
+            $checkEmployee = Employee::where('email',$request->email)->first();
+            if($checkEmployee){
+                return back()->with('error','Email sudah terdaftar sebelum untuk karyawan dengan nama '.$checkEmployee->name);
+            }
+
             $newEmployee                         = new Employee;
             $newEmployee->code                   = $code;
             $newEmployee->name                   = $request->name;
@@ -71,20 +81,25 @@ class EmployeeController extends Controller
             $newEmployee->save();
             return back()->with('success','Berhasil menambahkan karyawan '.$request->name);
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal menambahkan karyawan, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal menambahkan karyawan, silahkan coba kembali atau hubungi developer "'.$ex->getMessage().'"');
         }
         
     }
 
     public function updateEmployee(Request $request){
         try {
-            $employee                       = Employee::findOrFail($request->employee_id);
+            $employee             = Employee::findOrFail($request->employee_id);
+            $check_is_email_exist = Employee::where('email',$request->email)->first();
+            if($check_is_email_exist && ($employee->email != $request->email)){
+                return back()->with('error','Email '.$request->email.' telah terdaftar sebelumnya dengan nama pengguna '.$check_is_email_exist->name);
+            }
             $employee->phone                = $request->phone;
             $employee->name                 = $request->name;
+            $employee->email                = $request->email;
             $employee->save();
             return back()->with('success','Berhasil memperbarui data karyawan '.$request->name);
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal memperbarui data karyawan, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal memperbarui data karyawan, silahkan coba kembali atau hubungi developer "'.$ex->getMessage().'"');
         }
     }
 
@@ -98,7 +113,7 @@ class EmployeeController extends Controller
             $employee->save();
             return back()->with('success','berhasil diaktifkan');
         }catch (\Exception $ex){
-            return back()->with('error','Gagal mengaktifkan karyawan, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal mengaktifkan karyawan, silahkan coba kembali atau hubungi developer "'.$ex->getMessage().'"');
         }
     }
 
@@ -112,7 +127,21 @@ class EmployeeController extends Controller
             $employee->save();
             return back()->with('success','berhasil di non aktifkan');
         }catch (\Exception $ex){
-            return back()->with('error','Gagal mengaktifkan karyawan, silahkan coba kembali atau hubungi admin "'.$ex->getMessage().'"');
+            return back()->with('error','Gagal mengaktifkan karyawan, silahkan coba kembali atau hubungi developer "'.$ex->getMessage().'"');
         }
     }
+
+    public function deleteEmployee(Request $request){
+        try{
+            $employee           = Employee::findOrFail($request->employee_id);
+            if(new Carbon($employee->updated_at) != new Carbon($request->updated_at)){
+                return back()->with('error','Employee sudah di update sebelumnya. Silahkan coba kembali.');
+            }
+            $employee->delete();
+            return back()->with('success','Karyawan berhasil dihapus');
+        }catch (\Exception $ex){
+            return back()->with('error','Gagal menghapus karyawan, silahkan coba kembali atau hubungi developer "'.$ex->getMessage().'"');
+        }
+    }
+
 }

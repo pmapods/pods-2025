@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employee',[EmployeeController::class, 'employeeView']);
         Route::post('/addEmployee',[EmployeeController::class, 'addEmployee']);
         Route::patch('/updateEmployee',[EmployeeController::class, 'updateEmployee']);
-        Route::delete('/deleteEmployee',[EmployeeController::class, 'deleteEmployee']);
+        Route::delete('/deleteemployee',[EmployeeController::class, 'deleteEmployee']);
         Route::patch('/nonactiveemployee',[EmployeeController::class, 'nonactiveEmployee']);
         Route::patch('/activeemployee',[EmployeeController::class, 'activeEmployee']);
     });

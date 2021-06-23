@@ -116,7 +116,7 @@
                                     <option value="6">DKI</option>
                                     <option value="7">JABAR 1</option>
                                     <option value="8">JABAR 2</option>
-                                    <option value="9">R13 JABAR 3</option>
+                                    <option value="9">JABAR 3</option>
                                     <option value="10">JATENG 1</option>
                                     <option value="11">JATENG 2</option>
                                     <option value="12">JATIM 1</option>
@@ -219,12 +219,12 @@
                                     <option value="1">SUMATERA 1</option>
                                     <option value="2">SUMATERA 2</option>
                                     <option value="3">SUMATERA 3</option>
-                                    <option value="4">SUMATERA 4</option>
+                                    {{-- <option value="4">SUMATERA 4</option> --}}
                                     <option value="5">BANTEN</option>
                                     <option value="6">DKI</option>
                                     <option value="7">JABAR 1</option>
                                     <option value="8">JABAR 2</option>
-                                    <option value="9">R13 JABAR 3</option>
+                                    <option value="9">JABAR 3</option>
                                     <option value="10">JATENG 1</option>
                                     <option value="11">JATENG 2</option>
                                     <option value="12">JATIM 1</option>

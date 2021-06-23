@@ -101,7 +101,9 @@ class AuthorizationController extends Controller
             $single_data = (object)[];
             $single_data->id = $selected_employee->id;
             $single_data->name = $selected_employee->name;
-            array_push($data,$single_data);
+            if($selected_employee->status == 0){
+                array_push($data,$single_data);
+            }
         }
         return response()->json([
             'salespoint_id' => $salespoint_id,

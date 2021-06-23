@@ -44,7 +44,7 @@ class LoginController extends Controller
                 return back()->with('error','Password salah');
             }
         }else{
-            return back()->with('error', 'Username atau email tidak terdaftar, silahkan coba kembali atau hubungi admin');
+            return back()->with('error', 'Username atau email tidak terdaftar, silahkan coba kembali atau hubungi developer');
         }
     }
 
