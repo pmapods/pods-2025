@@ -15,6 +15,9 @@
         .sign_space {
             height: 100px !important
         }
+        .textarea_text {
+            white-space: pre-wrap;
+        }
     </style>
 @endsection
 
@@ -94,12 +97,12 @@
                                             {{$po_detail->item_name}}<br>
                                             <span class="small text-secondary">{{$po_detail->item_description}}</span>
                                         </td>
-                                        <td>{{$po_detail->qty}} {{$po_detail->uom}}</td>
+                                        <td>{{$po_detail->qty}} AU</td>
                                         <td class="rupiah_text">{{$po_detail->item_price}}</td>
                                         <td class="rupiah_text text-right">{{$po_detail->qty*$po_detail->item_price}}</td>
                                         <td>
                                             @if ($po->status != -1)
-                                                {{$po_detail->delivery_notes}}
+                                                {!! nl2br(e($po_detail->delivery_notes)) !!}
                                             @else
                                                 <textarea class="form-control" name="po_detail[{{$key}}][delivery_notes]" placeholder="Notes (Optional)" rows="3"></textarea>
                                             @endif

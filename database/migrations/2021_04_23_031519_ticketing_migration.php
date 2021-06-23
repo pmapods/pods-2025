@@ -22,7 +22,7 @@ class TicketingMigration extends Migration
             $table->integer('authorization_id')->unsigned()->nullable();
             $table->tinyInteger('item_type')->nullable();
             // 0 barang
-            // 1 Jasa
+            // 1 Jasa'
             $table->tinyInteger('request_type')->nullable();
             // 0 Baru
             // 1 Replace Existing

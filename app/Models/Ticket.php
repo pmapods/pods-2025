@@ -90,19 +90,19 @@ class Ticket extends Model
     public function status(){
         switch ($this->status) {
             case '0':
-                return 'Draft';
+                return 'Draft Pengaadaan';
                 break;
                 
             case '1':
-                return 'Menunggu Otorisasi';
+                return 'Menunggu Otorisasi Pengadaan Oleh Area';
                 break;
 
             case '2':
-                return 'Otorisasi Selesai / Menunggu Proses Bidding';
+                return 'Otorisasi Pengadaan Oleh Area Selesai / Menunggu Proses Bidding';
                 break;
                 
             case '3':
-                return 'Bidding Selesai / Menunggu Proses PR';
+                return 'Proses Bidding Selesai / Menunggu Proses PR';
                 break;
 
             case '4':
@@ -110,7 +110,7 @@ class Ticket extends Model
                 break;
 
             case '5':
-                return 'PR selesai otorisasi, Menunggu update kelengkapan nomor asset';
+                return 'PR selesai otorisasi, Menunggu update kelengkapan Nomor Asset';
                 break;
 
             case '6':

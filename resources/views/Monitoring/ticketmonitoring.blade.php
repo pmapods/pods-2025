@@ -51,12 +51,33 @@
                         <td>{{$ticket->code}}</td>
                         <td>{{$ticket->salespoint->name}}</td>
                         <td>{{$ticket->created_at->translatedFormat('d F Y')}}</td>
-                        <td>{{$created->diffForHumans(now())}}</td>
+                        <td>{{$ticket->created_at->diffForHumans(now())}}</td>
                         <td>{{$ticket->status()}}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="monitormodal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Monitoring (<span class="code"></span>)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                Body
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -66,7 +87,9 @@
     $(document).ready(function(){
         var table = $('#monitoringDT').DataTable(datatable_settings);
         $('#monitoringDT tbody').on('click', 'tr', function () {
-            
+            let code = $(this).find('td:eq(1)').text().trim();
+            $('#monitormodal').find('.code').text(code);
+            $('#monitormodal').modal('show');
         });
     });
 </script>

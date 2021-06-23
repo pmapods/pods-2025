@@ -23,8 +23,8 @@ class PoMigration extends Migration
             $table->integer('payment_days')->default(-1);
             $table->string('no_pr_sap')->default('unset');
             $table->string('no_po_sap')->default('unset');
-            $table->string('supplier_pic_name')->default('unset');
-            $table->string('supplier_pic_position')->default('unset');
+            $table->string('supplier_pic_name')->default('unset')->nullable();
+            $table->string('supplier_pic_position')->default('unset')->nullable();
 
             $table->boolean('has_ppn')->default(false);
             $table->tinyInteger('ppn_percentage')->nullable();
@@ -56,7 +56,7 @@ class PoMigration extends Migration
             $table->string('item_name');
             $table->string('item_description');
             $table->integer('ticket_item_id')->unsigned();
-            $table->string('uom');
+            $table->string('uom')->default('AU');
             $table->integer('qty');
             $table->integer('item_price');
             $table->string('delivery_notes')->nullable();

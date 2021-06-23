@@ -70,7 +70,6 @@ class POController extends Controller
                     $newDetail->item_description  = $prdetail->ticket_item->bidding->ketersediaan_barang_notes;
                     $newDetail->ticket_item_id    = $prdetail->ticket_item->id;
                     $newDetail->qty               = $prdetail->qty;
-                    $newDetail->uom               = $prdetail->uom;
                     $newDetail->item_price        = $prdetail->price;
                     if($item['ppn_percentage'] == null){
                         array_push($non_ppn_items,$newDetail);
@@ -85,7 +84,6 @@ class POController extends Controller
                         $newDetail->item_description  = '';
                         $newDetail->ticket_item_id    = $prdetail->ticket_item->id;
                         $newDetail->qty               = 1;
-                        $newDetail->uom               = null;
                         $newDetail->item_price        = $prdetail->ongkir;
                         array_push($non_ppn_items,$newDetail);
                     }
@@ -96,7 +94,6 @@ class POController extends Controller
                         $newDetail->item_description  = '';
                         $newDetail->ticket_item_id    = $prdetail->ticket_item->id;
                         $newDetail->qty               = 1;
-                        $newDetail->uom               = null;
                         $newDetail->item_price        = $prdetail->ongpas;
                         array_push($non_ppn_items,$newDetail);
                     }
@@ -119,7 +116,6 @@ class POController extends Controller
                             $podetail->item_description  = $list->item_description;
                             $podetail->ticket_item_id    = $list->ticket_item_id;
                             $podetail->qty               = $list->qty;
-                            $podetail->uom               = $list->uom;
                             $podetail->item_price        = $list->item_price;
                             $podetail->save();
                         }
@@ -141,7 +137,6 @@ class POController extends Controller
                         $podetail->item_description  = $list->item_description;
                         $podetail->ticket_item_id    = $list->ticket_item_id;
                         $podetail->qty               = $list->qty;
-                        $podetail->uom               = $list->uom;
                         $podetail->item_price        = $list->item_price;
                         $podetail->save();
                     }
@@ -150,6 +145,7 @@ class POController extends Controller
             DB::commit();
             return back()->with('success', 'Berhasil melakukan setting PO. Silahkan melanjutkan penerbitan PO');
         } catch (\Exception $ex) {
+            dd($ex);
             DB::rollback();
             return back()->with('error','Gagal melakukan setting PO. Silahkan hubungi developer atau coba kembali');
         }

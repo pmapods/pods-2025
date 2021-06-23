@@ -58,10 +58,6 @@
             vertical-align: top;
             float: none;
         }
-        footer{     
-            font-size: 12px;
-            margin-top: 50px;
-        }
         .sign_box{
             border: 1px solid black;
         }
@@ -198,16 +194,16 @@
             @endphp
             @foreach ($po->po_detail as $key => $po_detail)
                 <tr>
-                    <td>&nbsp; {{$key+1}}</td>
-                    <td>
+                    <td style="vertical-align:top">&nbsp; {{$key+1}}</td>
+                    <td style="vertical-align:top">
                         {{$po_detail->item_name}}<br>
                         <small>{{$po_detail->item_description}}</small>
                     </td>
-                    <td>{{$po_detail->qty}} {{($po_detail->uom ?? '')}}</td>
-                    <td class="rupiah_text">{{setRupiah($po_detail->item_price)}}</td>
-                    <td class="rupiah_text text-right">{{setRupiah($po_detail->qty*$po_detail->item_price)}}</td>
-                    <td style="padding-left: 1em">
-                        {{$po_detail->delivery_notes}}
+                    <td style="vertical-align:top">{{$po_detail->qty}} {{($po_detail->uom ?? '')}}</td>
+                    <td style="vertical-align:top" class="rupiah_text">{{setRupiah($po_detail->item_price)}}</td>
+                    <td style="vertical-align:top" class="rupiah_text text-right">{{setRupiah($po_detail->qty*$po_detail->item_price)}}</td>
+                    <td style="vertical-align:top" class="text-center">
+                        {!! nl2br(e($po_detail->delivery_notes)) !!}
                     </td>
                     @php $subtotal += $po_detail->qty*$po_detail->item_price; @endphp
                 </tr>
@@ -254,7 +250,7 @@
             <i>{{$po->notes}}</i>
         </div>
     </div>
-    <footer class="row">
+    <table style="width: 100%">
         @php
             $names = ["Dibuat Oleh","Diperiksa dan disetujui oleh","Konfirmasi Supplier"];
             $enames = ["Created by","Checked and Approval by","Supplier Confirmation"];
@@ -271,29 +267,31 @@
             $auth->employee_position = $po->supplier_pic_position;
             array_push($authorizations,$auth);
         @endphp
-        @foreach($authorizations as $key=>$authorization)
-            <div class="col-xs-3 @if($key != 0) col-xs-offset-1 @endif" style="padding: 1em 0em;">
-                <div class="sign_box">
-                    <div class="text-center header">
-                        {{$names[$key]}}<br>
-                        <i>{{$enames[$key]}}</i>
+        <tr>
+            @foreach($authorizations as $key=>$authorization)
+                <td style="padding: 1em 1em; width: 25%">
+                    <div class="sign_box">
+                        <div class="text-center header">
+                            {{$names[$key]}}<br>
+                            <i>{{$enames[$key]}}</i>
+                        </div>
+                        <div class="sign_space"></div>
+                        <div class="text-center text-uppercase small">
+                            {{$authorization->employee_name}}
+                            @if ($authorization->employee_name=="")
+                            {!! "&nbsp;" !!}
+                            @endif
+                        </div>
+                        <div class="text-center">
+                            {{$authorization->employee_position}}
+                            @if ($authorization->employee_position=="")
+                            {!! "&nbsp;" !!}
+                            @endif
+                        </div>
                     </div>
-                    <div class="sign_space"></div>
-                    <div class="text-center text-uppercase small">
-                        {{$authorization->employee_name}}
-                        @if ($authorization->employee_name=="")
-                        {!! "&nbsp;" !!}
-                        @endif
-                    </div>
-                    <div class="text-center">
-                        {{$authorization->employee_position}}
-                        @if ($authorization->employee_position=="")
-                        {!! "&nbsp;" !!}
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </footer>
+                </td>
+            @endforeach
+        </tr>
+        </table>
 </body>
 </html>

@@ -89,7 +89,7 @@
                     </tr>
 
                     @if ($item->ongkir > 0)
-                    <tr>
+                    <tr class="@if($key % 2 == 0) table-secondary @endif">
                         <td>Ongkir {{ $item->ticket_item->name }}</td>
                         <td>-</td>
                         <td>1</td>
@@ -98,7 +98,7 @@
                     @endif
                     
                     @if ($item->ongpas > 0)
-                    <tr>
+                    <tr class="@if($key % 2 == 0) table-secondary @endif">
                         <td>Ongpas {{ $item->ticket_item->name }}</td>
                         <td>-</td>
                         <td>1</td>
