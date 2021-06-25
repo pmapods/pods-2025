@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Employee;
+use App\Models\TicketMonitoring;
 class Ticket extends Model
 {
     use SoftDeletes;
@@ -202,6 +203,10 @@ class Ticket extends Model
         }else{
             return null;
         }
+    }
+
+    public function monitoring_log(){
+        return TicketMonitoring::where('ticket_id',$this->id)->get();
     }
 
 }

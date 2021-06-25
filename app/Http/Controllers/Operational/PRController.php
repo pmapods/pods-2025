@@ -9,6 +9,7 @@ use DB;
 use Carbon\Carbon;
 
 use App\Models\Ticket;
+use App\Models\TicketMonitoring;
 use App\Models\Authorization;
 use App\Models\Pr;
 use App\Models\PrAuthorization;
@@ -105,6 +106,13 @@ class PRController extends Controller
                 $detail->save();
             }
 
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Menambahkan PR untuk di otorisasi';
+            $monitor->save();
+
             DB::commit();
             return back()->with('success','Berhasil menambakan PR, Silahkan melakukan proses otorisasi');
         }catch(\Exception $ex){
@@ -143,11 +151,23 @@ class PRController extends Controller
                     $ticket->status = 5;
                     $ticket->save();
                 }
+                
+                $pr = Pr::findOrFail($request->pr_id);
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $pr->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                if ($pr->current_authorization() == null) {
+                    $monitor->message        = 'Melakukan Otorisasi Bidding (otorisasi selesai)';
+                }else{
+                    $monitor->message        = 'Melakukan Otorisasi Bidding (otorisasi selanjutnya '.$pr->current_authorization()->employee->name.')';
+                }
+                $monitor->save();
                 DB::commit();
                 if ($pr->current_authorization() == null) {
                     return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selesai, Silahkan mengajukan nomor asset dan mengupdate nomor asset');
                 }else{
-                    return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi dilanjutkan');
+                    return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selanjutnya oleh ('.$pr->current_authorization()->name.')');
                 }
             }else{
                 throw new \Exception("Otorisasi saat ini dan akun login tidak sesuai");
@@ -179,11 +199,18 @@ class PRController extends Controller
                 $ticket = Ticket::findOrFail($request->ticket_id);
                 $ticket->status = 3;
                 $ticket->save();
+                
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $pr->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Reject Form PR';
+                $monitor->save();
+                DB::commit();
+                return redirect('/pr')->with('success','Berhasil Melakukan Reject PR. Silahkan membuat form PR baru');
             }else{
                 throw new \Exception("Otorisasi saat ini dan akun login tidak sesuai");
             }
-            DB::commit();
-            return redirect('/pr')->with('success','Berhasil Melakukan Reject PR. Silahkan membuat form PR baru');
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -209,6 +236,13 @@ class PRController extends Controller
                 $pr->save();
                 $ticket->status = 6;
                 $ticket->save();
+                
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Submit Nomor Asset di PR';
+                $monitor->save();
 
                 DB::commit();
                 return redirect('/pr')->with('success','Sukses submit nomor asset. Silahkan melanjutkan ke proses PO');

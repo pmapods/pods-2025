@@ -9,6 +9,7 @@ use App\Models\TicketItem;
 use App\Models\TicketVendor;
 use App\Models\TicketItemFileRequirement;
 use App\Models\TicketItemAttachment;
+use App\Models\TicketMonitoring;
 use App\Models\Authorization;
 use App\Models\Bidding;
 use App\Models\BiddingDetail;
@@ -42,14 +43,29 @@ class BiddingController extends Controller
                 // ba_vendor
                 $ticket = Ticket::findOrFail($request->id);
             }
+
             if($request->type == 'vendor'){
                 $ticket->ba_status = 1;
                 $ticket->ba_confirmed_by = Auth::user()->id;
                 $ticket->save();
+
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Konfirmasi berita acara pengajuan vendor';
+                $monitor->save();
             }else{
                 $item->status = 1;
                 $item->confirmed_by = Auth::user()->id;
                 $item->save();
+
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $item->ticket_item->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Konfirmasi file pengadaan'.$item->name;
+                $monitor->save();
             }
             return back()->with('success','Berhasil melakukan confirm kelengkapan');
         }catch(Exception $ex){
@@ -75,11 +91,25 @@ class BiddingController extends Controller
                 $ticket->ba_rejected_by = Auth::user()->id;
                 $ticket->ba_reject_notes = $request->reason;
                 $ticket->save();
+                
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Reject berita acara vendor';
+                $monitor->save();
             }else{
                 $item->status = -1;
                 $item->rejected_by = Auth::user()->id;
                 $item->reject_notes = $request->reason;
                 $item->save();
+                
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $item->ticket_item->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Reject file pengadaan'.$item->name;
+                $monitor->save();
             }
             return back()->with('success','Berhasil melakukan reject kelengkapan');
         }catch(Exception $ex){
@@ -98,6 +128,13 @@ class BiddingController extends Controller
             
             $isvalidated =  $this->validateBiddingDone($ticket_item->ticket->id);
             if($isvalidated){
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $ticket_item->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Menghapus item '.$ticket_item->name.' dari pengadaan';
+                $monitor->save();
+
                 DB::commit();
                 return redirect('/bidding/'.$ticket_item->ticket->code)->with('success','Berhasil Menghapus item, seluruh otorisasi Bidding telah selesai, Silahkan melanjutkan proses di menu Purchase Requistion'); 
             }else{
@@ -208,6 +245,13 @@ class BiddingController extends Controller
                 $newauthorization->level             = $detail->level;
                 $newauthorization->save();
             }
+
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Membuat Form Bidding item "'.$newBidding->ticket_item->name.'" untuk di otorisasi';
+            $monitor->save();
             DB::commit();
             return redirect('/bidding/'.$ticket->code)->with('success','Berhasil membuat form bidding. Harap Menunggu proses otorisasi');
         } catch (Exception $ex) {
@@ -218,27 +262,44 @@ class BiddingController extends Controller
     }
 
     public function approveBidding(Request $request) {
-        $bidding = Bidding::find($request->bidding_id);
-        if(($bidding->signed_filename == null || $bidding->signed_filepath == null) && $bidding->current_authorization()->level == 2 && Auth::user()->id == $bidding->current_authorization()->employee->id){
-            return back()->with('error','Harap melakukan upload file penawaran yang sudah di tanda tangan');
-        }
-        $bidding_authorization = BiddingAuthorization::find($request->bidding_authorization_id);
-        if($bidding_authorization->employee_id == Auth::user()->id){
-            $bidding_authorization->status = 1;
-            $bidding_authorization->save();
-            if($bidding->current_authorization() != null){
-                return redirect('/bidding/'.$bidding->ticket->code)->with('success','Otorisasi berhasil, menunggu otorisasi selanjutnya oleh '.$bidding->current_authorization()->employee->name);
-            }else{
-                $bidding->status = 1;
-                $bidding->save();
-                $isvalidated =  $this->validateBiddingDone($bidding->ticket->id);
-                if($isvalidated){
-                    return redirect('/bidding/'.$bidding->ticket->code)->with('success','Seluruh Otorisasi Bidding telah selesai, Silahkan melanjutkan proses di menu Purchase Requistion'); 
-                }
-                return redirect('/bidding/'.$bidding->ticket->code)->with('success','Otorisasi telah selesai');
+        try{
+            DB::beginTransaction();
+            $bidding = Bidding::find($request->bidding_id);
+            if(($bidding->signed_filename == null || $bidding->signed_filepath == null) && $bidding->current_authorization()->level == 2 && Auth::user()->id == $bidding->current_authorization()->employee->id){
+                return back()->with('error','Harap melakukan upload file penawaran yang sudah di tanda tangan');
             }
-        }else{
-            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Otorisasi login tidak sesuai');
+            $bidding_authorization = BiddingAuthorization::find($request->bidding_authorization_id);
+            if($bidding_authorization->employee_id == Auth::user()->id){
+                $bidding_authorization->status = 1;
+                $bidding_authorization->save();
+
+                $bidding = Bidding::find($request->bidding_id);
+                $next_authorization_text = ($bidding->current_authorization() != null)?'(otorisasi selanjutnya '.$bidding->current_authorization()->employee->name.')' : '';
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $bidding->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Melakukan Approval Bidding item "'.$bidding->product_name.'" '.$next_authorization_text;
+                $monitor->save();
+                if($bidding->current_authorization() != null){
+                    DB::commit();
+                    return redirect('/bidding/'.$bidding->ticket->code)->with('success','Approval Bidding berhasil, menunggu otorisasi selanjutnya oleh '.$bidding->current_authorization()->employee->name);
+                }else{
+                    $bidding->status = 1;
+                    $bidding->save();
+                    DB::commit();
+                    $isvalidated =  $this->validateBiddingDone($bidding->ticket->id);
+                    if($isvalidated){
+                        return redirect('/bidding/'.$bidding->ticket->code)->with('success','Seluruh Otorisasi Bidding telah selesai, Silahkan melanjutkan proses di menu Purchase Requistion'); 
+                    }
+                    return redirect('/bidding/'.$bidding->ticket->code)->with('success','Otorisasi telah selesai');
+                }
+            }else{
+                throw new \Exception('Otorisasi login tidak sesuai');
+            }
+        }catch(\Exception $ex){
+            DB::rollback();
+            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Gagal melakukan otorisasi ('.$ex->getMessage().')');
         }
     }
 
@@ -259,7 +320,14 @@ class BiddingController extends Controller
                 $bidding_authorization->bidding->signed_filepath = null;
                 $bidding_authorization->bidding->save();
 
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $bidding->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Melakukan Reject Bidding';
+                $monitor->save();
                 DB::commit();
+
                 return redirect('/bidding/'.$bidding->ticket->code)->with('success','Berhasil melakukan reject form bidding. Silahkan melakukan pengajuan ulang');
             }else{
                  DB::rollback();
@@ -293,7 +361,6 @@ class BiddingController extends Controller
     public function validateBiddingDone($ticket_id) {
         $ticket = Ticket::findOrFail($ticket_id);
         $flag = true;
-        // dd($ticket->ticket_item->where('isCancelled','!=',true));
         foreach($ticket->ticket_item->where('isCancelled','!=',true) as $ticket_item){
             if(isset($ticket_item->bidding)){
                 if($ticket_item->bidding->status != 1){
@@ -312,6 +379,7 @@ class BiddingController extends Controller
 
     public function terminateTicket(Request $request){
         try {
+            DB::beginTransaction();
             $ticket = Ticket::findOrFail($request->ticket_id);
             if($ticket->status==3){
                 return back()->with('error','Ticket yang sudah mencapai proses PR tidak dapat dibatalkan');
@@ -320,9 +388,17 @@ class BiddingController extends Controller
             $ticket->terminated_by = Auth::user()->id;
             $ticket->termination_reason = $request->reason;
             $ticket->save();
+
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Membatalkan Ticket Pengadaan';
+            $monitor->save();
+            DB::commit();
             return redirect('/bidding')->with('success','Berhasil membatalkan pengadaan '.$ticket->code);
         } catch (\Exception $ex) {
-            dd($ex);
+            DB::rollback();
             return back('/bidding')->with('error','Gagal membatalkan pengadaan '.$ex->getMessage());
         }
     }

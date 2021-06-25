@@ -15,6 +15,7 @@ use App\Models\Authorization;
 use App\Models\PrDetail; 
 use App\Models\EmployeeLocationAccess;
 use App\Models\Employee;
+use App\Models\TicketMonitoring;
 use PDF;
 use DB;
 use Storage;
@@ -142,6 +143,13 @@ class POController extends Controller
                     }
                 }
             }
+            
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Melakukan Setup PO';
+            $monitor->save();
             DB::commit();
             return back()->with('success', 'Berhasil melakukan setting PO. Silahkan melanjutkan penerbitan PO');
         } catch (\Exception $ex) {
@@ -202,6 +210,13 @@ class POController extends Controller
                     $po_authorization->save();
                 }
             }
+            
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $po->ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Menerbitkan PO '.$po->no_po_sap;
+            $monitor->save();
             DB::commit();
             return back()->with('success','Berhasil Menerbitkan PO');
         } catch (\Exception $ex) {
@@ -260,6 +275,12 @@ class POController extends Controller
             );
             Mail::to($mail)->send(new POMail($data, 'posignedrequest'));
 
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $po->ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Upload Internal Signed PO '.$po->no_po_sap;
+            $monitor->save();
             DB::commit();
             return back()->with('success','Berhasil Upload File Intenal Signed untuk PO '.$po->no_po_sap.' File sudah dikirimkan ke email supplier ('.$mail.') untuk ditandatangan');
         } catch (\Exception $ex) {
@@ -300,8 +321,15 @@ class POController extends Controller
             Mail::to($mail)
             ->cc($employee_emails)
             ->send(new POMail($data, 'poconfirmed'));
-            DB::commit();
+            
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $po->ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Konfirmasi tanda tangan supplier PO '.$po->no_po_sap;
+            $monitor->save();
 
+            DB::commit();
             return back()->with('success','Berhasil melakukan konfirmasi tanda tangan Supplier untuk PO '.$po->no_po_sap.' dilanjutkan dengan penerimaan barang di salespoint/area bersangkutan');
         } catch (\Exception $ex) {
             DB::rollback();
@@ -341,6 +369,13 @@ class POController extends Controller
                 'new_url' => url('/signpo/'.$po_upload_request->id)
             );
             Mail::to($mail)->send(new POMail($data, 'posignedreject'));
+            
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $po->ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Menolak tanda tangan Supplier PO '.$po->no_po_sap;
+            $monitor->save();
             DB::commit();
             return back()->with('success','Berhasil melakukan penolakan tanda tangan PO '.$po->no_po_sap.' link baru telah dikirim ke email '.$mail);
         } catch (\Exception $ex) {
@@ -381,7 +416,14 @@ class POController extends Controller
             );
             Mail::to($mail)->send(new POMail($data, 'posignedrequest'));
             DB::commit();
-            return back()->with('success', 'berhasil mengirim email untuk po '.$po->no_po_sap.' ke email '.$mail);
+            
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $po->ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Mengirim ulang email untuk PO '.$po->no_po_sap;
+            $monitor->save();
+            return back()->with('success', 'berhasil mengirim ulang email untuk po '.$po->no_po_sap.' ke email '.$mail);
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -425,6 +467,13 @@ class POController extends Controller
                 $po = $pouploadrequest->po;
                 $po->status = 2;
                 $po->save();
+                
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $po->ticket->id;
+                $monitor->employee_id    = -1;
+                $monitor->employee_name  = $po->ticket_vendor->name;
+                $monitor->message        = 'Supplier '.$po->ticket_vendor->name.' Melakukan Upload tanda tangan PO '.$po->no_po_sap;
+                $monitor->save();
                 DB::commit();
                 return back()->with('success','Berhasil upload file');
             }else{

@@ -165,6 +165,7 @@ Route::middleware(['auth'])->group(function () {
 
     // MONITORING
     Route::get('/ticketmonitoring',[MonitoringController::class, 'ticketMonitoringView']);
+    Route::get('/ticketmonitoringlogs/{ticket_id}',[MonitoringController::class, 'ticketMonitoringLogs']);
 });
     // Purchase Order
     Route::get('/signpo/{po_upload_request_id}',[POController::class,'poUploadRequestView']);

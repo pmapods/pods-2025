@@ -19,6 +19,8 @@ use App\Models\TicketAuthorization;
 use App\Models\TicketAdditionalAttachment;
 use App\Models\FileCategory;
 use App\Models\FileCompletement;
+
+use App\Models\TicketMonitoring;
 use Auth;
 use DB;
 use Storage;
@@ -474,6 +476,15 @@ class TicketingController extends Controller
                 rename($oldpath,$newpath);
             }
             $ticket->save();
+
+            // TICKET MONITOR_LOG
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Memulai Otorisasi Ticket';
+            $monitor->save();
+
             DB::commit();
             // oper path
             return redirect('/ticketing')->with('success','Berhasil memulai otorisasi untuk form '.$ticket->code);
@@ -517,6 +528,7 @@ class TicketingController extends Controller
 
     public function approveTicket(Request $request){
         try{
+            DB::beginTransaction();
             $ticket = Ticket::findOrFail($request->id);
             $updated_at = new Carbon($request->updated_at);
             if ($updated_at == $ticket->updated_at) {
@@ -525,7 +537,17 @@ class TicketingController extends Controller
                     // set status jadi approve
                     $authorization->status = 1;
                     $authorization->save();
+                    
+                    // TICKET MONITOR_LOG
+                    $monitor = new TicketMonitoring;
+                    $monitor->ticket_id      = $ticket->id;
+                    $monitor->employee_id    = Auth::user()->id;
+                    $monitor->employee_name  = Auth::user()->name;
+                    $monitor->message        = 'Approval Ticket Pengadaan';
+                    $monitor->save();
+
                     $this->checkTicketApproval($ticket->id);
+                    DB::commit();
                     return redirect('/ticketing')->with('success','Berhasil melakukan approve ticket');
                 }else{
                     return back()->with('error','ID otorisasi tidak sesuai. Silahkan coba kembali');
@@ -534,12 +556,14 @@ class TicketingController extends Controller
                 return back()->with('error','Ticket sudah di approve sebelumnya');
             }
         }catch (\Exception $ex){
+            DB::rollback();
             return back()->with('error','Gagal melakukan approve ticket '.$ex->getMessage());
         }
     }
 
     public function checkTicketApproval($ticket_id){
         try{
+            DB::beginTransaction();
             $ticket = Ticket::findOrFail($ticket_id);
             $flag = true;
             foreach($ticket->ticket_authorization as $authorization){
@@ -551,14 +575,25 @@ class TicketingController extends Controller
             if($flag){
                 $ticket->status = 2;
                 $ticket->save();
+
+                // TICKET MONITOR_LOG
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Approval ticket selesai';
+                $monitor->save();
             }
+            DB::commit();
         }catch (\Exception $ex){
+            DB::rollback();
             return back()->with('error','Approval checker error please contact admin '.$ex->getMessage());
         }
     }
 
     public function rejectTicket(Request $request){
         try{
+            DB::beginTransaction();
             $ticket = Ticket::findOrFail($request->id);
             $updated_at = new Carbon($request->updated_at);
             if ($updated_at == $ticket->updated_at) {
@@ -566,17 +601,26 @@ class TicketingController extends Controller
                 $ticket->terminated_by = Auth::user()->id;
                 $ticket->termination_reason = $request->reason;
                 $ticket->save();
+
+                // TICKET MONITOR_LOG
+                $monitor                 = new TicketMonitoring;
+                $monitor->ticket_id      = $ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Melakukan reject ticket pengadaan';
+                $monitor->save();
+                DB::commit();
                 return back()->with('success','Berhasil membatalkan ticket');
             }else{
                 return back()->with('error','Ticket sudah dibatalkan sebelumnya');
             }
         }catch (\Exception $ex){
+            DB::rollback();
             return back()->with('error','Gagal membatalkan ticket '.$ex->getMessage());
         }
     }
     
     public function uploadFileRevision(Request $request){
-        // dd($request);
         try{
             DB::beginTransaction();
             if($request->type == 'file'){
@@ -593,6 +637,15 @@ class TicketingController extends Controller
                 $ticket->ba_status      = 0;
                 $ticket->ba_revised_by  = Auth::user()->id;
                 $ticket->save();
+
+                // TICKET MONITOR_LOG
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Upload Revisi File Kelengkapan ticket pengadaan';
+                $monitor->save();
+
                 $file = explode('base64,',$request->file)[1];
                 $newfilename = pathinfo($ticket->ba_vendor_filename, PATHINFO_FILENAME).'.'.pathinfo($request->filename, PATHINFO_EXTENSION);
                 $path = str_replace($ticket->ba_vendor_filename,$newfilename,$ticket->ba_vendor_filepath);
@@ -604,6 +657,14 @@ class TicketingController extends Controller
                 $ticketitem->status = 0;
                 $ticketitem->revised_by = Auth::user()->id;
                 $ticketitem->save();
+
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $ticketitem->ticket_item->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Upload Revisi File Kelengkapan ticket pengadaan';
+                $monitor->save();
+
                 $file = explode('base64,',$request->file)[1];
                 $newfilename = pathinfo($ticketitem->name, PATHINFO_FILENAME).'.'.pathinfo($request->filename, PATHINFO_EXTENSION);
                 $path = str_replace($ticketitem->name,$newfilename,$ticketitem->path);
@@ -645,6 +706,13 @@ class TicketingController extends Controller
             $ticket_item->isFinished = true;
             $ticket_item->confirmed_by = Auth::user()->id;
             $ticket_item->save();
+
+            $monitor = new TicketMonitoring;
+            $monitor->ticket_id      = $ticket_item->ticket->id;
+            $monitor->employee_id    = Auth::user()->id;
+            $monitor->employee_name  = Auth::user()->name;
+            $monitor->message        = 'Upload File LPB dan Invoice untuk item '.$ticket_item->name;
+            $monitor->save();
 
             $ticket = $ticket_item->ticket;
             $isTicketFinished = $this->isTicketFinished($ticket->id);

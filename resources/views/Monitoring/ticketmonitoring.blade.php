@@ -14,7 +14,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Monitoring</li>
-                    <li class="breadcrumb-item active">>Monitoring Pengadaan</li>
+                    <li class="breadcrumb-item active">Monitoring Pengadaan</li>
                 </ol>
             </div>
         </div>
@@ -46,7 +46,7 @@
             </thead>
             <tbody>
                 @foreach ($tickets as $key=>$ticket)
-                    <tr>
+                    <tr data-status="{{$ticket->status()}}" data-ticket_id="{{$ticket->id}}">
                         <td>{{$key+1}}</td>
                         <td>{{$ticket->code}}</td>
                         <td>{{$ticket->salespoint->name}}</td>
@@ -62,7 +62,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="monitormodal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Monitoring (<span class="code"></span>)</h5>
@@ -71,11 +71,21 @@
                     </button>
             </div>
             <div class="modal-body">
-                Body
+                <table class="table table-sm">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Aktivitas</th>
+                            <th>Oleh</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div>status saat ini : <b class="status">Dalam Proses Bidding oleh tim Purchasing</b></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -88,7 +98,30 @@
         var table = $('#monitoringDT').DataTable(datatable_settings);
         $('#monitoringDT tbody').on('click', 'tr', function () {
             let code = $(this).find('td:eq(1)').text().trim();
+            let status = $(this).data('status');
+            let ticket_id = $(this).data('ticket_id');
+            $.ajax({
+                type: "get",
+                url: "/ticketmonitoringlogs/" + ticket_id,
+                success: function (response) {
+                    let logs = []
+                    $('#monitormodal').find('table tbody tr').remove();
+                    let data = response.data;
+                    data.forEach(log => {
+                        let row_element = '<tr>';
+                        row_element += '<td style="width:60%; overflow-wrap: anywhere">'+log.message+'</td>';
+                        row_element += '<td>'+log.employee_name+'</td>';
+                        row_element += '<td>'+log.date+'</td>';
+                        row_element += '</tr>';
+                        $('#monitormodal').find('table tbody').append(row_element);
+                    });
+                },
+                error: function (response) {
+                    alert("error");
+                }
+            });
             $('#monitormodal').find('.code').text(code);
+            $('#monitormodal').find('.status').text(status);
             $('#monitormodal').modal('show');
         });
     });

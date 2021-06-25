@@ -606,7 +606,7 @@
                         <tr>
                             <td width="40%">{{$requirement->file_completement->name}}</td>
                             <td width="60%" class="tdbreak">
-                                <a onclick='window.open("/storage/{{$requirement->path}}")'>
+                                <a class="text-primary" onclick='window.open("/storage/{{$requirement->path}}")'>
                                 tampilkan attachment</a></td>
                         </tr>
                         @endforeach
