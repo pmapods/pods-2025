@@ -171,19 +171,19 @@
     <table class="item_table" style="margin-top: 2em">
         <thead>
             <tr>
-                <th rowspan="2">&nbsp; No.</td>
-                <th>Deskripsi Barang</td>
-                <th>Jumlah</td>
-                <th>Harga/ Unit</td>
-                <th class="text-right">Jumlah</td>
-                <th class="text-center">Tgl kirim</td>
+                <th rowspan="2">&nbsp; No.</th>
+                <th>Deskripsi Barang</th>
+                <th>Jumlah</th>
+                <th>Harga/ Unit</th>
+                <th class="text-right">Jumlah</th>
+                <th class="text-center">Tgl kirim</th>
             </tr>
             <tr>
-                <th><i>Description of Goods</i></td>
-                <th><i>Quantity</i></td>
-                <th><i>Unit Price</i></td>
-                <th class="text-right"><i>Amount</i></td>
-                <th class="text-center"><i>Delivery Date</i></td>
+                <th><i>Description of Goods</i></th>
+                <th><i>Quantity</i></th>
+                <th><i>Unit Price</i></th>
+                <th class="text-right"><i>Amount</i></th>
+                <th class="text-center"><i>Delivery Date</i></th>
             </tr>
         </thead>
         <tbody>

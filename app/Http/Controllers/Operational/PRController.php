@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
 use DB;
+use PDF;
 use Carbon\Carbon;
 
 use App\Models\Ticket;
@@ -251,6 +252,23 @@ class PRController extends Controller
             DB::rollback();
             dd($ex);
             return back()->with('error','Gagal approved PR '.$ex->getMessage());
+        }
+    }
+
+    public function printPR($ticket_code){
+        $ticket = Ticket::where('code',$ticket_code)->first();
+        if($ticket == null){
+            abort(404);
+        }
+        if($ticket->status <5){
+            return "Ticket belum terbuat / belum terotorisasi";
+        }
+        try {
+            $pr = $ticket->pr;
+            $pdf = PDF::loadView('pdf.prpdf', compact('pr','ticket'))->setPaper('a4', 'landscape');
+            return $pdf->stream('PR ('.$ticket->code.').pdf');
+        } catch (\Exception $ex) {
+            return back()->with('error','Gagal Mencetak PR '.$ex->getMessage());
         }
     }
 }

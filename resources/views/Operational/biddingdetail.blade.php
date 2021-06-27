@@ -312,7 +312,7 @@
             </table>
             @if($ticket->ba_vendor_filename != null && $ticket->ba_vendor_filepath != null)
                 <b> Berita Acara </b><br>
-                <a href="/storage/{{$ticket->ba_vendor_filepath}}" download="{{$ticket->ba_vendor_filename}}">tampilkan berita acara</a><br>
+                <a href="#" onclick='window.open("/storage/{{$ticket->ba_vendor_filepath}}")'>tampilkan berita acara</a><br>
                 @if($ticket->ba_status == 0)
                     <div class="d-flex">
                         <button type="button" class="btn btn-success btn-sm mr-2" onclick="confirm({{$ticket->id}},'vendor')">Confirm</button>

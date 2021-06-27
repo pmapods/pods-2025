@@ -40,7 +40,7 @@
                 <i class="fal @if($ticket->budget_type==1) fa-check-square @else fa-square @endif ml-5 mr-1" aria-hidden="true"></i>Non Budget
             </div>
             <span>Tanggal : {{$ticket->pr->created_at->format('Y-m-d')}}</span>
-            <table class="table table-bordered">
+            <table class="table table-bordered table-sm">
                 <thead class="text-center">
                     <tr>
                         <td class="font-weight-bold">No</td>
@@ -188,7 +188,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-center mt-3">
-                {{-- <button type="button" class="btn btn-info">Cetak</button> --}}
+                <button onclick="window.open('/printPR/{{$ticket->code}}')" class="btn btn-info">Cetak</button>
                 @if($ticket->status <6)
                     <button type="submit" class="btn btn-primary ml-3">Submit Nomor Asset</button>
                 @endif

@@ -299,7 +299,7 @@ class BiddingController extends Controller
             }
         }catch(\Exception $ex){
             DB::rollback();
-            return redirect('/bidding/'.$bidding->ticket->code)->with('error','Gagal melakukan otorisasi ('.$ex->getMessage().')');
+            return back()->with('error','Gagal melakukan otorisasi ('.$ex->getMessage().')');
         }
     }
 
