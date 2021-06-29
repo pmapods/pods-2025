@@ -110,6 +110,7 @@
                 <div>Belum memilih otorisasi</div>
             </div>
         </div>
+        {{-- PARTING --}}
         <div class="col-md-6">
             <div class="form-group">
                 <label class="required_field">Jenis Item</label>
@@ -371,7 +372,7 @@
                       <label class="required_field">Berita Acara</label>
                       <input type="file" class="form-control-file vendor_ba_file" accept="application/pdf,application/vnd.ms-excel">
                       <small class="text-danger">* Wajib menyertakan berita acara untuk pemilihan satu vendor (.pdf/xls MAX 5MB)</small><br>
-                      <a href="" download="" id="vendor_ba_preview">tampilkan berita acara</a>
+                      <a class="text-primary" id="vendor_ba_preview" style="display: none">tampilkan berita acara</a>
                     </div>
                 </div>
             </div>
@@ -548,8 +549,7 @@
         if(ticket_vendors.length < 2){
             // need ba
             $('.vendor_ba_field').show();
-            $('#vendor_ba_preview').prop('href','/storage'+ticket.ba_vendor_filepath);
-            $('#vendor_ba_preview').prop('download',ticket.ba_vendor_filename);
+            $('#vendor_ba_preview').click('window.open("/storage'+ticket.ba_vendor_filepath+'")');
         }else{
             // no need ba
             $('.vendor_ba_field').hide();

@@ -98,11 +98,13 @@ class AuthorizationController extends Controller
         $data = array();
         foreach($employees as $employee){
             $selected_employee = Employee::find($employee);
-            $single_data = (object)[];
-            $single_data->id = $selected_employee->id;
-            $single_data->name = $selected_employee->name;
-            if($selected_employee->status == 0){
-                array_push($data,$single_data);
+            if($selected_employee != null){
+                $single_data = (object)[];
+                $single_data->id = $selected_employee->id;
+                $single_data->name = $selected_employee->name;
+                if($selected_employee->status == 0){
+                    array_push($data,$single_data);
+                }
             }
         }
         return response()->json([

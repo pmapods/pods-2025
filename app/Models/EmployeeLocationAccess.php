@@ -10,10 +10,10 @@ class EmployeeLocationAccess extends Model
     protected $primaryKey = 'id';
 
     public function employee(){
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class)->withTrashed();
     }
 
     public function salespoint(){
-        return $this->belongsTo(SalesPoint::class);
+        return $this->belongsTo(SalesPoint::class)->withTrashed();
     }
 }

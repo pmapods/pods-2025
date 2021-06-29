@@ -23,7 +23,7 @@ class Po extends Model
     }
 
     public function created_by_employee(){
-        return $this->belongsTo(Employee::class,'created_by','id');
+        return $this->belongsTo(Employee::class,'created_by','id')->withTrashed();
     }
 
     public function po_authorization(){

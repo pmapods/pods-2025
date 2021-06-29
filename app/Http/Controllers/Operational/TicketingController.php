@@ -76,27 +76,27 @@ class TicketingController extends Controller
     }
 
     public function addNewTicket(Request $request){
+        $user_location_access = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
+        $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
+        $available_salespoints = $available_salespoints->groupBy('region');
+        $budget_category_items = BudgetPricingCategory::all();
+        // active vendors
+        $vendors = Vendor::where('status',0)->get();
+        // show ticket liat based on auth access area
+        $access = Auth::user()->location_access->pluck('salespoint_id');
+        // show file completement data
+        $filecategories = FileCategory::all();
+
         if($request->ticketing_type == '0'){
-            $user_location_access = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
-            $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
-            $available_salespoints = $available_salespoints->groupBy('region');
-            
-            $budget_category_items = BudgetPricingCategory::all();
-
-            // active vendors
-            $vendors = Vendor::where('status',0)->get();
-
-            // show ticket liat based on auth access area
-            $access = Auth::user()->location_access->pluck('salespoint_id');
-            
-            // show file completement data
-            $filecategories = FileCategory::all();
             return view('Operational.ticketingdetail',compact('available_salespoints','budget_category_items','vendors','filecategories'));
         }
         if($request->ticketing_type == '1'){
             return view('Operational.securitydetail');
         }
-        return back()->with('error','Terjadi Kesalahan silahakan mencoba lagi');
+        if($request->ticketing_type == '2'){
+            return view('Operational.armadadetail',compact('available_salespoints','budget_category_items','vendors','filecategories'));
+        }
+        return back()->with('error','Terjadi Kesalahan silahkan mencoba lagi');
         
     }
 

@@ -14,10 +14,10 @@ class AuthorizationDetail extends Model
     }
 
     public function employee(){
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class)->withTrashed();
     }
 
     public function employee_position(){
-        return $this->belongsTo(EmployeePosition::class);
+        return $this->belongsTo(EmployeePosition::class)->withTrashed();
     }
 }

@@ -298,14 +298,12 @@
                     @endif
                     
                     <div class="display_field my-1 d-flex flex-column">
-                        @if($po->status == 0)
+                        @if($po->status == 1)
                             @php
                                 $filename = explode('/',$po->internal_signed_filepath);
                                 $filename = $filename[count($filename)-1];
                             @endphp
                             <a class="uploaded_file text-primary" style="cursor:pointer" onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'>Tampilkan dokumen Internal Signed</a>
-                        @endif
-                        @if($po->status == 1)
                             <span>status : {{($po->po_upload_request->isOpened == false) ? 'Link Upload File belum dibuka' : 'Link Upload File sudah dibuka'}}</span>
                         @endif
                         @if($po->status == 2)
