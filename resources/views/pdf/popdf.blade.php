@@ -243,7 +243,7 @@
     </table>
     <div class="row">
         <div class="col-xs-11 footer_notes">
-            <b>PASTIKAN UNTUK SELALU MEMINTA LPD PADA SAAT MELAKUKAN PENGIRIMAN/SELESAI MELAKUKAN JASA.</b><br>
+            <b>PASTIKAN UNTUK SELALU MEMINTA LPB PADA SAAT MELAKUKAN PENGIRIMAN/SELESAI MELAKUKAN JASA.</b><br>
             <u>Mohon PO ini diemailkan kembali setelah konfirmasi</u><br>
             <i>Please return this PO by email after signing</i><br>
             <u>Catatan</u><br>
