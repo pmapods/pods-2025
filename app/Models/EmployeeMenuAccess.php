@@ -10,6 +10,6 @@ class EmployeeMenuAccess extends Model
     protected $primaryKey = 'id';
 
     public function employee(){
-        return $this->belongsTo(Employee::class)->withTrashed();
+        return $this->belongsTo(Employee::class);
     }
 }

@@ -29,7 +29,7 @@ class Ticket extends Model
     }
 
     public function created_by_employee(){
-        return $this->belongsTo(Employee::class,'created_by','id')->withTrashed();
+        return $this->belongsTo(Employee::class,'created_by','id');
     }
 
     public function salespoint(){
@@ -95,12 +95,11 @@ class Ticket extends Model
                 break;
                 
             case '1':
-                $current_authorization = $this->current_authorization();
-                return 'Menunggu Otorisasi Pengadaan Oleh '.$current_authorization->employee_name;
+                return 'Menunggu Otorisasi Pengadaan Oleh Area';
                 break;
 
             case '2':
-                return 'Otorisasi Pengadaan Selesai / Menunggu Proses Bidding';
+                return 'Otorisasi Pengadaan Oleh Area Selesai / Menunggu Proses Bidding';
                 break;
                 
             case '3':
@@ -156,7 +155,7 @@ class Ticket extends Model
     }
 
     public function terminated_by_employee(){
-        return $this->belongsTo(Employee::class,'terminated_by','id')->withTrashed();
+        return $this->belongsTo(Employee::class,'terminated_by','id');
     }
 
     public function ticket_items_with_attachments(){

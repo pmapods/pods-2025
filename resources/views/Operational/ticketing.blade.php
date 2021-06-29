@@ -42,6 +42,7 @@
                     <th>Keterangan</th>
                     <th>Tanggal Pengadaan</th>
                     <th>Status</th>
+                    <th>Status Otorisasi</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,6 +83,13 @@
                             @endif
                         </td>
                         <td>{{$ticket->status()}}</td>
+                        <td>
+                            @if ($ticket->current_authorization() != null)
+                            Menunggu otorisasi : <br><b>{{$ticket->current_authorization()->employee_name}}</b>
+                            @else
+                            -
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

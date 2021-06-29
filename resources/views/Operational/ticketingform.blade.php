@@ -37,6 +37,13 @@
     </div>
 </div>
 <div class="content-body">
+    <div class="row d-flex justify-content-end">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary mr-4" data-toggle="modal" data-target="#statusModal">
+          Cek Status Pengadaan
+        </button>
+    </div>
+
     <div class="row">
         <div class="col-md-4">
             <table class="table table-borderless table-sm">
@@ -418,25 +425,7 @@
             </div>
         </div>
     </div>
-
-    <div class="d-flex align-items-center justify-content-center text-center">
-        @foreach($ticket->ticket_authorization as $key =>$authorization)
-            <div class="mr-3">
-                <span class="font-weight-bold">{{$authorization->employee_name}} -- {{$authorization->employee_position}}</span><br>
-                @if ($authorization->status == 1)
-                    <span class="text-success">Approved</span><br>
-                    <span class="text-success">{{$authorization->updated_at->translatedFormat('d F Y (H:i)')}}</span><br>
-                @endif
-                @if(($ticket->current_authorization()->employee_id ?? -1) == $authorization->employee_id)
-                    <span class="text-warning">Menunggu Otorisasi</span><br>
-                @endif
-                <span>{{$authorization->as}}</span>
-            </div>
-            @if($key != $ticket->ticket_authorization->count()-1)
-                <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
-            @endif
-        @endforeach
-    </div>
+    
 
     <div class="d-flex justify-content-center mt-3 bottom_action">
         @if ($ticket->status == 1)
@@ -445,6 +434,59 @@
             <button type="button" class="btn btn-success" onclick="approve()" id="approvebutton">Approve</button>
             @endif
         @endif
+    </div>
+</div>
+<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Status pengadaan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <h5>Status saat ini :</h5>
+                @if ($ticket->status == 1)
+                    Menunggu Otorisasi {{$ticket->current_authorization()->employee_name}} <b>({{$ticket->current_authorization()->as}})</b>
+                @endif
+                @if ($ticket->status == 2)
+                    Menunggu Proses Bidding
+                @endif
+                <table class="table table-borderless">
+                    <thead>
+                        <tr class="font-weight-bold">
+                            <td>Nama</td>
+                            <td>Posisi</td>
+                            <td>Tanggal Approval</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($ticket->ticket_authorization as $auth)
+                            <tr>
+                                <td>
+                                    <b>{{$auth->employee_name}}</b><br>
+                                    {{$auth->employee_position}}
+                                </td>
+                                <td>
+                                    {{$auth->as}}
+                                </td>
+                                <td>
+                                    @if($auth->status == 1)
+                                        {{$auth->updated_at->translatedFormat('d F Y (H:i)')}}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
     </div>
 </div>
 <form action="/uploadticketfilerevision" method="post" enctype="multipart/form-data" id="uploadrevisionform">
