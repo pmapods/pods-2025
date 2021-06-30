@@ -471,8 +471,9 @@ class TicketingController extends Controller
             // end cari oper semua path kode
             $oldpath = 'storage'.$oldpath;
             $newpath = 'storage'.$newpath;
-            // dd($oldpath,$newpath);
+
             if(is_dir($oldpath)){
+                Storage::disk('public')->deleteDirectory(str_replace('storage','',$newpath));
                 rename($oldpath,$newpath);
             }
             $ticket->save();
@@ -490,7 +491,7 @@ class TicketingController extends Controller
             return redirect('/ticketing')->with('success','Berhasil memulai otorisasi untuk form '.$ticket->code);
         }catch (\Exception $ex){
             DB::rollback();
-            return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage().'('.$ex->getLine().')');
+            return redirect('/ticketing')->with('error','Gagal memulai otorisasi '.$ex->getMessage().'('.$ex->getLine().')');
         }
     }
 

@@ -73,9 +73,9 @@
                         <input type="hidden" name="item[{{$key}}][ticket_item_id]" value="{{ $item->id }}">
                     @endif
                     <tr>
-                        <td rowspan="3">{{$key+1}}</td>
+                        <td>{{$key+1}}</td>
                         <td>{{$item->name}}</td>
-                        <td rowspan="3">
+                        <td>
                             @if($ticket->budget_type==0)
                                 {{$item->budget_pricing->uom ?? ''}}
                                 <input type="hidden" name="item[{{$key}}][uom]" value="{{$item->budget_pricing->uom}}">
@@ -143,31 +143,6 @@
                                 {{$isReadonly}}>{{($item->pr_detail)?$item->pr_detail->notes:''}}</textarea>
                             </div>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>Ongkos Kirim</td>
-                        <td>
-                            <input type="text" class="form-control rupiah item{{$key}}" 
-                            data-max="{{$item->bidding->selected_vendor()->end_ongkir_price}}" 
-                            value="{{($item->pr_detail)?$item->pr_detail->ongkir:$item->bidding->selected_vendor()->end_ongkir_price}}"
-                            onchange="refreshItemTotal(this)"
-                            name="item[{{$key}}][ongkir]"
-                            {{$isReadonly}}>
-                            <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_ongkir_price}}</span></small>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Ongkos Pasang</td>
-                        <td>
-                            <input type="text" class="form-control rupiah item{{$key}}" 
-                            data-max="{{$item->bidding->selected_vendor()->end_pasang_price}}" 
-                            value="{{($item->pr_detail)?$item->pr_detail->ongpas:$item->bidding->selected_vendor()->end_pasang_price}}"
-                            onchange="refreshItemTotal(this)"
-                            name="item[{{$key}}][ongpas]"
-                            {{$isReadonly}}>
-                            <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_pasang_price}}</span></small>
-                        </td>
-
                     </tr>
                     @php
                         $grandtotal += $total;

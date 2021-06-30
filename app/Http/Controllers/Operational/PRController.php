@@ -8,6 +8,7 @@ use Auth;
 use DB;
 use PDF;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 use App\Models\Ticket;
 use App\Models\TicketMonitoring;
@@ -15,6 +16,7 @@ use App\Models\Authorization;
 use App\Models\Pr;
 use App\Models\PrAuthorization;
 use App\Models\PrDetail;
+
 class PRController extends Controller
 {
     public function prView(Request $request){
@@ -94,16 +96,22 @@ class PRController extends Controller
             }
 
             foreach($request->item as $key => $item){
-                $detail                 = new PrDetail;
-                $detail->pr_id          = $pr->id;
-                $detail->ticket_item_id = $item["ticket_item_id"];
-                $detail->qty            = $item["qty"];
-                $detail->uom            = $item["uom"];
-                $detail->price          = $item["price"] ?? 0;
-                $detail->ongkir         = $item["ongkir"] ?? 0;
-                $detail->ongpas         = $item["ongpas"] ?? 0;
-                $detail->setup_date     = $item["setup_date"];
-                $detail->notes          = $item["notes"];
+                $detail                     = new PrDetail;
+                $detail->pr_id              = $pr->id;
+                $detail->ticket_item_id     = $item["ticket_item_id"];
+                $detail->qty                = $item["qty"];
+                $detail->uom                = $item["uom"];
+                do {
+                    $uuid = Str::uuid()->toString();
+                    $flag = true;
+                    if(PrDetail::where('asset_number_token',$uuid)->first()){
+                        $flag = false;
+                    }
+                } while (!$flag);
+                $detail->asset_number_token = $uuid;
+                $detail->price              = $item["price"] ?? 0;
+                $detail->setup_date         = $item["setup_date"];
+                $detail->notes              = $item["notes"];
                 $detail->save();
             }
 
@@ -131,8 +139,6 @@ class PRController extends Controller
                 $prdetail               = PrDetail::findOrFail($item["pr_detail_id"]);
                 $prdetail->qty          = $item["qty"];
                 $prdetail->price        = $item["price"] ?? 0;
-                $prdetail->ongkir       = $item["ongkir"] ?? 0;
-                $prdetail->ongpas       = $item["ongpas"] ?? 0;
                 $prdetail->setup_date   = $item["setup_date"];
                 $prdetail->notes        = $item["notes"];
                 $prdetail->save();

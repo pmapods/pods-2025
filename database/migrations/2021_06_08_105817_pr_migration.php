@@ -36,14 +36,16 @@ class PrMigration extends Migration
             $table->integer('ticket_item_id')->unsigned();
             $table->integer('qty');
             $table->double('price');
-            $table->double('ongkir');
-            $table->double('ongpas');
             $table->string('uom')->nullable();
             $table->date('setup_date')->nullable();
             $table->string('notes')->nullable();
             $table->boolean('isAsset')->nullable();
             
             $table->string('asset_number')->nullable();
+            $table->uuid('asset_number_token')->unique();
+            $table->string('asset_number_by')->nullable();
+            $table->datetime('asset_number_at')->nullable();
+
             $table->foreign('pr_id')->references('id')->on('pr');
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->SoftDeletes();

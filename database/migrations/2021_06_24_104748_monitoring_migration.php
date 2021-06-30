@@ -15,9 +15,11 @@ class MonitoringMigration extends Migration
     {
         Schema::create('ticket_monitoring', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('ticket_id')->unsigned();
             $table->integer('employee_id');
             $table->string('employee_name');
             $table->string('message');
+            $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->timestamps();
         });
     }
