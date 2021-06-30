@@ -19,6 +19,7 @@ class MonitoringController extends Controller
         $logs = TicketMonitoring::where('ticket_id',$ticket_id)
         ->get()
         ->sortBy('created_at');
+        $ticket = Ticket::find($ticket_id);
         $data = [];
         foreach($logs as $log){
             $item = new \stdClass();
@@ -28,7 +29,8 @@ class MonitoringController extends Controller
             array_push($data, $item);
         }
         return response()->json([
-            'data' => $data
+            'data' => $data,
+            'status' =>  $ticket->status(),
         ]);
     }
 }

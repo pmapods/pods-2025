@@ -108,7 +108,8 @@ class Ticket extends Model
                 break;
 
             case '4':
-                return 'PR sudah dibuat, Menunggu otorisasi';
+                $current_authorization = $this->pr->current_authorization();
+                return 'PR sudah dibuat, Menunggu otorisasi oleh '.$current_authorization->employee_name;
                 break;
 
             case '5':
@@ -116,7 +117,12 @@ class Ticket extends Model
                 break;
 
             case '6':
-                return 'PR selesai. Menunggu proses PO';
+                foreach ($this->po as $po){
+                    if($po->status != 3){
+                        return 'PR selesai. Menunggu proses PO';
+                    }
+                }
+                return 'Menunggu Penerimaan Barang di Area';
                 break;
                 
             case '7':

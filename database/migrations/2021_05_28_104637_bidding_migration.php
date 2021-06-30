@@ -22,10 +22,10 @@ class BiddingMigration extends Migration
             $table->enum('group', ['asset', 'inventory', 'others']);
             $table->string('other_name')->nullable();
 
-            $table->string('price_notes');
-            $table->string('ketersediaan_barang_notes');
-            $table->string('ketentuan_bayar_notes');
-            $table->string('others_notes');
+            $table->string('price_notes')->nullable();
+            $table->string('ketersediaan_barang_notes')->nullable();
+            $table->string('ketentuan_bayar_notes')->nullable();
+            $table->string('others_notes')->nullable();
 
             $table->string('optional1_name')->nullable();
             $table->string('optional2_name')->nullable();

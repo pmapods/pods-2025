@@ -98,8 +98,8 @@
         var table = $('#monitoringDT').DataTable(datatable_settings);
         $('#monitoringDT tbody').on('click', 'tr', function () {
             let code = $(this).find('td:eq(1)').text().trim();
-            let status = $(this).data('status');
             let ticket_id = $(this).data('ticket_id');
+            let status_column_el = $(this).find('td:eq(5)');
             $.ajax({
                 type: "get",
                 url: "/ticketmonitoringlogs/" + ticket_id,
@@ -107,6 +107,7 @@
                     let logs = []
                     $('#monitormodal').find('table tbody tr').remove();
                     let data = response.data;
+                    let status = response.status;
                     data.forEach(log => {
                         let row_element = '<tr>';
                         row_element += '<td style="width:60%; overflow-wrap: anywhere">'+log.message+'</td>';
@@ -115,13 +116,15 @@
                         row_element += '</tr>';
                         $('#monitormodal').find('table tbody').append(row_element);
                     });
+                    $('#monitormodal').find('.status').text(status);
+                    console.log(status_column_el.text());
+                    status_column_el.text(status);
                 },
                 error: function (response) {
                     alert("error");
                 }
             });
             $('#monitormodal').find('.code').text(code);
-            $('#monitormodal').find('.status').text(status);
             $('#monitormodal').modal('show');
         });
     });

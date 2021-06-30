@@ -128,10 +128,14 @@
                         </td>
                         <td rowspan="3" class="text-justify">
                             <div class="d-flex flex-column">
+                                @if ($item->bidding->price_notes != null && $item->bidding->price_notes != '-')
                                 <label>notes bidding harga</label>
                                 <span>{{$item->bidding->price_notes}}</span>
+                                @endif
+                                @if ($item->bidding->ketersediaan_barang_notes != null && $item->bidding->ketersediaan_barang_notes != '-')
                                 <label>notes bidding barang</label>
                                 <span>{{$item->bidding->ketersediaan_barang_notes}}</span>
+                                @endif
                                 <label class="optional_field">Keterangan</label>
                                 <textarea class="form-control" rows="3" 
                                 placeholder="keterangan tambahan" 

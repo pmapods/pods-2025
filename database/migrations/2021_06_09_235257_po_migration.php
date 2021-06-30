@@ -36,14 +36,14 @@ class PoMigration extends Migration
             $table->string('reject_notes')->nullable();
             $table->string('rejected_by')->nullable();
             $table->tinyInteger('status')->default(-1);
-
-            $table->string('last_mail_send_to')->nullable();
-            $table->string('po_upload_request_id')->nullable();
             // -1 po draft
             // 0 po diterbitkan
             // 1 purchasing sudah upload file tanda tangan basah
             // 2 supplier sudah upload file tanda tangan basah / menunggu approval tanda tangan
             // 3 selesai / tanda tangan lengkap
+
+            $table->string('last_mail_send_to')->nullable();
+            $table->string('po_upload_request_id')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->foreign('ticket_vendor_id')->references('id')->on('ticket_vendor');
             $table->SoftDeletes();
