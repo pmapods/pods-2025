@@ -58,12 +58,12 @@
                     @foreach ($ticket->ticket_item->where('isCancelled','!=',true) as $key=>$item)
                     <input type="hidden" name="item[{{$key}}][pr_detail_id]" value="{{$item->pr_detail->id}}">
                     <tr>
-                        <td rowspan="3">{{$key+1}}</td>
+                        <td>{{$key+1}}</td>
                         <td>
                             {{$item->name}}
                         </td>
-                        <td rowspan="3">{{$item->budget_pricing->uom ?? '-'}}</td>
-                        <td rowspan="3">
+                        <td>{{$item->budget_pricing->uom ?? '-'}}</td>
+                        <td>
                             {{$item->pr_detail->qty}}
                         </td>
                         @php
@@ -78,20 +78,26 @@
                         <td class="rupiah_text">
                             {{$item->pr_detail->price}}
                         </td>
-                        <td rowspan="3" class="rupiah_text item{{$key}} total" data-total="{{$total}}">
+                        <td class="rupiah_text item{{$key}} total" data-total="{{$total}}">
                             {{$total}}
                         </td>
-                        <td rowspan="3">
+                        <td>
                             {{$item->pr_detail->setup_date}}
                         </td>
-                        <td rowspan="3" class="text-justify">
+                        <td class="text-justify">
                             <div class="d-flex flex-column asset_field">
+                                @if ($item->bidding->price_notes && $item->bidding->price_notes != '-')
                                 <b>notes bidding harga</b>
                                 <span>{{$item->bidding->price_notes}}</span>
+                                @endif
+                                @if ($item->bidding->ketersediaan_barang_notes && $item->bidding->ketersediaan_barang_notes != '-')
                                 <b>notes keterangan barang</b>
                                 <span>{{$item->bidding->ketersediaan_barang_notes}}</span>
+                                @endif
+                                @if ($item->pr_detail->notes && $item->pr_detail->notes != '-')
                                 <b>Keterangan</b>
                                 <span>{{$item->pr_detail->notes ?? '-'}}</span>
+                                @endif
                                 @if($ticket->status <6)
                                     @if ($ticket->budget_type==0)
                                         <div class="form-group">
@@ -123,19 +129,6 @@
                                 @endif                
                             </div>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>Ongkos Kirim</td>
-                        <td class="rupiah_text">
-                            {{$item->pr_detail->ongkir}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Ongkos Pasang</td>
-                        <td class="rupiah_text">
-                            {{$item->pr_detail->ongpas}}
-                        </td>
-
                     </tr>
                     @php
                         $grandtotal += $total;
@@ -191,6 +184,7 @@
                 <button onclick="window.open('/printPR/{{$ticket->code}}')" class="btn btn-info">Cetak</button>
                 @if($ticket->status <6)
                     <button type="submit" class="btn btn-primary ml-3">Submit Nomor Asset</button>
+                    <button type="button" class="btn btn-warning ml-3" onclick="window.open('/requestassetnumber/{{ $ticket->id }}/{{ $ticket->pr->id }}')">Kirim Ulang Request</button>
                 @endif
             </div>
         </div>

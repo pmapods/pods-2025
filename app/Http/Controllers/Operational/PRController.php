@@ -225,6 +225,71 @@ class PRController extends Controller
         }
     }
 
+    public function sendRequestAssetNumber($ticket_id,$pr_id){
+        try{
+            $ticket = Ticket::findOrFail($ticket_id);
+            $pr = Pr::findOrFail($pr_id);
+            $pr_items = [];
+            foreach($pr->pr_detail as $detail){
+                $item                      = new \stdClass();
+                $item->name                = $detail->ticket_item->name;
+                $item->qty                 = $detail->qty;
+                $item->price               = $detail->price;
+                $item->uom                 = $detail->uom;
+                $item->isAsset             = $detail->isAsset;
+                $item->setup_date          = $detail->setup_date;
+                $item->notes               = $detail->notes;
+                $item->asset_number_token  = $detail->asset_number_token;
+                $item->created_at          = $detail->created_at;
+                $item->notes_bidding_harga = $detail->ticket_item->bidding->price_notes;
+                $item->notes_keterangan_barang = $detail->ticket_item->bidding->ketersediaan_barang_notes;
+                array_push($pr_items,$item);
+            }
+
+            $pr_authorizations =[];
+            $collection = $ticket->ticket_authorization->slice(1)->all();
+            $values = collect($collection)->values();
+            foreach($values as $author){
+                $newAuthor = new \stdClass();
+                $newAuthor->name = $author->employee_name;
+                $newAuthor->position = $author->employee_position;
+                $newAuthor->date = $author->created_at;
+                array_push($pr_authorizations,$newAuthor);
+            }
+            foreach($pr->pr_authorizations as $author){   
+                $newAuthor = new \stdClass();
+                $newAuthor->name = $author->employee_name;
+                $newAuthor->position = $author->employee_position;
+                $newAuthor->date = $author->created_at;
+                array_push($pr_authorizations,$newAuthor);
+            }
+            if($ticket->budget_type==0){
+                $pr_authorizations = array_slice($pr_authorizations, 0, 5, true);
+            }
+
+           $prinfo = new \stdClass();
+           $prinfo->salespoint_name = $ticket->salespoint->name;
+           $prinfo->isBudget = ($ticket->budget_type == 0) ? true : false;
+
+           $data = [
+            "pr_items" => $pr_items,
+            "pr_authorizations" => $pr_authorizations,
+            "prinfo" => $prinfo];
+            return json_encode($data);
+           
+
+            return response()->json([
+                'error' => false,
+                'message' => 'Berhasil Mengirimkan request ke web asset'
+            ]);
+        }catch(\Exception $ex){
+            return response()->json([
+                'error' => true,
+                'message' => 'Gagal Mengirimkan request ke web asset'
+            ]);
+        }
+    }
+
     public function submitAssetNumber(Request $request){
         try{
             DB::beginTransaction();
@@ -271,10 +336,30 @@ class PRController extends Controller
         }
         try {
             $pr = $ticket->pr;
-            $pdf = PDF::loadView('pdf.prpdf', compact('pr','ticket'))->setPaper('a4', 'landscape');
+            $authorizations =[];
+            $collection = $ticket->ticket_authorization->slice(1)->all();
+            $values = collect($collection)->values();
+            foreach($values as $author){
+                $newAuthor = new \stdClass();
+                $newAuthor->name = $author->employee_name;
+                $newAuthor->position = $author->employee_position;
+                $newAuthor->date = $author->created_at->translatedFormat('d F Y (H:i)');
+                array_push($authorizations,$newAuthor);
+            }
+            foreach($pr->pr_authorizations as $author){   
+                $newAuthor = new \stdClass();
+                $newAuthor->name = $author->employee_name;
+                $newAuthor->position = $author->employee_position;
+                $newAuthor->date = $author->created_at->translatedFormat('d F Y (H:i)');
+                array_push($authorizations,$newAuthor);
+            }
+            if($ticket->budget_type==0){
+                $authorizations = array_slice($authorizations, 0, 5, true);
+            }
+            $pdf = PDF::loadView('pdf.prpdf', compact('pr','ticket','authorizations'))->setPaper('a4', 'landscape');
             return $pdf->stream('PR ('.$ticket->code.').pdf');
         } catch (\Exception $ex) {
-            return back()->with('error','Gagal Mencetak PR '.$ex->getMessage());
+            return back()->with('error','Gagal Mencetak PR '.$ex->getMessage().'('.$ex->getLine().')');
         }
     }
 }

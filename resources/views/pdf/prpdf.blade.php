@@ -62,7 +62,7 @@
     <div>PT. PINUS MERAH ABADI</div>
     <div>Cabang / Depo : {{$ticket->salespoint->name}}</div>
     <center>
-        <h3>PURCHASE REQUISITION (PR) - MANUAL</h3>
+        <div style="font-weight: bold; font-size: 20px">PURCHASE REQUISITION (PR) - MANUAL</div>
     </center>
     <div style="float:right">
         <input type="checkbox" style="margin-top:5px" @if($ticket->budget_type==0) checked="checked" @endif> Budget
@@ -93,12 +93,18 @@
                     <td>{{setRupiah($pr_detail->price * $pr_detail->qty)}}</td>
                     <td>{{$pr_detail->setup_date ?? '-'}}</td>
                     <td>
+                        @if($pr_detail->ticket_item->bidding->price_notes && $pr_detail->ticket_item->bidding->price_notes != '-')
                         <b>notes bidding harga</b><br>
                         <span>{{$pr_detail->ticket_item->bidding->price_notes}}</span><br>
+                        @endif
+                        @if($pr_detail->ticket_item->bidding->ketersediaan_barang_notes && $pr_detail->ticket_item->bidding->ketersediaan_barang_notes != '-')
                         <b>notes keterangan barang</b><br>
                         <span>{{$pr_detail->ticket_item->bidding->ketersediaan_barang_notes}}</span><br>
+                        @endif
+                        @if($pr_detail->notes && $pr_detail->notes != '-')
                         <b>Keterangan</b><br>
                         <span>{{$pr_detail->notes ?? '-'}}</span><br>
+                        @endif
                         @isset($pr_detail->asset_number)
                             <b>Nomor Asset</b><br>
                             <span>{{$pr_detail->asset_number}}</span>
@@ -125,12 +131,16 @@
                             <td colspan="3">Disetujui oleh,</td>
                         </tr>
                         <tr>
-                            <td style="width: 16.5%" class="sign_space"></td>
-                            <td style="width: 16.5%" class="sign_space"></td>
-                            <td style="width: 16.5%" class="sign_space"></td>
-                            <td style="width: 16.5%" class="sign_space"></td>
-                            <td style="width: 16.5%" class="sign_space"></td>
-                            <td style="width: 16.5%" class="sign_space"></td>
+                            @foreach ($authorizations as $authorization)
+                                <td style="width: 16.5%" class="sign_space text-center">
+                                    <b class="text-success">Approved</b><br>
+                                    {{$authorization->date}}<br>
+                                    <span class="font-weight-bold">{{$authorization->name}}</span>
+                                </td>
+                            @endforeach
+                            @for ($i = 0; $i < 6-count($authorizations); $i++)
+                                <td style="width: 16.5%" class="sign_space"></td>
+                            @endfor
                         </tr>
                         <tr>
                             <td>User (Min Gol 5A)</td>
@@ -145,5 +155,6 @@
             </tr>
         </tbody>
     </table>
+    <span>FRM-PCD-011 REV 01</span>
 </body>
 </html>

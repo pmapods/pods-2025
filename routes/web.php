@@ -148,6 +148,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/approvepr',[PRController::class, 'approvePR']);
         Route::patch('/rejectpr',[PRController::class, 'rejectPR']);
         Route::post('/submitassetnumber',[PRController::class, 'submitAssetNumber']);
+        Route::get('/requestassetnumber/{ticket_id}/{pr_id}',[PRController::class, 'sendRequestAssetNumber']);
         Route::get('/printPR/{ticket_code}',[PRController::class, 'printPR']);
     });
 

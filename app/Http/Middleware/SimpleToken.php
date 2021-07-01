@@ -16,8 +16,10 @@ class SimpleToken
      */
     public function handle(Request $request, Closure $next)
     {
+        
+        $token = $request->bearerToken();
         try {
-            if($request->token == 'asdasdasd'){
+            if($token == env('BEARER_TOKEN')){
                 return $next($request);
             }
             return response()->json([

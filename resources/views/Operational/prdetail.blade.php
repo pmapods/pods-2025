@@ -83,7 +83,7 @@
                                 <input type="text" class="form-control" name="item[{{$key}}][uom]" value="{{($item->pr_detail)?$item->pr_detail->uom:''}}" required {{$isReadonly}}>
                             @endif
                         </td>
-                        <td rowspan="3">
+                        <td>
                             <input type="number" class="form-control nilai qty item{{$key}}" min="0" max="{{$item->count}}" 
                             value="{{($item->pr_detail)?$item->pr_detail->qty:$item->count}}"
                             onchange="refreshItemTotal(this)"
@@ -117,16 +117,16 @@
                             {{$isReadonly}}>
                             <small class="text-secondary">max: <span class="rupiah_text">{{$item->bidding->selected_vendor()->end_harga}}</span></small>
                         </td>
-                        <td rowspan="3" class="rupiah_text item{{$key}} total" data-total="{{$total}}">
+                        <td class="rupiah_text item{{$key}} total" data-total="{{$total}}">
                             {{$total}}
                         </td>
-                        <td rowspan="3">
+                        <td>
                             <input class="form-control" type="date" 
                             name="item[{{$key}}][setup_date]" 
                             value="{{($item->pr_detail)?$item->pr_detail->setup_date : null}}"
                             {{$isReadonly}}>
                         </td>
-                        <td rowspan="3" class="text-justify">
+                        <td class="text-justify">
                             <div class="d-flex flex-column">
                                 @if ($item->bidding->price_notes != null && $item->bidding->price_notes != '-')
                                 <label>notes bidding harga</label>

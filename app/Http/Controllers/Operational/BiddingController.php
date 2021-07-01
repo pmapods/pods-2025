@@ -253,7 +253,8 @@ class BiddingController extends Controller
             $monitor->message        = 'Membuat Form Bidding item "'.$newBidding->ticket_item->name.'" untuk di otorisasi';
             $monitor->save();
             DB::commit();
-            return redirect('/bidding/'.$ticket->code)->with('success','Berhasil membuat form bidding. Harap Menunggu proses otorisasi');
+            
+            return redirect('/bidding/'.$ticket->code.'/'.$request->ticket_item_id)->with('success','Berhasil membuat form bidding. Harap Menunggu proses otorisasi');
         } catch (Exception $ex) {
             DB::rollback();
             return redirect('/bidding/'.$ticket->code)->with('error','Gagal membuat form bidding. Silahkan coba kembali atau hubungi developer');

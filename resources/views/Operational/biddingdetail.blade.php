@@ -71,9 +71,9 @@
             <table class="table table-bordered table_item">
                 <thead class="table-secondary">
                     <tr>
-                        <th>Nama Item</th>
+                        <th width="15%">Nama Item</th>
                         <th>Merk</th>
-                        <th>Type</th>
+                        <th width="10%">Type</th>
                         <th width="15%">Harga Satuan</th>
                         <th>Jumlah</th>
                         <th width="15%">Total</th>
@@ -125,12 +125,12 @@
                                     </table>
                                 @endif
                                 @if ($item->ticket_item_file_requirement->count() > 0)
-                                    <table class="table table-borderless table-sm">
+                                    <table class="table table-borderless table-sm small">
                                         <tbody>
                                             @foreach ($item->ticket_item_file_requirement as $requirement)
                                                 <tr>
                                                     <td width="40%">{{$requirement->file_completement->name}}</td>
-                                                    <td width="60%" class="tdbreak"><a href="/storage/{{$requirement->path}}" download="{{$requirement->name}}">tampilkan attachment</a></td>
+                                                    <td width="60%" class="tdbreak"><a class="text-primary" onclick='window.open("/storage/{{$requirement->path}}")'>tampilkan attachment</a></td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
