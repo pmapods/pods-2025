@@ -20,4 +20,5 @@ use App\Http\Controllers\APIController;
 // });
 Route::middleware(['simple_token'])->group(function () {
     Route::post('/updateassetnumber', [APIController::class,'updateAssetNumber']);
+    Route::get('/bidding/{encrypted_bidding_id}/printview',[APIController::class, 'printBidding']);
 });

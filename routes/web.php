@@ -128,11 +128,12 @@ Route::middleware(['auth'])->group(function () {
     // Bidding
     Route::middleware(['menu_access:operational:2'])->group(function () {
         Route::get('/bidding',[BiddingController::class, 'biddingView']);
+        Route::get('/bidding/printview/{encrypted_bidding_id}',[BiddingController::class, 'biddingPrintView']);
         Route::get('/bidding/{ticket_code}',[BiddingController::class, 'biddingDetailView']);
+        Route::get('/bidding/{ticket_code}/{ticket_item_id}',[BiddingController::class, 'vendorSelectionView']);
         Route::patch('/confirmticketfilerequirement',[BiddingController::class, 'confirmFileRequirement']);
         Route::patch('/rejectticketfilerequirement',[BiddingController::class, 'rejectFileRequirement']);
         Route::delete('/removeticketitem',[BiddingController::class, 'removeTicketItem']);
-        Route::get('/bidding/{ticket_code}/{ticket_item_id}',[BiddingController::class, 'vendorSelectionView']);
         Route::post('/addbiddingform',[BiddingController::class, 'addBiddingForm']);
         Route::patch('/approvebidding',[BiddingController::class, 'approveBidding']);
         Route::patch('/rejectbidding',[BiddingController::class, 'rejectBidding']);

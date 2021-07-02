@@ -16,12 +16,21 @@ use App\Models\BiddingDetail;
 use App\Models\BiddingAuthorization;
 use Auth;
 use DB;
+use PDF;
 use Storage;
+use Crypt;
 
 class BiddingController extends Controller
 {
-    public function biddingView(){
-        $biddings = Ticket::whereIn('status',[2,3])->get();
+    public function biddingView(Request $request){
+        if($request->input('status') == -1){
+            $biddings = Ticket::all()
+            ->sortByDesc('created_at');
+        }else{
+            $biddings = Ticket::whereIn('status',[2,3])
+            ->get()
+            ->sortByDesc('created_at');
+        }
         return view('Operational.bidding',compact('biddings'));
     }
 
@@ -157,8 +166,9 @@ class BiddingController extends Controller
             $bidding = $ticket_item->bidding;
             if($ticket_item->bidding->status == -1){
                 return view('Operational.vendorselection',compact('ticket_item','ticket','authorizations','bidding'));
+            }else{
+                return view('Operational.vendorselectionresult',compact('ticket_item','ticket','bidding'));
             }
-            return view('Operational.vendorselectionresult',compact('ticket_item','ticket','bidding'));
         }
         return view('Operational.vendorselection',compact('ticket_item','ticket','authorizations'));
     }
@@ -402,5 +412,17 @@ class BiddingController extends Controller
             DB::rollback();
             return back('/bidding')->with('error','Gagal membatalkan pengadaan '.$ex->getMessage());
         }
+    }
+
+    public function biddingPrintView($encrypted_bidding_id){
+        try {
+            $decrypted = Crypt::decryptString($encrypted_bidding_id);
+        } catch (\Exception $ex) {
+            abort(404);
+        }
+        $bidding = Bidding::find($decrypted);
+        $ticket_item = $bidding->ticket_item;
+        $ticket = $bidding->ticket;
+        return view('Operational.biddingprintoutview',compact('ticket_item','ticket','bidding'));
     }
 }

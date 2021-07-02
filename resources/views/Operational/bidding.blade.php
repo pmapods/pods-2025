@@ -9,19 +9,21 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Bidding</h1>
+                <h1 class="m-0 text-dark">Bidding @if(request()->get('status') == -1) (History) @endif</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Operasional</li>
-                    <li class="breadcrumb-item active">Bidding</li>
+                    <li class="breadcrumb-item active">Bidding @if(request()->get('status') == -1) (History) @endif</li>
                 </ol>
             </div>
         </div>
         <div class="d-flex justify-content-end mt-4">
-            {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEmployeeModal">
-                Tambah PR Baru
-            </button> --}}
+            @if(request()->get('status') == -1)
+                <a href="/bidding" class="btn btn-primary ml-2">Bidding Aktif</a>
+            @else
+                <a href="/bidding?status=-1" class="btn btn-info ml-2">History</a>
+            @endif
         </div>
     </div>
 </div>

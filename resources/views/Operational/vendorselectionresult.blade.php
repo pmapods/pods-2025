@@ -48,7 +48,7 @@
 
         <div class="col-md-2 mt-3">Tanggal Seleksi</div>
         <div class="col-md-4 mt-3">
-            <input type="text" class="form-control" value="{{now()->translatedFormat('d F Y')}}" readonly>
+            <input type="text" class="form-control" value="{{$bidding->created_at->translatedFormat('d F Y (H:i)')}}" readonly>
         </div>
 
         <div class="col-md-2 mt-3">Kelompok</div>
@@ -463,6 +463,8 @@
             <button type="button" class="btn btn-success" onclick="approve()"
             @if($needUploadSigned) disabled @endif>Approve</button>
             @endif
+        @else
+            <button type="button" class="btn btn-info" onclick="window.open('/bidding/printview/{{\Crypt::encryptString($bidding->id)}}')">Cetak</button>
         @endif
     </div>
 </div>
