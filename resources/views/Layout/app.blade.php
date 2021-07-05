@@ -179,6 +179,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       </a>
                     </li>
                     @endif
+                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 256) != 0)
+                    <li class="nav-item">
+                      <a href="/armada" class="nav-link">
+                          <i class="fad fa-garage-car nav-icon"></i>
+                          <p>Master Armada</p>
+                      </a>
+                    </li>
+                    @endif
                 </ul>
             </li>
             @endif

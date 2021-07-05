@@ -15,6 +15,7 @@ use App\Http\Controllers\Masterdata\AuthorizationController;
 use App\Http\Controllers\Masterdata\VendorController;
 use App\Http\Controllers\Masterdata\BudgetPricingController;
 use App\Http\Controllers\Masterdata\FileCompletementController;
+use App\Http\Controllers\Masterdata\ArmadaController;
 
 // Operational
 use App\Http\Controllers\Operational\TicketingController;
@@ -108,6 +109,11 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['menu_access:masterdata:128'])->group(function () {
         Route::get('/filecompletement',[FileCompletementController::class, 'fileCompletementView']);
     });
+
+    // Armada
+    // Route::middleware(['menu_access:masterdata:256'])->group(function () {
+        Route::get('/armada',[ArmadaController::class, 'armadaView']);
+    // });
 
     // OPERATIONAL
     // Pengadaan Barang Jasa

@@ -44,7 +44,7 @@ class SuperAdminSeeder extends Seeder
         
         $access = new EmployeeMenuAccess;
         $access->employee_id = $employee->id;
-        $access->masterdata = 255;
+        $access->masterdata = 1+2+4+8+16+32+64+128+256;
         $access->operational = 15;
         $access->save();
     }
