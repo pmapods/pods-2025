@@ -19,7 +19,7 @@ class ArmadaSeeder extends Seeder
         for ($i=0; $i < 10; $i++) { 
             $armada = new Armada;
             $armada->salespoint_id = 1;
-            $armada->name = $faker->word();
+            $armada->name = $faker->unique()->word();
             $armada->plate = $faker->bothify('? #### ???');
             $armada->status = $i%2;
             if($armada->status == 1){
@@ -31,7 +31,7 @@ class ArmadaSeeder extends Seeder
         for ($i=0; $i < 10; $i++) { 
             $armada = new Armada;
             $armada->salespoint_id = 1;
-            $armada->name = $faker->word();
+            $armada->name = $faker->unique()->word();
             $armada->plate = $faker->bothify('? #### ???');
             $armada->status = $i%2;
             if($armada->status == 1){

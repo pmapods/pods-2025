@@ -113,6 +113,8 @@ Route::middleware(['auth'])->group(function () {
     // Armada
     // Route::middleware(['menu_access:masterdata:256'])->group(function () {
         Route::get('/armada',[ArmadaController::class, 'armadaView']);
+        Route::post('/addarmada',[ArmadaController::class, 'addArmada']);
+        Route::patch('/updatearmada',[ArmadaController::class, 'updateArmada']);
     // });
 
     // OPERATIONAL
