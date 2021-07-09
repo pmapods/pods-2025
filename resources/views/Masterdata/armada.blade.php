@@ -57,9 +57,9 @@
                     <tr data-armada="{{$armada}}">
                         <td>{{$key+1}}</td>
                         <td>{{$armada->salespoint->name}}</td>
-                        <td>{{$armada->name}}</td>
+                        <td>{{$armada->armada_type->name}}</td>
                         <td class="text-uppercase">{{$armada->plate}}</td>
-                        <td>{{($armada->isNiaga)?'Niaga' : 'Non Niaga'}}</td>
+                        <td>{{($armada->armada_type->isNiaga)?'Niaga' : 'Non Niaga'}}</td>
                         <td>{{$armada->status()}}</td>
                         <td>{{($armada->status == 1) ? $armada->booked_by : '-'}}</td>
                     </tr>
@@ -69,7 +69,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="addArmadaModal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="addArmadaModal" tabindex="-1" data-backdrop="static" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -95,8 +95,13 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                            <label class="required_field">Jenis Kendaraan</label>
-                            <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Jenis Kendaraan" required>
+                              <label class="required_field">Pilih Jenis Kendaraan</label>
+                              <select class="form-control select2 armada_type_id" name="armada_type_id" required>
+                                  <option data-niaga="" value="">-- Pilih Jenis Kendaraan --</option>
+                                  @foreach ($armada_types as $type)
+                                      <option data-niaga="{{ $type->isNiaga }}" value="{{ $type->id }}">{{ $type->brand_name }} {{ $type->name }} ({{ ($type->isNiaga) ? 'niaga' : 'non'}})</option>
+                                  @endforeach
+                              </select>
                             </div>
                         </div>
                         <div class="col-12">
@@ -107,18 +112,8 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label class="required_field">Tipe Niaga</label>
-                                <select class="form-control" name="isNiaga" required>
-                                    <option value="">-- Pilih Salespoint --</option>
-                                        <option value="0">Non Niaga</option>
-                                        <option value="1">Niaga</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
                                 <label class="required_field">Status</label>
-                                <select class="form-control status" name="status" required>
+                                <select class="form-control status" name="status" disabled>
                                     <option value="">-- Pilih Status --</option>
                                     <option value="0">Available</option>
                                     <option value="1">Booked</option>
@@ -143,7 +138,7 @@
 </div>
 
 
-<div class="modal fade" id="detailArmadaModal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="detailArmadaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -171,8 +166,13 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                            <label class="required_field">Jenis Kendaraan</label>
-                            <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Jenis Kendaraan" required>
+                            <label class="required_field">Pilih Jenis Kendaraan</label>
+                            <select class="form-control select2 armada_type_id" name="armada_type_id" required>
+                                <option data-niaga="" value="">-- Pilih Jenis Kendaraan --</option>
+                                @foreach ($armada_types as $type)
+                                    <option data-niaga="{{ $type->isNiaga }}" value="{{ $type->id }}">{{ $type->brand_name }} {{ $type->name }} ({{ ($type->isNiaga) ? 'niaga' : 'non'}})</option>
+                                @endforeach
+                            </select>
                             </div>
                         </div>
                         <div class="col-12">
@@ -183,18 +183,8 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label class="required_field">Tipe Niaga</label>
-                                <select class="form-control" name="isNiaga" required>
-                                    <option value="">-- Pilih Salespoint --</option>
-                                        <option value="0">Non Niaga</option>
-                                        <option value="1">Niaga</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
                                 <label class="required_field">Status</label>
-                                <select class="form-control status" name="status" required>
+                                <select class="form-control status" name="status" disabled>
                                     <option value="">-- Pilih Status --</option>
                                     <option value="0">Available</option>
                                     <option value="1">Booked</option>
@@ -211,7 +201,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-info">Update Armada</button>
+                    <button type="submit" class="btn btn-info">Update Armada Baru</button>
                 </div>
             </form>
         </div>
@@ -229,9 +219,9 @@
             modal.find('input[name="armada_id"]').val(data['id']);
             modal.find('select[name="salespoint_id"]').val(data['salespoint_id']);
             modal.find('select[name="salespoint_id"]').trigger('change');
-            modal.find('input[name="name"]').val(data['name']);
+            modal.find('select[name="armada_type_id"]').val(data['armada_type_id']);
+            modal.find('select[name="armada_type_id"]').trigger('change');
             modal.find('input[name="plate"]').val(data['plate']);
-            modal.find('select[name="isNiaga"]').val(data['isNiaga']);
             modal.find('select[name="status"]').val(data['status']);
             modal.find('select[name="status"]').trigger('change');
             modal.find('input[name="booked_by"]').val(data['booked_by']);
@@ -240,14 +230,25 @@
         $('.status').on('change',function(){
             let modal = $(this).closest('.modal');
             let status = $(this).val();
-            if(status == 1){
+            let isNiaga = modal.find('.armada_type_id').find('option:selected').data('niaga');
+            modal.find('.booked_by').val(""); 
+            modal.find('.booked_by_field').hide();
+            modal.find('.booked_by').prop('required',false);     
+            if(status == 1 && !isNiaga){
                 modal.find('.booked_by_field').show();
                 modal.find('.booked_by').prop('required',true);      
-            }else{
-                modal.find('.booked_by_field').hide();
-                modal.find('.booked_by').prop('required',false);      
             }
         });
+        $('.armada_type_id').on('change',function(){
+            let modal = $(this).closest('.modal');
+            let value = $(this).val();
+            modal.find('.status').prop("disabled",true);
+            modal.find('.status').val("");
+            modal.find('.status').trigger('change');
+            if(value != ""){
+                modal.find('.status').prop("disabled",false);
+            }
+        })
         $('#addArmadaModal').on('show.bs.modal',function(){
             $('#addArmadaModal form').trigger('reset');
             $('#addArmadaModal .salespoint').trigger('change');

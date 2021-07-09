@@ -221,6 +221,7 @@
                                 <option value="1">Form Bidding</option>
                                 <option value="2">Form PR</option>
                                 <option value="3">Form PO</option>
+                                <option value="4">Form Fasilitas</option>
                             </select>
                         </div>
                     </div>
@@ -308,6 +309,7 @@
     let formbidding = ['Diajukan Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formpr = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formpo = ['Dibuat Oleh','Diperiksa dan disetujui oleh'];
+    let formfasilitas = ['Atasan ybs','Atasan dari atasan ybs'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -354,8 +356,10 @@
                     break;
                 case "3":
                     value_array = formpo;
-                    console.log('im triggered');
                     closestmodal.find('.table_level tfoot').append('<tr class="table-secondary"><td>-</td><td>Supplier PIC</td><td>Konfirmasi Supplier</td><td></td><td>-</td></tr>')
+                    break;
+                case "4":
+                    value_array = formfasilitas;
                     break;
                 default:
                     return;

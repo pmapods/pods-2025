@@ -15,6 +15,10 @@ class Armada extends Model
         return $this->belongsTo(SalesPoint::class);
     }
 
+    public function armada_type(){
+        return $this->belongsTo(ArmadaType::class);
+    }
+
     public function status(){
         switch ($this->status) {
             case 0:
