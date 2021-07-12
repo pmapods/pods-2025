@@ -19,6 +19,9 @@
             </div>
         </div>
         <div class="d-flex justify-content-end mt-2">
+            <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#addJenisKendaraanModal">
+                List Jenis Kendaraan
+            </button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addArmadaModal">
                 Tambah Armada
             </button>
@@ -137,7 +140,6 @@
     </div>
 </div>
 
-
 <div class="modal fade" id="detailArmadaModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -147,7 +149,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="/updatearmada" method="post" enctype="multipart/form-data">
+            <form action="/updatearmada" method="post" enctype="multipart/form-data" id="detailarmadaform">
             @csrf
             @method('patch')
             <input type="hidden" name="armada_id" class="armada_id">
@@ -201,9 +203,104 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-info">Update Armada Baru</button>
+                    <button type="button" class="btn btn-danger" id="armada_delete_button">Hapus Armada</button>
+                    <button type="submit" class="btn btn-info">Update Armada</button>
                 </div>
             </form>
+            <form action="/deletearmada" id="deletearmadaform" method="post">
+                @csrf
+                @method('delete')
+                <input type="hidden" name="armada_id" class="armada_id">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addJenisKendaraanModal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">List Jenis Kendaraan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Jenis</th>
+                            <th>Nama Brand</th>
+                            <th>Niaga</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($armada_types as $key=>$armada_type)
+                        <tr>
+                            <td scope="row">{{ $key+1 }}</td>
+                            <td>
+                                {{ $armada_type->name }}
+                                @if ($armada_type->alias)
+                                <span>({{ $armada_type->alias }})</span>
+                                @endif
+                            </td>
+                            <td>{{ $armada_type->brand_name }}</td>
+                            <td>{{ ($armada_type->isNiaga) ? "Niaga" : "Non Niaga" }}</td>
+                            <td class="text-danger"><i class="fas fa-trash delete_icon" data-id="{{ $armada_type->id }}" aria-hidden="true"></i></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                
+                <form action="/deletearmadatype" method="post" id="deletearmadatypeform">
+                    @csrf
+                    <input type="hidden" name="armada_type_id" class="armada_type_id">
+                </form>
+                <form action="/addarmadatype" method="post" id="armadatypeform">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                              <label class="required_field">Nama Jenis Kendaraan</label>
+                              <input type="text" class="form-control" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                              <label class="required_field">Nama Merk</label>
+                              <input type="text" class="form-control" name="brand_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                              <label class="optional_field">Nama Alias</label>
+                              <input type="text" class="form-control" name="alias">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="required_field">Pilih Jenis Niaga</label>
+                                <select class="form-control" name="isNiaga" required>
+                                    <option value="">-- Pilih Jenis Niaga --</option>
+                                    <option value="0">Non Niaga</option>
+                                    <option value="1">Niaga</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label class="">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary form-control">Tambah</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
         </div>
     </div>
 </div>
@@ -254,6 +351,23 @@
             $('#addArmadaModal .salespoint').trigger('change');
             $('#addArmadaModal .status').trigger('change');
         });
+        $('#armada_delete_button').click(function(){
+            let form = $('#deletearmadaform');
+            if (confirm('Jenis Kendaraan yang dihapus tidak dapat dikembalikan. Lanjutkan?')) {
+                form.submit();
+            }
+        });
+        $('.delete_icon').click(function(){
+            let id = $(this).data('id');
+            let form = $('#deletearmadatypeform');
+            form.find('.armada_type_id').val(id);
+            form.submit();
+        })
+        
+        let menu = @json(Session::get('menu'));
+        if(menu == 'armadatypelist'){
+            $('#addJenisKendaraanModal').modal('show')
+        }
     })
 </script>
 @endsection

@@ -64,4 +64,46 @@ class ArmadaController extends Controller
             return back()->with('error','Gagal update armada ('.$ex->getMessage().')');
         }
     }
+
+    public function deleteArmada(Request $request){
+        try {
+            $armada = Armada::findOrFail($request->armada_id);
+            $armada->delete();
+            return back()->with('success','Berhasil Menghapus Armada');
+        } catch (\Exception $ex) {
+            return back()->with('error','Gagal Menghapus Armada ('.$ex->getMessage().')');
+        }
+    }
+
+    public function addArmadaType(Request $request){
+        try {
+            $armadatype = ArmadaType::where('name',$request->name)->first();
+            if($armadatype){
+                throw new \Exception('Nama Jenis Kendaraan sudah ada');
+            }
+            $newArmadatype = new ArmadaType;
+            $newArmadatype->name = $request->name;
+            $newArmadatype->brand_name = $request->brand_name;
+            $newArmadatype->alias = $request->alias ?? null;
+            $newArmadatype->isNiaga = $request->isNiaga;
+            $newArmadatype->save();
+            return back()->with('success','Berhasil Menambah Jenis Armada')->with('menu','armadatypelist');
+        } catch (\Exception $ex) {
+            return back()->with('error','Gagal Menambahkan Jenis Kendaraan ('.$ex->getMessage().')');
+        }
+    }
+    
+    public function deleteArmadaType(Request $request){
+        try {
+            $armadatype = ArmadaType::findOrFail($request->armada_type_id);
+            if(count($armadatype->armada)>0){
+                $plates = implode(", ",$armadatype->armada->pluck('plate')->toArray());
+                throw new \Exception('Harap menghapus armada dengan nomor plat '.$plates.' sebelum melanjutkan pengahapusan jenis armada');
+            }
+            $armadatype->delete();
+            return back()->with('success','Berhasil Menghapus Jenis Armada')->with('menu','armadatypelist');
+        } catch (\Exception $ex) {
+            return back()->with('error','Gagal Menghapus Jenis Kendaraan ('.$ex->getMessage().')');
+        }
+    }
 }

@@ -10,4 +10,8 @@ class ArmadaType extends Model
     use SoftDeletes;
     protected $primaryKey = 'id';
     protected $table = 'armada_type';
+
+    public function armada(){
+        return $this->hasMany(Armada::class);
+    }
 }
