@@ -3,7 +3,7 @@
         border : 1px solid #000 !important;
     }
 </style>
-<section class="formfasilitas">
+<form id="formfasilitas">
     <h5>Formulir Fasilitas</h5>
     <div class="row">
         <div class="col-9">
@@ -160,11 +160,11 @@
             </div>
         </div>
     </div>
-</section>
-@section('local-js')
+</form>
+{{-- @section('local-js')
 <script>
 $(document).ready(function () {
     console.log('this is form fasilitas');
 });
 </script>
-@endsection
+@endsection --}}

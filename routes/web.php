@@ -114,7 +114,10 @@ Route::middleware(['auth'])->group(function () {
     // Route::middleware(['menu_access:masterdata:256'])->group(function () {
         Route::get('/armada',[ArmadaController::class, 'armadaView']);
         Route::post('/addarmada',[ArmadaController::class, 'addArmada']);
+        Route::post('/addarmadatype',[ArmadaController::class, 'addArmadaType']);
+        Route::post('/deletearmadatype',[ArmadaController::class, 'deleteArmadaType']);
         Route::patch('/updatearmada',[ArmadaController::class, 'updateArmada']);
+        Route::delete('/deletearmada',[ArmadaController::class, 'deleteArmada']);
     // });
 
     // OPERATIONAL

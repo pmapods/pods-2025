@@ -141,10 +141,10 @@
         </div>
     </div>
 </section>
-@section('local-js')
+{{-- @section('local-js')
 <script>
 $(document).ready(function () {
     console.log('this is form perpanjangan perhentian');
 });
 </script>
-@endsection
+@endsection --}}

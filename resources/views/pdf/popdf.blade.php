@@ -292,6 +292,7 @@
                 </td>
             @endforeach
         </tr>
-        </table>
+    </table>
+    <span style="font-size:10px">{{ now()->format('Y-m-d H:i:s') }}</span>
 </body>
 </html>

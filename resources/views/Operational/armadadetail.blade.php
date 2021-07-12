@@ -120,16 +120,18 @@
     </div>
     </form>
     <hr>
-    <section id="required_form" style="display: none">
+    <section id="required_form">
         <h4>Kebutuhan Data</h4>
         <div class="row">
-            <div class="col-6 form_field" id="formfasilitas_field" style="display: none">
+            <div class="col-6 form_field" id="formfasilitas_field">
                 @include('Operational.Armada.formfasilitas')
             </div>
-            <div class="col-6 form_field" id="formperpanjanganperhentian_field" style="display: none">
+            <div class="col-6 form_field" id="formperpanjanganperhentian_field">
                 @include('Operational.Armada.formperpanjanganperhentian')
             </div>
-            <div></div>
+            <div class="col-6 form_field" id="formmutasi_field">
+                @include('Operational.Armada.formmutasi')
+            </div>
         </div>
     </section>
 </div>
@@ -179,19 +181,18 @@ $(document).ready(function () {
                 // non niaga
                 $('#formfasilitas_field').show();
             }
-            if(data["armada_type"] == 0){
+            if(data["armada_type"] == 1){
                 // niaga
                 $('#formpr_field').show();
             }
-            // BASTK
         }
         if(data["pengadaan_type"] == 1){
             // Replace/Renewal/Stop/Perpanjangan
             $('#formperpanjanganperhentian_field').show();
-            // BASTK
         }
         if(data["pengadaan_type"] == 2){
             // Mutasi
+            $('#formmutasi_field').show();
         }
         if(data["pengadaan_type"] == 3){
             // COP
