@@ -82,8 +82,22 @@ class PRController extends Controller
             $pr->created_by   = Auth::user()->id;   
             $pr->save(); 
 
+            $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
+            $collection = $ticket->ticket_authorization->slice(1)->all();
+            $values = collect($collection)->values();
+            $count = $values->count();
+            foreach($values->all() as $key => $author){
+                $authorization                     = new PrAuthorization;
+                $authorization->pr_id              = $pr->id;         
+                $authorization->employee_id        = $author->employee->id;             
+                $authorization->employee_name      = $author->employee->name;                 
+                $authorization->as                 = $default_as[$key];     
+                $authorization->employee_position  = $author->employee_position;                     
+                $authorization->level              = $key+1;
+                $authorization->save();
+            }
+            
             $authorization = Authorization::find($request->pr_authorization_id);
-
             foreach($authorization->authorization_detail as $author){
                 $authorization                     = new PrAuthorization;
                 $authorization->pr_id              = $pr->id;         
@@ -91,7 +105,7 @@ class PRController extends Controller
                 $authorization->employee_name      = $author->employee->name;                 
                 $authorization->as                 = $author->sign_as;     
                 $authorization->employee_position  = $author->employee_position->name;                     
-                $authorization->level              = $author->level;
+                $authorization->level              = $count+$author->level;
                 $authorization->save();
             }
 
@@ -337,20 +351,11 @@ class PRController extends Controller
         try {
             $pr = $ticket->pr;
             $authorizations =[];
-            $collection = $ticket->ticket_authorization->slice(1)->all();
-            $values = collect($collection)->values();
-            foreach($values as $author){
-                $newAuthor = new \stdClass();
-                $newAuthor->name = $author->employee_name;
-                $newAuthor->position = $author->employee_position;
-                $newAuthor->date = $author->created_at->translatedFormat('d F Y (H:i)');
-                array_push($authorizations,$newAuthor);
-            }
             foreach($pr->pr_authorizations as $author){   
                 $newAuthor = new \stdClass();
                 $newAuthor->name = $author->employee_name;
                 $newAuthor->position = $author->employee_position;
-                $newAuthor->date = $author->created_at->translatedFormat('d F Y (H:i)');
+                $newAuthor->date = $author->updated_at->translatedFormat('d F Y (H:i)');
                 array_push($authorizations,$newAuthor);
             }
             if($ticket->budget_type==0){

@@ -24,8 +24,8 @@ class EmployeeMigration extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->string('name');
-            $table->string('username')->unique();
-            $table->string('email')->unique();
+            $table->string('username');
+            $table->string('email');
             $table->string('password');
             $table->string('phone')->nullable();
             $table->tinyInteger('status')->default(0);

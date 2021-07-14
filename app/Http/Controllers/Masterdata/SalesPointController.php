@@ -26,6 +26,7 @@ class SalesPointController extends Controller
                 $newSalesPoint = new SalesPoint;
                 $newSalesPoint->code           = $request->code;
                 $newSalesPoint->name           = $request->name;
+                $newSalesPoint->initial        = $request->initial;
                 $newSalesPoint->region         = $request->region;
                 $newSalesPoint->status         = $request->status;
                 $newSalesPoint->trade_type     = $request->trade_type;
@@ -51,6 +52,7 @@ class SalesPointController extends Controller
             $salespoint                 = SalesPoint::findOrFail($request->salespoint_id);
             $salespoint->code           = $request->code;
             $salespoint->name           = $request->name;
+            $salespoint->initial        = $request->initial;
             $salespoint->region         = $request->region;
             $salespoint->status         = $request->status;
             $salespoint->trade_type     = $request->trade_type;

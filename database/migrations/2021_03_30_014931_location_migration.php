@@ -17,6 +17,7 @@ class LocationMigration extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->string('name');
+            $table->string('initial',7);
             $table->tinyInteger('region');
             //  0 MT CENTRAL 1
             //  1 SUMATERA 1

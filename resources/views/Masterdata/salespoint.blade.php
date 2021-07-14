@@ -30,27 +30,14 @@
         <table id="salespointDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
-                    <th>
-                        #
-                    </th>
-                    <th width="12%">
-                        {{__('Kode Sales Point')}}
-                    </th>
-                    <th>
-                        {{__('Nama Area')}}
-                    </th>
-                    <th width="10%">
-                        {{__('Region')}}
-                    </th>
-                    <th>
-                        {{__('Status')}}
-                    </th>
-                    <th>
-                        Jawa Sumatra
-                    </th>
-                    <th>
-                        Alamat
-                    </th>
+                    <th>#</th>
+                    <th width="12%">{{__('Kode Sales Point')}}</th>
+                    <th>{{__('Nama Area')}}</th>
+                    <th>Inisial</th>
+                    <th width="10%">{{__('Region')}}</th>
+                    <th>{{__('Status')}}</th>
+                    <th>Jawa Sumatra</th>
+                    <th width="20%">Alamat</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,6 +46,7 @@
                     <td>{{$key+1}}</td>
                     <td>{{$salespoint->code}}</td>
                     <td>{{$salespoint->name}}</td>
+                    <td class="text-uppercase">{{$salespoint->initial}}</td>
                     <td>{{$salespoint->region_name()}}</td>
                     <td>{{$salespoint->status_name()}}</td>
                     <td>{{$salespoint->jawasumatra()}}</td>
@@ -95,14 +83,22 @@
                             </div>
                         </div>
                         <div class="col-md-6"></div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="required_field">Nama Area</label>
-                                <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area"
-                                    required>
+                                <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area" required>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="required_field">Inisial Area</label>
+                                <input type="text" class="form-control" 
+                                    name="initial" maxlength="7" minlength="3"
+                                    style="text-transform:uppercase"
+                                    placeholder="Masukan initial area" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="required_field">Pilih Region</label>
                                 <select class="form-control select2" name="region" required>
@@ -203,14 +199,23 @@
                             </div>
                         </div>
                         <div class="col-md-6"></div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="required_field">Nama Area</label>
                                 <input type="text" class="form-control" name="name" placeholder="Masukkan Nama Area"
                                     readonly>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="required_field">Inisial Area</label>
+                                <input type="text" class="form-control" 
+                                    name="initial" maxlength="7" minlength="3"
+                                    style="text-transform:uppercase"
+                                    placeholder="Masukan initial area" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="required_field">Pilih Region</label>
                                 <select class="form-control select2" name="region" required>
@@ -302,6 +307,7 @@
             modal.find('input[name="salespoint_id"]').val(data['id']);
             modal.find('input[name="code"]').val(data['code']);
             modal.find('input[name="name"]').val(data['name']);
+            modal.find('input[name="initial"]').val(data['initial']);
             modal.find('select[name="region"]').val(data['region']);
             modal.find('select[name="region"]').trigger('change');
             modal.find('select[name="status"]').val(data['status']);

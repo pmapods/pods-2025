@@ -23,14 +23,14 @@
     </div>
 </div>
 <div class="content-body px-4">
-    <div class="d-flex justify-content-end mb-2">
+    <div class="d-flex justify-content-end mt-1">
         @if(request()->get('status') == -1)
             <a href="/pr" class="btn btn-primary ml-2">PR dalam Proses</a>
         @else
             <a href="/pr?status=-1" class="btn btn-info ml-2">History</a>
         @endif
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive mt-2">
         <table id="prDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">

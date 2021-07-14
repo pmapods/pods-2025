@@ -31,6 +31,10 @@ class Bidding extends Model
 
     
     public function current_authorization(){
+        if($this->status != 0){
+            // if not pending return null
+            return null;
+        }
         $queue = $this->bidding_authorization->where('status',0)->sortBy('level');
         if($queue->count() > 0){
             $current = $queue->first();

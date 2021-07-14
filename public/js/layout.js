@@ -148,3 +148,13 @@ var language_setting = {
         "previous": "Sebelumnya"
     }
 };
+
+var autonum_setting = {
+    currencySymbol: "Rp ",
+    decimalCharacter: ",",
+    digitGroupSeparator: ".",
+    emptyInputBehavior: "zero",
+    minimumValue: 0,
+    unformatOnSubmit: true,
+};
+

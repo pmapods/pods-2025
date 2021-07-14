@@ -50,17 +50,37 @@
                     <th>
                         Tanggal Pengajuan
                     </th>
+                    <th>Status Bidding</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($biddings as $key => $bid)
+                @foreach ($tickets as $key => $ticket)
                 <tr>    
                     <td>{{$key+1}}</td>
-                    <td>{{$bid->code}}</td>
-                    <td>{{$bid->created_by_employee->name}}</td>
-                    <td>{{$bid->salespoint->name}}</td>
-                    <td>{{$bid->updated_at->translatedFormat('d F Y (H:i)')}}</td>
-                    <td>{{\Carbon\Carbon::parse($bid->requirement_date)->translatedFormat('d F Y')}}</td>
+                    <td>{{$ticket->code}}</td>
+                    <td>{{$ticket->created_by_employee->name}}</td>
+                    <td>{{$ticket->salespoint->name}}</td>
+                    <td>{{$ticket->updated_at->translatedFormat('d F Y (H:i)')}}</td>
+                    <td>{{\Carbon\Carbon::parse($ticket->requirement_date)->translatedFormat('d F Y')}}</td>
+                    <td>
+                        @php
+                            $current_waiting_authorizations = [];
+                            foreach($ticket->ticket_item as $ticket_item){
+                                if($ticket_item->bidding->current_authorization() != null){
+                                    array_push($current_waiting_authorizations,$ticket_item->bidding->current_authorization()->employee_name);
+                                }
+                            }
+                        @endphp
+                        @if (count($current_waiting_authorizations) > 0)   
+                            Menunggu otorisasi dari {{ implode(', ', array_unique($current_waiting_authorizations))}}
+                        @else
+                            @if ($ticket->status == 3)
+                                Otorisasi Selesai
+                            @else
+                                Menunggu proses pembuatan form bidding
+                            @endif
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

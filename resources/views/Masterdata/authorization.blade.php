@@ -310,6 +310,7 @@
     let formpr = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formpo = ['Dibuat Oleh','Diperiksa dan disetujui oleh'];
     let formfasilitas = ['Atasan ybs','Atasan dari atasan ybs'];
+    let formmutasi = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -360,6 +361,9 @@
                     break;
                 case "4":
                     value_array = formfasilitas;
+                    break;
+                case "5":
+                    value_array = formmutasi;
                     break;
                 default:
                     return;

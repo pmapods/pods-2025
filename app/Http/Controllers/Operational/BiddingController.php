@@ -24,14 +24,14 @@ class BiddingController extends Controller
 {
     public function biddingView(Request $request){
         if($request->input('status') == -1){
-            $biddings = Ticket::all()
+            $tickets = Ticket::all()
             ->sortByDesc('created_at');
         }else{
-            $biddings = Ticket::whereIn('status',[2,3])
+            $tickets = Ticket::whereIn('status',[2,3])
             ->get()
             ->sortByDesc('created_at');
         }
-        return view('Operational.bidding',compact('biddings'));
+        return view('Operational.bidding',compact('tickets'));
     }
 
     public function biddingDetailView($ticket_code){

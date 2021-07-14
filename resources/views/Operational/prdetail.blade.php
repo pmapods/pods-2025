@@ -184,11 +184,11 @@
                 $values = collect($collection)->values();
             @endphp
             <div class="d-flex justify-content-center">
+                @if ($ticket->status < 4)
                 <div class="d-flex align-items-center justify-content-center">
                     @foreach ($values->all() as $key =>$author)
                         <div class="mr-3">
                             <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br>
-                            <span class="font-weight-bold text-success">Approved</span><br>
                             <span>{{$default_as[$key]}}</span>
                         </div>
                         @if($key < $values->count()-1)
@@ -196,9 +196,10 @@
                         @endif
                     @endforeach
                 </div>
+                @endif
                 <div class="d-flex align-items-center justify-content-center" id="authorization_field">
                     @if($ticket->status > 3)
-                        <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
+                        @if ($ticket->status < 4)<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>@endif
                         @foreach($ticket->pr->pr_authorizations as $key =>$author)
                             <div class="mr-3">
                                 <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br>

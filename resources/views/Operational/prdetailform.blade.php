@@ -142,26 +142,8 @@
                 </tbody>
             </table>
             <center><h4>Otorisasi</h4><center>
-            @php
-                $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
-                $collection = $ticket->ticket_authorization->slice(1)->all();
-                $values = collect($collection)->values();
-            @endphp
             <div class="d-flex justify-content-center">
-                <div class="d-flex align-items-center justify-content-center">
-                    @foreach ($values->all() as $key =>$author)
-                        <div class="mr-3">
-                            <span class="font-weight-bold">{{$author->employee->name}} -- {{$author->employee_position}}</span><br>
-                            <span class="font-weight-bold text-success">Approved</span><br>
-                            <span>{{$default_as[$key]}}</span>
-                        </div>
-                        @if($key < $values->count()-1)
-                        <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
-                        @endif
-                    @endforeach
-                </div>
                 <div class="d-flex align-items-center justify-content-center" id="authorization_field">
-                    <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
                     @foreach($ticket->pr->pr_authorizations as $key =>$author)
                         <div class="mr-3">
                             <span class="font-weight-bold">{{$author->employee_name}} -- {{$author->employee_position}}</span><br>
@@ -202,19 +184,6 @@
             let max = $(this).data('max');
             let rupiahElement  = autoNumeric_field[index];
             rupiahElement.update({"maximumValue" : max});
-        });
-        $('.authorization_select2').change(function(){
-            let list = $(this).find('option:selected').data('list');
-            $('#authorization_field').empty();
-            if(list !== undefined){
-                $('#authorization_field').append('<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>')
-                list.forEach(function(item,index){
-                    $('#authorization_field').append('<div class="mr-3"><span class="font-weight-bold">'+item.employee.name+' -- '+item.employee_position.name+'</span><br><span>'+item.sign_as+'</span></div>');
-                    if(index != list.length -1){
-                        $('#authorization_field').append('<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>');
-                    }
-                });
-            }
         });
         $('.assetnumber_check').change(function(){
             if($(this).prop('checked')){

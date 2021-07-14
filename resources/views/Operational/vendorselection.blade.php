@@ -21,7 +21,12 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Form Seleksi Vendor</h1>
+                <h1 class="m-0 text-dark">
+                    <i class="fal fa-arrow-left" aria-hidden="true" 
+                    style="cursor: pointer;"
+                    onclick="window.location.href='/bidding/{{$ticket->code}}'"></i>
+                    Form Seleksi Vendor
+                </h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -77,7 +82,7 @@
     }
 @endphp
 <div class="content-body px-4">
-    <form action="/addbiddingform" method="post">
+    <form action="/addbiddingform" method="post" id="addbiddingform">
         @csrf
         <input type="hidden" name="ticket_item_id" value="{{$ticket_item->id}}">
         <input type="hidden" name="ticket_id" value="{{$ticket->id}}">
@@ -549,7 +554,7 @@
 
         <div class="form-group">
             <label class="required_field">Pilih Otorisasi</label>
-            <select class="form-control" name="authorization_id" required>
+            <select class="form-control authorization_id" name="authorization_id" required>
                 <option value="">-- Pilih Otorisasi --</option>
                 @foreach ($authorizations as $authorization)
                     @php
@@ -617,7 +622,7 @@
             -
             @endif
         <center>
-            <button type="submit" class="btn btn-primary">Buat Form Bidding</button>
+            <button type="submit" class="btn btn-primary" id="submit_button">Buat Form Bidding</button>
         </center>
     </form>
 </div>
@@ -627,12 +632,50 @@
 <script>
     var isSelected = false;
     $(document).on('click', 'form button[type=submit]', function(e) {
-        if(!isSelected) {
-            alert('Harus terpilih satu vendor');
-            e.preventDefault(); //prevent the default action
-        }
+        // if(!isSelected) {
+        //     alert('Harus terpilih satu vendor');
+        //     e.preventDefault(); //prevent the default action
+        // }
     });
     $(document).ready(function() {
+        $('#submit_button').on('click', function(e){
+            if(!isSelected) {
+                alert('Harus terpilih satu vendor');
+                e.preventDefault();
+                return;
+            }
+            let data = $('#addbiddingform').serializeObject();
+            let vendor1 = data['vendor'][0]['harga_akhir'];
+            vendor1 = AutoNumeric.unformat(vendor1,autonum_setting);
+            let vendor2 = null;
+            console.log(data['vendor'][1]);
+            if(data['vendor'][1] != undefined){
+                vendor2 = data['vendor'][1]['harga_akhir'];
+                vendor2 = AutoNumeric.unformat(vendor2,autonum_setting);
+            }
+            console.log(isNaN(vendor1));
+            console.log(isNaN(vendor2));
+            console.log(vendor1);
+            console.log(vendor2);
+            if(vendor1 < 50){
+                alert('Harga Proposal Akhir vendor pertama belum diisi atau lebih besar dari Rp. 50');
+                e.preventDefault();
+                return;
+            }
+            if(vendor2 < 50 && vendor2 != null){
+                alert('Harga Proposal Akhir vendor kedua belum diisi atau lebih besar dari Rp. 50');
+                e.preventDefault();
+                return;
+            }
+            if($('.authorization_id').val() ==""){
+                alert('Harap memilih otorisasi terlebih dahulu');
+                e.preventDefault();
+                return;
+            }
+            if(!confirm('Pastikan nilai proposal akhir sudah sesuai. Lanjutkan?')){
+                e.preventDefault();
+            }
+        });
         $('input[type="number"]').change(function(){
             autonumber($(this));
         });
