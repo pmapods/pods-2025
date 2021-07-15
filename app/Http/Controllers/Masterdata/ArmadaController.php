@@ -106,4 +106,11 @@ class ArmadaController extends Controller
             return back()->with('error','Gagal Menghapus Jenis Kendaraan ('.$ex->getMessage().')');
         }
     }
+
+    public function getArmadabyNiagaType($isNiaga){
+        $armadas = ArmadaType::where('isNiaga',$isNiaga)->get();
+        return response()->json([
+           'data' => $armadas
+        ]);
+    }
 }
