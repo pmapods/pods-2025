@@ -22,6 +22,8 @@ class AuthorizationMigration extends Migration
             // 1 form bidding
             // 2 form pr
             // 3 form po
+            // 4 form fasilitas
+            // 5 form mutasi
             $table->timestamps();
         });
 

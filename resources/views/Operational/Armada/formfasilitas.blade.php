@@ -5,7 +5,7 @@
 </style>
 <form id="formfasilitas">
     <h5>Formulir Fasilitas</h5>
-    <div class="row">
+    <div class="row border border-dark p-2">
         <div class="col-9">
             <table class="table table-bordered table-sm text-center h-100">
                 <tbody>
@@ -31,7 +31,7 @@
                     </label>
                 </td></tr>
                 <tr><td>
-                    <input type="text" class="form-control form-control-sm" name="date">
+                    <input type="date" class="form-control form-control-sm" name="date" value="{{now()->format('Y-m-d') }}">
                 </td></tr>
                 <tr><td class="table-secondary">
                     <label class="required_field">
@@ -110,19 +110,19 @@
                     </td>
                     <td colspan="3">
                         <div class="row">
-                            <div class="col-6"> <input type="checkbox" disabled> Ruangan, lokasi</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Pesawat telepon</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Meja & Kursi</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Line & Telepon</div>
-                            <div class="col-6"> <input type="checkbox" disabled> PC / LOP</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Kartu Nama</div>
-                            <div class="col-6"> <input type="checkbox" checked disabled> Mobil Dinas</div>
-                            <div class="col-6"> <input type="checkbox" disabled> ATK & perlengkapan kerja</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Rumah Dinas</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Lemari Arsip / Filling Kabinet / Whiteboard</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Akses Internet</div>
-                            <div class="col-6"> <input type="checkbox" disabled> ID Card</div>
-                            <div class="col-6"> <input type="checkbox" disabled> Akses email Pinus Merah Abadi</div>
+                            <div class="col-6"> <input type="checkbox"> Ruangan, lokasi</div>
+                            <div class="col-6"> <input type="checkbox"> Pesawat telepon</div>
+                            <div class="col-6"> <input type="checkbox"> Meja & Kursi</div>
+                            <div class="col-6"> <input type="checkbox"> Line & Telepon</div>
+                            <div class="col-6"> <input type="checkbox"> PC / LOP</div>
+                            <div class="col-6"> <input type="checkbox"> Kartu Nama</div>
+                            <div class="col-6"> <input type="checkbox"> Mobil Dinas</div>
+                            <div class="col-6"> <input type="checkbox"> ATK & perlengkapan kerja</div>
+                            <div class="col-6"> <input type="checkbox"> Rumah Dinas</div>
+                            <div class="col-6"> <input type="checkbox"> Lemari Arsip / Filling Kabinet / Whiteboard</div>
+                            <div class="col-6"> <input type="checkbox"> Akses Internet</div>
+                            <div class="col-6"> <input type="checkbox"> ID Card</div>
+                            <div class="col-6"> <input type="checkbox"> Akses email Pinus Merah Abadi</div>
                         </div>
                     </td>
                 </tr>
@@ -137,6 +137,14 @@
             </table>
             <div class="col-12">
                 <small>* Jenis Fasilitas yang disiapkan adalah standar yang berdasarkan Surat keputusan Direksi mengenai Standar Kompetensi dan Benefit</small>
+            </div>
+            <div class="form-group">
+              <label class="required_field">Pilih Otorisasi</label>
+              <select class="form-control" name="" id="">
+                <option></option>
+                <option></option>
+                <option></option>
+              </select>
             </div>
             <div class="offset-6 col-6">
                 <table class="table table-sm table-bordered text-center">
@@ -159,6 +167,7 @@
                 </table>
             </div>
         </div>
+        <span>FRM-HCD-114 REV 00</span>
     </div>
 </form>
 {{-- @section('local-js')

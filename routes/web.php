@@ -19,6 +19,7 @@ use App\Http\Controllers\Masterdata\ArmadaController;
 
 // Operational
 use App\Http\Controllers\Operational\TicketingController;
+use App\Http\Controllers\Operational\ArmadaTicketingController;
 use App\Http\Controllers\Operational\BiddingController;
 use App\Http\Controllers\Operational\PRController;
 use App\Http\Controllers\Operational\POController;
@@ -121,8 +122,9 @@ Route::middleware(['auth'])->group(function () {
     // });
 
     // OPERATIONAL
-    // Pengadaan Barang Jasa
+    // Pengadaan
     Route::middleware(['menu_access:operational:1'])->group(function () {
+        // Barang Jasa
         Route::get('/ticketing',[TicketingController::class, 'ticketingView']);
         Route::get('/ticketing/{code}',[TicketingController::class, 'ticketingDetailView']);
         Route::get('/getsalespointauthorization/{salespoint_id}',[SalesPointController::class, 'getSalesAuthorization']);
@@ -134,6 +136,11 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/rejectticket',[TicketingController::class, 'rejectTicket']);
         Route::patch('/uploadticketfilerevision',[TicketingController::class, 'uploadFileRevision']);
         Route::post('/uploadconfirmationfile',[TicketingController::class, 'uploadConfirmationFile']);
+
+        // Armada
+        Route::post('/createarmadaticket',[ArmadaTicketingController::class, 'createArmadaticket']);
+        Route::get('/armadaticketing/{code}',[ArmadaTicketingController::class, 'armadaTicketDetail']);
+        Route::get('/getarmadabyniagatype/{isNiaga}',[ArmadaController::class, 'getArmadabyNiagaType']);
     });
 
     // Bidding

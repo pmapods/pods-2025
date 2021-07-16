@@ -189,6 +189,14 @@
                 height: 125px;
             }
         </style>
+        <div class="form-group mt-3">
+          <label class="required_field">Pilih Otorisasi</label>
+          <select class="form-control" required>
+            <option></option>
+            <option></option>
+            <option></option>
+          </select>
+        </div>
         <table class="table table-borderless table-sm mt-3">
             <tr>
                 <td width="20%">Dibuat Oleh,</td>

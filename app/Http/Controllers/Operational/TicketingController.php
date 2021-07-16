@@ -10,6 +10,7 @@ use App\Models\BudgetPricingCategory;
 use App\Models\BudgetPricing;
 use App\Models\Vendor;
 use App\Models\Ticket;
+use App\Models\ArmadaTicket;
 use App\Models\TicketItem;
 use App\Models\TicketItemAttachment;
 use App\Models\TicketItemFileRequirement;
@@ -32,19 +33,26 @@ class TicketingController extends Controller
         // show ticket liat based on auth access area
         $access = Auth::user()->location_access->pluck('salespoint_id');
         if($request->input('status') == -1){
+            // TODO
             $tickets = Ticket::whereIn('salespoint_id',$access)
             ->where('status',-1)
             ->orWhere('status',7)
             ->get()
             ->sortByDesc('created_at');
+            $armadatickets = collect([]);
         }else{
+
             $tickets = Ticket::whereIn('salespoint_id',$access)
+            ->whereNotIn('status',[-1,7])
+            ->get()
+            ->sortByDesc('created_at');
+            $armadatickets = ArmadaTicket::whereIn('salespoint_id',$access)
             ->whereNotIn('status',[-1,7])
             ->get()
             ->sortByDesc('created_at');
         }
         
-        return view('Operational.ticketing',compact('tickets'));
+        return view('Operational.ticketing',compact('tickets','armadatickets'));
     }
 
     public function ticketingDetailView($code){
@@ -94,7 +102,7 @@ class TicketingController extends Controller
             return view('Operational.securitydetail');
         }
         if($request->ticketing_type == '2'){
-            return view('Operational.armadadetail',compact('available_salespoints','budget_category_items','vendors','filecategories'));
+            return view('Operational.Armada.newarmadaticket',compact('available_salespoints','budget_category_items','vendors','filecategories'));
         }
         return back()->with('error','Terjadi Kesalahan silahkan mencoba lagi');
         

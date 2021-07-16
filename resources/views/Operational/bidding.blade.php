@@ -55,7 +55,13 @@
             </thead>
             <tbody>
                 @foreach ($tickets as $key => $ticket)
-                <tr>    
+                @php
+                    $colorclass="";
+                    if($ticket->status >= 3){
+                        $colorclass = "table-success";
+                    }
+                @endphp
+                <tr class="{{ $colorclass }}">    
                     <td>{{$key+1}}</td>
                     <td>{{$ticket->code}}</td>
                     <td>{{$ticket->created_by_employee->name}}</td>
@@ -66,15 +72,17 @@
                         @php
                             $current_waiting_authorizations = [];
                             foreach($ticket->ticket_item as $ticket_item){
-                                if($ticket_item->bidding->current_authorization() != null){
-                                    array_push($current_waiting_authorizations,$ticket_item->bidding->current_authorization()->employee_name);
+                                if($ticket_item->bidding){
+                                    if($ticket_item->bidding->current_authorization() != null){
+                                        array_push($current_waiting_authorizations,$ticket_item->bidding->current_authorization()->employee_name);
+                                    }
                                 }
                             }
                         @endphp
                         @if (count($current_waiting_authorizations) > 0)   
                             Menunggu otorisasi dari {{ implode(', ', array_unique($current_waiting_authorizations))}}
                         @else
-                            @if ($ticket->status == 3)
+                            @if ($ticket->status >= 3)
                                 Otorisasi Selesai
                             @else
                                 Menunggu proses pembuatan form bidding
