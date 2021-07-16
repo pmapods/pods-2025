@@ -59,7 +59,11 @@
                 @foreach ($armadas as $key=>$armada)
                     <tr data-armada="{{$armada}}">
                         <td>{{$key+1}}</td>
-                        <td>{{$armada->salespoint->name}}</td>
+                        <td>
+                            @if ($armada->salespoint() != null)
+                                {{$armada->salespoint()->name}}
+                            @endif
+                        </td>
                         <td>{{$armada->armada_type->name}}</td>
                         <td class="text-uppercase">{{$armada->plate}}</td>
                         <td>{{($armada->armada_type->isNiaga)?'Niaga' : 'Non Niaga'}}</td>
@@ -87,8 +91,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                            <label class="required_field">Salespoint</label>
-                            <select class="form-control select2 salespoint" name="salespoint_id" required>
+                            <label class="optional_field">Salespoint</label>
+                            <select class="form-control select2 salespoint" name="salespoint_id">
                                 <option value="">-- Pilih Salespoint --</option>
                                 @foreach ($salespoints as $salespoint)
                                     <option value="{{ $salespoint->id }}">{{ $salespoint->name }}</option>
@@ -157,8 +161,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                            <label class="required_field">Salespoint</label>
-                            <select class="form-control select2 salespoint" name="salespoint_id" required>
+                            <label class="optional_field">Salespoint</label>
+                            <select class="form-control select2 salespoint" name="salespoint_id">
                                 <option value="">-- Pilih Salespoint --</option>
                                 @foreach ($salespoints as $salespoint)
                                     <option value="{{ $salespoint->id }}">{{ $salespoint->name }}</option>
@@ -314,7 +318,7 @@
             let modal = $('#detailArmadaModal');
             let data = $(this).data('armada');
             modal.find('input[name="armada_id"]').val(data['id']);
-            modal.find('select[name="salespoint_id"]').val(data['salespoint_id']);
+            modal.find('select[name="salespoint_id"]').val((data['salespoint_id'] == null) ? '' : data['salespoint_id']);
             modal.find('select[name="salespoint_id"]').trigger('change');
             modal.find('select[name="armada_type_id"]').val(data['armada_type_id']);
             modal.find('select[name="armada_type_id"]').trigger('change');
@@ -327,11 +331,10 @@
         $('.status').on('change',function(){
             let modal = $(this).closest('.modal');
             let status = $(this).val();
-            let isNiaga = modal.find('.armada_type_id').find('option:selected').data('niaga');
             modal.find('.booked_by').val(""); 
             modal.find('.booked_by_field').hide();
             modal.find('.booked_by').prop('required',false);     
-            if(status == 1 && !isNiaga){
+            if(status == 1){
                 modal.find('.booked_by_field').show();
                 modal.find('.booked_by').prop('required',true);      
             }

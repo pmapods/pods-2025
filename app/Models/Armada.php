@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Salespoint;
+
 class Armada extends Model
 {
     use SoftDeletes;
@@ -12,7 +14,11 @@ class Armada extends Model
     protected $primaryKey = 'id';
 
     public function salespoint(){
-        return $this->belongsTo(SalesPoint::class);
+        if($this->salespoint_id != null){
+            return Salespoint::find($this->salespoint_id);
+        }else{
+            return null;
+        }
     }
 
     public function armada_type(){

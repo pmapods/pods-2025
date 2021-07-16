@@ -26,7 +26,7 @@ class ArmadaController extends Controller
             }
             DB::beginTransaction();
             $newArmada                  = new Armada;
-            $newArmada->salespoint_id   = $request->salespoint_id;
+            $newArmada->salespoint_id   = ($request->salespoint_id ?? null);
             $newArmada->armada_type_id  = $request->armada_type_id;
             $newArmada->plate           = strtoupper($request->plate); 
             $newArmada->status          = $request->status; 
@@ -51,7 +51,7 @@ class ArmadaController extends Controller
             }
             DB::beginTransaction();
             $armada                  = Armada::find($request->armada_id);
-            $armada->salespoint_id   = $request->salespoint_id; 
+            $armada->salespoint_id   = ($request->salespoint_id ?? null); 
             $armada->armada_type_id  = $request->armada_type_id; 
             $armada->plate           = strtoupper($request->plate); 
             $armada->status          = $request->status; 
