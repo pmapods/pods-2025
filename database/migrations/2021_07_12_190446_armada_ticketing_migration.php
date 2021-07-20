@@ -17,7 +17,8 @@ class ArmadaTicketingMigration extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->integer('salespoint_id')->unsigned();
-            $table->integer('armada_type_id')->unsigned();
+            $table->integer('armada_type_id')->nullable();
+            $table->integer('armada_id')->nullable();
             $table->boolean('isNiaga');
             $table->tinyInteger('ticketing_type');
             // 0 Pengadaan Baru                
@@ -36,7 +37,6 @@ class ArmadaTicketingMigration extends Migration
             $table->foreign('created_by')->references('id')->on('employee');
             $table->foreign('terminated_by')->references('id')->on('employee');
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
-            $table->foreign('armada_type_id')->references('id')->on('armada_type');
             $table->timestamps();
             $table->softDeletes();
         });

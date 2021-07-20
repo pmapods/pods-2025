@@ -102,11 +102,20 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
+            {{-- untuk pengadaan baru --}}
+            <div class="col-md-4 armada_type_field" style="display:none">
                 <div class="form-group">
                   <label class="required_field">Jenis Kendaraan</label>
-                  <select class="form-control armada_type" name="armada_type" required disabled>
+                  <select class="form-control armada_type" name="armada_type_id">
                     <option>-- Pilih Jenis Kendaraan --</option>
+                  </select>
+                </div>
+            </div>
+            {{-- untuk replace/mutasi/stop --}}
+            <div class="col-md-4 armada_field" style="display:none">
+                <div class="form-group">
+                  <label class="required_field">Pilih Kendaraan</label>
+                  <select class="form-control armada" name="armada_id">
                   </select>
                 </div>
             </div>
@@ -167,30 +176,64 @@ $(document).ready(function () {
         armada_type_select.empty();
         let option_text = '<option value="">-- Pilih Jenis Kendaraan --</option>';
         armada_type_select.append(option_text);
+        $('.armada_field').hide();
+        $('.armada').val("").prop('disabled', true).prop('required',false);
+        $('.armada_type_field').hide();
+        $('.armada_type').val("").prop('disabled', true).prop('required',false);
         if($(this).val() == ''){
             return;
         }
-        $.ajax({
-            type: "get",
-            url: '/getarmadabyniagatype/'+isNiaga,
-            success: function (response) {
-                let data = response.data;
-                
-                data.forEach(item => {
-                    let option_text = '<option value="'+item.id+'">'+item.name+' -- '+item.brand_name+'</option>';
-                    armada_type_select.append(option_text);
-                });
-                armada_type_select.val("");
-                armada_type_select.trigger('change');
-                armada_type_select.prop('disabled', false);
-            },
-            error: function (response) {
-                alert('load data failed. Please refresh browser or contact admin');
-            },
-            complete: function () {
-                armada_type_select.trigger('change');
-            }
-        });
+        if($(this).val() == '0'){
+            $('.armada_type_field').show();
+            $('.armada_type').prop('disabled', false).prop('required',true);
+            $.ajax({
+                type: "get",
+                url: '/getarmadatypebyniaga/'+isNiaga,
+                success: function (response) {
+                    let data = response.data;
+                    
+                    data.forEach(item => {
+                        let option_text = '<option value="'+item.id+'">'+item.name+' -- '+item.brand_name+'</option>';
+                        armada_type_select.append(option_text);
+                    });
+                    armada_type_select.val("");
+                    armada_type_select.trigger('change');
+                    armada_type_select.prop('disabled', false);
+                },
+                error: function (response) {
+                    alert('load data failed. Please refresh browser or contact admin');
+                },
+                complete: function () {
+                    armada_type_select.trigger('change');
+                }
+            });
+        }
+        
+        if($(this).val() == '1'){
+            $('.armada_field').show();
+            $('.armada').prop('disabled', false).prop('required',true);
+            $.ajax({
+                type: "get",
+                url: '/getarmada?isNiaga='+isNiaga+'&salespoint_id='+salespoint_id,
+                success: function (response) {
+                    let data = response.data;
+                    console.log(data);
+                    data.forEach(item => {
+                        let option_text = '<option value="'+item.id+'">'+item.plate+' -- '+item.armada_type.brand_name+' '+item.armada_type.name+'</option>';
+                        $('.armada').append(option_text);
+                    });
+                    $('.armada').val("");
+                    $('.armada').trigger('change');
+                    $('.armada').prop('disabled', false);
+                },
+                error: function (response) {
+                    alert('load data failed. Please refresh browser or contact admin');
+                },
+                complete: function () {
+                    $('.armada').trigger('change');
+                }
+            });
+        }
     });
 
     // $('.armada_type').change(function() {

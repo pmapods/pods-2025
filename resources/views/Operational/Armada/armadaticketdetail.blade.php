@@ -81,12 +81,23 @@
                 <input type="text" class="form-control" value="{{$armadaticket->type()}}" readonly>
             </div>
         </div>
+        @if ($armadaticket->ticketing_type == 0)
         <div class="col-md-4">
             <div class="form-group">
                 <label>Jenis Kendaraan</label>
-                <input type="text" class="form-control" value="{{$armadaticket->armada_type->name}} {{ $armadaticket->armada_type->brand_name}}" readonly>
+                <input type="text" class="form-control" value="{{$armadaticket->armada_type()->name}} {{ $armadaticket->armada_type()->brand_name}}" readonly>
             </div>
         </div>
+        @endif
+        
+        @if (in_array($armadaticket->ticketing_type,[1,2,3]))
+        <div class="col-md-4">
+            <div class="form-group">
+                <label>Pilihan Armada</label>
+                <input type="text" class="form-control" value="{{ $armadaticket->armada()->plate }} -- {{ $armadaticket->armada()->armada_type->brand_name }} {{ $armadaticket->armada()->armada_type->name }}" readonly>
+            </div>
+        </div>
+        @endif
     </div>
     <div class="row">
         @if ($armadaticket->isNiaga == false && $armadaticket->ticketing_type == 0)
@@ -112,9 +123,56 @@
 
 @endsection
 @section('local-js')
+{{-- form perpanjangan perhentian --}}
 <script>
-$(document).ready(function () {
-    
-});
+    let formperpanjangan = $('#formperpanjangan');
+    $(document).ready(function () {
+        formperpanjangan.find('.vendor').change(function(){
+            formperpanjangan.find('.localvendor').val('');
+            if($(this).val() == 'lokal'){
+                formperpanjangan.find('.localvendor').prop('disabled',false);
+            }else{
+                formperpanjangan.find('.localvendor').prop('disabled',true);
+            }
+        });
+
+        formperpanjangan.find('.authorization').change(function(){
+            let list = $(this).find('option:selected').data('list');
+            if(list == null){
+                formperpanjangan.find('.authorization_table').hide();
+                return;
+            }
+            formperpanjangan.find('.authorization_table').show();
+            let table_string = '<tr>';
+            let temp = '';
+            let col_count = 1;
+            // authorization header
+            list.forEach((item,index)=>{
+                if(index > 0){
+                    if(temp == item.sign_as){
+                        col_count++;
+                    }else{
+                        table_string += '<td class="small" colspan="'+col_count+'">'+temp+'</td>';
+                        temp = item.sign_as;
+                        col_count =1;
+                    }
+                }else{  
+                    temp = item.sign_as;
+                }
+                if(index == list.length-1){
+                    table_string += '<td class="small" colspan="'+col_count+'">'+temp+'</td>';
+                }
+            });
+            table_string += '</tr><tr>';
+            list.forEach((item,index)=>{
+                table_string += '<td width="20%" class="align-bottom small" style="height: 80px"><b>'+item.employee.name+'</b><br>'+item.employee_position.name+'</td>';
+            });
+            table_string += '</tr>';
+
+            formperpanjangan.find('.authorization_table tbody').empty();
+            formperpanjangan.find('.authorization_table tbody').append(table_string);
+        });
+    });
+
 </script>
 @endsection

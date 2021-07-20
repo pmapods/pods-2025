@@ -16,7 +16,11 @@ class ArmadaTicket extends Model
     }
 
     public function armada_type(){
-        return $this->belongsTo(ArmadaType::class);
+        return ArmadaType::find($this->armada_type_id);
+    }
+
+    public function armada(){
+        return Armada::find($this->armada_id);
     }
 
     public function status(){

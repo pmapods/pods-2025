@@ -5,7 +5,7 @@
 </style>
 <form id="formfasilitas">
     <h5>Formulir Fasilitas</h5>
-    <div class="row border border-dark p-2">
+    <div class="row border border-dark bg-light p-2">
         <div class="col-9">
             <table class="table table-bordered table-sm text-center h-100">
                 <tbody>
@@ -149,7 +149,7 @@
             <div class="offset-6 col-6">
                 <table class="table table-sm table-bordered text-center">
                     <tbody>
-                        <tr>
+                        {{-- <tr>
                             <td class="align-middle small table-secondary">Menyetujui,</td>
                             <td class="align-middle small table-secondary">Pemohon,</td>
                         </tr>
@@ -162,7 +162,7 @@
                                 ___________<br>
                                 Atasan ybs
                             </td>
-                        </tr>
+                        </tr> --}}
                     </tbody>
                 </table>
             </div>

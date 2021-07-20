@@ -107,10 +107,40 @@ class ArmadaController extends Controller
         }
     }
 
-    public function getArmadabyNiagaType($isNiaga){
+    public function getArmadaTypebyNiaga($isNiaga){
         $armadas = ArmadaType::where('isNiaga',$isNiaga)->get();
         return response()->json([
            'data' => $armadas
+        ]);
+    }
+
+    public function getArmada(Request $request){
+        $armadas = Armada::all();
+        if($request->isNiaga != null){
+            $armadas = $armadas->filter(function($item) use ($request){
+                if($item->armada_type->isNiaga == $request->isNiaga){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+        }
+        if($request->salespoint_id != null){
+            $armadas = $armadas->filter(function($item) use ($request){
+                if($item->salespoint_id ==  $request->salespoint_id){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+        }
+        // butuh di convert jadi array karena hasil filter bentuknya full json
+        $data =[];
+        foreach($armadas as $armada){
+            array_push($data,$armada);
+        }
+        return response()->json([
+            'data' => $data,
         ]);
     }
 }

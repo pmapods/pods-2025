@@ -33,7 +33,6 @@ class TicketingController extends Controller
         // show ticket liat based on auth access area
         $access = Auth::user()->location_access->pluck('salespoint_id');
         if($request->input('status') == -1){
-            // TODO
             $tickets = Ticket::whereIn('salespoint_id',$access)
             ->where('status',-1)
             ->orWhere('status',7)
@@ -41,7 +40,6 @@ class TicketingController extends Controller
             ->sortByDesc('created_at');
             $armadatickets = collect([]);
         }else{
-
             $tickets = Ticket::whereIn('salespoint_id',$access)
             ->whereNotIn('status',[-1,7])
             ->get()
@@ -439,16 +437,25 @@ class TicketingController extends Controller
             if($validate['error']){
                 return redirect('/ticketing/'.$ticket->code)->with('error',implode(',',$validate['messages']));
             }
-            $count_ticket = Ticket::whereBetween('created_at', [
+            $armada_ticket_count = ArmadaTicket::whereBetween('created_at', [
+                Carbon::now()->startOfYear(),
+                Carbon::now()->endOfYear(),
+            ])
+            ->withTrashed()
+            ->count();
+
+            $barang_ticket_count = Ticket::whereBetween('created_at', [
                 Carbon::now()->startOfYear(),
                 Carbon::now()->endOfYear(),
             ])
             ->where('status','>',0)
             ->withTrashed()
             ->count();
+
+            $total_count = $armada_ticket_count + $barang_ticket_count;
             do {
-                $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($count_ticket+1)).($count_ticket+1);
-                $count_ticket++;
+                $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($total_count+1)).($total_count+1);
+                $total_count++;
                 $checkticket = Ticket::where('code',$code)->first();
                 ($checkticket)? $flag = false : $flag = true;
             } while (!$flag);

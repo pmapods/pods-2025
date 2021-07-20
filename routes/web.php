@@ -140,7 +140,8 @@ Route::middleware(['auth'])->group(function () {
         // Armada
         Route::post('/createarmadaticket',[ArmadaTicketingController::class, 'createArmadaticket']);
         Route::get('/armadaticketing/{code}',[ArmadaTicketingController::class, 'armadaTicketDetail']);
-        Route::get('/getarmadabyniagatype/{isNiaga}',[ArmadaController::class, 'getArmadabyNiagaType']);
+        Route::get('/getarmadatypebyniaga/{isNiaga}',[ArmadaController::class, 'getArmadaTypebyNiaga']);
+        Route::get('/getarmada',[ArmadaController::class, 'getArmada']);
     });
 
     // Bidding

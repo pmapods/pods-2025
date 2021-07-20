@@ -106,6 +106,9 @@
                                 <option value="1">Form Bidding</option>
                                 <option value="2">Form PR</option>
                                 <option value="3">Form PO</option>
+                                <option value="4">Form Fasilitas</option>
+                                <option value="5">Form Mutasi</option>
+                                <option value="6">Form Perpanjangan / Perhentian</option>
                             </select>
                         </div>
                     </div>
@@ -222,6 +225,8 @@
                                 <option value="2">Form PR</option>
                                 <option value="3">Form PO</option>
                                 <option value="4">Form Fasilitas</option>
+                                <option value="5">Form Mutasi</option>
+                                <option value="6">Form Perpanjangan / Perhentian</option>
                             </select>
                         </div>
                     </div>
@@ -311,6 +316,7 @@
     let formpo = ['Dibuat Oleh','Diperiksa dan disetujui oleh'];
     let formfasilitas = ['Atasan ybs','Atasan dari atasan ybs'];
     let formmutasi = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
+    let formperpanjangan = ['Yang Mengajukan','Diketahui Oleh','Disetujui'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -364,6 +370,9 @@
                     break;
                 case "5":
                     value_array = formmutasi;
+                    break;
+                case "6":
+                    value_array = formperpanjangan;
                     break;
                 default:
                     return;
