@@ -32,7 +32,7 @@
                         Kode Pengadaan
                     </th>
                     <th>
-                        Salespoint
+                        SalesPoint
                     </th>
                     <th>
                         Tanggal Mulai Pengadaan

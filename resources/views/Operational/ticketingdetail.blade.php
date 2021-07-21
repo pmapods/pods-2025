@@ -76,9 +76,9 @@
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label class="required_field">Pilihan Area / Salespoint</label>
+                <label class="required_field">Pilihan Area / SalesPoint</label>
                 <select class="form-control select2 salespoint_select2">
-                    <option value="" data-isjawasumatra="-1">-- Pilih Salespoint --</option>
+                    <option value="" data-isjawasumatra="-1">-- Pilih SalesPoint --</option>
                     @foreach ($available_salespoints as $region)
                     <optgroup label="{{$region->first()->region_name()}}">
                         @foreach ($region as $salespoint)
@@ -89,7 +89,7 @@
                     </optgroup>
                     @endforeach
                 </select>
-                <small class="text-danger">* Salespoint yang muncul berdasarkan hak akses tiap akun</small>
+                <small class="text-danger">* SalesPoint yang muncul berdasarkan hak akses tiap akun</small>
             </div>
             <span class="spinner-border text-danger loading_salespoint_select2" role="status"
                 style="display:none">

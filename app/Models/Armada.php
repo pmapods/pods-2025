@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Salespoint;
+use App\Models\SalesPoint;
 
 class Armada extends Model
 {
@@ -15,7 +15,7 @@ class Armada extends Model
 
     public function salespoint(){
         if($this->salespoint_id != null){
-            return Salespoint::find($this->salespoint_id);
+            return SalesPoint::find($this->salespoint_id);
         }else{
             return null;
         }

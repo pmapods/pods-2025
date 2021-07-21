@@ -62,6 +62,9 @@ class ArmadaTicket extends Model
         }
     }
 
+    public function facility_form(){
+        return $this->hasOne(FacilityForm::class);
+    }
     
     public function created_by_employee(){
         return $this->belongsTo(Employee::class,'created_by','id')->withTrashed();

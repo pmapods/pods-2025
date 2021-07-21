@@ -120,7 +120,7 @@ class TicketingController extends Controller
         try {
             DB::beginTransaction();
             if(!isset($request->salespoint)){
-                return back()->with('error','Salespoint harus dipilih');
+                return back()->with('error','SalesPoint harus dipilih');
             }
             $ticket = Ticket::find($request->id);
             $isnew = true;

@@ -37,7 +37,7 @@
                         #
                     </th>
                     <th>
-                        Salespoint
+                        SalesPoint
                     </th>
                     <th>
                         Jenis Kendaraan
@@ -91,9 +91,9 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                            <label class="optional_field">Salespoint</label>
+                            <label class="optional_field">SalesPoint</label>
                             <select class="form-control select2 salespoint" name="salespoint_id">
-                                <option value="">-- Pilih Salespoint --</option>
+                                <option value="">-- Pilih SalesPoint --</option>
                                 @foreach ($salespoints as $salespoint)
                                     <option value="{{ $salespoint->id }}">{{ $salespoint->name }}</option>
                                 @endforeach
@@ -161,9 +161,9 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                            <label class="optional_field">Salespoint</label>
+                            <label class="optional_field">SalesPoint</label>
                             <select class="form-control select2 salespoint" name="salespoint_id">
-                                <option value="">-- Pilih Salespoint --</option>
+                                <option value="">-- Pilih SalesPoint --</option>
                                 @foreach ($salespoints as $salespoint)
                                     <option value="{{ $salespoint->id }}">{{ $salespoint->name }}</option>
                                 @endforeach

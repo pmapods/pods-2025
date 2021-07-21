@@ -7,14 +7,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Armada;
 use App\Models\ArmadaType;
-use App\Models\Salespoint;
+use App\Models\SalesPoint;
 
 class ArmadaController extends Controller
 {
     public function armadaView(){
         $armadas = Armada::all();
         $armada_types = ArmadaType::all();
-        $salespoints = Salespoint::all();
+        $salespoints = SalesPoint::all();
         return view('Masterdata.armada',compact('armadas','salespoints','armada_types'));
     }
 

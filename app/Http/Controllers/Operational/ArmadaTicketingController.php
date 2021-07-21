@@ -6,16 +6,19 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Auth;
+use DB;
 
 use App\Models\Ticket;
 use App\Models\Armada;
 use App\Models\ArmadaTicket;
+use App\Models\FacilityForm;
+use App\Models\FacilityFormAuthorization;
 use App\Models\Authorization;
 use App\Models\EmployeePosition;
 use App\Models\EmployeeLocationAccess;
 use App\Models\SalesPoint;
 
-class ArmadaTicketingController extends Controller
+    class ArmadaTicketingController extends Controller
 {
     public function createArmadaticket(Request $request){
         try {
@@ -74,16 +77,97 @@ class ArmadaTicketingController extends Controller
         $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
         $available_salespoints = $available_salespoints->groupBy('region');
 
-        $formperpanjangan_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)
-        ->where('form_type',6)
-        ->get();
+        $formperpanjangan_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)->where('form_type',6)->get();
+        $formfasilitas_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)->where('form_type',4)->get();
         try { 
             if(!$armadaticket){
                 throw new \Exception('Ticket armada dengan kode '.$code.'tidak ditemukan');
             }
-            return view('Operational.Armada.armadaticketdetail',compact('armadaticket','employee_positions','available_salespoints','formperpanjangan_authorizations'));
+            return view('Operational.Armada.armadaticketdetail',compact('armadaticket','employee_positions','available_salespoints','formperpanjangan_authorizations','formfasilitas_authorizations'));
         } catch (\Exception $ex) {
             return redirect('/ticketing')->with('error','Gagal membukan detail ticket armada '.$ex->getMessage());
+        }
+    }
+
+    public function addFacilityForm(Request $request){
+        try{
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::find($request->armada_ticket_id);
+
+            $salespoint_initial = $armadaticket->salespoint->initial;
+            $currentmonth = date('m');
+            $currentyear = date('Y');
+            $count = FacilityForm::join('armada_ticket','facility_form.armada_ticket_id','armada_ticket.id')
+            ->where('armada_ticket.salespoint_id',$armadaticket->salespoint->id)
+                ->whereYear('facility_form.created_at', Carbon::now()->year)
+                ->whereMonth('facility_form.created_at', Carbon::now()->month)
+                ->withTrashed()
+                ->count();
+            
+            $code = $salespoint_initial.'/'.$count.'/'.numberToRoman(intval($currentmonth)).'/'.$currentyear;
+            $form                       = new FacilityForm;
+            $form->armada_ticket_id     = $request->armada_ticket_id;
+            $form->salespoint_id        = $request->salespoint_id;
+            $form->code                 = $code;
+            $form->nama                 = $request->nama;
+            $form->divisi               = $request->divisi;
+            $form->phone                = $request->phone;
+            $form->jabatan              = $request->jabatan;
+            $form->tanggal_mulai_kerja  = $request->tanggal_mulai_kerja;
+            $form->golongan             = $request->golongan;
+            $form->status_karyawan      = $request->status_karyawan;
+            $form->facilitylist         = json_encode($request->fasilitasdanperlengkapan);
+            $form->notes                = $request->notes;
+            $form->created_by           = Auth::user()->id;
+            $form->save();
+
+            $authorization = Authorization::find($request->authorization_id);
+            foreach($authorization->authorization_detail as $detail){
+                $newAuthorization                     = new FacilityFormAuthorization;
+                $newAuthorization->facility_form_id   = $form->id;
+                $newAuthorization->employee_id        = $detail->employee_id;
+                $newAuthorization->employee_name      = $detail->employee->name;
+                $newAuthorization->as                 = $detail->sign_as;
+                $newAuthorization->employee_position  = $detail->employee_position->name;
+                $newAuthorization->level              = $detail->level;
+                $newAuthorization->save();
+            }
+            DB::commit();
+            return back()->with('success', 'Berhasil membuat form fasilitas. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
+        }catch(Exception $ex){
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal membuat form fasilitas');
+        }
+    }
+
+    public function approveFacilityForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $facility_form = FacilityForm::findOrFail($request->facility_form_id);
+            if($facility_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            $authorization = $facility_form->current_authorization();
+            $authorization->status = 1;
+            $authorization->save();
+
+            // recall the new one
+            $authorization = $facility_form->current_authorization();
+            if($authorization == null){
+                $facility_form->status = 1;
+                $facility_form->save();
+            }
+            DB::commit();
+            if($authorization == null){
+                return back()->with('success','Seluruh Otorisasi Form fasilitas telah selesai');
+            }else{
+                return back()->with('success','Berhasil melakukan otorisasi, Otorisasi selanjutnya oleh '.$authorization->employee_name);
+            }
+        } catch (Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
         }
     }
 }

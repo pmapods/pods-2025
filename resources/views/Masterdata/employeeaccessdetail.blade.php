@@ -53,7 +53,7 @@
         <hr>
         <h3>Akses Menu</h3>
         @php
-            $masterdata_accesses = ['Jabatan','Karyawan','Salespoint','Akses Karyawan','Matriks Otorisasi','Vendor','Budget Pricing','Kelengkapan Berkas'];
+            $masterdata_accesses = ['Jabatan','Karyawan','SalesPoint','Akses Karyawan','Matriks Otorisasi','Vendor','Budget Pricing','Kelengkapan Berkas'];
         @endphp
         <div class="row">
             <div class="col-6 col-md-4 mb-3 group_check">

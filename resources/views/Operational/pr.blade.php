@@ -41,7 +41,7 @@
                         Kode Tiket
                     </th>
                     <th>
-                        Salespoint
+                        SalesPoint
                     </th>
                     <th>
                         Tanggal Permintaan

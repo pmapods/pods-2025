@@ -31,6 +31,15 @@ class Authorization extends Model
             case 3:
                 return 'Form PO';
                 break;
+            case 4:
+                return 'Form Fasilitas';
+                break;
+            case 5:
+                return 'Form Mutasi';
+                break;
+            case 6:
+                return 'Form Perpanjangan / Perhentian';
+                break;
             default:
                 return 'form_type_undefined';
                 break;

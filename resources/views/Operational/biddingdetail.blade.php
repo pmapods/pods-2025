@@ -47,7 +47,7 @@
                         <td>{{\Carbon\Carbon::parse($ticket->requirement_date)->translatedFormat('d F Y')}}</td>
                     </tr>
                     <tr>
-                        <td><b>Salespoint</b></td>
+                        <td><b>SalesPoint</b></td>
                         <td>{{$ticket->salespoint->name}}</td>
                     </tr>
                 </tbody>

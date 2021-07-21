@@ -65,7 +65,7 @@
                             @endif
                         </div>
                         <div class="col-6 d-flex flex-column text-right">
-                            <label class="required_field">Alamat Kirim / Salespoint</label>
+                            <label class="required_field">Alamat Kirim / SalesPoint</label>
                             @if($po->status != -1)
                                 <span>{{$po->send_address}}</span>
                             @else

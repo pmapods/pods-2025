@@ -46,7 +46,7 @@
             <input type="text" class="form-control" value="{{$ticket_item->name}}" readonly>
         </div>
 
-        <div class="col-md-2 mt-3">Area / Salespoint</div>
+        <div class="col-md-2 mt-3">Area / SalesPoint</div>
         <div class="col-md-4 mt-3">
             <input type="text" class="form-control" value="{{$ticket->salespoint->name}}" readonly>
         </div>

@@ -39,7 +39,7 @@
         <table id="authorDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr>
-                    <th>Salespoint</th>
+                    <th>SalesPoint</th>
                     <th>Region</th>
                     <th>Orang Pertama</th>
                     <th>Jenis Form</th>
@@ -314,7 +314,7 @@
     let formbidding = ['Diajukan Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formpr = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formpo = ['Dibuat Oleh','Diperiksa dan disetujui oleh'];
-    let formfasilitas = ['Atasan ybs','Atasan dari atasan ybs'];
+    let formfasilitas = ['Menyetujui,','Pemohon,'];
     let formmutasi = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formperpanjangan = ['Yang Mengajukan','Diketahui Oleh','Disetujui'];
     $(document).ready(function () {
@@ -480,6 +480,7 @@
         let closestmodal = $(current_element).closest('.modal');
         let table_level = closestmodal.find('.table_level');
         let salespoint_select = closestmodal.find('.salespoint_select2');
+        let form_type = closestmodal.find('.form_type');
         // check table level if table has data / tr or not
         let row_count = 0;
         table_level.find('tbody tr').not('.empty_row').each(function () {
@@ -487,12 +488,14 @@
         });
         if (row_count > 0) {
             salespoint_select.prop('disabled', true);
+            form_type.prop('disabled', true);
             table_level.find('.empty_row').remove();
             table_level.find('.level').each(function (index, el) {
                 $(el).text(index + 1);
             });
         } else {
             salespoint_select.prop('disabled', false);
+            form_type.prop('disabled', false);
             table_level.append('<tr class="empty_row text-center"><td colspan="5">Otorasi belum dipilih</td></tr>');
         }
     }
