@@ -61,7 +61,7 @@
                         <label class="required_field small">Nama</label>
                     </td>
                     <td colspan="3">
-                        <input type="text" class="form-control form-control-sm" placeholder="Masukkan Nama" value="{{ $facility_form->name}}" readonly>
+                        <input type="text" class="form-control form-control-sm" placeholder="Masukkan Nama" value="{{ $facility_form->nama}}" readonly>
                     </td>
                 </tr>
                 <tr>

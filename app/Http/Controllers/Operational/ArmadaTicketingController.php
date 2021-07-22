@@ -14,6 +14,7 @@ use App\Models\ArmadaTicket;
 use App\Models\FacilityForm;
 use App\Models\FacilityFormAuthorization;
 use App\Models\Authorization;
+use App\Models\ArmadaTicketAuthorization;
 use App\Models\EmployeePosition;
 use App\Models\EmployeeLocationAccess;
 use App\Models\SalesPoint;
@@ -22,6 +23,7 @@ use App\Models\SalesPoint;
 {
     public function createArmadaticket(Request $request){
         try {
+            DB::beginTransaction();
             $armada_ticket_count = ArmadaTicket::whereBetween('created_at', [
                 Carbon::now()->startOfYear(),
                 Carbon::now()->endOfYear(),
@@ -61,8 +63,21 @@ use App\Models\SalesPoint;
             $newTicket->created_by       = Auth::user()->id;
             $newTicket->save();
 
+            $authorization = Authorization::findOrFail($request->authorization_id);
+            foreach ($authorization->authorization_detail as $key => $authorization) {
+                $newAuthorization                    = new ArmadaTicketAuthorization;
+                $newAuthorization->armada_ticket_id  = $newTicket->id;
+                $newAuthorization->employee_id       = $authorization->employee_id;
+                $newAuthorization->employee_name     = $authorization->employee->name;
+                $newAuthorization->as                = $authorization->sign_as;
+                $newAuthorization->employee_position = $authorization->employee_position->name;
+                $newAuthorization->level             = $key+1;
+                $newAuthorization->save();
+            }
+            DB::commit();
             return redirect('/ticketing')->with('success','Berhasil membuat ticketing armada');
         } catch (\Exception $ex) {
+            DB::rollback();
             dd($ex);
             return back()->with('error','Gagal membuat ticketing armada ('.$ex->getMessage().')');
         }
@@ -104,7 +119,7 @@ use App\Models\SalesPoint;
                 ->withTrashed()
                 ->count();
             
-            $code = $salespoint_initial.'/'.$count.'/'.numberToRoman(intval($currentmonth)).'/'.$currentyear;
+            $code = $salespoint_initial.'/'.$count.'/FF/'.numberToRoman(intval($currentmonth)).'/'.$currentyear;
             $form                       = new FacilityForm;
             $form->armada_ticket_id     = $request->armada_ticket_id;
             $form->salespoint_id        = $request->salespoint_id;
@@ -168,6 +183,51 @@ use App\Models\SalesPoint;
             DB::rollback();
             dd($ex);
             return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
+        }
+    }
+
+    public function startArmadaAuthorization(Request $request) {
+        try {
+            $armadaticket = ArmadaTicket::findOrFail($request->armada_ticket_id);
+            if($armadaticket->updated_at != $request->updated_at){
+                return back()->with('error','Data terbaru sudah diupdate. Silahkan coba kembali');
+            }else{
+                $armadaticket->status += 1;
+                $armadaticket->save();
+            }
+            return back()->with('success','Berhasil memulai otorisasi pengadaan armada '.$armadaticket->code.'. Otorisasi selanjutnya oleh '.$armadaticket->current_authorization()->employee->name);
+        } catch (\Exception $ex) {
+            dd($ex);
+            return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage());
+        }
+    }
+
+    public function approveArmadaAuthorization(Request $request){
+        try {
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::findOrFail($request->armada_ticket_id);
+            $current_authorization = $armadaticket->current_authorization();
+            if($current_authorization->employee_id != Auth::user()->id){
+                return back()->with('error','Otorisasi saat ini tidak sesuai dengan akun login.');
+            }else{
+                $current_authorization->status += 1;
+                $current_authorization->save();
+            }
+
+            $current_authorization = $armadaticket->current_authorization();
+            if($current_authorization == null){
+                $armadaticket->status += 1;
+                $armadaticket->save();
+                DB::commit();
+                return back()->with('success','Otorisasi pengadaan armada '.$armadaticket->code.' telah selesai.');
+            }else{
+                DB::commit();
+                return back()->with('success','Berhasil melakukan approval otorisasi pengadaan armada '.$armadaticket->code.'. Otorisasi selanjutnya oleh '.$armadaticket->current_authorization()->employee_name);
+            }
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage());
         }
     }
 }

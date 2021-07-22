@@ -100,8 +100,16 @@
         @endif
     </div>
     <div class="row">
+        @php
+            $isRequirementFinished = true;
+        @endphp
         @if ($armadaticket->isNiaga == false && $armadaticket->ticketing_type == 0)
         <div class="col-md-6">
+            @php 
+                if(($armadaticket->facility_form->status ?? -1) != 1){
+                    $isRequirementFinished = false;
+                }
+            @endphp
             @include('Operational.Armada.formfasilitas')
         </div>
         @endif
@@ -116,7 +124,46 @@
         </div>
         @endif
     </div>
-
+    <div class="row mt-3">
+        <div class="col-md-12 d-flex flex-row justify-content-center align-items-center">
+            @foreach ($armadaticket->authorizations as $authorization)
+                <div class="d-flex text-center flex-column mr-3">
+                    <div class="font-weight-bold">{{ $authorization->as }}</div>
+                    @if (($armadaticket->current_authorization()->employee_id ?? -1) == $authorization->employee_id)
+                    <div class="text-warning">Pending</div>
+                    @endif
+                    
+                    @if ($authorization->status == 1)
+                    <div class="text-success">Approved {{ $authorization->updated_at->format('Y-m-d (H:i)') }}</div>
+                    @endif
+                    <div>{{ $authorization->employee_name }} ({{ $authorization->employee_position }})</div>
+                </div>
+                @if (!$loop->last)
+                <div class="mr-3">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+    @if ($armadaticket->status == 0)
+    <div class="text-center mt-3 d-flex flex-row justify-content-center">
+        <button type="button" class="btn btn-primary mr-2" 
+        @if (!$isRequirementFinished)
+            disabled 
+        @else 
+            onclick="startAuthorization('{{ $armadaticket->id }}', '{{ $armadaticket->updated_at }}')"
+        @endif>Mulai Otorisasi</button>
+        <button type="button" class="btn btn-danger mr-2">Batalkan Pengadaan</button>
+    </div>
+    <div class="text-danger small text-center mt-1">*otorisasi dapat dimulai setelah melengkapi kelengkapan</div>
+    @endif
+    @if ($armadaticket->status == 1 && ($armadaticket->current_authorization()->employee_id ?? -1) == Auth::user()->id)
+    <div class="text-center mt-3 d-flex flex-row justify-content-center">
+        <button type="button" class="btn btn-success mr-2" onclick="approveAuthorization('{{ $armadaticket->id }}')">Approve</button>
+        <button type="button" class="btn btn-danger mr-2" onclick="">Reject</button>
+    </div> 
+    @endif
 </div>
 <form id="submitform">
     @csrf
@@ -124,6 +171,22 @@
 </form>
 @endsection
 @section('local-js')
+<script>
+    function startAuthorization(armada_ticket_id,updated_at){
+        $('#submitform').prop('action', '/startarmadaauthorization');
+        $('#submitform').prop('method', 'POST');
+        $('#submitform').find('div').append('<input type="hidden" name="armada_ticket_id" value="'+armada_ticket_id+'">');
+        $('#submitform').find('div').append('<input type="hidden" name="updated_at" value="'+updated_at+'">');
+        $('#submitform').submit();
+    }
+
+    function approveAuthorization(armada_ticket_id){
+        $('#submitform').prop('action', '/approvearmadaauthorization');
+        $('#submitform').find('div').append('<input type="hidden" name="armada_ticket_id" value="'+armada_ticket_id+'">');
+        $('#submitform').prop('method', 'POST');
+        $('#submitform').submit();
+    }
+</script>
 {{-- form perpanjangan perhentian --}}
 <script>
     let formperpanjangan = $('#formperpanjangan');

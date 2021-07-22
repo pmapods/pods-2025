@@ -19,6 +19,21 @@ class ArmadaTicket extends Model
         return ArmadaType::find($this->armada_type_id);
     }
 
+    public function authorizations(){
+        return $this->hasMany(ArmadaTicketAuthorization::class);
+    }
+
+    public function current_authorization(){
+        $queue = $this->authorizations->where('status',0)->sortBy('level');
+        $current = $queue->first();
+        if($this->status >= 2){
+            // authorization done
+            return null;
+        }else{
+            return $current;
+        }
+    }
+
     public function armada(){
         return Armada::find($this->armada_id);
     }
@@ -28,7 +43,15 @@ class ArmadaTicket extends Model
             case '0':
                 return 'Pengadaan Baru';
                 break;
-                
+            
+            case '1':
+                return 'Dalam proses otorisasi';
+                break;
+            
+            case '2':
+                return 'Selesai otorisasi tiket';
+                break;
+
             case '-1':
                 return 'Batal';
                 break;
