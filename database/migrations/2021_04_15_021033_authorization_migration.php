@@ -18,13 +18,14 @@ class AuthorizationMigration extends Migration
             // salespoint_id untuk form pengadaan
             $table->integer('salespoint_id')->nullable();
             $table->tinyInteger('form_type')->default(0);
-            // 0 form pengadaan
+            // 0 form pengadaan barang jasa
             // 1 form bidding
             // 2 form pr
             // 3 form po
             // 4 form fasilitas
             // 5 form mutasi
-            // 5 form perpanjangan perhentian
+            // 6 form perpanjangan perhentian
+            // 7 form pengadaan armada
             $table->timestamps();
         });
 

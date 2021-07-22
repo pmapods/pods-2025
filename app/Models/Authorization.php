@@ -20,7 +20,7 @@ class Authorization extends Model
     public function form_type_name(){
         switch ($this->form_type) {
             case 0:
-                return 'Form Pengadaan';
+                return 'Form Pengadaan Barang Jasa';
                 break;
             case 1:
                 return 'Form Bidding';
@@ -39,6 +39,9 @@ class Authorization extends Model
                 break;
             case 6:
                 return 'Form Perpanjangan / Perhentian';
+                break;
+            case 7:
+                return 'Form Pengadaan Armada';
                 break;
             default:
                 return 'form_type_undefined';

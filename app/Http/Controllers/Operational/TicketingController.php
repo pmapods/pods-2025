@@ -100,7 +100,8 @@ class TicketingController extends Controller
             return view('Operational.securitydetail');
         }
         if($request->ticketing_type == '2'){
-            return view('Operational.Armada.newarmadaticket',compact('available_salespoints','budget_category_items','vendors','filecategories'));
+            $armada_ticket_authorizations = Authorization::whereIn('salespoint_id',$user_location_access)->where('form_type',7)->get();
+            return view('Operational.Armada.newarmadaticket',compact('available_salespoints','vendors','armada_ticket_authorizations'));
         }
         return back()->with('error','Terjadi Kesalahan silahkan mencoba lagi');
         

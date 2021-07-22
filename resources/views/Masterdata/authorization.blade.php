@@ -106,6 +106,7 @@
                                 <option value="1">Form Bidding</option>
                                 <option value="2">Form PR</option>
                                 <option value="3">Form PO</option>
+                                <option value="7">Form Pengadaan Armada</option>
                                 <option value="4">Form Fasilitas</option>
                                 <option value="5">Form Mutasi</option>
                                 <option value="6">Form Perpanjangan / Perhentian</option>
@@ -220,10 +221,11 @@
                             <label class="required_field">Jenis Form</label>
                             <select class="form-control form_type" name="form_type" required disabled>
                                 <option value="">-- Pilih Jenis Form --</option>
-                                <option value="0">Form Pengadaan</option>
+                                <option value="0">Form Pengadaan Barang Jasa</option>
                                 <option value="1">Form Bidding</option>
                                 <option value="2">Form PR</option>
                                 <option value="3">Form PO</option>
+                                <option value="7">Form Pengadaan Armada</option>
                                 <option value="4">Form Fasilitas</option>
                                 <option value="5">Form Mutasi</option>
                                 <option value="6">Form Perpanjangan / Perhentian</option>
@@ -317,6 +319,7 @@
     let formfasilitas = ['Menyetujui,','Pemohon,'];
     let formmutasi = ['Dibuat Oleh','Diperiksa Oleh','Disetujui Oleh'];
     let formperpanjangan = ['Yang Mengajukan','Diketahui Oleh','Disetujui'];
+    let formpengadaanarmada = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -373,6 +376,9 @@
                     break;
                 case "6":
                     value_array = formperpanjangan;
+                    break;
+                case "7":
+                    value_array = formpengadaanarmada;
                     break;
                 default:
                     return;

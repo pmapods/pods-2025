@@ -28,6 +28,8 @@ class ArmadaTicketingMigration extends Migration
             $table->tinyInteger('status')->default(0);
             // -1 Terminated
             // 0 New
+            // 1 Pending Authorization
+            // 2 Finish Authorization
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
@@ -37,6 +39,23 @@ class ArmadaTicketingMigration extends Migration
             $table->foreign('armada_type_id')->references('id')->on('armada_type');
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        Schema::create('armada_ticket_authorization', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('armada_ticket_id')->unsigned();
+            $table->integer('employee_id')->unsigned();
+            $table->string('employee_name');
+            $table->string('as');
+            $table->string('employee_position');
+            $table->tinyInteger('level');
+            $table->tinyInteger('status')->default(0);
+            // 0 pending
+            // 1 approved
+            // -1 reject
+            $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');
+            $table->foreign('employee_id')->references('id')->on('employee');
+            $table->timestamps();
         });
 
         Schema::create('facility_form', function (Blueprint $table) {
@@ -51,14 +70,13 @@ class ArmadaTicketingMigration extends Migration
             $table->date('tanggal_mulai_kerja');
             $table->string('golongan');
             $table->enum('status_karyawan', ['percobaan', 'tetap']);
-            $table->tinyInteger('status')->default(0);
             $table->json('facilitylist')->nullable();
             $table->text('notes')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
-            // 0 new / approval pending
-            // 1 approved
+            $table->tinyInteger('status')->default(0);
+            // 0 new / waiting for approval
             // -1 terminated
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');

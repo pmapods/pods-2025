@@ -119,14 +119,40 @@
                   </select>
                 </div>
             </div>
-            {{-- <div class="col-md-3">
+            <div class="col-md-12">
                 <div class="form-group">
-                  <label class="required_field">Tanggal Setup</label>
-                  <input type="date" class="form-control setup_date" name="setup_date" required disabled>
+                  <label class="required_field">Pilih Otorisasi</label>
+                  <select class="form-control" id="authorization" name="authorization_id" required>
+                    <option>-- Pilih Otorisasi --</option>
+                    @foreach ($armada_ticket_authorizations as $authorization)
+                        @php
+                            $list= $authorization->authorization_detail;
+                            $string = "";
+                            foreach ($list as $key=>$author){
+                                $string = $string.$author->employee->name;
+                                $open = $author->employee_position;
+                                if(count($list)-1 != $key){
+                                    $string = $string.' -> ';
+                                }
+                            }
+                        @endphp
+                        <option value="{{ $authorization->id }}" data-list="{{ $list }}">{{$string}}</option>
+                    @endforeach
+                  </select>
                 </div>
-            </div> --}}
+            </div>
+            <div class="col-md-12 d-flex flex-row justify-content-center align-items-center" id="authorization_field">
+                {{-- <div class="d-flex text-center flex-column mr-3">
+                    <div class="font-weight-bold">Sebagai</div>
+                    <div>Kevin Farel</div>
+                    <div class="text-secondary">(Staff)</div>
+                </div>
+                <div class="mr-3">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </div> --}}
+            </div>
         </div>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center mt-3">
             <button type="submit" class="btn btn-primary">Buat Ticket Armada</button>
         </div>
     </form>
@@ -236,15 +262,18 @@ $(document).ready(function () {
         }
     });
 
-    // $('.armada_type').change(function() {
-    //     let armada_type_id = $(this).val();
-    //     $('.setup_date').prop('disabled',true);
-    //     $('.setup_date').val("");
-    //     if(armada_type_id != ""){
-    //         $('.setup_date').prop('disabled',false);
-    //     }
-    //     $('.setup_date').trigger('change');
-    // });
+    $('#authorization').change(function() {
+        let list = $(this).find('option:selected').data('list');
+        $('#authorization_field').empty();
+        if(list !== undefined){
+            list.forEach(function(item,index){
+                $('#authorization_field').append('<div class="d-flex text-center flex-column mr-3"><div class="font-weight-bold">'+item.sign_as+'</div><div>'+item.employee.name+'</div><div class="text-secondary">('+item.employee_position.name+')</div></div>');
+                if(index != list.length -1){
+                    $('#authorization_field').append('<div class="mr-3"><i class="fa fa-chevron-right" aria-hidden="true"></i></div>');
+                }
+            });
+        }
+    })
 });
 </script>
 @endsection

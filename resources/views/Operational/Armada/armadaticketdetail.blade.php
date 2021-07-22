@@ -116,9 +116,7 @@
         </div>
         @endif
     </div>
-    <div class="d-flex justify-content-center mt-3">
-        <button type="submit" class="btn btn-danger">Batalkan Pengadaan Armada</button>
-    </div>
+
 </div>
 <form id="submitform">
     @csrf
