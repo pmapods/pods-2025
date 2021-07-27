@@ -32,13 +32,16 @@
                         Kode Tiket
                     </th>
                     <th>
+                        Tipe Pengadaan
+                    </th>
+                    <th>
                         SalesPoint
                     </th>
                     <th>
                         Tanggal Permintaan
                     </th>
                     <th>
-                        Tanggal Selesai Otorisasi
+                        Tanggal Selesai Otorisasi PR
                     </th>
                     <th>
                         Status
@@ -50,6 +53,7 @@
                 <tr>
                     <td>{{$key+1}}</td>
                     <td>{{$ticket->code}}</td>
+                    <td>{{$ticket->type}}</td>
                     <td>{{$ticket->salespoint->name}}</td>
                     <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
                     <td>{{$ticket->pr->last_authorization()->updated_at->translatedFormat('d F Y (H:i)')}}</td>

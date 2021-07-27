@@ -16,9 +16,13 @@ class PoMigration extends Migration
     {
         Schema::create('po', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('ticket_id')->unsigned();
-            $table->integer('ticket_vendor_id')->unsigned();
+            $table->integer('ticket_id')->nullable();
+            $table->integer('ticket_vendor_id')->nullable();
+            $table->integer('armada_ticket_id')->nullable();
+
+            $table->string('vendor_name')->default('unset');
             $table->string('vendor_address')->default('unset');
+            $table->string('send_name')->default('unset');
             $table->string('send_address')->default('unset');
             $table->integer('payment_days')->default(-1);
             $table->string('no_pr_sap')->default('unset');
@@ -44,8 +48,6 @@ class PoMigration extends Migration
 
             $table->string('last_mail_send_to')->nullable();
             $table->string('po_upload_request_id')->nullable();
-            $table->foreign('ticket_id')->references('id')->on('ticket');
-            $table->foreign('ticket_vendor_id')->references('id')->on('ticket_vendor');
             $table->SoftDeletes();
             $table->timestamps();
         });
@@ -53,15 +55,14 @@ class PoMigration extends Migration
         Schema::create('po_detail', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('po_id')->unsigned();
+            $table->integer('ticket_item_id')->nullable();
             $table->string('item_name');
             $table->string('item_description');
-            $table->integer('ticket_item_id')->unsigned();
             $table->string('uom')->default('AU');
             $table->integer('qty');
             $table->integer('item_price');
             $table->string('delivery_notes')->nullable();
             $table->foreign('po_id')->references('id')->on('po');
-            $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->SoftDeletes();
             $table->timestamps();
         });
@@ -106,5 +107,9 @@ class PoMigration extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('po');
+        Schema::dropIfExists('po_detail');
+        Schema::dropIfExists('po_authorization');
+        Schema::dropIfExists('po_upload_request');
     }
 }

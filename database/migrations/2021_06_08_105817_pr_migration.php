@@ -15,7 +15,8 @@ class PrMigration extends Migration
     {
         Schema::create('pr', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('ticket_id')->unsigned();
+            $table->integer('ticket_id')->nullable();
+            $table->integer('armada_ticket_id')->nullable();
             $table->integer('created_by');
             $table->tinyInteger('status')->default(0);
             // 0 Menunggu proses otorisasi
@@ -25,7 +26,6 @@ class PrMigration extends Migration
             $table->integer('assetnumber_by')->nullable();
             $table->integer('rejected_by')->nullable();
             $table->string('reject_reason')->nullable();
-            $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->SoftDeletes();
             $table->timestamps();
         });
@@ -33,9 +33,10 @@ class PrMigration extends Migration
         Schema::create('pr_detail', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('pr_id')->unsigned();
-            $table->integer('ticket_item_id')->unsigned();
+            $table->integer('ticket_item_id')->nullable();
+            $table->string('name');
             $table->integer('qty');
-            $table->double('price');
+            $table->double('price')->nullable();
             $table->string('uom')->nullable();
             $table->date('setup_date')->nullable();
             $table->string('notes')->nullable();
@@ -47,7 +48,6 @@ class PrMigration extends Migration
             $table->datetime('asset_number_at')->nullable();
 
             $table->foreign('pr_id')->references('id')->on('pr');
-            $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->SoftDeletes();
             $table->timestamps();
         });

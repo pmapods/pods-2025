@@ -19,6 +19,14 @@ class ArmadaTicket extends Model
         return ArmadaType::find($this->armada_type_id);
     }
 
+    public function pr(){
+        return $this->hasOne(Pr::class);
+    }
+
+    public function po(){
+        return $this->hasMany(Po::class);
+    }
+
     public function authorizations(){
         return $this->hasMany(ArmadaTicketAuthorization::class);
     }
@@ -49,9 +57,20 @@ class ArmadaTicket extends Model
                 break;
             
             case '2':
-                return 'Selesai otorisasi tiket';
+                return 'Menunggu Proses PR';
                 break;
 
+            case '3':
+                return 'Memulai Otorisasi PR';
+                break;
+
+            case '4':
+                return 'Otorisasi PR selesai. Menunggu Nomor Asset';
+                break;
+
+            case '5':
+                return 'PR selesai. Menunggu proses PO';
+                break;
             case '-1':
                 return 'Batal';
                 break;
@@ -60,6 +79,13 @@ class ArmadaTicket extends Model
                 return 'item_type_undefined';
                 break;
         }
+        
+            // -1 Terminated
+            // 0 New
+            // 1 Pending Authorization
+            // 2 Finish Authorization
+            // 3 Otorisasi PR Dimulai
+            // 4 Otorisasi Selesai
     }
 
     public function type(){

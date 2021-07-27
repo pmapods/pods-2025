@@ -14,6 +14,10 @@ class Pr extends Model
     public function ticket(){
         return $this->belongsTo(Ticket::class);
     }
+    
+    public function armada_ticket(){
+        return $this->belongsTo(ArmadaTicket::class);
+    }
 
     public function pr_detail(){
         return $this->hasMany(PrDetail::class);

@@ -60,13 +60,24 @@
 @endphp
 <body>
     <div>PT. PINUS MERAH ABADI</div>
+    @isset ($ticket)
     <div>Cabang / Depo : {{$ticket->salespoint->name}}</div>
+    @endisset
+    @isset ($armadaticket)
+    <div>Cabang / Depo : {{$armadaticket->salespoint->name}}</div>
+    @endisset
     <center>
         <div style="font-weight: bold; font-size: 20px">PURCHASE REQUISITION (PR) - MANUAL</div>
     </center>
     <div style="float:right">
+        @isset ($ticket)
         <input type="checkbox" style="margin-top:5px" @if($ticket->budget_type==0) checked="checked" @endif> Budget
         <input type="checkbox" style="margin-left: 15px; margin-top:5px" @if($ticket->budget_type==1) checked="checked" @endif> Non Budget
+        @endisset
+        @isset ($armadaticket)
+        <input type="checkbox" style="margin-top:5px" checked="checked"> Budget
+        <input type="checkbox" style="margin-left: 15px; margin-top:5px"> Non Budget
+        @endisset
     </div>
     
     <table class="table table-bordered item_table" style="margin-top: 3em !important">
@@ -84,33 +95,49 @@
         </thead>
         <tbody>
             @foreach ($pr->pr_detail as $key => $pr_detail)
-                <tr>
-                    <td>{{$key+1}}</td>
-                    <td>{{$pr_detail->ticket_item->name}}</td>
-                    <td>{{$pr_detail->uom}}</td>
-                    <td>{{$pr_detail->qty}}</td>
-                    <td>{{setRupiah($pr_detail->price)}}</td>
-                    <td>{{setRupiah($pr_detail->price * $pr_detail->qty)}}</td>
-                    <td>{{$pr_detail->setup_date ?? '-'}}</td>
-                    <td>
-                        @if($pr_detail->ticket_item->bidding->price_notes && $pr_detail->ticket_item->bidding->price_notes != '-')
-                        <b>notes bidding harga</b><br>
-                        <span>{{$pr_detail->ticket_item->bidding->price_notes}}</span><br>
-                        @endif
-                        @if($pr_detail->ticket_item->bidding->ketersediaan_barang_notes && $pr_detail->ticket_item->bidding->ketersediaan_barang_notes != '-')
-                        <b>notes keterangan barang</b><br>
-                        <span>{{$pr_detail->ticket_item->bidding->ketersediaan_barang_notes}}</span><br>
-                        @endif
-                        @if($pr_detail->notes && $pr_detail->notes != '-')
-                        <b>Keterangan</b><br>
-                        <span>{{$pr_detail->notes ?? '-'}}</span><br>
-                        @endif
-                        @isset($pr_detail->asset_number)
-                            <b>Nomor Asset</b><br>
-                            <span>{{$pr_detail->asset_number}}</span>
-                        @endisset
-                    </td>
-                </tr>
+            @isset ($ticket)   
+            <tr>
+                <td>{{$key+1}}</td>
+                <td>{{$pr_detail->ticket_item->name}}</td>
+                <td>{{$pr_detail->uom}}</td>
+                <td>{{$pr_detail->qty}}</td>
+                <td>{{setRupiah($pr_detail->price)}}</td>
+                <td>{{setRupiah($pr_detail->price * $pr_detail->qty)}}</td>
+                <td>{{$pr_detail->setup_date ?? '-'}}</td>
+                <td>
+                    @if($pr_detail->ticket_item->bidding->price_notes && $pr_detail->ticket_item->bidding->price_notes != '-')
+                    <b>notes bidding harga</b><br>
+                    <span>{{$pr_detail->ticket_item->bidding->price_notes}}</span><br>
+                    @endif
+                    @if($pr_detail->ticket_item->bidding->ketersediaan_barang_notes && $pr_detail->ticket_item->bidding->ketersediaan_barang_notes != '-')
+                    <b>notes keterangan barang</b><br>
+                    <span>{{$pr_detail->ticket_item->bidding->ketersediaan_barang_notes}}</span><br>
+                    @endif
+                    @if($pr_detail->notes && $pr_detail->notes != '-')
+                    <b>Keterangan</b><br>
+                    <span>{{$pr_detail->notes ?? '-'}}</span><br>
+                    @endif
+                    @isset($pr_detail->asset_number)
+                        <b>Nomor Asset</b><br>
+                        <span>{{$pr_detail->asset_number}}</span>
+                    @endisset
+                </td>
+            </tr>
+            @endisset
+            @isset ($armadaticket)
+            <tr>
+                <td>{{$key+1}}</td>
+                <td>{{$pr_detail->name}}</td>
+                <td>{{$pr_detail->uom}}</td>
+                <td>{{$pr_detail->qty}}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>{{$pr_detail->setup_date ?? '-'}}</td>
+                <td width="20%" class="d-flex flex-column">
+                    <span>{{ $pr_detail->notes }}</span>
+                </td>
+            </tr>   
+            @endisset
             @endforeach
         </tbody>
     </table>

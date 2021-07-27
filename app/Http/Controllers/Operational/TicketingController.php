@@ -457,8 +457,9 @@ class TicketingController extends Controller
             do {
                 $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($total_count+1)).($total_count+1);
                 $total_count++;
-                $checkticket = Ticket::where('code',$code)->first();
-                ($checkticket)? $flag = false : $flag = true;
+                $checkbarang = Ticket::where('code',$code)->first();
+                $checkarmada = ArmadaTicket::where('code',$code)->first();
+                ($checkticket != null || $checkarmada != null)? $flag = false : $flag = true;
             } while (!$flag);
             $old_code               = $ticket->code;
             $ticket->code           = $code;

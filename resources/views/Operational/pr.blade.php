@@ -41,6 +41,9 @@
                         Kode Tiket
                     </th>
                     <th>
+                        Tipe Pengadaan
+                    </th>
+                    <th>
                         SalesPoint
                     </th>
                     <th>
@@ -56,6 +59,7 @@
                 <tr>
                     <td>{{$key+1}}</td>
                     <td>{{$ticket->code}}</td>
+                    <td>{{$ticket->type}}</td>
                     <td>{{$ticket->salespoint->name}}</td>
                     <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
                     <td>

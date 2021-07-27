@@ -58,7 +58,7 @@ class EmployeeSeeder extends Seeder
             $access = new EmployeeMenuAccess;
             $access->employee_id = $newEmployee->id;
             $access->masterdata = 0;
-            $access->operational = 1;
+            $access->operational = 5;
             $access->save();
         }
 

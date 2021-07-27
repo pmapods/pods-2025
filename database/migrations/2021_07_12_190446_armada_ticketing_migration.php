@@ -30,6 +30,8 @@ class ArmadaTicketingMigration extends Migration
             // 0 New
             // 1 Pending Authorization
             // 2 Finish Authorization
+            // 3 Otorisasi PR Dimulai
+            // 4 Otorisasi Selesai \ Menunggu Submit Nomor Asset
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();

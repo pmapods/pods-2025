@@ -43,8 +43,9 @@ use App\Models\SalesPoint;
             do {
                 $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($total_count+1)).($total_count+1);
                 $total_count++;
-                $checkticket = ArmadaTicket::where('code',$code)->first();
-                ($checkticket)? $flag = false : $flag = true;
+                $checkbarang = Ticket::where('code',$code)->first();
+                $checkarmada = ArmadaTicket::where('code',$code)->first();
+                ($checkbarang != null || $checkarmada != null) ? $flag = false : $flag = true;
             } while (!$flag);
 
             $newTicket                   = new ArmadaTicket;
@@ -195,7 +196,7 @@ use App\Models\SalesPoint;
                 $armadaticket->status += 1;
                 $armadaticket->save();
             }
-            return back()->with('success','Berhasil memulai otorisasi pengadaan armada '.$armadaticket->code.'. Otorisasi selanjutnya oleh '.$armadaticket->current_authorization()->employee->name);
+            return back()->with('success','Berhasil memulai otorisasi pengadaan armada '.$armadaticket->code.'. Otorisasi selanjutnya oleh '.$armadaticket->current_authorization()->employee_name);
         } catch (\Exception $ex) {
             dd($ex);
             return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage());

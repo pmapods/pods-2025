@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Operational;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
+use App\Models\ArmadaTicket;
 use App\Models\Ticket;
 use App\Models\TicketVendor;
 use App\Models\Po;
@@ -28,25 +29,50 @@ class POController extends Controller
 {
     public function poView(){
         $salespoint_ids = Auth::user()->location_access->pluck('salespoint_id');
-        $tickets = Ticket::where('status','>',5)
+        $barangjasatickets = Ticket::where('status','>',5)
         ->whereIn('salespoint_id',$salespoint_ids)
         ->get();
+
+        $armadatickets = ArmadaTicket::whereIn('status',[5,6,7])
+        ->whereIn('salespoint_id',$salespoint_ids)->get();
+
+        $tickets = array();
+        foreach($barangjasatickets as $ticket){
+            $ticket->type = "Barang Jasa";
+            array_push($tickets,$ticket);
+        }
+
+        foreach($armadatickets as $ticket){
+            $ticket->type = "Armada";
+            array_push($tickets,$ticket);
+        }
         return view('Operational.po', compact('tickets'));
     }
 
     public function podetailView($ticket_code){
         try {
             $ticket = Ticket::where('code',$ticket_code)->first();
-            if($ticket ==  null){
+            $armadaticket = ArmadaTicket::where('code',$ticket_code)->first();
+            if($ticket ==  null && $armadaticket == null){
                 throw new \Exception("Ticket tidak ditemukan");
             }
-            if($ticket->po->count() > 0){
-                $authorization_list = Authorization::where('form_type',3)->get();
-                return view('Operational.podetail',compact('ticket','authorization_list'));
-            }else{
-                return view('Operational.poitemselection',compact('ticket'));
+            if($ticket != null){
+                if($ticket->po->count() > 0){
+                    $authorization_list = Authorization::where('form_type',3)->get();
+                    return view('Operational.podetail',compact('ticket','authorization_list'));
+                }else{
+                    return view('Operational.poitemselection',compact('ticket'));
+                }
             }
-        } catch (\Exception $ex) {
+            if($armadaticket != null){
+                if($armadaticket->po->count() > 0){
+                    $authorization_list = Authorization::where('form_type',3)->get();
+                    return view('Operational.podetail',compact('ticket','authorization_list'));
+                }else{
+                    return view('Operational.poitemselection',compact('ticket'));
+                }
+            }
+        } catch (Exception $ex) {
             return back()->with('error',$ex->getMessage());
         }
     }
