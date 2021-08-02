@@ -119,8 +119,17 @@ use App\Models\SalesPoint;
                 ->whereMonth('facility_form.created_at', Carbon::now()->month)
                 ->withTrashed()
                 ->count();
-            
-            $code = $salespoint_initial.'/'.$count.'/FF/'.numberToRoman(intval($currentmonth)).'/'.$currentyear;
+                
+            do{
+                $flag = true;
+                $code = $salespoint_initial.'/'.$count.'/FF/'.numberToRoman(intval($currentmonth)).'/'.$currentyear;
+                $count++;
+                $checkFacilityForm = FacilityForm::where('code', $code)->first();
+                if($checkFacilityForm != null){
+                    $flag = false;
+                }
+            }while(!$flag);
+
             $form                       = new FacilityForm;
             $form->armada_ticket_id     = $request->armada_ticket_id;
             $form->salespoint_id        = $request->salespoint_id;
@@ -184,6 +193,31 @@ use App\Models\SalesPoint;
             DB::rollback();
             dd($ex);
             return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
+        }
+    }
+
+    public function uploadBASTK(Request $request){
+        try{
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::findOrFail($request->arnada_ticket_id);
+
+            $salespointname = str_replace(' ','_',$armadaticket->salespoint->name);
+            $ext = pathinfo($request->file('bastk_file')->getClientOriginalName(), PATHINFO_EXTENSION);
+            $name = "BASTK_".$salespointname.'.'.$ext;
+            $path = "/attachments/ticketing/barangjasa/".$armadaticket->code.'/'.$name;
+            $file = pathinfo($path);
+            $path = $request->file('bastk_file')->storeAs($file['dirname'],$file['basename'],'public');
+            $armadaticket->bastk_path = $path;
+            $armadaticket->finished_date = date('Y-m-d');
+            $armadaticket->status = 6;
+            $armadaticket->save();
+
+            DB::commit();
+            return back()->with('success','Berhasil melakukan upload file BASTK');
+        }catch(\Exception $ex){
+            dd($ex);
+            DB::rollback();
+            return back()->with('error','Berhasil melakukan upload file BASTK');
         }
     }
 

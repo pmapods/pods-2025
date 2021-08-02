@@ -19,7 +19,7 @@ class ArmadaMigration extends Migration
             $table->string('name');
             $table->string('brand_name');
             $table->string('alias')->nullable();
-            $table->boolean('isNiagda'); 
+            $table->boolean('isNiaga'); 
             $table->softDeletes();
             $table->timestamps();
         });

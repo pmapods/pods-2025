@@ -213,7 +213,7 @@ class PRController extends Controller
     
                 $detail                     = new PrDetail;
                 $detail->pr_id              = $pr->id;
-                $detail->name               = $armadaticket->armada_type()->name;
+                $detail->name               = $armadaticket->armada_type()->name.' '.$armadaticket->armada_type()->brand_name;
                 $detail->qty                = 1;
                 $detail->uom                = 'Unit';
                 do {

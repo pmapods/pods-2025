@@ -124,7 +124,7 @@
             <div class="address small">Jl. Soekarno Hatta 112<br>Babakan Ciparay, Babakan Ciparay<br>Bandung 40233 - Jawa Barat</div>
             <div class="vendor_address">
                 <b>Kepada Yth / To :</b><br>
-                {{$po->ticket_vendor->name}}<br>
+                {{$po->vendor_name}}<br>
                 {{$po->vendor_address}}
             </div>
             <div class="kami_memesan_text small">Kami memesan barang / produk sebagai berikut</div>
@@ -158,11 +158,13 @@
             </div>
             <div class="small" style="margin-top: 1em">Alamat kirim / Delivery Address</div>
             <div>
-                {{$po->ticket_vendor->name}}<br>
+                {{$po->vendor_name}}<br>
                 {{$po->send_address}}
-                @if($po->ticket_vendor->vendor() != null)
-                <br>
-                ({{$po->ticket_vendor->vendor()->regency->name}})
+                @if ($po->ticket_id != null)
+                    @if($po->ticket_vendor->vendor() != null)
+                    <br>
+                    ({{$po->ticket_vendor->vendor()->regency->name}})
+                    @endif
                 @endif
             </div>
         </div>
@@ -176,14 +178,14 @@
                 <th>Jumlah</th>
                 <th>Harga/ Unit</th>
                 <th class="text-right">Jumlah</th>
-                <th class="text-center">Tgl kirim</th>
+                <th width="20%" class="text-center">Tgl kirim</th>
             </tr>
             <tr>
                 <th><i>Description of Goods</i></th>
                 <th><i>Quantity</i></th>
                 <th><i>Unit Price</i></th>
                 <th class="text-right"><i>Amount</i></th>
-                <th class="text-center"><i>Delivery Date</i></th>
+                <th width="20%" class="text-center"><i>Delivery Date</i></th>
             </tr>
         </thead>
         <tbody>

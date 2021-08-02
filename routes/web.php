@@ -144,6 +144,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/approvearmadaauthorization',[ArmadaTicketingController::class, 'approveArmadaAuthorization']);
         Route::post('/addfacilityform',[ArmadaTicketingController::class, 'addFacilityForm']);
         Route::post('/approvefacilityform',[ArmadaTicketingController::class, 'approveFacilityForm']);
+        Route::post('/uploadbastk',[ArmadaTicketingController::class, 'uploadBASTK']);
         Route::get('/getarmadatypebyniaga/{isNiaga}',[ArmadaController::class, 'getArmadaTypebyNiaga']);
         Route::get('/getarmada',[ArmadaController::class, 'getArmada']);
     });

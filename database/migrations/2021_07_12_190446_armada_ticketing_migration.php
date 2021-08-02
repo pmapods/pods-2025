@@ -32,11 +32,14 @@ class ArmadaTicketingMigration extends Migration
             // 2 Finish Authorization
             // 3 Otorisasi PR Dimulai
             // 4 Otorisasi Selesai \ Menunggu Submit Nomor Asset
+            // 5 Dalam Proses PO
+            // 6 Selesai / sudah diterima
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
             $table->date('requirement_date');
             $table->date('finished_date')->nullable();
+            $table->string('bastk_path')->nullable();
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('armada_type_id')->references('id')->on('armada_type');
             $table->timestamps();

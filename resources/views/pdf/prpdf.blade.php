@@ -134,7 +134,11 @@
                 <td>-</td>
                 <td>{{$pr_detail->setup_date ?? '-'}}</td>
                 <td width="20%" class="d-flex flex-column">
-                    <span>{{ $pr_detail->notes }}</span>
+                    <div>{{ $pr_detail->notes }}</div>
+                    @isset($pr_detail->asset_number)
+                        <b>Nomor Asset</b><br>
+                        <div>{{$pr_detail->asset_number}}</div>
+                    @endisset
                 </td>
             </tr>   
             @endisset

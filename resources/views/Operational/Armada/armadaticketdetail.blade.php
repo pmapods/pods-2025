@@ -104,24 +104,121 @@
             $isRequirementFinished = true;
         @endphp
         @if ($armadaticket->isNiaga == false && $armadaticket->ticketing_type == 0)
-        <div class="col-md-6">
-            @php 
-                if(($armadaticket->facility_form->status ?? -1) != 1){
-                    $isRequirementFinished = false;
-                }
-            @endphp
-            @include('Operational.Armada.formfasilitas')
-        </div>
+            <div class="col-md-6">
+                @php 
+                    if(($armadaticket->facility_form->status ?? -1) != 1){
+                        $isRequirementFinished = false;
+                    }
+                @endphp
+                @include('Operational.Armada.formfasilitas')
+            </div>
         @endif
         @if ($armadaticket->ticketing_type == 1)
-        <div class="col-md-6">
-            @include('Operational.Armada.formperpanjanganperhentian')
-        </div>
+            <div class="col-md-6">
+                @include('Operational.Armada.formperpanjanganperhentian')
+            </div>
         @endif
         @if ($armadaticket->ticketing_type == 2)
-        <div class="col-md-6">
-            @include('Operational.Armada.formmutasi')
-        </div>
+            <div class="col-md-6">
+                @include('Operational.Armada.formmutasi')
+            </div>
+        @endif
+        @if ($armadaticket->status == 5)
+            <div class="col-md-12 pt-3">
+                <h5>Upload Dokumen Penerimaan</h5>
+                <div class="row">
+                    <div class="col-1">
+                        <b>Status PO</b>
+                    </div>
+                    <div class="col-11">
+                        :
+                        @if ($armadaticket->po->count()>0)
+                            @php
+                                $po = $armadaticket->po->first();
+                            @endphp
+                            @switch($po->status)
+                                @case(0)
+                                    PO sudah diterbitkan
+                                    @break
+                                @case(1)
+                                    Purchasing PMA sudah upload dokumen dengan ttd basah
+                                    @break
+                                @case(2)
+                                    Supplier sudah upload tanda tangan basah
+                                    @break
+                                @case(3)
+                                    Selesai / Tanda Tangan sudah lengkap 
+                                    <a class="text-primary font-weight-bold" 
+                                    style="cursor: pointer;" 
+                                    onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
+                                        Tampilkan PO
+                                    </a>
+                                    @break
+                                @default
+                            @endswitch
+                        @else
+                            Menunggu Setup PO
+                        @endif
+                    </div>
+                </div>
+                @if (($armadaticket->po->first()->status ?? -1)== 3)    
+                <form action="/uploadbastk" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="arnada_ticket_id" value="{{ $armadaticket->id }}">
+                    <div class="form-group">
+                        <label class="required_field">Pilih File BASTK lengkap dengan ttd</label>
+                        <input type="file" class="form-control-file validatefilesize" name="bastk_file" accept="image/*,application/pdf" required>
+                        <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit BASTK</button>
+                </form>
+                @endif
+            </div>
+        @endif
+        @if ($armadaticket->status == 6)
+            <div class="col-md-12 pt-3">
+                <h5>Dokumen Penerimaan</h5>
+                <div class="row">
+                    <div class="col-1">
+                        <b>PO</b>
+                    </div>
+                    <div class="col-11">
+                        @php
+                            $po = $armadaticket->po->first();
+                        @endphp
+                        : Selesai / Tanda Tangan sudah lengkap 
+                        <a class="text-primary font-weight-bold" 
+                        style="cursor: pointer;" 
+                        onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
+                            Tampilkan PO
+                        </a>
+                    </div>
+                    
+                    <div class="col-1">
+                        <b>BASTK</b>
+                    </div>
+                    <div class="col-11">
+                        : BASTK berhasil di upload
+                        <a class="text-primary font-weight-bold" 
+                        style="cursor: pointer;" 
+                        onclick='window.open("/storage/{{$armadaticket->bastk_path}}")'>
+                            Tampilkan BASTK
+                        </a>
+                    </div>
+                </div>
+                @if (($armadaticket->po->first()->status ?? -1)== 3 && $armadaticket->status == 5)    
+                <form action="/uploadbastk" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="arnada_ticket_id" value="{{ $armadaticket->id }}">
+                    <div class="form-group">
+                        <label class="required_field">Pilih File BASTK lengkap dengan ttd</label>
+                        <input type="file" class="form-control-file validatefilesize" name="bastk_file" accept="image/*,application/pdf" required>
+                        <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit BASTK</button>
+                </form>
+                @endif
+            </div>
         @endif
     </div>
     <div class="row mt-3">
@@ -172,6 +269,13 @@
 @endsection
 @section('local-js')
 <script>
+    $(document).ready(function() {
+        $('.validatefilesize').change(function(event){
+            if(!validatefilesize(event)){
+                $(this).val('');
+            }
+        });
+    });
     function startAuthorization(armada_ticket_id,updated_at){
         $('#submitform').prop('action', '/startarmadaauthorization');
         $('#submitform').prop('method', 'POST');
