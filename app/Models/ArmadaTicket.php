@@ -65,12 +65,12 @@ class ArmadaTicket extends Model
                 break;
 
             case '4':
-                return 'Otorisasi PR selesai. Menunggu Nomor Asset';
+                return 'Menunggu proses PO';
                 break;
 
             case '5':
-                return 'PR selesai. Menunggu proses PO';
-                break;
+                return 'Pengadaan Armada Selesai';
+                
             case '-1':
                 return 'Batal';
                 break;
@@ -113,6 +113,10 @@ class ArmadaTicket extends Model
 
     public function facility_form(){
         return $this->hasOne(FacilityForm::class);
+    }
+
+    public function perpanjangan_form(){
+        return $this->hasOne(PerpanjanganForm::class);
     }
     
     public function created_by_employee(){

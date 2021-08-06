@@ -39,7 +39,7 @@ class PrMigration extends Migration
             $table->double('price')->nullable();
             $table->string('uom')->nullable();
             $table->date('setup_date')->nullable();
-            $table->string('notes')->nullable();
+            $table->text('notes')->nullable();
             $table->boolean('isAsset')->nullable();
             
             $table->string('asset_number')->nullable();

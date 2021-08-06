@@ -109,6 +109,7 @@
                     if(($armadaticket->facility_form->status ?? -1) != 1){
                         $isRequirementFinished = false;
                     }
+                    if(($armadaticket->facility_form->))
                 @endphp
                 @include('Operational.Armada.formfasilitas')
             </div>
@@ -123,8 +124,8 @@
                 @include('Operational.Armada.formmutasi')
             </div>
         @endif
-        @if ($armadaticket->status == 5)
-            <div class="col-md-12 pt-3">
+        @if ($armadaticket->status == 4)
+            <div class="col-md-6 pl-3">
                 <h5>Upload Dokumen Penerimaan</h5>
                 <div class="row">
                     <div class="col-1">
@@ -175,9 +176,9 @@
                 @endif
             </div>
         @endif
-        @if ($armadaticket->status == 6)
-            <div class="col-md-12 pt-3">
-                <h5>Dokumen Penerimaan</h5>
+        @if ($armadaticket->status == 5)
+            <div class="col-md-6 pl-3">
+                <h5>Dokumen Penerimaan <span class="text-success">(Selesai)</span></h5>
                 <div class="row">
                     <div class="col-1">
                         <b>PO</b>
@@ -206,18 +207,6 @@
                         </a>
                     </div>
                 </div>
-                @if (($armadaticket->po->first()->status ?? -1)== 3 && $armadaticket->status == 5)    
-                <form action="/uploadbastk" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="arnada_ticket_id" value="{{ $armadaticket->id }}">
-                    <div class="form-group">
-                        <label class="required_field">Pilih File BASTK lengkap dengan ttd</label>
-                        <input type="file" class="form-control-file validatefilesize" name="bastk_file" accept="image/*,application/pdf" required>
-                        <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit BASTK</button>
-                </form>
-                @endif
             </div>
         @endif
     </div>
@@ -251,7 +240,7 @@
         @else 
             onclick="startAuthorization('{{ $armadaticket->id }}', '{{ $armadaticket->updated_at }}')"
         @endif>Mulai Otorisasi</button>
-        <button type="button" class="btn btn-danger mr-2">Batalkan Pengadaan</button>
+        <button type="button" class="btn btn-danger mr-2" onclick="terminateTicketing('{{ $armadaticket->id }}', '{{ $armadaticket->updated_at }}')">Batalkan Pengadaan</button>
     </div>
     <div class="text-danger small text-center mt-1">*otorisasi dapat dimulai setelah melengkapi kelengkapan</div>
     @endif
@@ -276,12 +265,30 @@
             }
         });
     });
+
     function startAuthorization(armada_ticket_id,updated_at){
         $('#submitform').prop('action', '/startarmadaauthorization');
         $('#submitform').prop('method', 'POST');
         $('#submitform').find('div').append('<input type="hidden" name="armada_ticket_id" value="'+armada_ticket_id+'">');
         $('#submitform').find('div').append('<input type="hidden" name="updated_at" value="'+updated_at+'">');
         $('#submitform').submit();
+    }
+
+    function terminateTicketing(armada_ticket_id,updated_at){
+        var reason = prompt("Pengadaan yang dibatalkan tidak dapat diajukan kembali. Masukkan alasan pembatalan");
+        $('#submitform').find('div').empty();
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return
+            }
+            $('#submitform').prop('action', '/terminatearmadaticketing');
+            $('#submitform').prop('method', 'POST');
+            $('#submitform').find('div').append('<input type="hidden" name="armada_ticket_id" value="'+armada_ticket_id+'">');
+            $('#submitform').find('div').append('<input type="hidden" name="updated_at" value="'+updated_at+'">');
+            $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
+            $('#submitform').submit();
+        }
     }
 
     function approveAuthorization(armada_ticket_id){

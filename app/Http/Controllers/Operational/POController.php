@@ -34,7 +34,7 @@ class POController extends Controller
         ->whereIn('salespoint_id',$salespoint_ids)
         ->get();
 
-        $armadatickets = ArmadaTicket::whereIn('status',[5,6,7])
+        $armadatickets = ArmadaTicket::whereIn('status',[4])
         ->whereIn('salespoint_id',$salespoint_ids)->get();
 
         $tickets = array();
@@ -70,10 +70,10 @@ class POController extends Controller
                     $authorization_list = Authorization::where('form_type',3)->get();
                     return view('Operational.podetail',compact('armadaticket','authorization_list'));
                 }else{
-                    return view('Operational.poitemselection',compact('armadaticket'));
+                    return view('Operational.Armada.poitemselection',compact('armadaticket'));
                 }
             }
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             return back()->with('error',$ex->getMessage());
         }
     }
@@ -185,22 +185,54 @@ class POController extends Controller
                 if($armadaticket->po->count() > 0){
                     return back()->with('error','PO sudah di setup sebelumnya');
                 }
+                $item_name = $armadaticket->pr->pr_detail->first()->name;
                 
                 $newPo = new Po;
                 $newPo->armada_ticket_id = $armadaticket->id;
                 $newPo->vendor_name = $request->vendor_name;
                 $newPo->send_name = $armadaticket->salespoint->name;
+                $newPo->has_ppn = true;
+                $newPo->ppn_percentage = 10;
                 $newPo->save();
 
-                $prdetail = PrDetail::find($request->pr_detail_id);
+                // sewa
+                if($request->sewa_value < 10000){
+                    return back()->with('error','Minimal biaya sewa Rp 10.000,-');
+                }
+                $notes = $request->sewa_notes;
+                $value = $request->sewa_value;
+                // jika ada biaya ekspedisi gabungkan dengan biaya sewa 
+                if($request->ekspedisi_count != null){
+                    $notes = $notes ."\r\n".'Biaya Ekspedisi';
+                    $notes = $notes ."\r\n".$request->ekspedisi_notes;
+                    
+                    $value += $request->ekspedisi_value/$request->sewa_count;
+                }
+
+                // biaya sewa
                 $newPoDetail = new PoDetail;
                 $newPoDetail->po_id            = $newPo->id;
-                $newPoDetail->item_name        = $prdetail->name;
-                $newPoDetail->item_description = "";
-                $newPoDetail->uom              = $prdetail->uom;
-                $newPoDetail->qty              = $prdetail->qty;
-                $newPoDetail->item_price       = $request->pr_detail_price;
+                $newPoDetail->item_name        = 'Sewa Armada '.$item_name;
+                $newPoDetail->item_description = $notes;
+                $newPoDetail->uom              = 'AU';
+                $newPoDetail->qty              = $request->sewa_count;
+                $newPoDetail->item_price       = $value;
                 $newPoDetail->save();
+
+                // jika ada prorate tambahkan biaya
+                if($request->prorate_value != null){
+                    if($request->prorate_value < 10000){
+                        return back()->with('error','Minimal biaya prorate Rp 10.000,-');
+                    }
+                    $newPoDetail = new PoDetail;
+                    $newPoDetail->po_id            = $newPo->id;
+                    $newPoDetail->item_name        = 'Prorate Armada '.$item_name;
+                    $newPoDetail->item_description = $request->prorate_notes;
+                    $newPoDetail->uom              = 'AU';
+                    $newPoDetail->qty              = $request->prorate_count;
+                    $newPoDetail->item_price       = $request->prorate_value;
+                    $newPoDetail->save();
+                }
                 
                 $monitor                        = new ArmadaTicketMonitoring;
                 $monitor->armada_ticket_id      = $armadaticket->id;
@@ -214,6 +246,7 @@ class POController extends Controller
             return back()->with('success', 'Berhasil melakukan setting PO. Silahkan melanjutkan penerbitan PO');
         } catch (\Exception $ex) {
             DB::rollback();
+            dd($ex);
             return back()->with('error','Gagal melakukan setting PO. Silahkan hubungi developer atau coba kembali');
         }
     }

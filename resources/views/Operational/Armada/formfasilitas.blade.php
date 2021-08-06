@@ -420,11 +420,13 @@
                 </div>
             </div>
             <span>FRM-HCD-114 REV 00</span>
+            @if ($armadaticket->status != -1)
             <div class="col-12">
                 <center>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </center>
             </div>
+            @endif
         </div>
     </form>
 @endif

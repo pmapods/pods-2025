@@ -140,6 +140,7 @@ Route::middleware(['auth'])->group(function () {
         // Armada
         Route::post('/createarmadaticket',[ArmadaTicketingController::class, 'createArmadaticket']);
         Route::get('/armadaticketing/{code}',[ArmadaTicketingController::class, 'armadaTicketDetail']);
+        Route::post('/terminatearmadaticketing',[ArmadaTicketingController::class, 'terminateArmadaTicketing']);
         Route::post('/startarmadaauthorization',[ArmadaTicketingController::class, 'startArmadaAuthorization']);
         Route::post('/approvearmadaauthorization',[ArmadaTicketingController::class, 'approveArmadaAuthorization']);
         Route::post('/addfacilityform',[ArmadaTicketingController::class, 'addFacilityForm']);

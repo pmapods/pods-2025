@@ -157,8 +157,17 @@
                 </div>
             </div>
             <div class="small" style="margin-top: 1em">Alamat kirim / Delivery Address</div>
+            @php
+                $salespoint_name = "";
+                if($po->armada_ticket_id != null){
+                    $salespoint_name = $po->armada_ticket->salespoint->name;
+                }
+                if($po->ticket_id != null){
+                    $salespoint_name = $po->ticket->salespoint->name;
+                }
+            @endphp
             <div>
-                {{$po->vendor_name}}<br>
+                {{$salespoint_name}}<br>
                 {{$po->send_address}}
                 @if ($po->ticket_id != null)
                     @if($po->ticket_vendor->vendor() != null)
@@ -204,8 +213,8 @@
                     <td style="vertical-align:top">{{$po_detail->qty}} {{($po_detail->uom ?? '')}}</td>
                     <td style="vertical-align:top" class="rupiah_text">{{setRupiah($po_detail->item_price)}}</td>
                     <td style="vertical-align:top" class="rupiah_text text-right">{{setRupiah($po_detail->qty*$po_detail->item_price)}}</td>
-                    <td style="vertical-align:top" class="text-center">
-                        {!! nl2br(e($po_detail->delivery_notes)) !!}
+                    <td style="vertical-align:top; padding-left:5px" class="text-start">
+                        <small>{!! nl2br(e($po_detail->delivery_notes)) !!}</small>
                     </td>
                     @php $subtotal += $po_detail->qty*$po_detail->item_price; @endphp
                 </tr>

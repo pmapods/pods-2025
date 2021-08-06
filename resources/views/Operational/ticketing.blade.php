@@ -32,7 +32,7 @@
                 Tambah Pengadaan Baru
             </button>
             @if(request()->get('status') == -1)
-                <a href="/ticketing" class="btn btn-primary ml-2">Pengadaan Aktif</a>
+                <a href="/ticketing" class="btn btn-success ml-2">Pengadaan Aktif</a>
             @else
                 <a href="/ticketing?status=-1" class="btn btn-info ml-2">History</a>
             @endif

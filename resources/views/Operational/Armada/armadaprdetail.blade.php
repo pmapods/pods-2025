@@ -90,19 +90,6 @@
                                 <div class="d-flex flex-column">
                                     <label class="optional_field">Keterangan</label>
                                     <span>{{ $detail->notes }}</span>
-                                    @if ($armadaticket->status == 4)
-                                        <div class="form-group">
-                                            <label class="required_field">Nomor Asset</label>
-                                            <input type="text" class="form-control" 
-                                            placeholder="Masukkan nomor asset" 
-                                            name="asset_number"
-                                            required>
-                                        </div>
-                                    @endif
-                                    @if ($armadaticket->status > 4)
-                                        <label class="optional_field">Nomor Asset</label>
-                                        <span>{{ $detail->asset_number }}</span>  
-                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -215,11 +202,6 @@
             @if ($armadaticket->status >= 4)
                 <div class="d-flex justify-content-center mt-3">
                     <button onclick="window.open('/printPR/{{$armadaticket->code}}')" class="btn btn-info">Cetak</button>
-                    @if($armadaticket->status == 4)
-                        <button type="button" class="btn btn-primary ml-3" id="submitassetnumber_button">Submit Nomor Asset</button>
-                        <button type="submit" class="d-none"></button>
-                        <button type="button" class="btn btn-warning ml-3" onclick="window.open('/requestassetnumber/{{ $armadaticket->id }}/{{ $armadaticket->pr->id }}')">Kirim Ulang Request</button>
-                    @endif
                 </div>
             @endif
     </div>
@@ -249,11 +231,6 @@
                     }
                 });
             }
-        });
-        $('#submitassetnumber_button').on('click',function(e){
-            $('form').prop('action','/submitassetnumber');
-            $('form').prop('method','POST');
-            $('form button[type="submit"]').trigger('click')
         });
     });
 

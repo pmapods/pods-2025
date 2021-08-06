@@ -115,7 +115,7 @@
             <div class="col-md-4 armada_field" style="display:none">
                 <div class="form-group">
                   <label class="required_field">Pilih Kendaraan</label>
-                  <select class="form-control armada" name="armada_id">
+                  <select class="form-control armada select2" name="armada_id">
                   </select>
                 </div>
             </div>

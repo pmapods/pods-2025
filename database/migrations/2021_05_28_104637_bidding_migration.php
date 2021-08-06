@@ -41,7 +41,7 @@ class BiddingMigration extends Migration
             $table->string('signed_filename')->nullable();
             $table->string('signed_filepath')->nullable();
 
-            $table->string('notes')->nullable();
+            $table->text('notes')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');
             $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
             $table->SoftDeletes();

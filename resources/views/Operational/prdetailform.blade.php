@@ -29,6 +29,12 @@
     @csrf
     <input type="hidden" name="ticket_id" value="{{$ticket->id}}">
     <input type="hidden" name="pr_id" value="{{$ticket->pr->id}}">
+    @isset ($ticket)
+    <input type="hidden" name="updated_at" value="{{$ticket->updated_at->translatedFormat('Y-m-d H:i:s')}}">
+    @endisset
+    @isset ($armadaticket)
+    <input type="hidden" name="updated_at" value="{{$armadaticket->updated_at->translatedFormat('Y-m-d H:i:s')}}">
+    @endisset
     <input type="hidden" name="_method">
     <div class="content-body border border-dark p-2">
         <div class="d-flex flex-column">

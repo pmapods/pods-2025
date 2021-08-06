@@ -19,7 +19,7 @@ use App\Models\EmployeePosition;
 use App\Models\EmployeeLocationAccess;
 use App\Models\SalesPoint;
 
-    class ArmadaTicketingController extends Controller
+class ArmadaTicketingController extends Controller
 {
     public function createArmadaticket(Request $request){
         try {
@@ -209,7 +209,7 @@ use App\Models\SalesPoint;
             $path = $request->file('bastk_file')->storeAs($file['dirname'],$file['basename'],'public');
             $armadaticket->bastk_path = $path;
             $armadaticket->finished_date = date('Y-m-d');
-            $armadaticket->status = 6;
+            $armadaticket->status = 5;
             $armadaticket->save();
 
             DB::commit();
@@ -219,6 +219,26 @@ use App\Models\SalesPoint;
             DB::rollback();
             return back()->with('error','Berhasil melakukan upload file BASTK');
         }
+    }
+
+    public function terminateArmadaTicketing(Request $request){
+        try {
+            DB::beginTransaction();
+            $armadaticketing = ArmadaTicket::findOrFail($request->armada_ticket_id);
+            if($armadaticketing->updated_at->format('Y-m-d H:i:s') != $request->updated_at){
+                throw new \Exception('Ticket armada sudah di update sebelumnya, silahkan coba kembali.');
+            }
+            $armadaticketing->status = -1;
+            $armadaticketing->termination_reason = $request->reason;
+            $armadaticketing->save();
+            DB::commit();
+            return redirect('/ticketing')->with('success', 'Berhasil melakukan pembatalan ticketing');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error','Gagal membatalkan ticketing armada ('.$ex->getMessage().')');
+        }
+        
     }
 
     public function startArmadaAuthorization(Request $request) {

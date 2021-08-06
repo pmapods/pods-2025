@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 
 use App\Models\ArmadaTicket;
 use App\Models\Ticket;
+use App\Models\TicketItem;
 use App\Models\TicketMonitoring;
 use App\Models\ArmadaTicketMonitoring;
 use App\Models\Authorization;
@@ -138,9 +139,11 @@ class PRController extends Controller
                 }
     
                 foreach($request->item as $key => $item){
+                    $ticketitem = TicketItem::find($item["ticket_item_id"]);
                     $detail                     = new PrDetail;
                     $detail->pr_id              = $pr->id;
                     $detail->ticket_item_id     = $item["ticket_item_id"];
+                    $detail->name               = $ticketitem->name.' '.$ticketitem->brand;
                     $detail->qty                = $item["qty"];
                     $detail->uom                = $item["uom"];
                     do {
@@ -248,7 +251,6 @@ class PRController extends Controller
     }
 
     public function approvePR(Request $request){
-        // dd($request);
         try {
             DB::beginTransaction();
             $pr = Pr::findOrFail($request->pr_id);
@@ -304,7 +306,12 @@ class PRController extends Controller
                 $monitor->save();
                 DB::commit();
                 if ($pr->current_authorization() == null) {
-                    return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selesai, Silahkan mengajukan nomor asset dan mengupdate nomor asset');
+                    if($pr->ticket != null){
+                        return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selesai, Silahkan mengajukan nomor asset dan mengupdate nomor asset');
+                    }
+                    if($pr->armada_ticket != null){
+                        return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selesai, Silahkan melanjutkan setup PO');
+                    }
                 }else{
                     return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selanjutnya oleh ('.$pr->current_authorization()->employee_name.')');
                 }
@@ -485,7 +492,7 @@ class PRController extends Controller
             
             DB::commit();
             return redirect('/pr')->with('success','Sukses submit nomor asset. Silahkan melanjutkan ke proses PO');
-        }catch(Exception $ex){
+        }catch(\Exception $ex){
             DB::rollback();
             return back()->with('error','Gagal approved PR '.$ex->getMessage());
         }

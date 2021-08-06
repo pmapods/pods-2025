@@ -38,14 +38,17 @@ class TicketingController extends Controller
             ->orWhere('status',7)
             ->get()
             ->sortByDesc('created_at');
-            $armadatickets = collect([]);
+            $armadatickets = ArmadaTicket::whereIn('salespoint_id',$access)
+            ->whereIn('status',[-1,5])
+            ->get()
+            ->sortByDesc('created_at');
         }else{
             $tickets = Ticket::whereIn('salespoint_id',$access)
-            ->whereNotIn('status',[-1,7])
+            ->whereNotIn('status',[-1,6])
             ->get()
             ->sortByDesc('created_at');
             $armadatickets = ArmadaTicket::whereIn('salespoint_id',$access)
-            ->whereNotIn('status',[-1,7])
+            ->whereNotIn('status',[-1,5])
             ->get()
             ->sortByDesc('created_at');
         }
@@ -459,7 +462,7 @@ class TicketingController extends Controller
                 $total_count++;
                 $checkbarang = Ticket::where('code',$code)->first();
                 $checkarmada = ArmadaTicket::where('code',$code)->first();
-                ($checkticket != null || $checkarmada != null)? $flag = false : $flag = true;
+                ($checkbarang != null || $checkarmada != null)? $flag = false : $flag = true;
             } while (!$flag);
             $old_code               = $ticket->code;
             $ticket->code           = $code;

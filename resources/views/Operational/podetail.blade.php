@@ -16,7 +16,7 @@
             height: 100px !important
         }
         .textarea_text {
-            white-space: pre-wrap;
+            white-space: pre-line;
         }
     </style>
 @endsection
@@ -104,7 +104,9 @@
                                             <tr>
                                                 <td>
                                                     {{$po_detail->item_name}}<br>
-                                                    <span class="small text-secondary">{{$po_detail->item_description}}</span>
+                                                    <span class="small text-secondary">
+                                                        {!! nl2br(e($po_detail->item_description)) !!}
+                                                    </span>
                                                 </td>
                                                 <td>{{$po_detail->qty}} AU</td>
                                                 <td class="rupiah_text">{{$po_detail->item_price}}</td>
@@ -380,7 +382,12 @@
                         <input type="hidden" name="po_id" value="{{$po->id}}">
                         <input type="hidden" name="updated_at" value="{{$po->updated_at}}">
                         <div class="box d-flex flex-column p-3">
-                            <h4>{{$po->vendor_name}}</h4>
+                            <div class="row">
+                                <div class="col-md-3">Nama Vendor</div>
+                                <div class="col-md-9 font-weight-bold">{{$po->vendor_name}}</div>
+                                <div class="col-md-3">Salespoint Terkait</div>
+                                <div class="col-md-9 font-weight-bold">{{$po->armada_ticket->salespoint->name}}</div>
+                            </div>
                             <div class="row">
                                 <div class="col-6 d-flex flex-column">
                                     <label class="required_field">Alamat Vendor</label>
@@ -400,7 +407,7 @@
                                 </div>
                             </div>
                             <div class="table-responsive mt-2">
-                                <table class="table" style>
+                                <table class="table small">
                                     <thead>
                                         <tr>
                                             <th width="25%">Nama Barang</th>
@@ -421,7 +428,7 @@
                                             <tr>
                                                 <td>
                                                     {{$po_detail->item_name}}<br>
-                                                    <span class="small text-secondary">{{$po_detail->item_description}}</span>
+                                                    <span class="text-secondary">{!! nl2br(e($po_detail->item_description)) !!}</span>
                                                 </td>
                                                 <td>{{$po_detail->qty}} AU</td>
                                                 <td class="rupiah_text">{{$po_detail->item_price}}</td>

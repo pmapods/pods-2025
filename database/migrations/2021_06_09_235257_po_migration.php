@@ -33,7 +33,7 @@ class PoMigration extends Migration
             $table->boolean('has_ppn')->default(false);
             $table->tinyInteger('ppn_percentage')->nullable();
             
-            $table->string('notes')->nullable();
+            $table->text('notes')->nullable();
             $table->integer('created_by')->default(-1);
             $table->string('internal_signed_filepath')->nullable();
             $table->string('external_signed_filepath')->nullable();
@@ -57,7 +57,7 @@ class PoMigration extends Migration
             $table->integer('po_id')->unsigned();
             $table->integer('ticket_item_id')->nullable();
             $table->string('item_name');
-            $table->string('item_description');
+            $table->text('item_description');
             $table->string('uom')->default('AU');
             $table->integer('qty');
             $table->integer('item_price');
@@ -94,7 +94,7 @@ class PoMigration extends Migration
             // -1 Rejected
             $table->boolean('isExpired')->default(false);
             $table->boolean('isOpened')->default(false);
-            $table->string('notes')->nullable();
+            $table->text('notes')->nullable();
             $table->foreign('po_id')->references('id')->on('po');
             $table->timestamps();
         });

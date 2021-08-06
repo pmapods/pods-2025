@@ -19,7 +19,7 @@
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Operasional</li>
                     <li class="breadcrumb-item">Purchase Requisition</li>
-                    <li class="breadcrumb-item active">Setting PO ({{$ticket->code ?? ''}}{{$armadaticket->code}})</li>
+                    <li class="breadcrumb-item active">Setting PO ({{$ticket->code}})</li>
                 </ol>
             </div>
         </div>
@@ -28,8 +28,7 @@
 <div class="content-body">
     <form action="/setupPO" method="post" id="setupForm">
     @csrf
-    <input type="hidden" name="ticket_id" value="{{$ticket->id ?? 'undefined'}}">
-    <input type="hidden" name="armada_ticket_id" value="{{$armadaticket->id ?? 'undefined'}}">
+    <input type="hidden" name="ticket_id" value="{{$ticket->id}}">
     <div class="row">
         <table class="table table-bordered">
             <thead>
@@ -107,63 +106,11 @@
                     </tr> 
                     @endif
                 @endforeach
-                
-                @foreach ($armadaticket->pr->pr_detail ?? [] as $key=>$item)
-                    <tr class="@if($key % 2 == 0) table-secondary @endif">
-                        <td>
-                            {{ $item->name }}
-                            <input type="hidden" name="pr_detail_id" value="{{$item->id}}">
-                        </td>
-                        <td>{{ $item->uom }}</td>
-                        <td>{{ $item->qty }}</td>
-                        <td>
-                            <input type="text" 
-                            class="form-control rupiah pr_detail_price" 
-                            name="pr_detail_price" required>
-                        </td>
-                        <td class="total_price">
-                        </td>
-                        <td>
-                            <input type="text" 
-                            class="form-control vendor_name" 
-                            name="vendor_name" 
-                            placeholder="masukkan nama vendor" required>
-                        </td>
-                        <td>
-                            <div class="form-check form-check-inline">
-                                <label class="form-check-label">
-                                    <input class="form-check-input percent_checker" type="checkbox" disabled>
-                                    Apakah item PPN ?
-                                </label>
-                            </div>
-                            <div class="col-md-6 percent_field d-none">
-                                <div class="form-group">
-                                    <label class="required_field">Masukkan persentase PPN</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control autonumber percent_value" min="1" name="item[{{$key}}][ppn_percentage]">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">%</span>
-                                        </div>
-                                    </div>
-                                    <small class="text-danger">* minimal 1%</small>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
             </tbody>
         </table>
     </div>
     <center>
-        @php
-            if($armadaticket ?? null != null){
-                $type = 'armada';
-            }
-            if($ticket ?? null != null){
-                $type = 'barangjasa';
-            }
-        @endphp
-        <button type="button" class="btn btn-primary" onclick="doSubmit('{{ $type }}')">Submit</button>
+        <button type="button" class="btn btn-primary" onclick="doSubmit('barangjasa')">Submit</button>
         <button type="submit" class="btn btn-primary d-none">Submit</button>
     </center>
     </form>
@@ -192,23 +139,7 @@
         });
     });
     function doSubmit(type){
-        if(type == 'barangjasa'){
-            $('#setupForm').find('button[type="submit"]').trigger('click');
-        }
-        if(type == 'armada'){
-            let price = $('#setupForm').find('.pr_detail_price').val();
-            let vendor = $('#setupForm').find('.vendor_name').val();
-            price = AutoNumeric.unformat(price,autonum_setting);
-            if(price < 25){
-                alert('Harga belum diisi atau minimal Rp 25,-');
-                return;
-            }
-            if(vendor == ''){
-                alert('Nama Vendor harus diisi');
-                return;
-            }
-            $('#setupForm').find('button[type="submit"]').trigger('click');
-        }
+        $('#setupForm').find('button[type="submit"]').trigger('click');
     }   
 </script>
 @endsection
