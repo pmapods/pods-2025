@@ -31,9 +31,8 @@ class ArmadaTicketingMigration extends Migration
             // 1 Pending Authorization
             // 2 Finish Authorization
             // 3 Otorisasi PR Dimulai
-            // 4 Otorisasi Selesai \ Menunggu Submit Nomor Asset
-            // 5 Dalam Proses PO
-            // 6 Selesai / sudah diterima
+            // 4 Dalam Proses PO
+            // 5 Selesai / sudah diterima
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
@@ -102,6 +101,54 @@ class ArmadaTicketingMigration extends Migration
             // 1 approved
             // -1 reject
             $table->foreign('facility_form_id')->references('id')->on('facility_form');
+            $table->foreign('employee_id')->references('id')->on('employee');
+            $table->timestamps();
+        });
+
+        Schema::create('perpanjangan_form',function(Blueprint $table){
+            $table->increments('id');
+            $table->integer('armada_ticket_id')->unsigned();
+            $table->integer('salespoint_id')->nullable();
+            $table->integer('armada_id')->nullable();
+            $table->string('nama');
+            $table->string('nik');
+            $table->string('jabatan');
+            $table->string('nama_salespoint');
+            $table->enum('tipe_armada', ['niaga', 'nonniaga']);
+            $table->string('jenis_kendaraan');
+            $table->string('nopol');
+            $table->enum('unit', ['GS', 'GT']);
+            $table->boolean('is_vendor_lokal');
+            $table->string('nama_vendor');
+            $table->enum('form_type', ['perpanjangan', 'stopsewa']);
+            $table->integer('perpanjangan_length')->nullable();
+            $table->date('stopsewa_date')->nullable();     
+            $table->enum('stopsewa_reason',['replace','renewal','end'])->nullable();  
+
+            $table->integer('created_by')->nullable();
+            $table->integer('terminated_by')->nullable();
+            $table->string('termination_reason')->nullable();
+            $table->tinyInteger('status')->default(0);
+            // 0 new / waiting for approval
+            // -1 terminated
+            $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('perpanjangan_form_authorization', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('perpanjangan_form_id')->unsigned();
+            $table->integer('employee_id')->unsigned();
+            $table->string('employee_name');
+            $table->string('as');
+            $table->string('employee_position');
+            $table->tinyInteger('level');
+            $table->tinyInteger('status')->default(0);
+            // 0 pending
+            // 1 approved
+            // -1 reject
+            $table->foreign('perpanjangan_form_id')->references('id')->on('perpanjangan_form');
             $table->foreign('employee_id')->references('id')->on('employee');
             $table->timestamps();
         });

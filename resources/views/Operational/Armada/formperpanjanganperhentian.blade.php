@@ -183,8 +183,8 @@
                 </tbody>
             </table>
         </div>
-        <center>
+        <div class="col-12 text-center">
             <button type="submit" class="btn btn-primary">Submit</button>
-        </center>
+        </div>
     </div>
 </form>
