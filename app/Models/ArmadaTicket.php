@@ -69,8 +69,13 @@ class ArmadaTicket extends Model
                 break;
 
             case '5':
+                return 'Menunggu Upload Berkas Penerimaan';
+                break;
+
+            case '6':
                 return 'Pengadaan Armada Selesai';
-                
+                break;
+
             case '-1':
                 return 'Batal';
                 break;
@@ -94,7 +99,7 @@ class ArmadaTicket extends Model
                 return 'Pengadaan';
                 break;
             case 1:
-                switch ($this->perpanjangan_form->form_type) {
+                switch ($this->perpanjangan_form->form_type ?? 'unset') {
                     case 'perpanjangan':
                         return 'Perpanjangan';
                         break;
@@ -111,7 +116,11 @@ class ArmadaTicket extends Model
                                 return 'End Kontrak';
                                 break;
                         }
-                }
+                        break;
+                    default:
+                        return 'Perpanjangan/Replace/Renewal/End Kontrak';
+                        break;
+                }   
                 break;
             case 2:
                 return 'Mutasi';

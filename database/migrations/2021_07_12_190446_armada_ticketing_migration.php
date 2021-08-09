@@ -32,7 +32,8 @@ class ArmadaTicketingMigration extends Migration
             // 2 Finish Authorization
             // 3 Otorisasi PR Dimulai
             // 4 Dalam Proses PO
-            // 5 Selesai / sudah diterima
+            // 5 Menunggu Upload Berkan Penerimaan
+            // 6 Selesai / sudah diterima
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();

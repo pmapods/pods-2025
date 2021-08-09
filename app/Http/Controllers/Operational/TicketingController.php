@@ -39,7 +39,7 @@ class TicketingController extends Controller
             ->get()
             ->sortByDesc('created_at');
             $armadatickets = ArmadaTicket::whereIn('salespoint_id',$access)
-            ->whereIn('status',[-1,5])
+            ->whereIn('status',[-1,6])
             ->get()
             ->sortByDesc('created_at');
         }else{
@@ -48,7 +48,7 @@ class TicketingController extends Controller
             ->get()
             ->sortByDesc('created_at');
             $armadatickets = ArmadaTicket::whereIn('salespoint_id',$access)
-            ->whereNotIn('status',[-1,5])
+            ->whereNotIn('status',[-1,6])
             ->get()
             ->sortByDesc('created_at');
         }

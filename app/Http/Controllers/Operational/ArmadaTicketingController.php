@@ -196,7 +196,7 @@ class ArmadaTicketingController extends Controller
             }
             if($form->form_type == "stopsewa"){
                 $form->stopsewa_date = $request->stopsewa_date;
-                $form->stopsewa_reason = $request->stopsewa_reason;
+                $form->stopsewa_reason = $request->alasan;
             }
             $form->created_by       = Auth::user()->id;
             $form->save();
@@ -394,12 +394,12 @@ class ArmadaTicketingController extends Controller
             $salespointname = str_replace(' ','_',$armadaticket->salespoint->name);
             $ext = pathinfo($request->file('bastk_file')->getClientOriginalName(), PATHINFO_EXTENSION);
             $name = "BASTK_".$salespointname.'.'.$ext;
-            $path = "/attachments/ticketing/barangjasa/".$armadaticket->code.'/'.$name;
+            $path = "/attachments/ticketing/armada/".$armadaticket->code.'/'.$name;
             $file = pathinfo($path);
             $path = $request->file('bastk_file')->storeAs($file['dirname'],$file['basename'],'public');
             $armadaticket->bastk_path = $path;
             $armadaticket->finished_date = date('Y-m-d');
-            $armadaticket->status = 5;
+            $armadaticket->status = 6;
             $armadaticket->save();
 
             DB::commit();
@@ -468,7 +468,12 @@ class ArmadaTicketingController extends Controller
                         break;
                     case 1:
                         // perpanjangan/replace/renewal/stopsewa
-                        $armadaticket->status = 4;
+                        if($armadaticket->perpanjangan_form->stopsewa_reason ?? "unset" == "end"){
+                            $armadaticket->status = 5;
+                        }else{
+                            $armadaticket->status = 4;
+                        }
+                        
                         break;
                     case 2:
                         // mutasi

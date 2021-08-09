@@ -41,6 +41,11 @@
               <input type="text" class="form-control" name="vendor_name" placeholder="Masukan nama vendor" required>
             </div>
         </div>
+        <div class="col-md-8 flex-end d-flex align-items-center justify-content-end">
+            <a href="modalInfo" class="font-weight-bold text-primary" data-toggle="modal" data-target="#modalInfo">
+              Tampilkan Form {{ $armadaticket->type() }}
+            </a>
+        </div>
     </div>
     <div class="row">
         <table class="table table-bordered" id="table_list">
@@ -100,6 +105,31 @@
         <button type="submit" class="btn btn-primary d-none">Submit</button>
     </center>
     </form>
+</div>
+
+<div class="modal fade" id="modalInfo" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                @switch($armadaticket->ticketing_type)
+                    @case(0)
+                        @include('Operational.Armada.formfasilitas')
+                        @break
+                    @case(1)
+                        @include('Operational.Armada.formperpanjanganperhentian')
+                        @break
+                    @case(2)                
+                        @include('Operational.Armada.formmutasi')
+                        @break
+                    @default
+                        @break     
+                @endswitch
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 @section('local-js')

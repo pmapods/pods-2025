@@ -1,3 +1,4 @@
+@if ($armadaticket->status != -1)
 @isset($armadaticket->perpanjangan_form)
     @php
         $perpanjanganform = $armadaticket->perpanjangan_form;
@@ -427,6 +428,7 @@
     </div>
 </form>
 @endisset
+@endif
 @section('perpanjangan-js')
 {{-- form perpanjangan perhentian --}}
 <script>

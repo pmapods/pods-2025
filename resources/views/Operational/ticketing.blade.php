@@ -18,21 +18,21 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Pengadaan @if(request()->get('status') == -1) (History) @endif</h1>
+                <h1 class="m-0 text-dark">Ticketing @if(request()->get('status') == -1) (History) @endif</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Operasional</li>
-                    <li class="breadcrumb-item active">Pengadaan @if(request()->get('status') == -1) (History) @endif</li>
+                    <li class="breadcrumb-item active">Ticketing @if(request()->get('status') == -1) (History) @endif</li>
                 </ol>
             </div>
         </div>
         <div class="d-flex justify-content-end mt-1">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectTicketModal">
-                Tambah Pengadaan Baru
+                Tambah Tiket Baru
             </button>
             @if(request()->get('status') == -1)
-                <a href="/ticketing" class="btn btn-success ml-2">Pengadaan Aktif</a>
+                <a href="/ticketing" class="btn btn-success ml-2">Ticket Aktif</a>
             @else
                 <a href="/ticketing?status=-1" class="btn btn-info ml-2">History</a>
             @endif
@@ -60,7 +60,7 @@
                             <th width="13%">Nama Pembuat Form</th>
                             <th width="10%">Area</th>
                             <th width="15%">Keterangan</th>
-                            <th>Tanggal Pengadaan</th>
+                            <th>Tanggal Tiket</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -118,8 +118,8 @@
                             <th>Tanggal Pengajuan</th>
                             <th>Nama Pembuat Form</th>
                             <th>Area</th>
-                            <th>Tipe Pengadaan</th>
-                            <th>Tanggal Pengadaan</th>
+                            <th>Tipe Tiket</th>
+                            <th>Tanggal Requirement</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -171,21 +171,21 @@
                     <div class="form-check">
                         <label class="form-check-label">
                         <input type="radio" class="form-check-input" name="ticketing_type" value="0" checked>
-                        Pengadaan Barang Jasa
+                        Barang Jasa
                       </label>
                     </div>
                     
                     <div class="form-check">
                         <label class="form-check-label">
                         <input type="radio" class="form-check-input" name="ticketing_type" value="1">
-                        Pengadaan Security
+                        Security
                       </label>
                     </div>
                     
                     <div class="form-check">
                         <label class="form-check-label">
                         <input type="radio" class="form-check-input" name="ticketing_type" value="2">
-                        Pengadaan Armada
+                        Armada
                       </label>
                     </div>
                 </div>

@@ -35,13 +35,18 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Pengadaan Armada @isset($ticket) ({{$ticket->code}}) @endisset</h1>
+                <h1 class="m-0 text-dark">
+                    Pengadaan Armada @isset($armadaticket) ({{$armadaticket->code}}) @endisset
+                </h1>
+                @if ($armadaticket->status == -1)
+                    <h5 class="text-danger">( Alasan Pembatalan : {{ $armadaticket->termination_reason }})</h5>
+                @endif
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Operasional</li>
                     <li class="breadcrumb-item">Pengadaan</li>
-                    <li class="breadcrumb-item active">Pengadaan Armada @isset($ticket) ({{$ticket->code}}) @endisset</li>
+                    <li class="breadcrumb-item active">Pengadaan Armada @isset($armadaticket) ({{$armadaticket->code}}) @endisset</li>
                 </ol>
             </div>
         </div>
@@ -133,12 +138,12 @@
                 @include('Operational.Armada.formmutasi')
             </div>
         @endif
-        @if ($armadaticket->status == 4)
+        @if ($armadaticket->status == 4 || $armadaticket->status == 5)
             <div class="col-md-6 pl-3">
                 <h5>Upload Dokumen Penerimaan</h5>
                 <div class="row">
                     <div class="col-1">
-                        <b>Status PO</b>
+                        <b>Status</b>
                     </div>
                     <div class="col-11">
                         :
@@ -171,11 +176,11 @@
                                 @default
                             @endswitch
                         @else
-                            Menunggu Setup PO
+                            {{ $armadaticket->status() }}
                         @endif
                     </div>
                 </div>
-                @if (($armadaticket->po->first()->status ?? -1)== 3)    
+                @if (($armadaticket->po->first()->status ?? -1)== 3 || $armadaticket->status == 5)    
                 <form action="/uploadbastk" method="post" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="arnada_ticket_id" value="{{ $armadaticket->id }}">
@@ -189,24 +194,26 @@
                 @endif
             </div>
         @endif
-        @if ($armadaticket->status == 5)
+        @if ($armadaticket->status == 6)
             <div class="col-md-6 pl-3">
                 <h5>Dokumen Penerimaan <span class="text-success">(Selesai)</span></h5>
                 <div class="row">
-                    <div class="col-1">
-                        <b>PO</b>
-                    </div>
-                    <div class="col-11">
-                        @php
-                            $po = $armadaticket->po->first();
-                        @endphp
-                        : Selesai / Tanda Tangan sudah lengkap 
-                        <a class="text-primary font-weight-bold" 
-                        style="cursor: pointer;" 
-                        onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
-                            Tampilkan PO
-                        </a>
-                    </div>
+                    @if($armadaticket->po->count()>0)    
+                        <div class="col-1">
+                            <b>PO</b>
+                        </div>
+                        <div class="col-11">
+                            @php
+                                $po = $armadaticket->po->first();
+                            @endphp
+                            : Selesai / Tanda Tangan sudah lengkap 
+                            <a class="text-primary font-weight-bold" 
+                            style="cursor: pointer;" 
+                            onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
+                                Tampilkan PO
+                            </a>
+                        </div>
+                    @endif
                     
                     <div class="col-1">
                         <b>BASTK</b>

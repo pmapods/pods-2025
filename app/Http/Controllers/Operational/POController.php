@@ -36,8 +36,7 @@ class POController extends Controller
 
         $armadatickets = ArmadaTicket::whereIn('status',[4])
         ->whereIn('salespoint_id',$salespoint_ids)->get();
-        
-
+        dd($armadatickets);
         $tickets = array();
         foreach($barangjasatickets as $ticket){
             $ticket->type = "Barang Jasa";
@@ -45,35 +44,7 @@ class POController extends Controller
         }
 
         foreach($armadatickets as $ticket){
-            switch ($ticket->ticketing_type) {
-                case 0:
-                    $type = 'Pengadaan';
-                    break;
-                case 1:
-                    switch ($ticket->perpanjangan_form->form_type) {
-                        case 'perpanjangan':
-                            $type = 'Perpanjangan';
-                            break;
-                        
-                        case 'stopsewa':
-                            switch ($ticket->perpanjangan_form->stopsewa_reason) {
-                                case 'replace':
-                                    $type = 'Replace';
-                                    break;
-                                case 'renewal':
-                                    $type = 'Renewal';
-                                    break;
-                                case 'end':
-                                    $type = 'End Kontrak';
-                                    break;
-                            }
-                    }
-                    break;
-                case 2:
-                    $type = 'Mutasi';
-                    break;
-            }
-            $ticket->type = $type." Armada";
+            $ticket->type = $ticket->type()." Armada";
             array_push($tickets,$ticket);
         }
         return view('Operational.po', compact('tickets'));
@@ -215,13 +186,13 @@ class POController extends Controller
                     return back()->with('error','PO sudah di setup sebelumnya');
                 }
                 $item_name = $armadaticket->armada_type()->brand_name.' '.$armadaticket->armada_type()->name;
-                
-                $newPo = new Po;
+
+                $newPo                   = new Po;
                 $newPo->armada_ticket_id = $armadaticket->id;
-                $newPo->vendor_name = $request->vendor_name;
-                $newPo->send_name = $armadaticket->salespoint->name;
-                $newPo->has_ppn = true;
-                $newPo->ppn_percentage = 10;
+                $newPo->sender_name      = $request->vendor_name;
+                $newPo->send_name        = $armadaticket->salespoint->name;
+                $newPo->has_ppn          = true;
+                $newPo->ppn_percentage   = 10;
                 $newPo->save();
 
                 // sewa
@@ -376,14 +347,16 @@ class POController extends Controller
             $po = Po::findOrFail($request->po_id);
             if($po->ticket_id != null){
                 $ticket = $po->ticket;
+                $type = 'barangjasa';
             }
             if($po->armada_ticket_id != null){
                 $ticket = $po->armada_ticket;
+                $type = 'armada';
             }
             $salespointname = str_replace(' ','_',$ticket->salespoint->name);
             $ext = pathinfo($request->file('internal_signed_file')->getClientOriginalName(), PATHINFO_EXTENSION);
             $name = $po->no_po_sap."_INTERNAL_SIGNED_".$salespointname.'.'.$ext;
-            $path = "/attachments/ticketing/barangjasa/".$ticket->code.'/po/'.$name;
+            $path = "/attachments/ticketing/".$type."/".$ticket->code.'/po/'.$name;
             $file = pathinfo($path);
             $path = $request->file('internal_signed_file')->storeAs($file['dirname'],$file['basename'],'public');
             $po->internal_signed_filepath = $path;

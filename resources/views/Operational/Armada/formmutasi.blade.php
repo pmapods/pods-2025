@@ -1,3 +1,4 @@
+@if ($armadaticket->status != -1)
 @isset($armadaticket->mutasi_form)
     @php
     $mutasiform = $armadaticket->mutasi_form;
@@ -400,7 +401,7 @@
         </div>
     </form>
 @endisset
-
+@endif
 @section('mutasi-js')
 {{-- form mutasi --}}
 <script>

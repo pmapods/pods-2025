@@ -66,10 +66,10 @@
                                         <span>{{$po->sender_address}}</span>
                                     @else
                                         @if($po->ticket_vendor->type == 0)
-                                        <textarea class="form-control" rows="3" placeholder="Masukkan Alamat pengirim" name="sender_address" required>{{$po->ticket_vendor->vendor()->address}}</textarea>
+                                        <textarea class="form-control" rows="2" placeholder="Masukkan Alamat pengirim" name="sender_address" required>{{$po->ticket_vendor->vendor()->address}}</textarea>
                                         @endif
                                         @if($po->ticket_vendor->type == 1)
-                                        <textarea class="form-control" rows="3" placeholder="Masukkan Alamat pengirim" name="sender_address" required>{{$po->ticket->ticket_item->first()->bidding->bidding_detail->where('ticket_vendor_id',$po->ticket_vendor->id)->first()->address}}</textarea>
+                                        <textarea class="form-control" rows="2" placeholder="Masukkan Alamat pengirim" name="sender_address" required>{{$po->ticket->ticket_item->first()->bidding->bidding_detail->where('ticket_vendor_id',$po->ticket_vendor->id)->first()->address}}</textarea>
                                         @endif
                                     @endif
                                 </div>
@@ -398,7 +398,7 @@
                                     @if($po->status != -1)
                                         <span>{{$po->sender_address}}</span>
                                     @else
-                                        <textarea class="form-control" name="sender_address" rows="4"></textarea>
+                                        <textarea class="form-control" name="sender_address" rows="3"></textarea>
                                     @endif
                                 </div>
                                 <div class="col-6 d-flex flex-column text-right">
