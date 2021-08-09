@@ -29,7 +29,9 @@
     <form action="/setupPO" method="post" id="setupForm">
     @csrf
     @php
-        $item_name = $armadaticket->pr->pr_detail->first()->name;
+        $item_name = $armadaticket->armada_type()->brand_name.' '.$armadaticket->armada_type()->name;
+        
+        $namabiaya = ($armadaticket->ticketing_type == 2) ? 'Mutasi' : 'Sewa';
     @endphp
     <input type="hidden" name="armada_ticket_id" value="{{$armadaticket->id}}">
     <div class="row">
@@ -54,7 +56,8 @@
             <tbody>
                 <tr>
                     <td>
-                        Sewa Armada {{ $item_name }}
+                        <input type="hidden" name="sewa_name" value="{{ $namabiaya }} Armada {{ $item_name }}">
+                        {{ $namabiaya }} Armada {{ $item_name }}
                         <div class="form-group">
                           <textarea class="form-control" 
                           rows="3" 

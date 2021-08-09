@@ -20,8 +20,8 @@ class PoMigration extends Migration
             $table->integer('ticket_vendor_id')->nullable();
             $table->integer('armada_ticket_id')->nullable();
 
-            $table->string('vendor_name')->default('unset');
-            $table->string('vendor_address')->default('unset');
+            $table->string('sender_name')->default('unset');
+            $table->string('sender_address')->default('unset');
             $table->string('send_name')->default('unset');
             $table->string('send_address')->default('unset');
             $table->integer('payment_days')->default(-1);

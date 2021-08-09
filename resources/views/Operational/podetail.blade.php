@@ -61,15 +61,15 @@
                             <h4>{{$po->ticket_vendor->name}}</h4>
                             <div class="row">
                                 <div class="col-6 d-flex flex-column">
-                                    <label class="required_field">Alamat Vendor</label>
+                                    <label class="required_field">Alamat Pengirim</label>
                                     @if($po->status != -1)
-                                        <span>{{$po->vendor_address}}</span>
+                                        <span>{{$po->sender_address}}</span>
                                     @else
                                         @if($po->ticket_vendor->type == 0)
-                                        <textarea class="form-control" rows="3" placeholder="Masukkan Alamat vendor" name="vendor_address" required>{{$po->ticket_vendor->vendor()->address}}</textarea>
+                                        <textarea class="form-control" rows="3" placeholder="Masukkan Alamat pengirim" name="sender_address" required>{{$po->ticket_vendor->vendor()->address}}</textarea>
                                         @endif
                                         @if($po->ticket_vendor->type == 1)
-                                        <textarea class="form-control" rows="3" placeholder="Masukkan Alamat vendor" name="vendor_address" required>{{$po->ticket->ticket_item->first()->bidding->bidding_detail->where('ticket_vendor_id',$po->ticket_vendor->id)->first()->address}}</textarea>
+                                        <textarea class="form-control" rows="3" placeholder="Masukkan Alamat pengirim" name="sender_address" required>{{$po->ticket->ticket_item->first()->bidding->bidding_detail->where('ticket_vendor_id',$po->ticket_vendor->id)->first()->address}}</textarea>
                                         @endif
                                     @endif
                                 </div>
@@ -327,8 +327,12 @@
                                 @if($po->status == 3)
                                     <a class="uploaded_file text-primary font-weight-bold" 
                                     style="cursor: pointer;" 
-                                    onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
-                                        Dokumen PO dengan Tanda Tangan Lengkap
+                                    @if ($po->external_signed_filepath != null)
+                                    onclick='window.open("/storage/{{$po->external_signed_filepath}}")'
+                                    @else
+                                    onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'
+                                    @endif
+                                    >Dokumen PO dengan Tanda Tangan Lengkap
                                     </a>
                                 @endif
                             </div>
@@ -384,17 +388,17 @@
                         <div class="box d-flex flex-column p-3">
                             <div class="row">
                                 <div class="col-md-3">Nama Vendor</div>
-                                <div class="col-md-9 font-weight-bold">{{$po->vendor_name}}</div>
+                                <div class="col-md-9 font-weight-bold">{{$po->sender_name}}</div>
                                 <div class="col-md-3">Salespoint Terkait</div>
                                 <div class="col-md-9 font-weight-bold">{{$po->armada_ticket->salespoint->name}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-6 d-flex flex-column">
-                                    <label class="required_field">Alamat Vendor</label>
+                                    <label class="required_field">Alamat Pengirim</label>
                                     @if($po->status != -1)
-                                        <span>{{$po->vendor_address}}</span>
+                                        <span>{{$po->sender_address}}</span>
                                     @else
-                                        <textarea class="form-control" name="vendor_address" rows="4"></textarea>
+                                        <textarea class="form-control" name="sender_address" rows="4"></textarea>
                                     @endif
                                 </div>
                                 <div class="col-6 d-flex flex-column text-right">
@@ -648,9 +652,13 @@
                                 @endif
                                 @if($po->status == 3)
                                     <a class="uploaded_file text-primary font-weight-bold" 
-                                    style="cursor: pointer;" 
-                                    onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
-                                        Dokumen PO dengan Tanda Tangan Lengkap
+                                        style="cursor: pointer;" 
+                                        @if ($po->external_signed_filepath != null)
+                                        onclick='window.open("/storage/{{$po->external_signed_filepath}}")'
+                                        @else
+                                        onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'
+                                        @endif
+                                        >Dokumen PO dengan Tanda Tangan Lengkap
                                     </a>
                                 @endif
                             </div>
@@ -664,12 +672,19 @@
                                 }
                             @endphp
                             @if($po->status == 0)
+                            <div>
+                                <input type="checkbox" class="mr-2"
+                                name="need_supplier_confirmation" 
+                                id="need_supplier_confirmation">
+                                <label class="font-weight-normal" for="need_supplier_confirmation">Apakah Butuh Tanda Tangan Konfirmasi Supplier ?</label>
+                            </div>
                                 <div class="form-group">
                                     <label class="required_field">Masukkan Email Tujuan</label>
                                     <input type="text" class="form-control" 
+                                    id="supplier_email"
                                     value="{{$toEmail}}" 
                                     placeholder="supplieremail@example.com" name="email" 
-                                    required>
+                                    disabled>
                                 </div>
                                 <div class="form-group">
                                     <label class="required_field">Pilih File PO yang sudah di Tanda tangan Internal</label>
@@ -688,7 +703,7 @@
                                     @endif
                                     
                                     @if($po->status == 1)
-                                        <button type="button" class="btn btn-warning" onclick="send_email({{$po->id}},'{{$po->vendor_name}}','{{$po->no_po_sap}}')">Kirim Ulang Email</button>
+                                        <button type="button" class="btn btn-warning" onclick="send_email({{$po->id}},'{{$po->sender_name}}','{{$po->no_po_sap}}')">Kirim Ulang Email</button>
                                     @endif
 
                                     @if($po->status == 2)
@@ -803,6 +818,16 @@
         $('.validatefilesize').change(function(event){
             if(!validatefilesize(event)){
                 $(this).val('');
+            }
+        });
+        $('#need_supplier_confirmation').change(function(event){
+            $('#supplier_email').val('');
+            if($(this).prop('checked')){
+                $('#supplier_email').prop('disabled',false);
+                $('#supplier_email').prop('required',true);
+            }else{
+                $('#supplier_email').prop('disabled',true);
+                $('#supplier_email').prop('required',false);
             }
         });
     });

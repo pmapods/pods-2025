@@ -13,6 +13,10 @@ use App\Models\Armada;
 use App\Models\ArmadaTicket;
 use App\Models\FacilityForm;
 use App\Models\FacilityFormAuthorization;
+use App\Models\PerpanjanganForm;
+use App\Models\PerpanjanganFormAuthorization;
+use App\Models\MutasiForm;
+use App\Models\MutasiFormAuthorization;
 use App\Models\Authorization;
 use App\Models\ArmadaTicketAuthorization;
 use App\Models\EmployeePosition;
@@ -95,11 +99,14 @@ class ArmadaTicketingController extends Controller
 
         $formperpanjangan_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)->where('form_type',6)->get();
         $formfasilitas_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)->where('form_type',4)->get();
+        $formmutasi_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)->where('form_type',5)->get();
+
+        $salespoints = SalesPoint::all();
         try { 
             if(!$armadaticket){
                 throw new \Exception('Ticket armada dengan kode '.$code.'tidak ditemukan');
             }
-            return view('Operational.Armada.armadaticketdetail',compact('armadaticket','employee_positions','available_salespoints','formperpanjangan_authorizations','formfasilitas_authorizations'));
+            return view('Operational.Armada.armadaticketdetail',compact('armadaticket','employee_positions','available_salespoints','formperpanjangan_authorizations','formfasilitas_authorizations','formmutasi_authorizations','salespoints'));
         } catch (\Exception $ex) {
             return redirect('/ticketing')->with('error','Gagal membukan detail ticket armada '.$ex->getMessage());
         }
@@ -159,10 +166,133 @@ class ArmadaTicketingController extends Controller
             }
             DB::commit();
             return back()->with('success', 'Berhasil membuat form fasilitas. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
-        }catch(Exception $ex){
+        }catch(\Exception $ex){
+            DB::rollback();
+            return back()->with('error', 'Gagal membuat form fasilitas');
+        }
+    }
+
+    public function addPerpanjanganForm(Request $request){
+        try{
+            DB::beginTransaction();
+
+            $form                   = new PerpanjanganForm;
+            $form->armada_ticket_id = $request->armada_ticket_id;
+            $form->salespoint_id    = $request->salespoint_id;
+            $form->armada_id        = $request->armada_id;
+            $form->nama             = $request->name;
+            $form->nik              = $request->nik;
+            $form->jabatan          = $request->jabatan;
+            $form->nama_salespoint  = $request->salespoint_name;
+            $form->tipe_armada      = $request->armada_type;
+            $form->jenis_kendaraan  = $request->jenis_kendaraan;
+            $form->nopol            = $request->nopol;
+            $form->unit             = $request->unit;
+            $form->is_vendor_lokal  = ($request->lokal_vendor_name != null) ? true : false;
+            $form->nama_vendor      = ($form->is_vendor_lokal) ? $request->lokal_vendor_name : $request->vendor_name;
+            $form->form_type        = $request->form_type;
+            if($form->form_type == "perpanjangan"){
+                $form->perpanjangan_length = $request->perpanjangan_length;
+            }
+            if($form->form_type == "stopsewa"){
+                $form->stopsewa_date = $request->stopsewa_date;
+                $form->stopsewa_reason = $request->stopsewa_reason;
+            }
+            $form->created_by       = Auth::user()->id;
+            $form->save();
+
+            $authorization = Authorization::find($request->authorization_id);
+            foreach($authorization->authorization_detail as $detail){
+                $newAuthorization                           = new PerpanjanganFormAuthorization;
+                $newAuthorization->perpanjangan_form_id     = $form->id;
+                $newAuthorization->employee_id              = $detail->employee_id;
+                $newAuthorization->employee_name            = $detail->employee->name;
+                $newAuthorization->as                       = $detail->sign_as;
+                $newAuthorization->employee_position        = $detail->employee_position->name;
+                $newAuthorization->level                    = $detail->level;
+                $newAuthorization->save();
+            }
+            DB::commit();
+            return back()->with('success', 'Berhasil membuat form perpanjangan perhentian. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
+        }catch(\Exception $ex){
             DB::rollback();
             dd($ex);
             return back()->with('error', 'Gagal membuat form fasilitas');
+        }
+    }
+
+    public function addMutasiForm(Request $request){
+        try{
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::find($request->armada_ticket_id);
+            $salespoint_initial = $armadaticket->salespoint->initial;
+            $currentmonth = date('m');
+            $currentyear = date('Y');
+
+            $count = MutasiForm::join('armada_ticket','mutasi_form.armada_ticket_id','armada_ticket.id')
+                ->where('armada_ticket.salespoint_id',$armadaticket->salespoint->id)
+                ->whereYear('mutasi_form.created_at', Carbon::now()->year)
+                ->whereMonth('mutasi_form.created_at', Carbon::now()->month)
+                ->withTrashed()
+                ->count();
+                
+            do{
+                $flag = true;
+                $code = $salespoint_initial.'/'.$count.'/MA/'.numberToRoman(intval($currentmonth)).'/'.$currentyear;
+                $count++;
+                $checkMutasiForm = MutasiForm::where('code', $code)->first();
+                if($checkMutasiForm != null){
+                    $flag = false;
+                }
+            }while(!$flag);
+            $form                           = new MutasiForm;
+            $form->armada_ticket_id         = $request->armada_ticket_id;
+            $form->salespoint_id            = $request->salespoint_id;
+            $form->receiver_salespoint_id   = $request->receive_salespoint_id;
+            $form->armada_id                = $request->armada_id;
+            $form->code                     = $code;
+            $form->sender_salespoint_name   = $request->sender_salespoint_name;
+            $receiver_salespoint_name = SalesPoint::find($request->receive_salespoint_id)->name;
+            $form->receiver_salespoint_name = $receiver_salespoint_name;
+            $form->mutation_date            = $request->mutation_date;
+            $form->received_date            = $request->received_date;
+            $form->nopol                    = $request->nopol;
+            $form->vendor_name              = $request->vendor_name;
+            $form->brand_name               = $request->merk;
+            $form->jenis_kendaraan          = $request->jenis_kendaraan;
+            $form->nomor_rangka             = $request->nomor_rangka;
+            $form->nomor_mesin              = $request->nomor_mesin;
+            $form->tahun_pembuatan          = $request->tahun_pembuatan;
+            $form->stnk_date                = $request->stnk_date;
+            $form->p3k                      = $request->p3k;
+            $form->segitiga                 = $request->segitiga;
+            $form->dongkrak                 = $request->dongkrak;
+            $form->toolkit                  = $request->toolkit;
+            $form->ban                      = $request->ban;
+            $form->gembok                   = $request->gembok;
+            $form->bongkar                  = $request->bongkar;
+            $form->buku                     = $request->buku;
+            $form->nama_tempat              = $request->nama_tempat;
+            $form->created_by               = Auth::user()->id;
+            $form->save();
+
+            $authorization = Authorization::find($request->authorization_id);
+            foreach($authorization->authorization_detail as $detail){
+                $newAuthorization                           = new MutasiFormAuthorization;
+                $newAuthorization->mutasi_form_id           = $form->id;
+                $newAuthorization->employee_id              = $detail->employee_id;
+                $newAuthorization->employee_name            = $detail->employee->name;
+                $newAuthorization->as                       = $detail->sign_as;
+                $newAuthorization->employee_position        = $detail->employee_position->name;
+                $newAuthorization->level                    = $detail->level;
+                $newAuthorization->save();
+            }
+            DB::commit();
+            return back()->with('success', 'Berhasil membuat form mutasi. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
+        }catch(\Exception $ex){
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal membuat form mutasi');
         }
     }
 
@@ -190,6 +320,66 @@ class ArmadaTicketingController extends Controller
                 return back()->with('success','Berhasil melakukan otorisasi, Otorisasi selanjutnya oleh '.$authorization->employee_name);
             }
         } catch (Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
+        }
+    }
+
+    public function approvePerpanjanganForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $perpanjangan_form = PerpanjanganForm::findOrFail($request->perpanjangan_form_id);
+            if($perpanjangan_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            $authorization = $perpanjangan_form->current_authorization();
+            $authorization->status = 1;
+            $authorization->save();
+
+            // recall the new one
+            $authorization = $perpanjangan_form->current_authorization();
+            if($authorization == null){
+                $perpanjangan_form->status = 1;
+                $perpanjangan_form->save();
+            }
+            DB::commit();
+            if($authorization == null){
+                return back()->with('success','Seluruh Otorisasi Form Perpanjangan telah selesai');
+            }else{
+                return back()->with('success','Berhasil melakukan otorisasi formulit perpanjangan, Otorisasi selanjutnya oleh '.$authorization->employee_name);
+            }
+        } catch (Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
+        }
+    }
+
+    public function approveMutasiForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $mutasi_form = MutasiForm::findOrFail($request->mutasi_form_id);
+            if($mutasi_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            $authorization = $mutasi_form->current_authorization();
+            $authorization->status = 1;
+            $authorization->save();
+
+            // recall the new one
+            $authorization = $mutasi_form->current_authorization();
+            if($authorization == null){
+                $mutasi_form->status = 1;
+                $mutasi_form->save();
+            }
+            DB::commit();
+            if($authorization == null){
+                return back()->with('success','Seluruh Otorisasi Form Mutasi telah selesai');
+            }else{
+                return back()->with('success','Berhasil melakukan otorisasi formulit mutasi, Otorisasi selanjutnya oleh '.$authorization->employee_name);
+            }
+        } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
             return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
@@ -271,7 +461,20 @@ class ArmadaTicketingController extends Controller
 
             $current_authorization = $armadaticket->current_authorization();
             if($current_authorization == null){
-                $armadaticket->status += 1;
+                switch ($armadaticket->ticketing_type) {
+                    case 0:
+                        // pengadaan
+                        $armadaticket->status = 2;
+                        break;
+                    case 1:
+                        // perpanjangan/replace/renewal/stopsewa
+                        $armadaticket->status = 4;
+                        break;
+                    case 2:
+                        // mutasi
+                        $armadaticket->status = 4;
+                        break;
+                }
                 $armadaticket->save();
                 DB::commit();
                 return back()->with('success','Otorisasi pengadaan armada '.$armadaticket->code.' telah selesai.');

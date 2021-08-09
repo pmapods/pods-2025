@@ -90,23 +90,31 @@ class ArmadaTicket extends Model
 
     public function type(){
         switch ($this->ticketing_type) {
-            case '0':
-                return 'Pengadaan Baru';
+            case 0:
+                return 'Pengadaan';
                 break;
-            case '1':
-                return 'Perpanjangan/Replace/Renewal/Stop Sewa';
+            case 1:
+                switch ($this->perpanjangan_form->form_type) {
+                    case 'perpanjangan':
+                        return 'Perpanjangan';
+                        break;
+                    
+                    case 'stopsewa':
+                        switch ($this->perpanjangan_form->stopsewa_reason) {
+                            case 'replace':
+                                return 'Replace';
+                                break;
+                            case 'renewal':
+                                return 'Renewal';
+                                break;
+                            case 'end':
+                                return 'End Kontrak';
+                                break;
+                        }
+                }
                 break;
-            case '2':
+            case 2:
                 return 'Mutasi';
-                break;
-            case '3':
-                return 'COP';
-                break;
-            case '-1':
-                return 'Batal';
-                break;
-            default:
-                return 'item_type_undefined';
                 break;
         }
     }
@@ -117,6 +125,10 @@ class ArmadaTicket extends Model
 
     public function perpanjangan_form(){
         return $this->hasOne(PerpanjanganForm::class);
+    }
+
+    public function mutasi_form(){
+        return $this->hasOne(MutasiForm::class);
     }
     
     public function created_by_employee(){

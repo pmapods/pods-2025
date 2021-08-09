@@ -430,3 +430,63 @@
         </div>
     </form>
 @endif
+@section('fasilitas-js')
+{{-- form fasilitas --}}
+<script>
+    let formfasilitas = $('#formfasilitas');
+    $(document).ready(function () {
+        formfasilitas.find('.vendor').change(function(){
+            formfasilitas.find('.localvendor').val('');
+            if($(this).val() == 'lokal'){
+                formfasilitas.find('.localvendor').prop('disabled',false);
+            }else{
+                formfasilitas.find('.localvendor').prop('disabled',true);
+            }
+        });
+
+        formfasilitas.find('.authorization').change(function(){
+            let list = $(this).find('option:selected').data('list');
+            if(list == null){
+                formfasilitas.find('.authorization_table').hide();
+                return;
+            }
+            formfasilitas.find('.authorization_table').show();
+            let table_string = '<tr>';
+            let temp = '';
+            let col_count = 1;
+            // authorization header
+            list.forEach((item,index)=>{
+                if(index > 0){
+                    if(temp == item.sign_as){
+                        col_count++;
+                    }else{
+                        table_string += '<td class="align-middle small table-secondary" colspan="'+col_count+'">'+temp+'</td>';
+                        temp = item.sign_as;
+                        col_count =1;
+                    }
+                }else{  
+                    temp = item.sign_as;
+                }
+                if(index == list.length-1){
+                    table_string += '<td class="align-middle small table-secondary" colspan="'+col_count+'">'+temp+'</td>';
+                }
+            });
+            table_string += '</tr><tr>';
+            // authorization body
+            list.forEach((item,index)=>{
+                table_string += '<td width="50%" class="align-bottom small" style="height: 120px"><b>'+item.employee.name+'</b><br>'+item.employee_position.name+'</td>';
+            });
+            table_string += '</tr>';
+
+            formfasilitas.find('.authorization_table tbody').empty();
+            formfasilitas.find('.authorization_table tbody').append(table_string);
+        });
+    });
+    function facilityapprove(facility_form_id){
+        $('#submitform').prop('action', '/approvefacilityform');
+        $('#submitform').prop('method', 'POST');
+        $('#submitform').find('div').append('<input type="hidden" name="facility_form_id" value="'+facility_form_id+'">');
+        $('#submitform').submit();
+    }
+</script>
+@endsection

@@ -44,8 +44,10 @@ class PRController extends Controller
                 $ticket->type = 'Pengadaan Barang Jasa';
                 array_push($tickets,$ticket);
             }
+            // pr hanya untuk pengadaan
             $armadatickets = ArmadaTicket::whereIn('status',[2,3,4])
             ->whereIn('salespoint_id',$salespoint_ids)
+            ->where('ticketing_type',0)
             ->get();
             foreach($armadatickets as $ticket){
                 $ticket->type = 'Pengadaan Armada';

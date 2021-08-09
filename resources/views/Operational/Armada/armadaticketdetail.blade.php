@@ -105,21 +105,30 @@
         @endphp
         @if ($armadaticket->isNiaga == false && $armadaticket->ticketing_type == 0)
             <div class="col-md-6">
-                @php 
+                @php
                     if(($armadaticket->facility_form->status ?? -1) != 1){
                         $isRequirementFinished = false;
                     }
-                    if(($armadaticket->facility_form->))
                 @endphp
                 @include('Operational.Armada.formfasilitas')
             </div>
         @endif
         @if ($armadaticket->ticketing_type == 1)
+            @php
+                if(($armadaticket->perpanjangan_form->status ?? -1) != 1){
+                    $isRequirementFinished = false;
+                }
+            @endphp
             <div class="col-md-6">
                 @include('Operational.Armada.formperpanjanganperhentian')
             </div>
         @endif
         @if ($armadaticket->ticketing_type == 2)
+            @php
+                if(($armadaticket->mutasi_form->status ?? -1) != 1){
+                    $isRequirementFinished = false;
+                }
+            @endphp
             <div class="col-md-6">
                 @include('Operational.Armada.formmutasi')
             </div>
@@ -149,10 +158,14 @@
                                     @break
                                 @case(3)
                                     Selesai / Tanda Tangan sudah lengkap 
-                                    <a class="text-primary font-weight-bold" 
+                                    <a class="uploaded_file text-primary font-weight-bold" 
                                     style="cursor: pointer;" 
-                                    onclick='window.open("/storage/{{$po->external_signed_filepath}}")'>
-                                        Tampilkan PO
+                                    @if ($po->external_signed_filepath != null)
+                                    onclick='window.open("/storage/{{$po->external_signed_filepath}}")'
+                                    @else
+                                    onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'
+                                    @endif
+                                    >Tampikan PO
                                     </a>
                                     @break
                                 @default
@@ -264,6 +277,9 @@
                 $(this).val('');
             }
         });
+        $('.autonumber').change(function(event){
+            autonumber($(this));
+        });
     });
 
     function startAuthorization(armada_ticket_id,updated_at){
@@ -298,114 +314,7 @@
         $('#submitform').submit();
     }
 </script>
-{{-- form perpanjangan perhentian --}}
-<script>
-    let formperpanjangan = $('#formperpanjangan');
-    $(document).ready(function () {
-        formperpanjangan.find('.vendor').change(function(){
-            formperpanjangan.find('.localvendor').val('');
-            if($(this).val() == 'lokal'){
-                formperpanjangan.find('.localvendor').prop('disabled',false);
-            }else{
-                formperpanjangan.find('.localvendor').prop('disabled',true);
-            }
-        });
-
-        formperpanjangan.find('.authorization').change(function(){
-            let list = $(this).find('option:selected').data('list');
-            if(list == null){
-                formperpanjangan.find('.authorization_table').hide();
-                return;
-            }
-            formperpanjangan.find('.authorization_table').show();
-            let table_string = '<tr>';
-            let temp = '';
-            let col_count = 1;
-            // authorization header
-            list.forEach((item,index)=>{
-                if(index > 0){
-                    if(temp == item.sign_as){
-                        col_count++;
-                    }else{
-                        table_string += '<td class="small" colspan="'+col_count+'">'+temp+'</td>';
-                        temp = item.sign_as;
-                        col_count =1;
-                    }
-                }else{  
-                    temp = item.sign_as;
-                }
-                if(index == list.length-1){
-                    table_string += '<td class="small" colspan="'+col_count+'">'+temp+'</td>';
-                }
-            });
-            table_string += '</tr><tr>';
-            list.forEach((item,index)=>{
-                table_string += '<td width="20%" class="align-bottom small" style="height: 80px"><b>'+item.employee.name+'</b><br>'+item.employee_position.name+'</td>';
-            });
-            table_string += '</tr>';
-
-            formperpanjangan.find('.authorization_table tbody').empty();
-            formperpanjangan.find('.authorization_table tbody').append(table_string);
-        });
-    });
-</script>
-
-{{-- form fasilitas --}}
-<script>
-    let formfasilitas = $('#formfasilitas');
-    $(document).ready(function () {
-        formfasilitas.find('.vendor').change(function(){
-            formfasilitas.find('.localvendor').val('');
-            if($(this).val() == 'lokal'){
-                formfasilitas.find('.localvendor').prop('disabled',false);
-            }else{
-                formfasilitas.find('.localvendor').prop('disabled',true);
-            }
-        });
-
-        formfasilitas.find('.authorization').change(function(){
-            let list = $(this).find('option:selected').data('list');
-            if(list == null){
-                formfasilitas.find('.authorization_table').hide();
-                return;
-            }
-            formfasilitas.find('.authorization_table').show();
-            let table_string = '<tr>';
-            let temp = '';
-            let col_count = 1;
-            // authorization header
-            list.forEach((item,index)=>{
-                if(index > 0){
-                    if(temp == item.sign_as){
-                        col_count++;
-                    }else{
-                        table_string += '<td class="align-middle small table-secondary" colspan="'+col_count+'">'+temp+'</td>';
-                        temp = item.sign_as;
-                        col_count =1;
-                    }
-                }else{  
-                    temp = item.sign_as;
-                }
-                if(index == list.length-1){
-                    table_string += '<td class="align-middle small table-secondary" colspan="'+col_count+'">'+temp+'</td>';
-                }
-            });
-            table_string += '</tr><tr>';
-            // authorization body
-            list.forEach((item,index)=>{
-                table_string += '<td width="50%" class="align-bottom small" style="height: 120px"><b>'+item.employee.name+'</b><br>'+item.employee_position.name+'</td>';
-            });
-            table_string += '</tr>';
-
-            formfasilitas.find('.authorization_table tbody').empty();
-            formfasilitas.find('.authorization_table tbody').append(table_string);
-        });
-    });
-    function facilityapprove(facility_form_id){
-        $('#submitform').prop('action', '/approvefacilityform');
-        $('#submitform').prop('method', 'POST');
-        $('#submitform').find('div').append('<input type="hidden" name="facility_form_id" value="'+facility_form_id+'">');
-        $('#submitform').submit();
-    }
-</script>
+@yield('mutasi-js')
+@yield('perpanjangan-js')
+@yield('fasilitas-js')
 @endsection

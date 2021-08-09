@@ -41,9 +41,6 @@
                         Tanggal Permintaan
                     </th>
                     <th>
-                        Tanggal Selesai Otorisasi PR
-                    </th>
-                    <th>
                         Status
                     </th>
                 </tr>
@@ -56,7 +53,6 @@
                     <td>{{$ticket->type}}</td>
                     <td>{{$ticket->salespoint->name}}</td>
                     <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
-                    <td>{{$ticket->pr->last_authorization()->updated_at->translatedFormat('d F Y (H:i)')}}</td>
                     <td>{{$ticket->status()}}</td>
                 </tr>
                 @endforeach

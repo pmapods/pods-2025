@@ -235,7 +235,7 @@ $(document).ready(function () {
             });
         }
         
-        if($(this).val() == '1'){
+        if($(this).val() == '1' || $(this).val() == '2'){
             $('.armada_field').show();
             $('.armada').prop('disabled', false).prop('required',true);
             $.ajax({

@@ -36,6 +36,7 @@ class POController extends Controller
 
         $armadatickets = ArmadaTicket::whereIn('status',[4])
         ->whereIn('salespoint_id',$salespoint_ids)->get();
+        
 
         $tickets = array();
         foreach($barangjasatickets as $ticket){
@@ -44,7 +45,35 @@ class POController extends Controller
         }
 
         foreach($armadatickets as $ticket){
-            $ticket->type = "Armada";
+            switch ($ticket->ticketing_type) {
+                case 0:
+                    $type = 'Pengadaan';
+                    break;
+                case 1:
+                    switch ($ticket->perpanjangan_form->form_type) {
+                        case 'perpanjangan':
+                            $type = 'Perpanjangan';
+                            break;
+                        
+                        case 'stopsewa':
+                            switch ($ticket->perpanjangan_form->stopsewa_reason) {
+                                case 'replace':
+                                    $type = 'Replace';
+                                    break;
+                                case 'renewal':
+                                    $type = 'Renewal';
+                                    break;
+                                case 'end':
+                                    $type = 'End Kontrak';
+                                    break;
+                            }
+                    }
+                    break;
+                case 2:
+                    $type = 'Mutasi';
+                    break;
+            }
+            $ticket->type = $type." Armada";
             array_push($tickets,$ticket);
         }
         return view('Operational.po', compact('tickets'));
@@ -185,7 +214,7 @@ class POController extends Controller
                 if($armadaticket->po->count() > 0){
                     return back()->with('error','PO sudah di setup sebelumnya');
                 }
-                $item_name = $armadaticket->pr->pr_detail->first()->name;
+                $item_name = $armadaticket->armada_type()->brand_name.' '.$armadaticket->armada_type()->name;
                 
                 $newPo = new Po;
                 $newPo->armada_ticket_id = $armadaticket->id;
@@ -212,7 +241,7 @@ class POController extends Controller
                 // biaya sewa
                 $newPoDetail = new PoDetail;
                 $newPoDetail->po_id            = $newPo->id;
-                $newPoDetail->item_name        = 'Sewa Armada '.$item_name;
+                $newPoDetail->item_name        = $request->sewa_name;
                 $newPoDetail->item_description = $notes;
                 $newPoDetail->uom              = 'AU';
                 $newPoDetail->qty              = $request->sewa_count;
@@ -269,7 +298,7 @@ class POController extends Controller
                     throw new \Exception('Nomor PO SAP '.$request->no_po_sap.'telah sebelumnya di input di kode pengadaan '.$existing_po->ticket->code);
                 }
 
-                $po->vendor_address         = $request->vendor_address;
+                $po->sender_address         = $request->sender_address;
                 $po->send_address           = $request->send_address;
                 $po->payment_days           = $request->payment_days;
                 $po->no_pr_sap              = $request->no_pr_sap;
@@ -358,34 +387,40 @@ class POController extends Controller
             $file = pathinfo($path);
             $path = $request->file('internal_signed_file')->storeAs($file['dirname'],$file['basename'],'public');
             $po->internal_signed_filepath = $path;
-            $po->status = 1;
-            $po->last_mail_send_to = $request->email;
-            $po->save();
 
-            $po_upload_request               = new POUploadRequest;
-            $po_upload_request->id           = (string) Str::uuid();
-            $po_upload_request->po_id        = $po->id;
-            $po_upload_request->vendor_name  = $po->vendor_name;
-            if($po->ticket_id != null){
-                $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
+            if(isset($request->need_supplier_confirmation)){
+                $po_upload_request               = new POUploadRequest;
+                $po_upload_request->id           = (string) Str::uuid();
+                $po_upload_request->po_id        = $po->id;
+                $po_upload_request->vendor_name  = $po->sender_name;
+                if($po->ticket_id != null){
+                    $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
+                }
+                if($po->armada_ticket_id != null){
+                    $po_upload_request->vendor_pic   = $po->supplier_pic_name;
+                }
+                $po_upload_request->save();
+
+                $po->po_upload_request_id = $po_upload_request->id;
+                $po->save();
+
+                $mail = $request->email;
+                $data = array(
+                    'po' => $po,
+                    'mail' => $mail,
+                    'po_upload_request' => $po_upload_request,
+                    'url' => url('/signpo/'.$po_upload_request->id)
+                );
+                Mail::to($mail)->send(new POMail($data, 'posignedrequest'));
+                
+                $po->status = 1;
+                $po->last_mail_send_to = $request->email;
+                $po->save();
+            }else{
+                $po->status = 3;
+                $po->save();
             }
-            if($po->armada_ticket_id != null){
-                $po_upload_request->vendor_pic   = $po->supplier_pic_name;
-            }
-            $po_upload_request->save();
-
-            $po->po_upload_request_id = $po_upload_request->id;
-            $po->save();
-
-            $mail = $request->email;
-            $data = array(
-                'po' => $po,
-                'mail' => $mail,
-                'po_upload_request' => $po_upload_request,
-                'url' => url('/signpo/'.$po_upload_request->id)
-            );
-            Mail::to($mail)->send(new POMail($data, 'posignedrequest'));
-
+            
             if($po->ticket_id != null){
                 $monitor = new TicketMonitoring;
                 $monitor->ticket_id      = $po->ticket->id;
@@ -403,9 +438,15 @@ class POController extends Controller
                 $monitor->save();
             }
             DB::commit();
-            return back()->with('success','Berhasil Upload File Intenal Signed untuk PO '.$po->no_po_sap.' File sudah dikirimkan ke email supplier ('.$mail.') untuk ditandatangan');
+            if($po->status == 1){
+                return back()->with('success','Berhasil Upload File Intenal Signed untuk PO '.$po->no_po_sap.' File sudah dikirimkan ke email supplier ('.$mail.') untuk ditandatangan');
+            }
+            if($po->status == 3){
+                return back()->with('success','Berhasil Upload File Intenal Signed untuk PO '.$po->no_po_sap.' Dilanjutkan dengan penerimaan di area');
+            }
         } catch (\Exception $ex) {
             DB::rollback();
+            dd($ex);
             return back()->with('error','Gagal Upload File '. $ex->getMessage()); 
         }
     }

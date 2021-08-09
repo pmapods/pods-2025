@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class PerpanjanganForm extends Model
+class MutasiForm extends Model
 {
     use SoftDeletes;
-    protected $table = 'perpanjangan_form';
+    protected $table = 'mutasi_form';
     protected $primaryKey = 'id';
 
     public function salespoint(){
@@ -19,12 +19,8 @@ class PerpanjanganForm extends Model
         return $this->belongsTo(ArmadaTicket::class);
     }
 
-    public function armada(){
-        return $this->belongsTo(Armada::class);
-    }
-
     public function authorizations(){
-        return $this->hasMany(PerpanjanganFormAuthorization::class);
+        return $this->hasMany(MutasiFormAuthorization::class);
     }
 
     public function current_authorization(){
