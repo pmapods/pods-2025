@@ -132,12 +132,24 @@ class ArmadaTicket extends Model
         return $this->hasOne(FacilityForm::class);
     }
 
+    public function last_rejected_facility_form(){
+        return $this->hasOne(FacilityForm::class)->onlyTrashed()->orderBy('id', 'desc');
+    }
+
     public function perpanjangan_form(){
         return $this->hasOne(PerpanjanganForm::class);
     }
 
+    public function last_rejected_perpanjangan_form(){
+        return $this->hasOne(PerpanjanganForm::class)->onlyTrashed()->orderBy('id', 'desc');
+    }
+
     public function mutasi_form(){
         return $this->hasOne(MutasiForm::class);
+    }
+
+    public function last_rejected_mutasi_form(){
+        return $this->hasOne(MutasiForm::class)->onlyTrashed()->orderBy('id', 'desc');
     }
     
     public function created_by_employee(){

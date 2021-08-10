@@ -182,7 +182,7 @@
         <div class="col-12 text-center">
             @if (($perpanjanganform->current_authorization()->employee_id ?? '-1') == Auth::user()->id)
                 <button type="button" class="btn btn-success" onclick="perpanjanganapprove({{ $perpanjanganform->id }})">Approve</button>
-                <button type="button" class="btn btn-danger" >Reject</button>
+                <button type="button" class="btn btn-danger" onclick="perpanjanganreject({{ $perpanjanganform->id }})">Reject</button>
             @endif
         </div>
     </div>
@@ -193,6 +193,10 @@
     <input type="hidden" name="armada_ticket_id" value="{{ $armadaticket->id }}">
     <input type="hidden" name="armada_id" value="{{ $armadaticket->armada_id }}">
     <h5>Form Perpanjangan Perhentian</h5>
+    @isset($armadaticket->last_rejected_perpanjangan_form)
+        Formulir terakhir yang di reject : {{ $armadaticket->last_rejected_perpanjangan_form->code }}<br>
+        Alasan Reject : <span class="text-danger">{{ $armadaticket->last_rejected_perpanjangan_form->termination_reason }}</span>
+    @endisset
     <div class="row border border-dark bg-light p-4">
         <div class="col-12">
             <center class="h4 text-uppercase"><u>form perpanjangan/penghentian sewa armada</u></center>
@@ -520,6 +524,20 @@
         $('#submitform').prop('method', 'POST');
         $('#submitform').find('div').append('<input type="hidden" name="perpanjangan_form_id" value="'+perpanjangan_form_id+'">');
         $('#submitform').submit();
+    }
+    function perpanjanganreject(perpanjangan_form_id){
+        var reason = prompt("Harap memasukan alasan reject formulir");
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return;
+            }
+            $('#submitform').prop('action', '/rejectperpanjanganform');
+            $('#submitform').prop('method', 'POST');
+            $('#submitform').find('div').append('<input type="hidden" name="perpanjangan_form_id" value="'+perpanjangan_form_id+'">');
+            $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
+            $('#submitform').submit();
+        }
     }
 </script>
 @endsection

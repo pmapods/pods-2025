@@ -349,6 +349,37 @@ class ArmadaTicketingController extends Controller
         }
     }
 
+    public function rejectFacilityForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $facility_form = FacilityForm::findOrFail($request->facility_form_id);
+            if($facility_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            
+            $authorization = $facility_form->current_authorization();
+            $authorization->status = -1;
+            $authorization->save();
+
+            $facility_form->status              = -1;
+            $facility_form->terminated_by       = Auth::user()->id;
+            $facility_form->termination_reason  = $request->reason;
+            $facility_form->save();
+            $facility_form->delete();
+
+            DB::commit();
+            if($authorization == null){
+                return back()->with('success','Formulir fasilitas berhasil dibatalkan. Silahkan membuat formulir fasilitas baru');
+            }else{
+                return back()->with('success','Gagal membatalkan formulir fasilitas');
+            }
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
+        }
+    }
+
     public function approvePerpanjanganForm(Request $request){
         try {
             DB::beginTransaction();
@@ -379,6 +410,37 @@ class ArmadaTicketingController extends Controller
         }
     }
 
+    public function rejectPerpanjanganForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $perpanjangan_form = PerpanjanganForm::findOrFail($request->perpanjangan_form_id);
+            if($perpanjangan_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            
+            $authorization = $perpanjangan_form->current_authorization();
+            $authorization->status = -1;
+            $authorization->save();
+
+            $perpanjangan_form->status              = -1;
+            $perpanjangan_form->terminated_by       = Auth::user()->id;
+            $perpanjangan_form->termination_reason  = $request->reason;
+            $perpanjangan_form->save();
+            $perpanjangan_form->delete();
+
+            DB::commit();
+            if($authorization == null){
+                return back()->with('success','Formulir perpanjangan berhasil dibatalkan. Silahkan membuat formulir perpanjangan baru');
+            }else{
+                return back()->with('success','Gagal membatalkan formulir perpanjangan');
+            }
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
+        }
+    }
+
     public function approveMutasiForm(Request $request){
         try {
             DB::beginTransaction();
@@ -401,6 +463,37 @@ class ArmadaTicketingController extends Controller
                 return back()->with('success','Seluruh Otorisasi Form Mutasi telah selesai');
             }else{
                 return back()->with('success','Berhasil melakukan otorisasi formulit mutasi, Otorisasi selanjutnya oleh '.$authorization->employee_name);
+            }
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form fasilitas');
+        }
+    }
+
+    public function rejectMutasiForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $mutasi_form = MutasiForm::findOrFail($request->mutasi_form_id);
+            if($mutasi_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            
+            $authorization = $mutasi_form->current_authorization();
+            $authorization->status = -1;
+            $authorization->save();
+
+            $mutasi_form->status              = -1;
+            $mutasi_form->terminated_by       = Auth::user()->id;
+            $mutasi_form->termination_reason  = $request->reason;
+            $mutasi_form->save();
+            $mutasi_form->delete();
+
+            DB::commit();
+            if($authorization == null){
+                return back()->with('success','Formulir mutasi berhasil dibatalkan. Silahkan membuat formulir mutasi baru');
+            }else{
+                return back()->with('success','Gagal membatalkan formulir mutasi');
             }
         } catch (\Exception $ex) {
             DB::rollback();

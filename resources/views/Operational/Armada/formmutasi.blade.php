@@ -164,7 +164,7 @@
         <div class="text-center">
             @if (($mutasiform->current_authorization()->employee_id ?? '-1') == Auth::user()->id)
                 <button type="button" class="btn btn-success" onclick="mutasiapprove({{ $mutasiform->id }})">Approve</button>
-                <button type="button" class="btn btn-danger" >Reject</button>
+                <button type="button" class="btn btn-danger" onclick="mutasireject({{ $mutasiform->id }})">Reject</button>
             @endif
         </div>
         <span class="small">FRM-HCD-107 REV 04</span>
@@ -175,6 +175,10 @@
         <input type="hidden" name="armada_ticket_id" value="{{ $armadaticket->id }}">
         <input type="hidden" name="armada_id" value="{{ $armadaticket->armada_id }}">
         <h5>Formulir Mutasi</h5>
+        @isset($armadaticket->last_rejected_mutasi_form)
+            Formulir terakhir yang di reject : {{ $armadaticket->last_rejected_mutasi_form->code }}<br>
+            Alasan Reject : <span class="text-danger">{{ $armadaticket->last_rejected_mutasi_form->termination_reason }}</span>
+        @endisset
         <div class="border p-2 border-dark">
             <h5 class="text-center">BERITA ACARA MUTASI INTERNAL ARMADA NIAGA/NON NIAGA</h5>
             <table class="table table-bordered table-sm">
@@ -452,6 +456,21 @@
         $('#submitform').prop('method', 'POST');
         $('#submitform').find('div').append('<input type="hidden" name="mutasi_form_id" value="'+mutasi_form_id+'">');
         $('#submitform').submit();
+    }
+
+    function mutasireject(mutasi_form_id){
+        var reason = prompt("Harap memasukan alasan reject formulir");
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return;
+            }
+            $('#submitform').prop('action', '/rejectmutasiform');
+            $('#submitform').prop('method', 'POST');
+            $('#submitform').find('div').append('<input type="hidden" name="mutasi_form_id" value="'+mutasi_form_id+'">');
+            $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
+            $('#submitform').submit();
+        }
     }
 </script>
 @endsection

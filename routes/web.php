@@ -148,8 +148,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/addmutasiform',[ArmadaTicketingController::class, 'addMutasiForm']);
         Route::post('/completearmadabookedby',[ArmadaTicketingController::class, 'completeArmadaBookedBy']);
         Route::post('/approveperpanjanganform',[ArmadaTicketingController::class, 'approvePerpanjanganForm']);
+        Route::post('/rejectperpanjanganform',[ArmadaTicketingController::class, 'rejectPerpanjanganForm']);
         Route::post('/approvefacilityform',[ArmadaTicketingController::class, 'approveFacilityForm']);
+        Route::post('/rejectfacilityform',[ArmadaTicketingController::class, 'rejectFacilityForm']);
         Route::post('/approvemutasiform',[ArmadaTicketingController::class, 'approveMutasiForm']);
+        Route::post('/rejectmutasiform',[ArmadaTicketingController::class, 'rejectMutasiForm']);
         Route::post('/uploadbastk',[ArmadaTicketingController::class, 'uploadBASTK']);
         Route::get('/getarmadatypebyniaga/{isNiaga}',[ArmadaController::class, 'getArmadaTypebyNiaga']);
         Route::get('/getarmada',[ArmadaController::class, 'getArmada']);

@@ -81,8 +81,8 @@ class ArmadaTicketingMigration extends Migration
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
             $table->tinyInteger('status')->default(0);
-            // 0 new / waiting for approval
             // -1 terminated
+            // 0 new / waiting for approval
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');
             $table->softDeletes();

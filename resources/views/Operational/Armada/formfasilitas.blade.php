@@ -225,13 +225,17 @@
                 <div class="col-12 text-center">
                     @if (($facility_form->current_authorization()->employee_id ?? '-1') == Auth::user()->id)
                         <button type="button" class="btn btn-success" onclick="facilityapprove({{ $facility_form->id }})">Approve</button>
-                        <button type="button" class="btn btn-danger" >Reject</button>
+                        <button type="button" class="btn btn-danger" onclick="facilityreject({{ $facility_form->id }})">Reject</button>
                     @endif
                 </div>
             </div>
             <span>FRM-HCD-114 REV 00</span>
         </div>
     @else
+        @isset($armadaticket->last_rejected_facility_form)
+            Formulir terakhir yang di reject : {{ $armadaticket->last_rejected_facility_form->code }}<br>
+            Alasan Reject : <span class="text-danger">{{ $armadaticket->last_rejected_facility_form->termination_reason }}</span>
+        @endisset
         <form id="formfasilitas" method="post" action="/addfacilityform">
             @csrf
             <input type="hidden" name="armada_ticket_id" value="{{ $armadaticket->id }}">
@@ -488,6 +492,20 @@
         $('#submitform').prop('method', 'POST');
         $('#submitform').find('div').append('<input type="hidden" name="facility_form_id" value="'+facility_form_id+'">');
         $('#submitform').submit();
+    }
+    function facilityreject(facility_form_id){
+        var reason = prompt("Harap memasukan alasan reject formulir");
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return;
+            }
+            $('#submitform').prop('action', '/rejectfacilityform');
+            $('#submitform').prop('method', 'POST');
+            $('#submitform').find('div').append('<input type="hidden" name="facility_form_id" value="'+facility_form_id+'">');
+            $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
+            $('#submitform').submit();
+        }
     }
 </script>
 @endsection
