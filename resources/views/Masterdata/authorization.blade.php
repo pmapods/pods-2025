@@ -114,6 +114,22 @@
                         </div>
                     </div>
                     <div class="col-md-12">
+                        <h5>Otorisasi Default (otomatis)</h5>
+                        <table class="table table-bordered table_default_level">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Jabatan</th>
+                                    <th>Sebagai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="3" class="text-center">Tidak ada</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-12">
+                        <h5>Otorisasi Pilihan</h5>
                         <table class="table table-bordered table_level">
                             <thead>
                                 <tr>
@@ -233,6 +249,21 @@
                         </div>
                     </div>
                     <div class="col-md-12">
+                        <h5>Otorisasi Default (otomatis)</h5>
+                        <table class="table table-bordered table_default_level">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Jabatan</th>
+                                    <th>Sebagai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-12">
+                        <h5>Otorisasi pilihan</h5>
                         <table class="table table-bordered table_level">
                             <thead>
                                 <tr>
@@ -245,8 +276,6 @@
                             </thead>
                             <tbody>
                             </tbody>
-                            <tfoot>
-                            </tfoot>
                         </table>
                     </div>
                     <div class="col-md-4">
@@ -353,7 +382,8 @@
             as_text.find('option').remove();
             as_text.append('<option value="">-- Pilih --</option>');
             let value_array = [];
-            closestmodal.find('.table_level tfoot').empty();
+            let default_array = [];
+            closestmodal.find('.table_default_level tbody').empty();
             switch ($(this).val()) {
                 case "0":
                     value_array = formpengadaan;
@@ -363,10 +393,28 @@
                     break;
                 case "2":
                     value_array = formpr;
+                    default_array = [
+                        {
+                            "nama":"Diisi oleh otorisasi kedua dari tiket",
+                            "jabatan":"User (Min Gol 5A)",
+                            "sebagai":"Dibuat Oleh"
+                        },
+                        {
+                            "nama":"Diisi oleh otorisasi ketiga dari tiket",
+                            "jabatan":"Atasan Berikutnya",
+                            "sebagai":"Diperiksa Oleh"
+                        }
+                    ];
                     break;
                 case "3":
                     value_array = formpo;
-                    closestmodal.find('.table_level tfoot').append('<tr class="table-secondary"><td>-</td><td>Supplier PIC</td><td>Konfirmasi Supplier</td><td></td><td>-</td></tr>')
+                    default_array = [
+                        {
+                            "nama":"Diisi saat pembuatan PO",
+                            "jabatan":"Supplier PIC",
+                            "sebagai":"Konfirmasi Supplier"
+                        }
+                    ];
                     break;
                 case "4":
                     value_array = formfasilitas;
@@ -387,6 +435,12 @@
             value_array.forEach(item => {
                 as_text.append('<option value="' + item + '">' + item + '</option>');
             });
+            default_array.forEach(item => {
+                closestmodal.find('.table_default_level tbody').append('<tr><td>'+item.nama+'</td><td>'+item.jabatan+'</td><td>'+item.sebagai+'</td></tr>');
+            });
+            if(default_array.length == 0){
+                closestmodal.find('.table_default_level tbody').append('<tr><td colspan="3" class="text-center">Tidak ada</td></tr>');
+            }
             as_text.prop('disabled', false);
         });
 

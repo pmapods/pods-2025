@@ -25,6 +25,52 @@ class AuthorizationController extends Controller
     public function addAuthorization(Request $request){
         try {
             DB::beginTransaction();
+            switch ($request->form_type) {
+                case '0':
+                    // 0 form pengadaan barang jasa
+                    $detail_counts = [3];
+                    $errMessage = "Form Pengadaan Barang jasa membutuhkan 3 opilihan torisasi";
+                    break;
+                case '1':
+                    // 1 form bidding
+                    $detail_counts = [3];
+                    $errMessage = "Form Bidding membutuhkan 3 pilihan otorisasi";
+                    break;
+                case '2':
+                    // 2 form pr
+                    $detail_counts = [3,4];
+                    $errMessage = "Form PR membutuhkan 3 atau 4 pilihan otorisasi";
+                    break;
+                case '3':
+                    // 3 form po
+                    $detail_counts = [2];
+                    $errMessage = "Form PO membutuhkan 2 pilihan otorisasi";
+                    break;
+                case '4':
+                    // 4 form fasilitas
+                    $detail_counts = [2];
+                    $errMessage = "Form Fasilitas membutuhkan 2 pilihan otorisasi";
+                    break;
+                case '5':
+                    // 5 form mutasi
+                    $detail_counts = [7];
+                    $errMessage = "Form Mutasi membutuhkan 7 pilihan otorisasi";
+                    break;
+                case '6':
+                    // 6 form perpanjangan perhentian
+                    $detail_counts = [4,5];
+                    $errMessage = "Form Perpanjangan Perhentian membutuhkan 4 atau 5 pilihan otorisasi";
+                    break;
+                case '7':
+                    // 7 form pengadaan armada
+                    $detail_counts = [3];
+                    $errMessage = "Form Pengadaan Armada membutuhkan 3 pilihan otorisasi";
+                    break;
+            }
+            if(!in_array(count($request->authorization),$detail_counts)){
+                return back()->with('error',$errMessage);
+            }
+
             $newAuthorization                 = new Authorization;
             $newAuthorization->salespoint_id  = $request->salespoint;
             $newAuthorization->form_type      = $request->form_type;
@@ -49,6 +95,53 @@ class AuthorizationController extends Controller
     public function updateAuthorization(Request $request){
         try {
             DB::beginTransaction();
+            
+            switch ($request->form_type) {
+                case '0':
+                    // 0 form pengadaan barang jasa
+                    $detail_counts = [3];
+                    $errMessage = "Form Pengadaan Barang jasa membutuhkan 3 opilihan torisasi";
+                    break;
+                case '1':
+                    // 1 form bidding
+                    $detail_counts = [3];
+                    $errMessage = "Form Bidding membutuhkan 3 pilihan otorisasi";
+                    break;
+                case '2':
+                    // 2 form pr
+                    $detail_counts = [3,4];
+                    $errMessage = "Form PR membutuhkan 3 atau 4 pilihan otorisasi";
+                    break;
+                case '3':
+                    // 3 form po
+                    $detail_counts = [2];
+                    $errMessage = "Form PO membutuhkan 2 pilihan otorisasi";
+                    break;
+                case '4':
+                    // 4 form fasilitas
+                    $detail_counts = [2];
+                    $errMessage = "Form Fasilitas membutuhkan 2 pilihan otorisasi";
+                    break;
+                case '5':
+                    // 5 form mutasi
+                    $detail_counts = [7];
+                    $errMessage = "Form Mutasi membutuhkan 7 pilihan otorisasi";
+                    break;
+                case '6':
+                    // 6 form perpanjangan perhentian
+                    $detail_counts = [4,5];
+                    $errMessage = "Form Perpanjangan Perhentian membutuhkan 4 atau 5 pilihan otorisasi";
+                    break;
+                case '7':
+                    // 7 form pengadaan armada
+                    $detail_counts = [3];
+                    $errMessage = "Form Pengadaan Armada membutuhkan 3 pilihan otorisasi";
+                    break;
+            }
+            if(!in_array(count($request->authorization),$detail_counts)){
+                return back()->with('error',$errMessage);
+            }
+            
             $authorization = Authorization::findOrFail($request->authorization_id);
             $authorization->salespoint_id  = $request->salespoint;
             $authorization->form_type      = $request->form_type;
