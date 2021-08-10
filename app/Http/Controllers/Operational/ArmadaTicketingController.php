@@ -102,11 +102,16 @@ class ArmadaTicketingController extends Controller
         $formmutasi_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)->where('form_type',5)->get();
 
         $salespoints = SalesPoint::all();
+
+        $available_armadas = Armada::where('salespoint_id',$armadaticket->salespoint_id)
+                                ->where('armada_type_id',$armadaticket->armada_type_id)
+                                ->where('status',0)
+                                ->get();
         try { 
             if(!$armadaticket){
                 throw new \Exception('Ticket armada dengan kode '.$code.'tidak ditemukan');
             }
-            return view('Operational.Armada.armadaticketdetail',compact('armadaticket','employee_positions','available_salespoints','formperpanjangan_authorizations','formfasilitas_authorizations','formmutasi_authorizations','salespoints'));
+            return view('Operational.Armada.armadaticketdetail',compact('armadaticket','employee_positions','available_salespoints','formperpanjangan_authorizations','formfasilitas_authorizations','available_armadas','formmutasi_authorizations','salespoints'));
         } catch (\Exception $ex) {
             return redirect('/ticketing')->with('error','Gagal membukan detail ticket armada '.$ex->getMessage());
         }
@@ -293,6 +298,24 @@ class ArmadaTicketingController extends Controller
             DB::rollback();
             dd($ex);
             return back()->with('error', 'Gagal membuat form mutasi');
+        }
+    }
+
+    public function completeArmadaBookedBy(Request $request){
+        try {
+            DB::beginTransaction();
+            foreach($request->armada as $armada){
+                $available_armada               = Armada::find($armada['armada_id']);
+                $available_armada->booked_by    = $armada['booked_by'];
+                $available_armada->status       = 1;
+                $available_armada->save();
+            }
+            DB::commit();
+            return back()->with('success', 'Berhasil Melengkapi data available armada');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal Melengkapi data armada');
         }
     }
 

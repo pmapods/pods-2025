@@ -138,6 +138,14 @@
                 @include('Operational.Armada.formmutasi')
             </div>
         @endif
+        @if ($available_armadas->count() > 0 && $armadaticket->ticketing_type == 0)
+            @php
+                $isRequirementFinished = false;
+            @endphp
+            <div class="col-md-6">
+                @include('Operational.Armada.availablearmadas')
+            </div>
+        @endif
         @if ($armadaticket->status == 4 || $armadaticket->status == 5)
             <div class="col-md-6 pl-3">
                 <h5>Upload Dokumen Penerimaan</h5>

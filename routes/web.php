@@ -146,6 +146,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/addfacilityform',[ArmadaTicketingController::class, 'addFacilityForm']);
         Route::post('/addperpanjanganform',[ArmadaTicketingController::class, 'addPerpanjanganForm']);
         Route::post('/addmutasiform',[ArmadaTicketingController::class, 'addMutasiForm']);
+        Route::post('/completearmadabookedby',[ArmadaTicketingController::class, 'completeArmadaBookedBy']);
         Route::post('/approveperpanjanganform',[ArmadaTicketingController::class, 'approvePerpanjanganForm']);
         Route::post('/approvefacilityform',[ArmadaTicketingController::class, 'approveFacilityForm']);
         Route::post('/approvemutasiform',[ArmadaTicketingController::class, 'approveMutasiForm']);
