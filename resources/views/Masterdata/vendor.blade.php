@@ -1,6 +1,15 @@
 @extends('Layout.app')
 @section('local-css')
-
+<style>
+    #pills-tab .nav-link{
+        background-color: #a01e2b48;
+        color: black !important;
+    }
+    #pills-tab .nav-link.active{
+        background-color: #A01E2A;
+        color: white !important;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -19,61 +28,112 @@
             </div>
         </div>
         <div class="d-flex justify-content-end mt-2">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVendorModal">
+            <button type="button" class="btn btn-primary" data-toggle="modal" 
+            data-target="#addVendorModal" id="addbuttonbarangjasa">
                 Tambah Vendor
+            </button>
+            
+            <button type="button" class="btn btn-primary" data-toggle="modal" 
+            data-target="#addArmadaVendorModal" id="addbuttonarmada"
+            style="display: none">
+                Tambah Vendor Armada
             </button>
         </div>
     </div>
 </div>
 <div class="content-body px-4">
-    <div class="table-responsive">
-        <table id="vendorDT" class="table table-bordered table-striped dataTable" role="grid">
-            <thead>
-                <tr role="row">
-                    <th>
-                        #
-                    </th>
-                    <th>
-                        Kode Vendor
-                    </th>
-                    <th>
-                        Nama Vendor
-                    </th>
-                    <th>
-                        Alamat
-                    </th>
-                    <th>
-                        Kota
-                    </th>
-                    <th>
-                        Sales Person
-                    </th>
-                    <th>
-                        Telfon
-                    </th>
-                    <th>
-                        Email
-                    </th>
-            </thead>
-            <tbody>
-                @foreach ($vendors as $key=>$vendor)
-                    <tr data-vendor="{{$vendor}}">
-                        <td>{{$key+1}}</td>
-                        <td>{{$vendor->code}}</td>
-                        <td>{{$vendor->name}}</td>
-                        <td>{{$vendor->address}}</td>
-                        <td>{{$vendor->regency->name}}</td>
-                        <td>{{$vendor->salesperson}}</td>
-                        <td>{{$vendor->phone}}</td>
-                        <td>{{$vendor->email}}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <ul class="nav nav-pills flex-column flex-sm-row mb-3" id="pills-tab" role="tablist">
+        <li class="flex-sm-fill text-sm-center nav-item mr-1" role="presentation">
+          <a class="nav-link active" id="pills-barangjasa-tab" data-toggle="pill" href="#pills-barangjasa" role="tab" aria-controls="pills-barangjasa" aria-selected="true">Barang Jasa</a>
+        </li>
+        <li class="flex-sm-fill text-sm-center nav-item ml-1" role="presentation">
+          <a class="nav-link" id="pills-armada-tab" data-toggle="pill" href="#pills-armada" role="tab" aria-controls="pills-armada" aria-selected="false">Armada</a>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-barangjasa" role="tabpanel" aria-labelledby="pills-barangjasa-tab">
+            <div class="table-responsive">
+                <table id="vendorDT" class="table table-bordered table-striped dataTable" role="grid">
+                    <thead>
+                        <tr role="row">
+                            <th>
+                                #
+                            </th>
+                            <th>
+                                Kode Vendor
+                            </th>
+                            <th>
+                                Nama Vendor
+                            </th>
+                            <th>
+                                Alamat
+                            </th>
+                            <th>
+                                Kota
+                            </th>
+                            <th>
+                                Sales Person
+                            </th>
+                            <th>
+                                Telfon
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                    </thead>
+                    <tbody>
+                        @foreach ($vendors as $key=>$vendor)
+                            <tr data-vendor="{{$vendor}}">
+                                <td>{{$key+1}}</td>
+                                <td>{{$vendor->code}}</td>
+                                <td>{{$vendor->name}}</td>
+                                <td>{{$vendor->address}}</td>
+                                <td>{{$vendor->regency->name}}</td>
+                                <td>{{$vendor->salesperson}}</td>
+                                <td>{{$vendor->phone}}</td>
+                                <td>{{$vendor->email}}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="pills-armada" role="tabpanel" aria-labelledby="pills-armada-tab">
+            <table id="vendorArmadaDT" class="table table-bordered table-striped dataTable" role="grid">
+                <thead>
+                    <tr role="row">
+                        <th width="5%">
+                            #
+                        </th>
+                        <th>
+                            Nama Vendor
+                        </th>
+                        <th width="5%">Action</th>
+                </thead>
+                <tbody>
+                    @foreach ($armada_vendors as $key=>$vendor)
+                        <tr>
+                            <td>{{$key+1}}</td>
+                            <td>{{$vendor->name}}</td>
+                            <td>
+                               <i class="fa fa-trash text-danger" 
+                               aria-hidden="true"
+                               style="cursor: pointer;"
+                               onclick="removeArmadaVendor({{ $vendor->id }})"></i> 
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+<form id="submitform">
+    @csrf
+    <div></div>
+</form>
 
-<!-- Modal -->
 <div class="modal fade" id="addVendorModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <form action="/addvendor" method="post">
@@ -157,7 +217,6 @@
     </div>
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="updateVendorModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <form action="/updatevendor" method="post">
@@ -247,11 +306,38 @@
         </form>
     </div>
 </div>
+
+<div class="modal fade" id="addArmadaVendorModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form action="/addarmadavendor" method="post">
+        @csrf
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Vendor Armada</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                  <label for="armada_vendor_name">Nama Vendor Armada</label>
+                  <input type="text" class="form-control" name="armada_vendor_name" id="armada_vendor_name" placeholder="Masukan Nama Vendor" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Tambah Vendor</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
 @endsection
 @section('local-js')
 <script>
     $(document).ready(function(){
         var table = $('#vendorDT').DataTable(datatable_settings);
+        var armadatable = $('#vendorArmadaDT').DataTable(datatable_settings);
         $('#vendorDT tbody').on('click', 'tr', function () {
             let modal = $('#updateVendorModal');
             let data = $(this).data('vendor');
@@ -266,11 +352,32 @@
             modal.find('input[name="email"]').val(data['email']);
             modal.modal('show');
         });
+        $('a[data-toggle="pill"]').on('shown.bs.tab', function (event) {
+            var target = $(event.target).attr("href").split('-')[1];
+
+            $('#addbuttonbarangjasa').hide();
+            $('#addbuttonarmada').hide();
+            switch (target) {
+                case 'barangjasa':
+                    $('#addbuttonbarangjasa').show();
+                    break;
+                case 'armada':
+                    $('#addbuttonarmada').show();
+                    break;
+            }
+        });
     })
     function deleteVendor(el){
         if (confirm('Vendor akan dihapus dan tidak dapat dikembalikan. Lanjutkan?')) {
             $('#deleteform').submit();
         }
+    }
+    function removeArmadaVendor(armada_vendor_id){
+        $('#submitform').find('div').empty();
+        $('#submitform').prop('action', "/deletearmadavendor");
+        $('#submitform').prop('method', "POST");
+        $('#submitform').find('div').append('<input type="hidden" name="armada_vendor_id" value="'+armada_vendor_id+'">');
+        $('#submitform').submit();
     }
 </script>
 @endsection

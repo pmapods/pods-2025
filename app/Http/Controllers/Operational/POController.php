@@ -36,7 +36,6 @@ class POController extends Controller
 
         $armadatickets = ArmadaTicket::whereIn('status',[4])
         ->whereIn('salespoint_id',$salespoint_ids)->get();
-        dd($armadatickets);
         $tickets = array();
         foreach($barangjasatickets as $ticket){
             $ticket->type = "Barang Jasa";
@@ -370,7 +369,7 @@ class POController extends Controller
                     $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
                 }
                 if($po->armada_ticket_id != null){
-                    $po_upload_request->vendor_pic   = $po->supplier_pic_name;
+                    $po_upload_request->vendor_pic   = $po->sender_name;
                 }
                 $po_upload_request->save();
 
@@ -629,9 +628,9 @@ class POController extends Controller
                 if($po->armada_ticket_id != null){
                     $monitor = new ArmadaTicketMonitoring;
                     $monitor->armada_ticket_id      = $po->armada_ticket->id;
-                    $monitor->employee_id    = -1;
-                    $monitor->employee_name  = $po->vendor_name;
-                    $monitor->message        = 'Supplier '.$po->vendor_name.' Melakukan Upload tanda tangan PO '.$po->no_po_sap;
+                    $monitor->employee_id           = -1;
+                    $monitor->employee_name         = $po->sender_name;
+                    $monitor->message                = 'Supplier '.$po->vendor_name.' Melakukan Upload tanda tangan PO '.$po->no_po_sap;
                     $monitor->save();
                 }
                 DB::commit();

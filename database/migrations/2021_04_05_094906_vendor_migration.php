@@ -30,6 +30,13 @@ class VendorMigration extends Migration
             $table->SoftDeletes();
             $table->timestamps();
         });
+
+        // vendor armada
+        Schema::create('armada_vendor', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
+        });
     }
 
     /**

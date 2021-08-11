@@ -40,6 +40,7 @@ class PoMigration extends Migration
             $table->string('reject_notes')->nullable();
             $table->string('rejected_by')->nullable();
             $table->tinyInteger('status')->default(-1);
+            $table->string('po_reference')->nullable();
             // -1 po draft
             // 0 po diterbitkan
             // 1 purchasing sudah upload file tanda tangan basah

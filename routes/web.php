@@ -96,6 +96,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/addvendor',[VendorController::class, 'addVendor']);
         Route::patch('/updatevendor',[VendorController::class, 'updateVendor']);
         Route::delete('/deletevendor',[VendorController::class, 'deleteVendor']);
+        Route::post('/addarmadavendor',[VendorController::class, 'addArmadaVendor']);
+        Route::post('/deletearmadavendor',[VendorController::class, 'deleteArmadaVendor']);
     });
 
     // Budget Pricing

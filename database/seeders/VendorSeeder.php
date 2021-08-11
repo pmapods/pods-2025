@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Vendor;
+use App\Models\ArmadaVendor;
 use App\Models\Regency;
 use Faker\Factory as Faker;
 use DB;
@@ -186,5 +187,12 @@ class VendorSeeder extends Seeder
         ('V100608135','SRIKANDI DIAMOND MOTOR  PT','197 JL KH HASYIM ASHARI',3671,'ELVIN','0811-1576-688',NULL),
         ('V100601362','GARDA BHAKTI NUSANTARA  PT','JL DAAN MOGOT RAYA KM 19,6 KAWASAN PUSAT NIAGA TERPADU BLOK D NO8 G',3603,'ROMLIS','0823-6766-5290',NULL);
     ");
+
+        $armada_vendors = array("BATAVIA","ASSA","MARDIKA","TRAC","MPM","TAKARI","STAR DIPO",);
+        foreach($armada_vendors as $vendor_name){
+            $newVendor = new ArmadaVendor;
+            $newVendor->name = $vendor_name;
+            $newVendor->save();
+        }
     }
 }

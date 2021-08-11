@@ -119,7 +119,17 @@
                   </select>
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                  <label for="vendor">Pilih Vendor</label>
+                  <select class="form-control" name="vendor_name" id="vendor">
+                      @foreach ($vendors as $vendor)
+                          
+                      @endforeach
+                  </select>
+                </div>
+            </div>
+            <div class="col-md-6">
                 <div class="form-group">
                   <label class="required_field">Pilih Otorisasi</label>
                   <select class="form-control" id="authorization" name="authorization_id" required>
