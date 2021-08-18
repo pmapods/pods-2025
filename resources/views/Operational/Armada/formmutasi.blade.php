@@ -233,7 +233,7 @@
                 <div class="col-8">
                     <input type="text" class="form-control form-control-sm" 
                     name="nopol" 
-                    value="{{ $armadaticket->armada()->plate }}"
+                    value="{{ $armadaticket->armada->plate }}"
                     readonly>
                 </div>
                 <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Nama Pemilik (Vendor)</div>
@@ -243,7 +243,7 @@
                 <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Merk Kendaraan</div>
                 <div class="col-8">
                     <input type="text" class="form-control form-control-sm" 
-                    value="{{ $armadaticket->armada_type()->brand_name }}"
+                    value="{{ $armadaticket->armada_type->brand_name }}"
                     name="merk"
                     readonly>
                 </div>
@@ -251,7 +251,7 @@
                 <div class="col-8">
                     <input type="text" class="form-control form-control-sm"
                     name="jenis_kendaraan"
-                    value="{{ $armadaticket->armada_type()->name }}"
+                    value="{{ $armadaticket->armada_type->name }}"
                     readonly>
                 </div>
                 <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>No. Rangka</div>

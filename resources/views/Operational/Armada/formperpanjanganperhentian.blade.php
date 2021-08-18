@@ -267,7 +267,7 @@
                 <div class="col-2 small required_field">Jenis Kendaraan</div>
                 <div class="col-1 small">:</div>
                 <div class="col-7">
-                    <input type="text" class="form-control form-control-sm" value="{{ $armadaticket->armada_type()->name }}" 
+                    <input type="text" class="form-control form-control-sm" value="{{$po->armada_ticket->armada_type->name }}" 
                     name="jenis_kendaraan"
                     readonly>
                 </div>
@@ -278,7 +278,7 @@
                 <div class="col-2 small required_field">Nopol</div>
                 <div class="col-1 small">:</div>
                 <div class="col-7">
-                    <input type="text" class="form-control form-control-sm" value="{{ $armadaticket->armada()->plate }}" 
+                    <input type="text" class="form-control form-control-sm" value="{{ $po->armada_ticket->armada->plate }}" 
                     name="nopol"
                     readonly>
                 </div>
@@ -304,21 +304,10 @@
                 <div class="col-2 small required_field">Vendor</div>
                 <div class="col-1 small">:</div>
                 <div class="col-7">
-                    <select class="form-control form-control-sm vendor" 
-                    name="vendor_name"
-                    required>
-                        <option value="">-- Pilih Unit --</option>
-                        <option value="ASSA">ASSA</option>
-                        <option value="Batavia">Batavia</option>
-                        <option value="TRAC">TRAC</option>
-                        <option value="Mardika">Mardika</option>
-                        <option value="MPM">MPM</option>
-                        <option value="lokal">Lokal</option>
-                    </select>
-                    <input type="text" class="form-control form-control-sm mt-1 localvendor"
-                    placeholder="Masukkan Nama Vendor Lokal"
-                    name="lokal_vendor_name"
-                    disabled>
+                    <input class="form-control form-control-sm" 
+                    type="text" name="vendor_name" 
+                    value="{{ $po->sender_name }}"
+                    readonly>
                 </div>
             </div>
             
@@ -438,16 +427,16 @@
 <script>
     let formperpanjangan = $('#formperpanjangan');
     $(document).ready(function () {
-        formperpanjangan.find('.vendor').change(function(){
-            formperpanjangan.find('.localvendor').val('');
-            if($(this).val() == 'lokal'){
-                formperpanjangan.find('.localvendor').prop('disabled',false);
-                formperpanjangan.find('.localvendor').prop('required',true);
-            }else{
-                formperpanjangan.find('.localvendor').prop('disabled',true);
-                formperpanjangan.find('.localvendor').prop('required',false);
-            }
-        });
+        // formperpanjangan.find('.vendor').change(function(){
+        //     formperpanjangan.find('.localvendor').val('');
+        //     if($(this).val() == 'lokal'){
+        //         formperpanjangan.find('.localvendor').prop('disabled',false);
+        //         formperpanjangan.find('.localvendor').prop('required',true);
+        //     }else{
+        //         formperpanjangan.find('.localvendor').prop('disabled',true);
+        //         formperpanjangan.find('.localvendor').prop('required',false);
+        //     }
+        // });
 
         formperpanjangan.find('.authorization').change(function(){
             let list = $(this).find('option:selected').data('list');

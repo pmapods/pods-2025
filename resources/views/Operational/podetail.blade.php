@@ -327,11 +327,7 @@
                                 @if($po->status == 3)
                                     <a class="uploaded_file text-primary font-weight-bold" 
                                     style="cursor: pointer;" 
-                                    @if ($po->external_signed_filepath != null)
                                     onclick='window.open("/storage/{{$po->external_signed_filepath}}")'
-                                    @else
-                                    onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'
-                                    @endif
                                     >Dokumen PO dengan Tanda Tangan Lengkap
                                     </a>
                                 @endif
@@ -390,7 +386,7 @@
                                 <div class="col-md-3">Nama Vendor</div>
                                 <div class="col-md-9 font-weight-bold">{{$po->sender_name}}</div>
                                 <div class="col-md-3">Salespoint Terkait</div>
-                                <div class="col-md-9 font-weight-bold">{{$po->armada_ticket->salespoint->name}}</div>
+                                <div class="col-md-9 font-weight-bold">{{$po->send_name}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-6 d-flex flex-column">
@@ -406,7 +402,14 @@
                                     @if($po->status != -1)
                                         <span>{{$po->send_address}}</span>
                                     @else
-                                        <textarea class="form-control" rows="3" name="send_address" placeholder="Masukkan Alamat Kirim" required>{{$po->armada_ticket->salespoint->address}}</textarea>
+                                        @php 
+                                            if($po->armada_ticket->type() == 'Mutasi'){
+                                                $temp_address = $po->armada_ticket->po_reference->armada_ticket->salespoint->address;
+                                            }else{
+                                                $temp_address = $po->armada_ticket->salespoint->address;
+                                            }
+                                        @endphp
+                                        <textarea class="form-control" rows="3" name="send_address" placeholder="Masukkan Alamat Kirim" required>{{$temp_address}}</textarea>
                                     @endif
                                 </div>
                             </div>
@@ -653,11 +656,7 @@
                                 @if($po->status == 3)
                                     <a class="uploaded_file text-primary font-weight-bold" 
                                         style="cursor: pointer;" 
-                                        @if ($po->external_signed_filepath != null)
                                         onclick='window.open("/storage/{{$po->external_signed_filepath}}")'
-                                        @else
-                                        onclick='window.open("/storage/{{$po->internal_signed_filepath}}")'
-                                        @endif
                                         >Dokumen PO dengan Tanda Tangan Lengkap
                                     </a>
                                 @endif
@@ -672,19 +671,13 @@
                                 }
                             @endphp
                             @if($po->status == 0)
-                            <div>
-                                <input type="checkbox" class="mr-2"
-                                name="need_supplier_confirmation" 
-                                id="need_supplier_confirmation">
-                                <label class="font-weight-normal" for="need_supplier_confirmation">Apakah Butuh Tanda Tangan Konfirmasi Supplier ?</label>
-                            </div>
                                 <div class="form-group">
                                     <label class="required_field">Masukkan Email Tujuan</label>
                                     <input type="text" class="form-control" 
                                     id="supplier_email"
                                     value="{{$toEmail}}" 
                                     placeholder="supplieremail@example.com" name="email" 
-                                    disabled>
+                                    required>
                                 </div>
                                 <div class="form-group">
                                     <label class="required_field">Pilih File PO yang sudah di Tanda tangan Internal</label>
@@ -818,16 +811,6 @@
         $('.validatefilesize').change(function(event){
             if(!validatefilesize(event)){
                 $(this).val('');
-            }
-        });
-        $('#need_supplier_confirmation').change(function(event){
-            $('#supplier_email').val('');
-            if($(this).prop('checked')){
-                $('#supplier_email').prop('disabled',false);
-                $('#supplier_email').prop('required',true);
-            }else{
-                $('#supplier_email').prop('disabled',true);
-                $('#supplier_email').prop('required',false);
             }
         });
     });

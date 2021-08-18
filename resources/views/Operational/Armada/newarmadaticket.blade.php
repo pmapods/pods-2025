@@ -112,54 +112,37 @@
                 </div>
             </div>
             {{-- untuk replace/mutasi/stop --}}
-            <div class="col-md-4 armada_field" style="display:none">
+            <div class="col-md-4 po_field" style="display:none">
                 <div class="form-group">
-                  <label class="required_field">Pilih Kendaraan</label>
-                  <select class="form-control armada select2" name="armada_id">
+                  <label class="required_field">Pilih PO</label>
+                  <select class="form-control po select2" name="po_id">
+                      <option value="">-- Pilih PO --</option>
                   </select>
                 </div>
             </div>
-            <div class="col-md-6">
+        </div>
+        <div class="row">
+            <div class="col-md-4">
                 <div class="form-group">
-                  <label for="vendor">Pilih Vendor</label>
-                  <select class="form-control" name="vendor_name" id="vendor">
-                      @foreach ($vendors as $vendor)
-                          
+                  <label for="vendor">Pilih Rekomendasi Vendor</label>
+                  <select class="form-control" name="vendor_recommendation_name" id="vendor" required>
+                      @foreach ($armada_vendors as $vendor)
+                          <option value="{{ $vendor->name }}">{{ $vendor->name }}</option>
                       @endforeach
                   </select>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-group">
                   <label class="required_field">Pilih Otorisasi</label>
-                  <select class="form-control" id="authorization" name="authorization_id" required>
-                    <option>-- Pilih Otorisasi --</option>
-                    @foreach ($armada_ticket_authorizations as $authorization)
-                        @php
-                            $list= $authorization->authorization_detail;
-                            $string = "";
-                            foreach ($list as $key=>$author){
-                                $string = $string.$author->employee->name;
-                                $open = $author->employee_position;
-                                if(count($list)-1 != $key){
-                                    $string = $string.' -> ';
-                                }
-                            }
-                        @endphp
-                        <option value="{{ $authorization->id }}" data-list="{{ $list }}">{{$string}}</option>
-                    @endforeach
+                  <select class="form-control" id="authorization" name="authorization_id" disabled required>
+                    <option value="">-- Pilih Otorisasi --</option>
                   </select>
+                  <small class="text-danger">*otorisasi yang muncul berdasarkan pilihan salespoint</small>
                 </div>
             </div>
+        </div>
             <div class="col-md-12 d-flex flex-row justify-content-center align-items-center" id="authorization_field">
-                {{-- <div class="d-flex text-center flex-column mr-3">
-                    <div class="font-weight-bold">Sebagai</div>
-                    <div>Kevin Farel</div>
-                    <div class="text-secondary">(Staff)</div>
-                </div>
-                <div class="mr-3">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                </div> --}}
             </div>
         </div>
         <div class="d-flex justify-content-center mt-3">
@@ -181,6 +164,7 @@ $(document).ready(function () {
         let salespoint_id = $(this).val();
         $('.isNiaga').prop('disabled',true);
         $('.isNiaga').val("");
+        loadAuthorizationbySalespoint(salespoint_id);
         if(salespoint_id != ""){
             $('.isNiaga').prop('disabled',false);
         }
@@ -212,8 +196,8 @@ $(document).ready(function () {
         armada_type_select.empty();
         let option_text = '<option value="">-- Pilih Jenis Kendaraan --</option>';
         armada_type_select.append(option_text);
-        $('.armada_field').hide();
-        $('.armada').val("").prop('disabled', true).prop('required',false);
+        $('.po_field').hide();
+        $('.po').val("").prop('disabled', true).prop('required',false);
         $('.armada_type_field').hide();
         $('.armada_type').val("").prop('disabled', true).prop('required',false);
         if($(this).val() == ''){
@@ -246,27 +230,27 @@ $(document).ready(function () {
         }
         
         if($(this).val() == '1' || $(this).val() == '2'){
-            $('.armada_field').show();
-            $('.armada').prop('disabled', false).prop('required',true);
+            $('.po_field').show();
+            $('.po').prop('disabled', true).prop('required',true);
+            $('.po').find('option[value!=""]').remove();
             $.ajax({
                 type: "get",
-                url: '/getarmada?isNiaga='+isNiaga+'&salespoint_id='+salespoint_id,
+                url: '/getActivePO?isNiaga='+isNiaga+'&salespoint_id='+salespoint_id,
                 success: function (response) {
                     let data = response.data;
-                    console.log(data);
                     data.forEach(item => {
-                        let option_text = '<option value="'+item.id+'">'+item.plate+' -- '+item.armada_type.brand_name+' '+item.armada_type.name+'</option>';
-                        $('.armada').append(option_text);
+                        let option_text = '<option value="'+item.po_number+'">'+item.po_number+' ('+item.plate+')</option>';
+                        $('.po').append(option_text);
                     });
-                    $('.armada').val("");
-                    $('.armada').trigger('change');
-                    $('.armada').prop('disabled', false);
+                    $('.po').val("");
+                    $('.po').trigger('change');
+                    $('.po').prop('disabled', false);
                 },
                 error: function (response) {
                     alert('load data failed. Please refresh browser or contact admin');
                 },
                 complete: function () {
-                    $('.armada').trigger('change');
+                    $('.po').trigger('change');
                 }
             });
         }
@@ -283,7 +267,44 @@ $(document).ready(function () {
                 }
             });
         }
-    })
+    });
 });
+
+function loadAuthorizationbySalespoint(salespoint_id){
+    $('#authorization').find('option[value!=""]').remove();
+    $('#authorization').prop('disabled', true);
+    if(salespoint_id == ""){
+        return;
+    }
+    $.ajax({
+        type: "get",
+        url: '/getArmadaAuthorizationbySalespoint/'+salespoint_id,
+        success: function (response) {
+            let data = response.data;
+            if(data.length == 0){
+                alert('Otorisasi Armada tidak tersedia untuk salespoint yang dipilih, silahkan mengajukan otorisasi ke admin');
+                return;
+            }
+            data.forEach(item => {
+                let namelist = item.list.map(a => a.employee_name);
+                let option_text = '<option value="'+item.id+'">'+namelist.join(" -> ")+'</option>';
+                $('#authorization').append(option_text);
+            });
+            $('#authorization').val("");
+            $('#authorization').trigger('change');
+            $('#authorization').prop('disabled', false);
+        },
+        error: function (response) {
+            alert('load data failed. Please refresh browser or contact admin');
+            $('#authorization').find('option[value!=""]').remove();
+            $('#authorization').prop('disabled', true);
+        },
+        complete: function () {
+            $('#authorization').val("");
+            $('#authorization').trigger('change');
+            $('#authorization').prop('disabled', false);
+        }
+    });
+}
 </script>
 @endsection

@@ -44,3 +44,7 @@ html{
     content: " (optional)";
     color: gray;
 }
+.select2-results__option--disabled {
+    color: brown;
+    font-weight: bold;
+}

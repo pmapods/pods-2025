@@ -146,7 +146,9 @@
                                         {{\Carbon\Carbon::parse($ticket->requirement_date)->translatedFormat('d F Y')}}
                                     @endif
                                 </td>
-                                <td>{{$ticket->status()}}</td>
+                                <td>
+                                    {{$ticket->status()}}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

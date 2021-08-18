@@ -9,6 +9,7 @@ use App\Models\SalesPoint;
 use App\Models\BudgetPricingCategory;
 use App\Models\BudgetPricing;
 use App\Models\Vendor;
+use App\Models\ArmadaVendor;
 use App\Models\Ticket;
 use App\Models\ArmadaTicket;
 use App\Models\TicketItem;
@@ -34,8 +35,7 @@ class TicketingController extends Controller
         $access = Auth::user()->location_access->pluck('salespoint_id');
         if($request->input('status') == -1){
             $tickets = Ticket::whereIn('salespoint_id',$access)
-            ->where('status',-1)
-            ->orWhere('status',7)
+            ->whereIn('status',[-1,7])
             ->get()
             ->sortByDesc('created_at');
             $armadatickets = ArmadaTicket::whereIn('salespoint_id',$access)
@@ -44,7 +44,7 @@ class TicketingController extends Controller
             ->sortByDesc('created_at');
         }else{
             $tickets = Ticket::whereIn('salespoint_id',$access)
-            ->whereNotIn('status',[-1,6])
+            ->whereNotIn('status',[-1,7])
             ->get()
             ->sortByDesc('created_at');
             $armadatickets = ArmadaTicket::whereIn('salespoint_id',$access)
@@ -103,8 +103,8 @@ class TicketingController extends Controller
             return view('Operational.securitydetail');
         }
         if($request->ticketing_type == '2'){
-            $armada_ticket_authorizations = Authorization::whereIn('salespoint_id',$user_location_access)->where('form_type',7)->get();
-            return view('Operational.Armada.newarmadaticket',compact('available_salespoints','vendors','armada_ticket_authorizations'));
+            $armada_vendors = ArmadaVendor::all();
+            return view('Operational.Armada.newarmadaticket',compact('available_salespoints','vendors','armada_vendors'));
         }
         return back()->with('error','Terjadi Kesalahan silahkan mencoba lagi');
         

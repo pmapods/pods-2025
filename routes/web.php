@@ -156,7 +156,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/approvemutasiform',[ArmadaTicketingController::class, 'approveMutasiForm']);
         Route::post('/rejectmutasiform',[ArmadaTicketingController::class, 'rejectMutasiForm']);
         Route::post('/uploadbastk',[ArmadaTicketingController::class, 'uploadBASTK']);
+        Route::get('/getActivePO',[POController::class, 'getActivePO']);
         Route::get('/getarmadatypebyniaga/{isNiaga}',[ArmadaController::class, 'getArmadaTypebyNiaga']);
+        Route::get('/getArmadaAuthorizationbySalespoint/{salespoint_id}',[ArmadaController::class, 'getArmadaAuthorizationbySalespoint']);
         Route::get('/getarmada',[ArmadaController::class, 'getArmada']);
     });
 

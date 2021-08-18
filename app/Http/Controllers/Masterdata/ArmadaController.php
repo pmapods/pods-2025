@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Armada;
 use App\Models\ArmadaType;
 use App\Models\SalesPoint;
+use App\Models\Authorization;
 
 class ArmadaController extends Controller
 {
@@ -20,7 +21,7 @@ class ArmadaController extends Controller
 
     public function addArmada(Request $request){
         try {
-            $armada_by_plate = Armada::where('plate',strtoupper($request->plate))->first();
+            $armada_by_plate = Armada::where('plate',str_replace(' ', '', strtoupper($request->plate)))->first();
             if($armada_by_plate){
                 throw new \Exception('Nomor Pelat sudah ada ! ('.$armada_by_plate->armada_type->name.' -- '.$armada_by_plate->plate.') di '.$armada_by_plate->salespoint->name);
             }
@@ -28,7 +29,7 @@ class ArmadaController extends Controller
             $newArmada                  = new Armada;
             $newArmada->salespoint_id   = ($request->salespoint_id ?? null);
             $newArmada->armada_type_id  = $request->armada_type_id;
-            $newArmada->plate           = strtoupper($request->plate); 
+            $newArmada->plate           = str_replace(' ', '', strtoupper($request->plate)); 
             $newArmada->status          = $request->status; 
             $newArmada->booked_by       = $request->booked_by ?? null; 
             $newArmada->save();
@@ -43,7 +44,7 @@ class ArmadaController extends Controller
 
     public function updateArmada(Request $request){
         try {
-            $armada_by_plate = Armada::where('plate',strtoupper($request->plate))
+            $armada_by_plate = Armada::where('plate',str_replace(' ', '', strtoupper($request->plate)))
                                         ->where('id','!=',$request->armada_id)
                                         ->first();
             if($armada_by_plate){
@@ -53,7 +54,7 @@ class ArmadaController extends Controller
             $armada                  = Armada::find($request->armada_id);
             $armada->salespoint_id   = ($request->salespoint_id ?? null); 
             $armada->armada_type_id  = $request->armada_type_id; 
-            $armada->plate           = strtoupper($request->plate); 
+            $armada->plate           = str_replace(' ', '', strtoupper($request->plate)); 
             $armada->status          = $request->status; 
             $armada->booked_by       = $request->booked_by ?? null; 
             $armada->save();
@@ -141,6 +142,20 @@ class ArmadaController extends Controller
         }
         return response()->json([
             'data' => $data,
+        ]);
+    }
+
+    public function getArmadaAuthorizationbySalespoint($salespoint_id){
+        $armada_authorizations = Authorization::where('salespoint_id',$salespoint_id)->where('form_type',7)->get();
+
+        foreach($armada_authorizations as $authorizations){
+            $authorizations->list = $authorizations->authorization_detail;
+            foreach($authorizations->list as $item){
+                $item->employee_name = $item->employee->name;
+            }
+        }
+        return response()->json([
+            'data' => $armada_authorizations,
         ]);
     }
 }

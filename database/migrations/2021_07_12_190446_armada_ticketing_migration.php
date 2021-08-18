@@ -19,8 +19,12 @@ class ArmadaTicketingMigration extends Migration
             $table->integer('salespoint_id')->unsigned();
             $table->integer('armada_type_id')->unsigned();
             $table->integer('armada_id')->nullable();
-            $table->string('po_reference')->nullable();
+            $table->string('po_reference_number')->nullable();
+            // po_reference untuk mutasi replace renew
+            $table->string('po_number')->nullable();
+            // po_number untuk po yang ke create baru karena tiket ini
             $table->string('vendor_name')->nullable();
+            $table->string('vendor_recommendation_name')->nullable();
             $table->boolean('isNiaga');
             $table->tinyInteger('ticketing_type');
             // 0 Pengadaan Baru                

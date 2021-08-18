@@ -40,12 +40,12 @@ class PoMigration extends Migration
             $table->string('reject_notes')->nullable();
             $table->string('rejected_by')->nullable();
             $table->tinyInteger('status')->default(-1);
-            $table->string('po_reference')->nullable();
             // -1 po draft
             // 0 po diterbitkan
             // 1 purchasing sudah upload file tanda tangan basah
             // 2 supplier sudah upload file tanda tangan basah / menunggu approval tanda tangan
-            // 3 selesai / tanda tangan lengkap
+            // 3 po aktif
+            // 4 closed po
 
             $table->string('last_mail_send_to')->nullable();
             $table->string('po_upload_request_id')->nullable();
@@ -58,7 +58,7 @@ class PoMigration extends Migration
             $table->integer('po_id')->unsigned();
             $table->integer('ticket_item_id')->nullable();
             $table->string('item_name');
-            $table->text('item_description');
+            $table->text('item_description')->nullable();
             $table->string('uom')->default('AU');
             $table->integer('qty');
             $table->integer('item_price');

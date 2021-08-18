@@ -23,11 +23,11 @@ class DatabaseSeeder extends Seeder
             BudgetSeeder::class,
             FileCompletementSeeder::class,
             VendorSeeder::class,
+            ArmadaSeeder::class,
         ];
         $dev_array = [
             EmployeeSeeder::class,
             AuthorizationSeeder::class,
-            ArmadaSeeder::class,
         ];
         if(App::environment('local')) {
             $seeder_array = array_merge($seeder_array,$dev_array);

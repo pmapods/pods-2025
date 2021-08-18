@@ -67,6 +67,9 @@ class Ticket extends Model
             case '1':
                 return 'Replace Existing';
                 break;
+            case '2':
+                return 'Repeat Order';
+                break;
             
             default:
                 return 'request_type_undefined';

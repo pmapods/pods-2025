@@ -1,3 +1,4 @@
+{{-- validasi kalo bukan pengadaan aktif (selesai/cancelled) --}}
 <h5>
     Armada Tersedia di {{ $armadaticket->salespoint->name }}
 </h5> 

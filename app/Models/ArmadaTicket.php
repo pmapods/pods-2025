@@ -16,7 +16,11 @@ class ArmadaTicket extends Model
     }
 
     public function armada_type(){
-        return ArmadaType::find($this->armada_type_id);
+        return $this->belongsTo(ArmadaType::class,'armada_type_id','id');
+    }
+
+    public function armada(){
+        return $this->belongsTo(Armada::class,'armada_id','id')->withTrashed();
     }
 
     public function pr(){
@@ -42,10 +46,6 @@ class ArmadaTicket extends Model
         }
     }
 
-    public function armada(){
-        return Armada::find($this->armada_id);
-    }
-
     public function status(){
         switch ($this->status) {
             case '0':
@@ -69,7 +69,11 @@ class ArmadaTicket extends Model
                 break;
 
             case '5':
-                return 'Menunggu Upload Berkas Penerimaan';
+                if (in_array($this->type(),['Pengadaan','Replace','Renewal'])){
+                    return 'Menunggu Upload Berkas Penerimaan';
+                }else{
+                    return 'Menunggu Upload Berkas Penyerahan';
+                }
                 break;
 
             case '6':
@@ -150,6 +154,10 @@ class ArmadaTicket extends Model
 
     public function last_rejected_mutasi_form(){
         return $this->hasOne(MutasiForm::class)->onlyTrashed()->orderBy('id', 'desc');
+    }
+
+    public function po_reference(){
+        return $this->belongsTo(Po::class, 'po_reference_number','no_po_sap');
     }
     
     public function created_by_employee(){

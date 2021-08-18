@@ -218,7 +218,7 @@ class PRController extends Controller
     
                 $detail                     = new PrDetail;
                 $detail->pr_id              = $pr->id;
-                $detail->name               = $armadaticket->armada_type()->name.' '.$armadaticket->armada_type()->brand_name;
+                $detail->name               = $armadaticket->armada_type->name.' '.$armadaticket->armada_type->brand_name;
                 $detail->qty                = 1;
                 $detail->uom                = 'Unit';
                 do {
@@ -241,8 +241,6 @@ class PRController extends Controller
                 $monitor->message               = 'Menambahkan PR untuk di otorisasi';
                 $monitor->save();
             }
-            
-
             DB::commit();
             return back()->with('success','Berhasil menambakan PR, Silahkan melakukan proses otorisasi');
         }catch(\Exception $ex){

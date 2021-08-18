@@ -4,11 +4,6 @@
     .remove_list {
         cursor: pointer;
     }
-
-    .select2-results__option--disabled {
-        color: brown;
-        font-weight: bold;
-    }
 </style>
 @endsection
 

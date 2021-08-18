@@ -20,7 +20,7 @@ class PerpanjanganForm extends Model
     }
 
     public function armada(){
-        return $this->belongsTo(Armada::class);
+        return $this->belongsTo(Armada::class)->withTrashed();
     }
 
     public function authorizations(){

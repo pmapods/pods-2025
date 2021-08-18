@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Operational;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
+use App\Models\Armada;
+use App\Models\ArmadaType;
 use App\Models\ArmadaTicket;
 use App\Models\Ticket;
 use App\Models\TicketVendor;
+use App\Models\ArmadaVendor;
 use App\Models\Po;
 use App\Models\PoDetail;
 use App\Models\POUploadRequest; 
@@ -22,6 +25,7 @@ use PDF;
 use DB;
 use Storage;
 use Mail;
+use Form;
 use App\Mail\POMail;
 use Illuminate\Support\Str;
 
@@ -69,7 +73,14 @@ class POController extends Controller
                     $authorization_list = Authorization::where('form_type',3)->get();
                     return view('Operational.podetail',compact('armadaticket','authorization_list'));
                 }else{
-                    return view('Operational.Armada.poitemselection',compact('armadaticket'));
+                    $armada_vendors = ArmadaVendor::all();
+                    // ambil armada sesuai niaga yang terdaftar
+                    $armada_types = [];
+                    if($armadaticket->po_reference != null){
+                        $armada_types = ArmadaType::where('isNiaga',$armadaticket->po_reference->armada_ticket->armada_type->isNiaga)
+                        ->get();
+                    }
+                    return view('Operational.Armada.poitemselection',compact('armadaticket','armada_vendors','armada_types'));
                 }
             }
         } catch (\Exception $ex) {
@@ -89,6 +100,7 @@ class POController extends Controller
                 }
                 $group_item_by_selected_vendor = collect($request->item)->groupBy('ticket_vendor_id');
                 foreach($group_item_by_selected_vendor as $vendor_items){
+                    $ticket_vendor = TicketVendor::find($vendor_items[0]["ticket_vendor_id"]);
                     $ppn_items = [];
                     $non_ppn_items = [];
                     foreach($vendor_items as $item){
@@ -136,6 +148,8 @@ class POController extends Controller
                             $newPO->ticket_vendor_id = $item['ticket_vendor_id'];
                             $newPO->has_ppn          = true;
                             $newPO->ppn_percentage   = $lists[0]->ppn_percentage;
+                            $newPO->sender_name      = $ticket_vendor->name;
+                            $newPO->send_name        = $ticket->salespoint->name;
                             $newPO->save();
                             foreach($lists as $list){
                                 $podetail = new PoDetail;
@@ -156,6 +170,8 @@ class POController extends Controller
                         $newPO->ticket_id        = $ticket->id;
                         $newPO->ticket_vendor_id = $item['ticket_vendor_id'];
                         $newPO->has_ppn          = false;
+                        $newPO->sender_name      = $ticket_vendor->name;
+                        $newPO->send_name        = $ticket->salespoint->name;
                         $newPO->save();
         
                         foreach($non_ppn_items as $list){
@@ -184,12 +200,43 @@ class POController extends Controller
                 if($armadaticket->po->count() > 0){
                     return back()->with('error','PO sudah di setup sebelumnya');
                 }
-                $item_name = $armadaticket->armada_type()->brand_name.' '.$armadaticket->armada_type()->name;
+                switch ($armadaticket->type()) {
+                    case 'Pengadaan':
+                        $armadaticket->vendor_name = $request->selected_vendor;
+                        break;
+                        
+                    case 'Perpanjangan':
+                        $armadaticket->vendor_name = $request->selected_vendor;
+                        break;
+                        
+                    case 'Replace':
+                        break;
+                        
+                    case 'Renewal':
+                        $armadaticket->vendor_name = $request->selected_vendor;
+                        $armadaticket->armada_type_id = $request->armada_type_id;
+                        break;
+
+                    case 'Mutasi':
+                        // copy semua dari ticket armada lama
+                        $old_armada_ticket              = $armadaticket->po_reference->armada_ticket;
+                        $armadaticket->vendor_name      = $old_armada_ticket->vendor_name;
+                        $armadaticket->armada_type_id   = $old_armada_ticket->armada_type_id;
+                        $armadaticket->armada_id        = $old_armada_ticket->armada_id;
+                        break;
+                }
+                $armadaticket->save();
 
                 $newPo                   = new Po;
                 $newPo->armada_ticket_id = $armadaticket->id;
-                $newPo->sender_name      = $request->vendor_name;
-                $newPo->send_name        = $armadaticket->salespoint->name;
+                if($armadaticket->type() == "Mutasi"){
+                    // untuk mutasi sender dari salespoint lama dan penerima salespoint tujuan
+                    $newPo->sender_name      = $armadaticket->po_reference->armada_ticket->vendor_name;
+                    $newPo->send_name        = $armadaticket->mutasi_form->receiver_salespoint_name;
+                }else{
+                    $newPo->sender_name      = $request->selected_vendor;
+                    $newPo->send_name        = $armadaticket->salespoint->name;
+                }
                 $newPo->has_ppn          = true;
                 $newPo->ppn_percentage   = 10;
                 $newPo->save();
@@ -201,11 +248,14 @@ class POController extends Controller
                 $notes = $request->sewa_notes;
                 $value = $request->sewa_value;
                 // jika ada biaya ekspedisi gabungkan dengan biaya sewa 
+                
                 if($request->ekspedisi_count != null){
-                    $notes = $notes ."\r\n".'Biaya Ekspedisi';
-                    $notes = $notes ."\r\n".$request->ekspedisi_notes;
-                    
                     $value += $request->ekspedisi_value/$request->sewa_count;
+                    $single_expedition_value = $request->ekspedisi_value/$request->sewa_count;
+
+                    $notes = $notes ."\r\n".'Biaya Ekspedisi';
+                    $notes = $notes ."\r\n".$request->ekspedisi_value.'/'.$request->sewa_count.'='.$single_expedition_value;
+                    $notes = $notes ."\r\n".$request->ekspedisi_notes;
                 }
 
                 // biaya sewa
@@ -225,7 +275,7 @@ class POController extends Controller
                     }
                     $newPoDetail = new PoDetail;
                     $newPoDetail->po_id            = $newPo->id;
-                    $newPoDetail->item_name        = 'Prorate Armada '.$item_name;
+                    $newPoDetail->item_name        = 'Prorate Armada';
                     $newPoDetail->item_description = $request->prorate_notes;
                     $newPoDetail->uom              = 'AU';
                     $newPoDetail->qty              = $request->prorate_count;
@@ -360,38 +410,33 @@ class POController extends Controller
             $path = $request->file('internal_signed_file')->storeAs($file['dirname'],$file['basename'],'public');
             $po->internal_signed_filepath = $path;
 
-            if(isset($request->need_supplier_confirmation)){
-                $po_upload_request               = new POUploadRequest;
-                $po_upload_request->id           = (string) Str::uuid();
-                $po_upload_request->po_id        = $po->id;
-                $po_upload_request->vendor_name  = $po->sender_name;
-                if($po->ticket_id != null){
-                    $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
-                }
-                if($po->armada_ticket_id != null){
-                    $po_upload_request->vendor_pic   = $po->sender_name;
-                }
-                $po_upload_request->save();
-
-                $po->po_upload_request_id = $po_upload_request->id;
-                $po->save();
-
-                $mail = $request->email;
-                $data = array(
-                    'po' => $po,
-                    'mail' => $mail,
-                    'po_upload_request' => $po_upload_request,
-                    'url' => url('/signpo/'.$po_upload_request->id)
-                );
-                Mail::to($mail)->send(new POMail($data, 'posignedrequest'));
-                
-                $po->status = 1;
-                $po->last_mail_send_to = $request->email;
-                $po->save();
-            }else{
-                $po->status = 3;
-                $po->save();
+            $po_upload_request               = new POUploadRequest;
+            $po_upload_request->id           = (string) Str::uuid();
+            $po_upload_request->po_id        = $po->id;
+            $po_upload_request->vendor_name  = $po->sender_name;
+            if($po->ticket_id != null){
+                $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
             }
+            if($po->armada_ticket_id != null){
+                $po_upload_request->vendor_pic   = $po->sender_name;
+            }
+            $po_upload_request->save();
+
+            $po->po_upload_request_id = $po_upload_request->id;
+            $po->save();
+
+            $mail = $request->email;
+            $data = array(
+                'po' => $po,
+                'mail' => $mail,
+                'po_upload_request' => $po_upload_request,
+                'url' => url('/signpo/'.$po_upload_request->id)
+            );
+            Mail::to($mail)->send(new POMail($data, 'posignedrequest'));
+            
+            $po->status = 1;
+            $po->last_mail_send_to = $request->email;
+            $po->save();
             
             if($po->ticket_id != null){
                 $monitor = new TicketMonitoring;
@@ -428,6 +473,15 @@ class POController extends Controller
             DB::beginTransaction();
             $po = Po::findOrFail($request->po_id);
             $po->status = 3;
+
+            if ($po->armada_ticket_id != null) {
+                if(in_array($po->armada_ticket->type(),['Mutasi','Replace','Renewal'])){
+                    // change old po ticket 
+                    $old_po = $po->armada_ticket->po_reference;
+                    $old_po->status = 4;
+                    $old_po->save();
+                }
+            }
             
             $po_upload_request = $po->po_upload_request;
             $po_upload_request->status = 2;
@@ -470,6 +524,10 @@ class POController extends Controller
                 $monitor->save();
             }
             if ($po->armada_ticket_id != null) {
+                $armada_ticket              = $po->armada_ticket;
+                $armada_ticket->po_number   = $po->no_po_sap;
+                $armada_ticket->save();
+                
                 $monitor = new ArmadaTicketMonitoring;
                 $monitor->armada_ticket_id      = $po->armada_ticket->id;
                 $monitor->employee_id    = Auth::user()->id;
@@ -482,7 +540,7 @@ class POController extends Controller
             return back()->with('success','Berhasil melakukan konfirmasi tanda tangan Supplier untuk PO '.$po->no_po_sap.' dilanjutkan dengan penerimaan barang di salespoint/area bersangkutan');
         } catch (\Exception $ex) {
             DB::rollback();
-            return back()->with('error','Gagal Confirm Signed PO '.$ex->getMessage());
+            return back()->with('error','Gagal Confirm Signed PO '.$ex->getMessage().' - line '.$ex->getLine());
         }
     }
 
@@ -647,5 +705,17 @@ class POController extends Controller
     function replace_extension($filename, $new_extension) {
         $info = pathinfo($filename);
         return $info['dirname'].'/'.$info['filename'] . '.' . $new_extension;
+    }
+    function getActivePO(Request $request){
+        $pos = Po::join('armada_ticket','Po.armada_ticket_id','=','armada_ticket.id')
+                 ->join('armada','armada_ticket.armada_id','=','armada.id')
+                 ->where('Po.status',3)
+                 ->where('armada_ticket.salespoint_id',$request->salespoint_id)
+                 ->where('armada_ticket.isNiaga',$request->isNiaga)
+                 ->select('Po.no_po_sap AS po_number','armada.plate AS plate')
+                 ->get();
+        return response()->json([
+            "data" => $pos,
+        ]);
     }
 }

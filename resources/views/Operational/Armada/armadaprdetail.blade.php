@@ -97,7 +97,7 @@
                     @empty ($armadaticket->pr->pr_detail)    
                     <tr>
                         <td>1</td>
-                        <td>{{$armadaticket->armada_type()->name}} {{ $armadaticket->armada_type()->brand_name }}</td>
+                        <td>{{$armadaticket->armada_type->name}} {{ $armadaticket->armada_type->brand_name }}</td>
                         <td>Unit</td>
                         <td>1</td>
                         <td>-</td>
