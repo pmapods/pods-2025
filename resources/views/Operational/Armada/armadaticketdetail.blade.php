@@ -156,11 +156,12 @@
         @endif
         @if ($armadaticket->status == 4 || $armadaticket->status == 5)
             <div class="col-md-6 pl-3">
-                @if (in_array($armadaticket->type(),['Pengadaan','Replace','Renewal']))
-                <h5>Upload Dokumen Penerimaan</h5>
+                @if (in_array($armadaticket->type(),['Pengadaan','Replace','Renewal','Mutasi']))
+                    <h5>Upload Dokumen Penerimaan</h5>
+                @elseif($armadaticket->type() == "Perpanjangan")
+                    <h5>Verifikasi PO</h5>
                 @else
-                {{-- End Kontrak --}}
-                <h5>Upload Dokumen Penyerahan</h5>
+                    <h5>Upload Dokumen Penyerahan</h5>
                 @endif
                 <div class="row">
                     <div class="col-1">
@@ -201,79 +202,135 @@
                         @endif
                     </div>
                 </div>
-                @if (($armadaticket->po->first()->status ?? -1)== 3 || $armadaticket->status == 5)    
-                <form action="/uploadbastk" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="arnada_ticket_id" value="{{ $armadaticket->id }}">
-                    @if ($armadaticket->type() != "Perpanjangan")
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="required_field">Pilih File BASTK lengkap dengan ttd</label>
-                                    <input type="file" class="form-control-file validatefilesize" name="bastk_file" accept="image/*,application/pdf" required>
-                                    <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
+                @if (($armadaticket->po->first()->status ?? -1)== 3 || $armadaticket->status == 5)
+                    @php
+                        if($armadaticket->type() == 'Perpanjangan'){
+                            $action = '/verifyPO';
+                        }else{
+                            $action = '/uploadbastk';
+                        }
+                    @endphp
+                    <form action="{{ $action }}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="armada_ticket_id" value="{{ $armadaticket->id }}">
+                        @if (in_array($armadaticket->type(),["Pengadaan","Replace","Renewal","Mutasi","End Kontrak"]))
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="required_field">Pilih File BASTK lengkap dengan ttd</label>
+                                        <input type="file" class="form-control-file validatefilesize" name="bastk_file" accept="image/*,application/pdf" required>
+                                        <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endif
-                    @if (in_array($armadaticket->type(),["Replace","Renewal"]))
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>Armada Lama</label>
+                        @endif
+                        @if (in_array($armadaticket->type(),["Replace","Renewal"]))
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>Armada Lama</label>
+                                        <input type="text" class="form-control" 
+                                        value="{{ $armadaticket->po_reference->armada_ticket->armada_type->brand_name }} {{ $armadaticket->po_reference->armada_ticket->armada_type->name }}" 
+                                        readonly>
+                                        <small class="text-danger">*Armada lama akan terhapus dari sistem secara otomatis</small>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>Nomor Pelat Lama</label>
+                                        <input type="text" class="form-control"
+                                        value="{{ $armadaticket->po_reference->armada_ticket->armada->plate }}"
+                                        readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if (in_array($armadaticket->type(),["Pengadaan","Renewal","Replace"]))
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                    <label>Tipe Armada</label>
                                     <input type="text" class="form-control" 
-                                    value="{{ $armadaticket->po_reference->armada_ticket->armada_type->brand_name }} {{ $armadaticket->po_reference->armada_ticket->armada_type->name }}" 
+                                    value="{{ $armadaticket->armada_type->brand_name }} {{ $armadaticket->armada_type->name }}" 
                                     readonly>
-                                    <small class="text-danger">*Armada lama akan terhapus dari sistem secara otomatis</small>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required_field" for="nomor_pelat">Nomor Pelat</label>
+                                        <input type="text" class="form-control" name="plate" id="nomor_pelat" placeholder="Masukan Nomor Pelat"
+                                        @if ($armadaticket->type() == "Perpanjangan")
+                                            readonly
+                                            value="{{ $armadaticket->perpanjangan_form->nopol }}"
+                                        @else
+                                            required
+                                        @endif>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>Nomor Pelat Lama</label>
-                                    <input type="text" class="form-control"
-                                    value="{{ $armadaticket->po_reference->armada_ticket->armada->plate }}"
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                    <label class="required_field">Unit</label>
+                                    <select class="form-control" name="type" required>
+                                        <option value="">-- Pilih Unit --</option>
+                                        <option value="gs">GS</option>
+                                        <option value="gt">GT</option>
+                                    </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="optional_field" for="booked_by">Di Booking Oleh</label>
+                                        <input type="text" class="form-control" name="booked_by" id="booked_by" placeholder="Masukan Nama"
+                                        @if ($armadaticket->type() == "Perpanjangan")
+                                            value="{{ $armadaticket->po_reference->armada_ticket->armada->booked_by }}"
+                                        @endif>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($armadaticket->type() == "Mutasi")
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                    <label>Tipe Unit</label>
+                                    <input type="text" class="form-control" 
+                                    value="{{ $armadaticket->armada_type->brand_name }} {{ $armadaticket->armada_type->name }}" 
                                     readonly>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required_field" for="nomor_pelat">Nomor Pelat</label>
+                                        <input type="text" class="form-control" name="plate" id="nomor_pelat" placeholder="Masukan Nomor Pelat" readonly value="{{ $armadaticket->mutasi_form->nopol }}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endif
-                    @if (!in_array($armadaticket->type(),["End Kontrak","Mutasi"]))
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                <label>Tipe Armada</label>
-                                <input type="text" class="form-control" 
-                                value="{{ $armadaticket->armada_type->brand_name }} {{ $armadaticket->armada_type->name }}" 
-                                readonly>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required_field" for="nomor_pelat">Salespoint Awal</label>
+                                        <input type="text" class="form-control" name="plate" id="nomor_pelat" placeholder="Masukan Nomor Pelat" readonly value="{{ $armadaticket->mutasi_form->sender_salespoint_name }}">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label class="required_field" for="nomor_pelat">Salespoint Tujuan</label>
+                                        <input type="text" class="form-control" name="plate" id="nomor_pelat" placeholder="Masukan Nomor Pelat" readonly value="{{ $armadaticket->mutasi_form->receiver_salespoint_name }}">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label class="required_field" for="nomor_pelat">Nomor Pelat</label>
-                                    <input type="text" class="form-control" name="plate" id="nomor_pelat" placeholder="Masukan Nomor Pelat"
-                                    @if ($armadaticket->type() == "Perpanjangan")
-                                        readonly
-                                        value="{{ $armadaticket->perpanjangan_form->nopol }}"
-                                    @else
-                                        required
-                                    @endif>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="optional_field" for="booked_by">Di Booking Oleh</label>
-                                    <input type="text" class="form-control" name="booked_by" id="booked_by" placeholder="Masukan Nama"
-                                    @if ($armadaticket->type() == "Perpanjangan")
-                                        value="{{ $armadaticket->po_reference->armada_ticket->armada->booked_by }}"
-                                    @endif>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                    <button type="submit" class="btn btn-primary">Submit Dokumen Penerimaan</button>
-                </form>
+                        @endif
+
+                        @if ($armadaticket->type() == "Perpanjangan")
+                            <button type="submit" class="btn btn-primary mt-3">Verifikasi PO</button>   
+                        @else
+                            <button type="submit" class="btn btn-primary mt-3">Submit Dokumen Penerimaan</button>   
+                        @endif
+                    </form>
                 @endif
             </div>
         @endif
@@ -310,8 +367,57 @@
                             </a>
                         </div>
                     @endif
-                    
                 </div>
+                
+                @if (in_array($armadaticket->type(),['Pengadaan','Replace','Renewal']))
+                    @if ($armadaticket->gt_plate == null)
+                    <form action="/uploadbastkgt" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="armada_ticket_id" value="{{ $armadaticket->id }}">
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="required_field">Pilih File BASTK GT lengkap dengan ttd</label>
+                                    <input type="file" class="form-control-file validatefilesize" name="bastk_file" accept="image/*,application/pdf" required>
+                                    <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-6">
+                                <div class="form-group">
+                                <label>Nomor Kendaraan GS</label>
+                                <input type="text" class="form-control" value="{{ $armadaticket->gs_plate }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                <label>Nomor Kendaraan GT</label>
+                                <input type="text" class="form-control" placeholder="Masukkan Nomor Kendaraan GT" name="gt_plate" required>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <button type="submit" class="btn btn-primary">Submit GT</button>
+                            </div>
+                        </div>
+                    </form>
+                    @else
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <div class="form-group">
+                            <label>Nomor Kendaraan GT</label>
+                            <input type="text" class="form-control" value="{{ $armadaticket->gt_plate }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                            <label>Booked By</label>
+                            <input type="text" class="form-control" value="{{ \App\Models\Armada::where('plate',$armadaticket->gt_plate)->first()->booked_by }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                @endif
             </div>
         @endif
     </div>

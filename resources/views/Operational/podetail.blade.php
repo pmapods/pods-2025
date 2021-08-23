@@ -714,6 +714,15 @@
             @endforeach
         @endisset
     </div>
+    <div class="row d-flex justify-content-center">
+        @isset($armadaticket)
+            @if (in_array($armadaticket->status,[4,5]))
+                {{-- 4 Dalam Proses PO --}}
+                {{-- 5 Menunggu Upload Berkas Penerimaan --}}
+                <button type="button" class="btn btn-danger" onclick="doTerminateTicketing({{ $armadaticket->id }})">Batalkan Pengadaan</button>
+            @endif
+        @endisset
+    </div>
 </div>
 
 <form action="/uploadinternalsignedfile" method="post" enctype="multipart/form-data" id="uploadsignedform">
@@ -789,6 +798,40 @@
         </div>
     </div>
 </div>
+
+@isset($armadaticket)    
+    <div class="modal fade" id="terminateTicketingModal" data-static="backdrop" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title">Batalkan Pengadaan Armada</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                <form action="/terminateArmadaTicket" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="armada_ticket_id" value="{{ $armadaticket->id }}">
+                    <div class="modal-body">
+                        <div class="form-group">
+                        <label class="required_field">Alasan Pembatalan</label>
+                        <textarea class="form-control" name="cancel_notes" style="resize: none" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                        <label class="optional_field">Email Vendor</label>
+                        <input type="email" class="form-control" name="email_vendor" placeholder="Email Vendor">
+                        <small class="form-text text-warning">* Masukan email vendor untuk memberikan notifikasi pembatalan</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Batalkan Pengadaan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endisset
 @endsection
 @section('local-js')
 <script>
@@ -839,6 +882,10 @@
         $('#sendEmailModal .vendor_name').text(vendor_name);
         $('#sendEmailModal .no_sap').text(no_sap);
         $('#sendEmailModal').modal('show');
+    }
+    
+    function doTerminateTicketing(){
+        $('#terminateTicketingModal').modal('show');
     }
 </script>
 @endsection

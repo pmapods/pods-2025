@@ -9,27 +9,27 @@
         <table class="table table-bordered table-sm">
             <tbody>
                 <tr>
-                    <td width="25%" class="required_field">No. BA Mutasi</td>
+                    <td width="25%" >No. BA Mutasi</td>
                     <td width="75%" colspan="3">
                         {{ $mutasiform->code }}
                     </td>
                 </tr>
                 <tr>
-                    <td width="25%" class="required_field">PMA Pengirim</td>
+                    <td width="25%" >PMA Pengirim</td>
                     <td width="25%">
                         {{ $mutasiform->sender_salespoint_name }}
                     </td>
-                    <td width="25%" class="required_field">PMA Penerima</td>
+                    <td width="25%" >PMA Penerima</td>
                     <td width="25%">
                         {{ $mutasiform->receiver_salespoint_name }}
                     </td>
                 </tr>
                 <tr>
-                    <td width="25%" class="required_field">Tgl Mutasi</td>
+                    <td width="25%" >Tgl Mutasi</td>
                     <td width="25%">
                         {{ $mutasiform->mutation_date }}
                     </td>
-                    <td width="25%" class="required_field">Tgl Terima</td>
+                    <td width="25%" >Tgl Terima</td>
                     <td width="25%">
                         {{ $mutasiform->received_date }}
                     </td>
@@ -39,70 +39,70 @@
         <span class="align-self-start small">* No. BA Mutasi hanya berlaku untuk satu dokumen</span>
         <p class="small">Sehubungan denagn adanya perubahan Cabang/Depo/CP, maka dilakukan mutasi armada dengan rincian data armada sebagai berikut:</p>
         <div class="row">
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>No. Polisi</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>No. Polisi</div>
             <div class="col-8 small">
                 {{ $mutasiform->nopol }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Nama Pemilik (Vendor)</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Nama Pemilik (Vendor)</div>
             <div class="col-8 small">
                 {{ $mutasiform->vendor_name }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Merk Kendaraan</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Merk Kendaraan</div>
             <div class="col-8 small">
                 {{ $mutasiform->brand_name }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Tipe/Jenis Kendaraan</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Tipe/Jenis Kendaraan</div>
             <div class="col-8 small">
                 {{ $mutasiform->jenis_kendaraan }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>No. Rangka</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>No. Rangka</div>
             <div class="col-8 small">
                 {{ $mutasiform->nomor_rangka }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>No. Mesin</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>No. Mesin</div>
             <div class="col-8 small">
                 {{ $mutasiform->nomor_mesin }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Tahun Pembuatan</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Tahun Pembuatan</div>
             <div class="col-8 small">
                 {{ $mutasiform->tahun_pembuatan }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Masa Berlaku STNK</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Masa Berlaku STNK</div>
             <div class="col-8 small">
                 {{ $mutasiform->stnk_date }}
             </div>
         </div>
         <p class="small">Kelengkapan kendaraan: </p>
         <div class="row">
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Kotak P3k</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Kotak P3k</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->p3k) ? 'Ya' : 'Tidak' }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Segitiga Darurat</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Segitiga Darurat</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->segitiga) ? 'Ya' : 'Tidak' }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Dongkrak</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Dongkrak</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->dongkrak) ? 'Ya' : 'Tidak' }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Tool Kit Standar</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Tool Kit Standar</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->toolkit) ? 'Ya' : 'Tidak' }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Ban Serep</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Ban Serep</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->ban) ? 'Ya' : 'Tidak' }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Kunci Gembok</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Kunci Gembok</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->gembok) ? 'Ya' : 'Tidak' }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Ijin Bongkar</div>
+            <div class="col-4 small py-2 "><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Ijin Bongkar</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->bongkar) ? 'Ya' : 'Tidak' }}
             </div>
-            <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Buku Keur</div>
+            <div class="col-4 small py-2"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Buku Keur</div>
             <div class="col-8 py-2 small">
                 {{ ($mutasiform->buku) ? 'Ya' : 'Tidak' }}
             </div>
@@ -238,7 +238,7 @@
                 </div>
                 <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Nama Pemilik (Vendor)</div>
                 <div class="col-8">
-                    <input type="text" class="form-control form-control-sm" name="vendor_name" required>
+                    <input type="text" class="form-control form-control-sm" name="vendor_name" value="{{ $armadaticket->po_reference->sender_name }}" required>
                 </div>
                 <div class="col-4 small py-2 required_field"><i class="fa fa-circle fa-xs mr-1" style="font-size : 0.5rem" aria-hidden="true"></i>Merk Kendaraan</div>
                 <div class="col-8">

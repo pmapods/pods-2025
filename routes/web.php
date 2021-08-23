@@ -156,10 +156,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/approvemutasiform',[ArmadaTicketingController::class, 'approveMutasiForm']);
         Route::post('/rejectmutasiform',[ArmadaTicketingController::class, 'rejectMutasiForm']);
         Route::post('/uploadbastk',[ArmadaTicketingController::class, 'uploadBASTK']);
+        Route::post('/uploadbastkgt',[ArmadaTicketingController::class, 'uploadBASTKGT']);
+        Route::post('/verifyPO',[ArmadaTicketingController::class, 'verifyPO']);
         Route::get('/getActivePO',[POController::class, 'getActivePO']);
         Route::get('/getarmadatypebyniaga/{isNiaga}',[ArmadaController::class, 'getArmadaTypebyNiaga']);
         Route::get('/getArmadaAuthorizationbySalespoint/{salespoint_id}',[ArmadaController::class, 'getArmadaAuthorizationbySalespoint']);
         Route::get('/getarmada',[ArmadaController::class, 'getArmada']);
+        Route::post('/terminateArmadaTicket',[ArmadaTicketingController::class, 'terminateArmadaTicket']);
     });
 
     // Bidding
@@ -206,6 +209,8 @@ Route::middleware(['auth'])->group(function () {
     // MONITORING
     Route::get('/ticketmonitoring',[MonitoringController::class, 'ticketMonitoringView']);
     Route::get('/ticketmonitoringlogs/{ticket_id}',[MonitoringController::class, 'ticketMonitoringLogs']);
+    Route::get('/armadamonitoring',[MonitoringController::class, 'armadaMonitoringView']);
+    Route::get('/armadamonitoringlogs/{po_number}',[MonitoringController::class, 'armadaMonitoringLogs']);
 });
     // Purchase Order
     Route::get('/signpo/{po_upload_request_id}',[POController::class,'poUploadRequestView']);

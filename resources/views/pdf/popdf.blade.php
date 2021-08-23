@@ -124,8 +124,8 @@
             <div class="address small">Jl. Soekarno Hatta 112<br>Babakan Ciparay, Babakan Ciparay<br>Bandung 40233 - Jawa Barat</div>
             <div class="vendor_address">
                 <b>Kepada Yth / To :</b><br>
-                {{$po->vendor_name}}<br>
-                {{$po->vendor_address}}
+                {{$po->sender_name}}<br>
+                {!! nl2br(e($po->sender_address)) !!}
             </div>
             <div class="kami_memesan_text small">Kami memesan barang / produk sebagai berikut</div>
             <div class="small"><i>We would like to confirm our order as follows</i></div>
@@ -208,7 +208,7 @@
                     <td style="vertical-align:top">&nbsp; {{$key+1}}</td>
                     <td style="vertical-align:top">
                         {{$po_detail->item_name}}<br>
-                        <small>{{$po_detail->item_description}}</small>
+                        <small>{!! nl2br(e($po_detail->item_description)) !!}</small>
                     </td>
                     <td style="vertical-align:top">{{$po_detail->qty}} {{($po_detail->uom ?? '')}}</td>
                     <td style="vertical-align:top" class="rupiah_text">{{setRupiah($po_detail->item_price)}}</td>
@@ -258,7 +258,7 @@
             <u>Mohon PO ini diemailkan kembali setelah konfirmasi</u><br>
             <i>Please return this PO by email after signing</i><br>
             <u>Catatan</u><br>
-            <i>{{$po->notes}}</i>
+            <i>{!! nl2br(e($po->notes)) !!}</i>
         </div>
     </div>
     <table style="width: 100%">

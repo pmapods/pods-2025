@@ -817,13 +817,13 @@ function approve(){
 
 function reject(){
     var reason = prompt("Harap memasukan alasan penolakan");
-  if (reason != null) {
-    if(reason.trim() == ''){
-        alert("Alasan Harus diisi");
-        return;
+    if (reason != null) {
+        if(reason.trim() == ''){
+            alert("Alasan Harus diisi");
+            return;
+        }
+        $('#rejectform .input_field').append('<input type="hidden" name="reason" value="'+reason+'">');
+        $('#rejectform').submit();
     }
-    $('#rejectform .input_field').append('<input type="hidden" name="reason" value="'+reason+'">');
-    $('#rejectform').submit();
-  }
 }
 

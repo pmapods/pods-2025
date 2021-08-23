@@ -210,6 +210,8 @@ class POController extends Controller
                         break;
                         
                     case 'Replace':
+                        $armadaticket->vendor_name = $request->selected_vendor;
+                        $armadaticket->armada_type_id = $request->armada_type_id;
                         break;
                         
                     case 'Renewal':
@@ -473,15 +475,6 @@ class POController extends Controller
             DB::beginTransaction();
             $po = Po::findOrFail($request->po_id);
             $po->status = 3;
-
-            if ($po->armada_ticket_id != null) {
-                if(in_array($po->armada_ticket->type(),['Mutasi','Replace','Renewal'])){
-                    // change old po ticket 
-                    $old_po = $po->armada_ticket->po_reference;
-                    $old_po->status = 4;
-                    $old_po->save();
-                }
-            }
             
             $po_upload_request = $po->po_upload_request;
             $po_upload_request->status = 2;

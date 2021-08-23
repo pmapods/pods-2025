@@ -258,7 +258,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       </a>
                   </li>
                   <li class="nav-item">
-                      <a href="/fleetmonitoring" class="nav-link">
+                      <a href="/armadamonitoring" class="nav-link">
                           <i class="fad fa-truck-container nav-icon"></i>
                           <p>Monitor Armada</p>
                       </a>

@@ -104,7 +104,7 @@
                         <td>-</td>
                         <td>
                             <input class="form-control" type="date" 
-                            name="setup_date" {{$isReadonly}}>
+                            name="setup_date" value="{{ $armadaticket->requirement_date }}">
                         </td>
                         <td class="text-justify">
                             <div class="d-flex flex-column">

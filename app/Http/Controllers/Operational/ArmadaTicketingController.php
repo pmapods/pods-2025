@@ -11,6 +11,7 @@ use DB;
 use App\Models\Ticket;
 use App\Models\Armada;
 use App\Models\ArmadaTicket;
+use App\Models\ArmadaTicketMonitoring;
 use App\Models\FacilityForm;
 use App\Models\FacilityFormAuthorization;
 use App\Models\PerpanjanganForm;
@@ -511,12 +512,12 @@ class ArmadaTicketingController extends Controller
     public function uploadBASTK(Request $request){
         try{
             DB::beginTransaction();
-            $armadaticket = ArmadaTicket::findOrFail($request->arnada_ticket_id);
+            $armadaticket = ArmadaTicket::findOrFail($request->armada_ticket_id);
 
-            if ($armadaticket->type() != "Perpanjangan"){
+            if (in_array($armadaticket->type(),["Pengadaan","Replace","Renewal"])){
                 $salespointname = str_replace(' ','_',$armadaticket->salespoint->name);
                 $ext = pathinfo($request->file('bastk_file')->getClientOriginalName(), PATHINFO_EXTENSION);
-                $name = "BASTK_".$salespointname.'.'.$ext;
+                $name = "BASTK_".strtoupper($request->type)."_".$salespointname.'.'.$ext;
                 $path = "/attachments/ticketing/armada/".$armadaticket->code.'/'.$name;
                 $file = pathinfo($path);
                 $path = $request->file('bastk_file')->storeAs($file['dirname'],$file['basename'],'public');
@@ -531,47 +532,106 @@ class ArmadaTicketingController extends Controller
                     $oldarmada->delete();
                 }
             }
-            if($armadaticket->type() == "End Kontrak"){
-                // hapus armada saat ini
-                $currentarmada = Armada::where('plate', $armadaticket->po_reference->armada_ticket->armada->plate)->first();
-                if($currentarmada != null){
-                    $currentarmada->status = 0;
-                    $currentarmada->save();
-                    $currentarmada->delete();
-                }
-                // set po lama jadi closestmoda
+            if (in_array($armadaticket->type(), ['Perpanjangan','Replace','Renewal','Mutasi','End Kontrak'])) {
+                // ubah status po lama ke closed(4)
                 $old_po = $armadaticket->po_reference;
                 $old_po->status = 4;
                 $old_po->save();
             }
+
             $armadaticket->finished_date = date('Y-m-d');
             $armadaticket->status = 6;
             $armadaticket->save();
 
-            // tambahkan armada ke master armada
-            $armada_by_plate = Armada::where('plate',str_replace(' ', '', strtoupper($request->plate)))->first();
-            if($armada_by_plate){
-                $newArmada                  = $armada_by_plate;
-            }else{
-                $newArmada                  = new Armada;
+            if (in_array($armadaticket->type(), ['Pengadaan','Replace','Renewal'])) {
+                // tambahkan armada ke master armada
+                $armada_by_plate = Armada::where('plate', str_replace(' ', '', strtoupper($request->plate)))->first();
+                if ($armada_by_plate) {
+                    $newArmada                  = $armada_by_plate;
+                } else {
+                    $newArmada                  = new Armada;
+                }
+
+                if($request->plate == "" || $request->plate == null) {
+                    throw new \Exception('Nomor Plat tidak boleh kosong.');
+                }
+                $newArmada->salespoint_id   = $armadaticket->salespoint_id;
+                $newArmada->armada_type_id  = $armadaticket->armada_type_id;
+                $newArmada->plate           = str_replace(' ', '', strtoupper($request->plate));
+                $newArmada->status          = ($request->booked_by == null) ? 0 : 1;
+                $newArmada->booked_by       = $request->booked_by ?? null;
+                $newArmada->save();
+                $armadaticket->armada_id = $newArmada->id;
+                if($request->type == 'gs'){
+                    $armadaticket->gs_plate = str_replace(' ', '', strtoupper($newArmada->plate));
+                    $armadaticket->gs_received_date = date('Y-m-d');
+                }
+                if($request->type == 'gt'){
+                    $armadaticket->gt_plate = str_replace(' ', '', strtoupper($newArmada->plate));
+                    $armadaticket->gt_received_date = date('Y-m-d');
+                }
+                $armadaticket->save();
             }
 
-            $newArmada->salespoint_id   = $armadaticket->salespoint_id;
-            $newArmada->armada_type_id  = $armadaticket->armada_type_id;
-            $newArmada->plate           = str_replace(' ', '', strtoupper($request->plate)); 
-            $newArmada->status          = ($request->booked_by == null) ? 0 : 1; 
-            $newArmada->booked_by       = $request->booked_by ?? null; 
-            $newArmada->save();
-
-            $armadaticket->armada_id = $newArmada->id;
-            $armadaticket->save();
-
+            if($armadaticket->type() == "Mutasi"){
+                // ubah salespoint armada
+                $armada = $armadaticket->armada;
+                $armada->salespoint_id = $armadaticket->mutasi_form->receiver_salespoint_id;
+                $armada->save();
+            }
             DB::commit();
             return back()->with('success','Berhasil melakukan upload dokumen kelengkapan, armada dengan nomor pelat '.str_replace(' ', '', strtoupper($request->plate)).' telah diupdate di master armada');
         }catch(\Exception $ex){
-            dd($ex);
             DB::rollback();
-            return back()->with('error','Berhasil melakukan upload dokumen kelengkapan');
+            dd($ex);
+            return back()->with('error','Gagal melakukan upload dokumen kelengkapan '.$ex->getMessage());
+        }
+    }
+
+    public function uploadBASTKGT(Request $request){
+        try {
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::findOrFail($request->armada_ticket_id);
+            $armada = $armadaticket->armada;
+            $armada->plate = $request->gt_plate;
+            $armada->save();
+
+            $salespointname = str_replace(' ','_',$armadaticket->salespoint->name);
+            $ext = pathinfo($request->file('bastk_file')->getClientOriginalName(), PATHINFO_EXTENSION);
+            $name = "BASTK_GT_".$salespointname.'.'.$ext;
+            $path = "/attachments/ticketing/armada/".$armadaticket->code.'/'.$name;
+            $file = pathinfo($path);
+            $path = $request->file('bastk_file')->storeAs($file['dirname'],$file['basename'],'public');
+
+            $armadaticket->bastk_path = $path;
+            $armadaticket->gt_plate = str_replace(' ', '', strtoupper($request->gt_plate));
+            $armadaticket->gt_received_date = date('Y-m-d');
+            $armadaticket->save();
+            DB::commit();
+            return back()->with('success','Berhasil update armada dan upload bastk');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            return back()->with('error','Gagal update armada dan upload bastk '.$ex->getMessage());
+        }
+    }
+
+    public function verifyPO(Request $request){
+        try{
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::findOrFail($request->armada_ticket_id);
+            $old_po = $armadaticket->po_reference;
+            $old_po->status = 4;
+            $old_po->save();
+
+            $armadaticket->finished_date = date('Y-m-d');
+            $armadaticket->status = 6;
+            $armadaticket->save();
+
+            DB::commit();
+            return back()->with('success','Berhasil melakukan verifikasi PO.');
+        }catch(\Exception $ex){
+            DB::rollback();
+            return back()->with('error','Gagal melakukan verifikasi PO.');
         }
     }
 
@@ -662,6 +722,37 @@ class ArmadaTicketingController extends Controller
             DB::rollback();
             dd($ex);
             return back()->with('error','Gagal memulai otorisasi '.$ex->getMessage());
+        }
+    }
+
+    public function terminateArmadaTicket(Request $request){
+        try {
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::findOrFail($request->armada_ticket_id);
+            if($armadaticket->status == 6){
+                throw new \Exception('Status Armada yang sudah selesai tidak dapat dibatalkan.');
+            }
+            $armadaticket->terminated_by = Auth::user()->id;
+            $armadaticket->termination_reason = $request->cancel_notes;
+            $armadaticket->status = -1;
+            $armadaticket->save();
+
+            if($request->email_vendor != null){
+                // kirim email notifikasi ke vendor
+            }
+
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Membatalkan Pengadaan Armada';
+            $monitor->save();
+            DB::commit();
+            return redirect('/ticketing')->with('success','Berhasil Membatalkan Pengadaan');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return redirect('/ticketing')->with('error','Gagal Membatalkan Pengadaan "'.$ex->getMessage().'"');
         }
     }
 }

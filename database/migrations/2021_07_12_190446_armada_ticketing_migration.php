@@ -17,7 +17,7 @@ class ArmadaTicketingMigration extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->integer('salespoint_id')->unsigned();
-            $table->integer('armada_type_id')->unsigned();
+            $table->integer('armada_type_id')->nullable();
             $table->integer('armada_id')->nullable();
             $table->string('po_reference_number')->nullable();
             // po_reference untuk mutasi replace renew
@@ -38,16 +38,20 @@ class ArmadaTicketingMigration extends Migration
             // 2 Finish Authorization
             // 3 Otorisasi PR Dimulai
             // 4 Dalam Proses PO
-            // 5 Menunggu Upload Berkan Penerimaan
+            // 5 Menunggu Upload Berkas Penerimaan
             // 6 Selesai / sudah diterima
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
             $table->date('requirement_date');
+
             $table->date('finished_date')->nullable();
+            $table->string('gs_plate')->nullable();
+            $table->date('gs_received_date')->nullable();
+            $table->string('gt_plate')->nullable();
+            $table->date('gt_received_date')->nullable();
             $table->string('bastk_path')->nullable();
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
-            $table->foreign('armada_type_id')->references('id')->on('armada_type');
             $table->timestamps();
             $table->softDeletes();
         });
