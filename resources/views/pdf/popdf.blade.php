@@ -159,11 +159,14 @@
             <div class="small" style="margin-top: 1em">Alamat kirim / Delivery Address</div>
             @php
                 $salespoint_name = "";
+                if($po->ticket_id != null){
+                    $salespoint_name = $po->ticket->salespoint->name;
+                }
                 if($po->armada_ticket_id != null){
                     $salespoint_name = $po->armada_ticket->salespoint->name;
                 }
-                if($po->ticket_id != null){
-                    $salespoint_name = $po->ticket->salespoint->name;
+                if($po->security_ticket_id != null){
+                    $salespoint_name = $po->security_ticket->salespoint->name;
                 }
             @endphp
             <div>

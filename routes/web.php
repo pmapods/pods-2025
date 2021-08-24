@@ -20,6 +20,7 @@ use App\Http\Controllers\Masterdata\ArmadaController;
 // Operational
 use App\Http\Controllers\Operational\TicketingController;
 use App\Http\Controllers\Operational\ArmadaTicketingController;
+use App\Http\Controllers\Operational\SecurityTicketingController;
 use App\Http\Controllers\Operational\BiddingController;
 use App\Http\Controllers\Operational\PRController;
 use App\Http\Controllers\Operational\POController;
@@ -161,8 +162,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/getActivePO',[POController::class, 'getActivePO']);
         Route::get('/getarmadatypebyniaga/{isNiaga}',[ArmadaController::class, 'getArmadaTypebyNiaga']);
         Route::get('/getArmadaAuthorizationbySalespoint/{salespoint_id}',[ArmadaController::class, 'getArmadaAuthorizationbySalespoint']);
+        Route::get('/getSecurityAuthorizationbySalespoint/{salespoint_id}',[ArmadaController::class, 'getSecurityAuthorizationbySalespoint']);
         Route::get('/getarmada',[ArmadaController::class, 'getArmada']);
         Route::post('/terminateArmadaTicket',[ArmadaTicketingController::class, 'terminateArmadaTicket']);
+
+        // Security
+        Route::post('/createsecurityticket',[SecurityTicketingController::class, 'createSecurityTicket']);
+        Route::get('/securityticketing/{code}',[SecurityTicketingController::class, 'securityTicketDetail']);
+        Route::post('/terminatesecurityticketing',[SecurityTicketingController::class, 'terminateSecurityTicketing']);
+        Route::post('/startsecurityauthorization',[SecurityTicketingController::class, 'startSecurityAuthorization']);
+        Route::post('/approvesecurityauthorization',[SecurityTicketingController::class, 'approveSecurityAuthorization']);
+        Route::post('/uploadsecuritylpb',[SecurityTicketingController::class, 'uploadSecurityLPB']);
     });
 
     // Bidding

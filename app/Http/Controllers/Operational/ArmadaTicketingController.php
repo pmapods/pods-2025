@@ -36,6 +36,13 @@ class ArmadaTicketingController extends Controller
             ])
             ->withTrashed()
             ->count();
+            
+            $security_ticket_count = SecurityTicket::whereBetween('created_at', [
+                Carbon::now()->startOfYear(),
+                Carbon::now()->endOfYear(),
+            ])
+            ->withTrashed()
+            ->count();
 
             $barang_ticket_count = Ticket::whereBetween('created_at', [
                 Carbon::now()->startOfYear(),
@@ -47,13 +54,14 @@ class ArmadaTicketingController extends Controller
 
             
 
-            $total_count = $armada_ticket_count + $barang_ticket_count;
+            $total_count = $armada_ticket_count + $security_ticket_count + $barang_ticket_count;
             do {
                 $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($total_count+1)).($total_count+1);
                 $total_count++;
                 $checkbarang = Ticket::where('code',$code)->first();
                 $checkarmada = ArmadaTicket::where('code',$code)->first();
-                ($checkbarang != null || $checkarmada != null) ? $flag = false : $flag = true;
+                $checksecurity = SecurityTicket::where('code',$code)->first();
+                ($checkbarang != null || $checkarmada != null || $checksecurity != null) ? $flag = false : $flag = true;
             } while (!$flag);
 
             $newTicket                   = new ArmadaTicket;
@@ -87,7 +95,7 @@ class ArmadaTicketingController extends Controller
                 $newAuthorization->save();
             }
             DB::commit();
-            return redirect('/ticketing')->with('success','Berhasil membuat ticketing armada');
+            return redirect('/ticketing?menu=Armada')->with('success','Berhasil membuat ticketing armada');
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -120,7 +128,7 @@ class ArmadaTicketingController extends Controller
             }
             return view('Operational.Armada.armadaticketdetail',compact('armadaticket','employee_positions','available_salespoints','formperpanjangan_authorizations','formfasilitas_authorizations','available_armadas','formmutasi_authorizations','salespoints','po'));
         } catch (\Exception $ex) {
-            return redirect('/ticketing')->with('error','Gagal membukan detail ticket armada '.$ex->getMessage());
+            return redirect('/ticketing?menu=Armada')->with('error','Gagal membukan detail ticket armada '.$ex->getMessage());
         }
     }
 
@@ -646,7 +654,7 @@ class ArmadaTicketingController extends Controller
             $armadaticketing->termination_reason = $request->reason;
             $armadaticketing->save();
             DB::commit();
-            return redirect('/ticketing')->with('success', 'Berhasil melakukan pembatalan ticketing');
+            return redirect('/ticketing?menu=Armada')->with('success', 'Berhasil melakukan pembatalan ticketing');
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -748,11 +756,11 @@ class ArmadaTicketingController extends Controller
             $monitor->message               = 'Membatalkan Pengadaan Armada';
             $monitor->save();
             DB::commit();
-            return redirect('/ticketing')->with('success','Berhasil Membatalkan Pengadaan');
+            return redirect('/ticketing?menu=Armada')->with('success','Berhasil Membatalkan Pengadaan');
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
-            return redirect('/ticketing')->with('error','Gagal Membatalkan Pengadaan "'.$ex->getMessage().'"');
+            return redirect('/ticketing?menu=Armada')->with('error','Gagal Membatalkan Pengadaan "'.$ex->getMessage().'"');
         }
     }
 }

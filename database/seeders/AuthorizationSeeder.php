@@ -104,6 +104,24 @@ class AuthorizationSeeder extends Seeder
             $detail->level                  = $key+1;
             $detail->save();
         }
+        
+        // armadaticketing 
+        $newAuthorization                 = new Authorization;
+        $newAuthorization->salespoint_id  = 1;
+        $newAuthorization->form_type      = 8;
+        $newAuthorization->save();
+        $employee_ids = [2,3,4];
+        $position_ids = [2,3,4];
+        $as = ['Pengaju','Atasan Langsung','Atasan Tidak Langsung'];
+        foreach ($employee_ids as $key=>$id){
+            $detail                         = new AuthorizationDetail;
+            $detail->authorization_id       = $newAuthorization->id;
+            $detail->employee_id            = $id;
+            $detail->employee_position_id   = $position_ids[$key];
+            $detail->sign_as                = $as[$key];
+            $detail->level                  = $key+1;
+            $detail->save();
+        }
 
         // formulir fasilitas
         $newAuthorization                 = new Authorization;

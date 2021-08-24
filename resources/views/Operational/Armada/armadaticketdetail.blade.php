@@ -65,7 +65,7 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label>Tanggal Setup</label>
-                <input type="date" class="form-control" value="{{ $armadaticket->created_at->format('Y-m-d') }}" readonly>
+                <input type="date" class="form-control" value="{{ $armadaticket->requirement_date }}" readonly>
             </div>
         </div>
         <div class="col-md-4">

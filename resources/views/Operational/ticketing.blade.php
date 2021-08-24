@@ -47,6 +47,9 @@
         <li class="flex-sm-fill text-sm-center nav-item ml-1" role="presentation">
           <a class="nav-link" id="pills-armada-tab" data-toggle="pill" href="#pills-armada" role="tab" aria-controls="pills-armada" aria-selected="false">Armada</a>
         </li>
+        <li class="flex-sm-fill text-sm-center nav-item ml-1" role="presentation">
+          <a class="nav-link" id="pills-security-tab" data-toggle="pill" href="#pills-security" role="tab" aria-controls="pills-security" aria-selected="false">Security</a>
+        </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-barangjasa" role="tabpanel" aria-labelledby="pills-barangjasa-tab">
@@ -155,6 +158,53 @@
                 </table>
             </div>
         </div>
+        <div class="tab-pane fade" id="pills-security" role="tabpanel" aria-labelledby="pills-security-tab">
+            <div class="table-responsive">
+                <table id="securityticketDT" class="table table-bordered table-striped dataTable" role="grid">
+                    <thead>
+                        <tr role="row">
+                            <th>#</th>
+                            <th>Kode</th>
+                            <th>Tanggal Pengajuan</th>
+                            <th>Nama Pembuat Form</th>
+                            <th>Area</th>
+                            <th>Tipe Tiket</th>
+                            <th>Tanggal Requirement</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php $count = 0 @endphp
+                        @foreach ($securitytickets as $ticket)
+                            <tr data-id="{{$ticket->id}}">
+                                <td>{{$count+=1}}</td>
+                                <td>{{$ticket->code}}</td>
+                                <td>{{$ticket->created_at->translatedFormat('d F Y (H:i)')}}</td>
+                                <td>
+                                    @if (isset($ticket->created_by))
+                                        {{$ticket->created_by_employee->name}}
+                                    @endif
+                                </td>
+                                <td>
+                                    {{$ticket->salespoint->name}}
+                                </td>
+                                <td>
+                                    {{ $ticket->type() }}
+                                </td>
+                                <td>
+                                    @if (isset($ticket->requirement_date))
+                                        {{\Carbon\Carbon::parse($ticket->requirement_date)->translatedFormat('d F Y')}}
+                                    @endif
+                                </td>
+                                <td>
+                                    {{$ticket->status()}}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 <!-- Modal -->
@@ -205,6 +255,7 @@
     $(document).ready(function() {
         var table = $('#ticketDT').DataTable(datatable_settings);
         var armadatable = $('#armadaticketDT').DataTable(datatable_settings);
+        var securitytable = $('#securityticketDT').DataTable(datatable_settings);
         $('#ticketDT tbody').on('click', 'tr', function () {
             let id = $(this).data('id');
             let code = $(this).find('td:eq(1)').text().trim();
@@ -224,6 +275,29 @@
                 window.location.href = '/armadaticketing/'+id;
             }
         });
+
+        $('#securityticketDT tbody').on('click', 'tr', function () {
+            let id = $(this).data('id');
+            let code = $(this).find('td:eq(1)').text().trim();
+            if(code != ""){
+                window.location.href = '/securityticketing/'+code;
+            }
+        });
+
+        var type = getUrlVars()["menu"];
+        switch (type) {
+            case "Barangjasa":
+                $('#pills-barangjasa-tab').click();
+                break;
+            case "Armada":
+                $('#pills-armada-tab').click();
+                break;
+            case "Security":
+                $('#pills-security-tab').click();
+                break;
+            default:
+                break;
+        }
     });
 </script>
 

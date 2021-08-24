@@ -66,18 +66,21 @@
     @isset ($armadaticket)
     <div>Cabang / Depo : {{$armadaticket->salespoint->name}}</div>
     @endisset
+    @isset ($securityticket)
+    <div>Cabang / Depo : {{$securityticket->salespoint->name}}</div>
+    @endisset
     <center>
         <div style="font-weight: bold; font-size: 20px">PURCHASE REQUISITION (PR) - MANUAL</div>
     </center>
     <div style="float:right">
         @isset ($ticket)
-        <input type="checkbox" style="margin-top:5px" @if($ticket->budget_type==0) checked="checked" @endif> Budget
-        <input type="checkbox" style="margin-left: 15px; margin-top:5px" @if($ticket->budget_type==1) checked="checked" @endif> Non Budget
+            <input type="checkbox" style="margin-top:5px" @if($ticket->budget_type==0) checked="checked" @endif> Budget
+            <input type="checkbox" style="margin-left: 15px; margin-top:5px" @if($ticket->budget_type==1) checked="checked" @endif> Non Budget
         @endisset
-        @isset ($armadaticket)
-        <input type="checkbox" style="margin-top:5px" checked="checked"> Budget
-        <input type="checkbox" style="margin-left: 15px; margin-top:5px"> Non Budget
-        @endisset
+        @if (isset($armadaticket) || isset($securityticket))
+            <input type="checkbox" style="margin-top:5px" checked="checked"> Budget
+            <input type="checkbox" style="margin-left: 15px; margin-top:5px"> Non Budget
+        @endif
     </div>
     
     <table class="table table-bordered item_table" style="margin-top: 3em !important">
@@ -124,7 +127,7 @@
                 </td>
             </tr>
             @endisset
-            @isset ($armadaticket)
+            @if (isset($armadaticket) || isset($securityticket))
             <tr>
                 <td>{{$key+1}}</td>
                 <td>{{$pr_detail->name}}</td>
@@ -141,7 +144,7 @@
                     @endisset
                 </td>
             </tr>   
-            @endisset
+            @endif
             @endforeach
         </tbody>
     </table>

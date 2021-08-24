@@ -12,6 +12,7 @@ use App\Models\Vendor;
 use App\Models\ArmadaVendor;
 use App\Models\Ticket;
 use App\Models\ArmadaTicket;
+use App\Models\SecurityTicket;
 use App\Models\TicketItem;
 use App\Models\TicketItemAttachment;
 use App\Models\TicketItemFileRequirement;
@@ -42,6 +43,10 @@ class TicketingController extends Controller
             ->whereIn('status',[-1,6])
             ->get()
             ->sortByDesc('created_at');
+            $securitytickets = SecurityTicket::whereIn('salespoint_id',$access)
+            ->whereIn('status',[-1,6])
+            ->get()
+            ->sortByDesc('created_at');
         }else{
             $tickets = Ticket::whereIn('salespoint_id',$access)
             ->whereNotIn('status',[-1,7])
@@ -51,9 +56,13 @@ class TicketingController extends Controller
             ->whereNotIn('status',[-1,6])
             ->get()
             ->sortByDesc('created_at');
+            $securitytickets = SecurityTicket::whereIn('salespoint_id',$access)
+            ->whereNotIn('status',[-1,6])
+            ->get()
+            ->sortByDesc('created_at');
         }
         
-        return view('Operational.ticketing',compact('tickets','armadatickets'));
+        return view('Operational.ticketing',compact('tickets','armadatickets','securitytickets'));
     }
 
     public function ticketingDetailView($code){
@@ -100,7 +109,7 @@ class TicketingController extends Controller
             return view('Operational.ticketingdetail',compact('available_salespoints','budget_category_items','vendors','filecategories'));
         }
         if($request->ticketing_type == '1'){
-            return view('Operational.securitydetail');
+            return view('Operational.Security.newsecurityticket',compact('available_salespoints'));
         }
         if($request->ticketing_type == '2'){
             $armada_vendors = ArmadaVendor::all();
@@ -448,7 +457,14 @@ class TicketingController extends Controller
             ->withTrashed()
             ->count();
 
-            $barang_ticket_count = Ticket::whereBetween('created_at', [
+            $security_ticket_count = SecurityTicket::whereBetween('created_at', [
+                Carbon::now()->startOfYear(),
+                Carbon::now()->endOfYear(),
+            ])
+            ->withTrashed()
+            ->count();
+
+            $barang_ticket_count = SecurityTicket::whereBetween('created_at', [
                 Carbon::now()->startOfYear(),
                 Carbon::now()->endOfYear(),
             ])
@@ -456,12 +472,13 @@ class TicketingController extends Controller
             ->withTrashed()
             ->count();
 
-            $total_count = $armada_ticket_count + $barang_ticket_count;
+            $total_count = $armada_ticket_count + $security_ticket_count + $barang_ticket_count;
             do {
                 $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($total_count+1)).($total_count+1);
                 $total_count++;
                 $checkbarang = Ticket::where('code',$code)->first();
                 $checkarmada = ArmadaTicket::where('code',$code)->first();
+                $checksecurity = SecurityTicket::where('code',$code)->first();
                 ($checkbarang != null || $checkarmada != null)? $flag = false : $flag = true;
             } while (!$flag);
             $old_code               = $ticket->code;

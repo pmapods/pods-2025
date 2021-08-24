@@ -66,6 +66,11 @@ class AuthorizationController extends Controller
                     $detail_counts = [3];
                     $errMessage = "Form Pengadaan Armada membutuhkan 3 pilihan otorisasi";
                     break;
+                case '8':
+                    // 8 form pengadaan security
+                    $detail_counts = [3];
+                    $errMessage = "Form Pengadaan Security membutuhkan 3 pilihan otorisasi";
+                    break;
             }
             if(!in_array(count($request->authorization),$detail_counts)){
                 return back()->with('error',$errMessage);
@@ -136,6 +141,11 @@ class AuthorizationController extends Controller
                     // 7 form pengadaan armada
                     $detail_counts = [3];
                     $errMessage = "Form Pengadaan Armada membutuhkan 3 pilihan otorisasi";
+                    break;
+                case '8':
+                    // 8 form pengadaan security
+                    $detail_counts = [3];
+                    $errMessage = "Form Pengadaan Security membutuhkan 3 pilihan otorisasi";
                     break;
             }
             if(!in_array(count($request->authorization),$detail_counts)){

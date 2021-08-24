@@ -18,6 +18,10 @@ class Pr extends Model
     public function armada_ticket(){
         return $this->belongsTo(ArmadaTicket::class);
     }
+    
+    public function security_ticket(){
+        return $this->belongsTo(SecurityTicket::class);
+    }
 
     public function pr_detail(){
         return $this->hasMany(PrDetail::class);

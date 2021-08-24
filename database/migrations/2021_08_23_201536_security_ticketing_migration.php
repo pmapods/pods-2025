@@ -1,0 +1,81 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class SecurityTicketingMigration extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('security_ticket', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('code')->unique();
+            $table->integer('salespoint_id')->unsigned();
+            $table->string('po_reference_number')->nullable();
+            // po_reference untuk mutasi replace renew
+            $table->string('po_number')->nullable();
+            // po_number untuk po yang ke create baru karena tiket ini
+            $table->string('vendor_name')->nullable();
+            $table->string('vendor_recommendation_name')->nullable();
+            $table->tinyInteger('ticketing_type');
+            // 0 Pengadaan Baru                
+            // 1 Perpanjangan
+            // 2 Replace
+            // 3 End Sewa
+            $table->tinyInteger('status')->default(0);
+            // -1 Terminated
+            // 0 New
+            // 1 Pending Authorization
+            // 2 Finish Authorization
+            // 3 Otorisasi PR Dimulai
+            // 4 Dalam Proses PO
+            // 5 Menunggu Upload Berkas Penerimaan
+            // 6 Selesai / sudah diterima
+            $table->integer('created_by')->nullable();
+            $table->integer('terminated_by')->nullable();
+            $table->string('termination_reason')->nullable();
+
+            $table->date('requirement_date');
+            $table->date('finished_date')->nullable();
+
+            $table->string('lpb_path')->nullable();
+            $table->string('endkontrak_path')->nullable();
+
+            $table->foreign('salespoint_id')->references('id')->on('salespoint');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('security_ticket_authorization', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('security_ticket_id')->unsigned();
+            $table->integer('employee_id')->unsigned();
+            $table->string('employee_name');
+            $table->string('as');
+            $table->string('employee_position');
+            $table->tinyInteger('level');
+            $table->tinyInteger('status')->default(0);
+            // 0 pending
+            // 1 approved
+            // -1 reject
+            $table->foreign('security_ticket_id')->references('id')->on('security_ticket');
+            $table->foreign('employee_id')->references('id')->on('employee');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+    }
+}

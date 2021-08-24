@@ -18,6 +18,10 @@ class Po extends Model
         return $this->belongsTo(ArmadaTicket::class);
     }
 
+    public function security_ticket(){
+        return $this->belongsTo(SecurityTicket::class);
+    }
+
     public function po_detail(){
         return $this->hasMany(PoDetail::class);
     }

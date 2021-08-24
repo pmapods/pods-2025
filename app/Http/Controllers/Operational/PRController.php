@@ -11,10 +11,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 use App\Models\ArmadaTicket;
+use App\Models\SecurityTicket;
 use App\Models\Ticket;
 use App\Models\TicketItem;
 use App\Models\TicketMonitoring;
 use App\Models\ArmadaTicketMonitoring;
+use App\Models\SecurityTicketMonitoring;
 use App\Models\Authorization;
 use App\Models\Pr;
 use App\Models\PrAuthorization;
@@ -44,13 +46,23 @@ class PRController extends Controller
                 $ticket->type = 'Pengadaan Barang Jasa';
                 array_push($tickets,$ticket);
             }
-            // pr hanya untuk pengadaan
+            // pr hanya untuk pengadaan armada
             $armadatickets = ArmadaTicket::whereIn('status',[2,3,4])
             ->whereIn('salespoint_id',$salespoint_ids)
             ->where('ticketing_type',0)
             ->get();
             foreach($armadatickets as $ticket){
                 $ticket->type = 'Pengadaan Armada';
+                array_push($tickets,$ticket);
+            }
+
+            // pr hanya untuk pengadaan security
+            $securitytickets = SecurityTicket::whereIn('status',[2,3,4])
+            ->whereIn('salespoint_id',$salespoint_ids)
+            ->where('ticketing_type',0)
+            ->get();
+            foreach($securitytickets as $ticket){
+                $ticket->type = 'Pengadaan Security';
                 array_push($tickets,$ticket);
             }
         }
@@ -61,7 +73,8 @@ class PRController extends Controller
         try{
             $ticket = Ticket::where('code',$ticket_code)->first();
             $armadaticket = ArmadaTicket::where('code',$ticket_code)->first();
-            if(!$ticket && !$armadaticket){
+            $securityticket = SecurityTicket::where('code',$ticket_code)->first();
+            if(!$ticket && !$armadaticket && !$securityticket){
                 return back()->with('error',"Ticket tidak ditemukan");
             }
             $authorizations = Authorization::where('form_type',2)->get();
@@ -74,6 +87,9 @@ class PRController extends Controller
             }
             if($armadaticket != null){
                 return view('Operational.Armada.armadaprdetail',compact('armadaticket','authorizations'));
+            }
+            if($securityticket != null){
+                return view('Operational.Security.securityprdetail',compact('securityticket','authorizations'));
             }
         }catch(\Exception $ex){
             return back()->with('error','gagal membuka detil PR '.$ex->getMessage());
@@ -93,6 +109,7 @@ class PRController extends Controller
             DB::beginTransaction();
             $ticket = Ticket::find($request->ticket_id);
             $armadaticket = ArmadaTicket::find($request->armada_ticket_id);
+            $securityticket = SecurityTicket::find($request->security_ticket_id);
             if($ticket != null){
                 if(new Carbon($ticket->updated_at) != new Carbon($request->updated_at)){
                     return back()->with('error','Terdapat update data pada ticket. Silahkan coba lagi');
@@ -241,6 +258,78 @@ class PRController extends Controller
                 $monitor->message               = 'Menambahkan PR untuk di otorisasi';
                 $monitor->save();
             }
+            if($securityticket != null){
+                if(new Carbon($securityticket->updated_at) != new Carbon($request->updated_at)){
+                    throw new \Exception('error','Terdapat update data pada ticket. Silahkan coba lagi');
+                }
+                $securityticket->status = 3;
+                $securityticket->save();
+    
+                if($request->pr_id != -1){
+                    $pr = Pr::findOrFail($request->pr_id);
+                    $pr->rejected_by = null;
+                    $pr->reject_reason = null;
+                    $pr->status = 0;
+                    $pr->created_at = now()->format('Y-m-d H:i:s');
+                }else{
+                    $pr = new Pr;
+                }
+                $pr->security_ticket_id    = $securityticket->id;
+                $pr->created_by   = Auth::user()->id;   
+                $pr->save(); 
+    
+                $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
+                $collection = $securityticket->authorizations->slice(1)->all();
+                $values = collect($collection)->values();
+                $count = $values->count();
+                foreach($values->all() as $key => $author){
+                    $authorization                     = new PrAuthorization;
+                    $authorization->pr_id              = $pr->id;
+                    $authorization->employee_id        = $author->employee_id;             
+                    $authorization->employee_name      = $author->employee_name;                 
+                    $authorization->as                 = $default_as[$key];     
+                    $authorization->employee_position  = $author->employee_position;                     
+                    $authorization->level              = $key+1;
+                    $authorization->save();
+                }
+
+                $authorization = Authorization::find($request->pr_authorization_id);
+                foreach($authorization->authorization_detail as $author){
+                    $authorization                     = new PrAuthorization;
+                    $authorization->pr_id              = $pr->id;         
+                    $authorization->employee_id        = $author->employee_id;             
+                    $authorization->employee_name      = $author->employee->name;                 
+                    $authorization->as                 = $author->sign_as;     
+                    $authorization->employee_position  = $author->employee_position->name;                     
+                    $authorization->level              = $count+$author->level;
+                    $authorization->save();
+                }
+    
+                $detail                     = new PrDetail;
+                $detail->pr_id              = $pr->id;
+                $detail->name               = 'Security '.$securityticket->salespoint->name;
+                $detail->qty                = 1;
+                $detail->uom                = '';
+                do {
+                    $uuid = Str::uuid()->toString();
+                    $flag = true;
+                    if(PrDetail::where('asset_number_token',$uuid)->first()){
+                        $flag = false;
+                    }
+                } while (!$flag);
+                $detail->asset_number_token = $uuid;
+                $detail->price              = null;
+                $detail->setup_date         = $request->setup_date;
+                $detail->notes              = $request->notes;
+                $detail->save();
+
+                $monitor = new SecurityTicketMonitoring;
+                $monitor->security_ticket_id      = $securityticket->id;
+                $monitor->employee_id             = Auth::user()->id;
+                $monitor->employee_name           = Auth::user()->name;
+                $monitor->message                 = 'Menambahkan PR untuk di otorisasi';
+                $monitor->save();
+            }
             DB::commit();
             return back()->with('success','Berhasil menambakan PR, Silahkan melakukan proses otorisasi');
         }catch(\Exception $ex){
@@ -285,6 +374,11 @@ class PRController extends Controller
                         $armada_ticket->status = 4;
                         $armada_ticket->save();
                     }
+                    if($pr->security_ticket != null){
+                        $security_ticket = $pr->security_ticket;
+                        $security_ticket->status = 4;
+                        $security_ticket->save();
+                    }
                 }
                 
                 $pr = Pr::findOrFail($request->pr_id);
@@ -295,6 +389,10 @@ class PRController extends Controller
                 if($pr->armada_ticket != null){
                     $monitor = new ArmadaTicketMonitoring;
                     $monitor->armada_ticket_id      = $pr->armada_ticket->id;
+                }
+                if($pr->security_ticket != null){
+                    $monitor = new SecurityTicketMonitoring;
+                    $monitor->security_ticket_id      = $pr->security_ticket->id;
                 }
                 $monitor->employee_id    = Auth::user()->id;
                 $monitor->employee_name  = Auth::user()->name;
@@ -310,7 +408,10 @@ class PRController extends Controller
                         return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selesai, Silahkan mengajukan nomor asset dan mengupdate nomor asset');
                     }
                     if($pr->armada_ticket != null){
-                        return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selesai, Silahkan melanjutkan setup PO');
+                        return back()->with('success','Berhasil Melakukan Approve PR Pengadaan Armada, Proses otorisasi selesai, Silahkan melanjutkan setup PO');
+                    }
+                    if($pr->security_ticket != null){
+                        return back()->with('success','Berhasil Melakukan Approve PR Pengadaan Security, Proses otorisasi selesai, Silahkan melanjutkan setup PO');
                     }
                 }else{
                     return back()->with('success','Berhasil Melakukan Approve PR, Proses otorisasi selanjutnya oleh ('.$pr->current_authorization()->employee_name.')');
@@ -501,7 +602,8 @@ class PRController extends Controller
     public function printPR($ticket_code){
         $ticket = Ticket::where('code',$ticket_code)->where('status','>=',5)->first();
         $armadaticket = ArmadaTicket::where('code',$ticket_code)->where('status','>=',4)->first();
-        if($ticket == null && $armadaticket == null){
+        $securityticket = SecurityTicket::where('code',$ticket_code)->where('status','>=',4)->first();
+        if($ticket == null && $armadaticket == null && $securityticket == null){
             abort(404);
         }
         try {
@@ -510,6 +612,9 @@ class PRController extends Controller
             }
             if($armadaticket != null){
                 $pr = $armadaticket->pr;
+            }
+            if($securityticket != null){
+                $pr = $securityticket->pr;
             }
             $authorizations =[];
             foreach($pr->pr_authorizations as $author){   
@@ -522,17 +627,28 @@ class PRController extends Controller
             if(($ticket->budget_type ?? -1)==0 && $ticket != null){
                 $authorizations = array_slice($authorizations, 0, 5, true);
             }
+
             if($armadaticket != null){
                 $authorizations = array_slice($authorizations, 0, 5, true);
+            }
+
+            if($securityticket != null){
+                $authorizations = array_slice($authorizations, 0, 5, true);
+            }
+
+            if($ticket != null){
+                $pdf = PDF::loadView('pdf.prpdf', compact('pr','ticket','authorizations'))->setPaper('a4', 'landscape');
+                return $pdf->stream('PR ('.$ticket->code.').pdf');
             }
 
             if($armadaticket != null){                
                 $pdf = PDF::loadView('pdf.prpdf', compact('pr','armadaticket','authorizations'))->setPaper('a4', 'landscape');
                 return $pdf->stream('PR ('.$armadaticket->code.').pdf');
             }
-            if($ticket != null){
-                $pdf = PDF::loadView('pdf.prpdf', compact('pr','ticket','authorizations'))->setPaper('a4', 'landscape');
-                return $pdf->stream('PR ('.$ticket->code.').pdf');
+            
+            if($securityticket != null){                
+                $pdf = PDF::loadView('pdf.prpdf', compact('pr','securityticket','authorizations'))->setPaper('a4', 'landscape');
+                return $pdf->stream('PR ('.$securityticket->code.').pdf');
             }
         } catch (\Exception $ex) {
             return back()->with('error','Gagal Mencetak PR '.$ex->getMessage().'('.$ex->getLine().')');

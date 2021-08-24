@@ -17,6 +17,7 @@ class PrMigration extends Migration
             $table->increments('id');
             $table->integer('ticket_id')->nullable();
             $table->integer('armada_ticket_id')->nullable();
+            $table->integer('security_ticket_id')->nullable();
             $table->integer('created_by');
             $table->tinyInteger('status')->default(0);
             // 0 Menunggu proses otorisasi

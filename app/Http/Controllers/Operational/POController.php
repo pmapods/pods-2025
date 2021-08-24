@@ -8,6 +8,8 @@ use Auth;
 use App\Models\Armada;
 use App\Models\ArmadaType;
 use App\Models\ArmadaTicket;
+use App\Models\SecurityTicket;
+use App\Models\SecurityTicketMonitoring;
 use App\Models\Ticket;
 use App\Models\TicketVendor;
 use App\Models\ArmadaVendor;
@@ -40,6 +42,10 @@ class POController extends Controller
 
         $armadatickets = ArmadaTicket::whereIn('status',[4])
         ->whereIn('salespoint_id',$salespoint_ids)->get();
+        
+        $securitytickets = SecurityTicket::whereIn('status',[4])
+        ->whereIn('salespoint_id',$salespoint_ids)->get();
+
         $tickets = array();
         foreach($barangjasatickets as $ticket){
             $ticket->type = "Barang Jasa";
@@ -50,6 +56,11 @@ class POController extends Controller
             $ticket->type = $ticket->type()." Armada";
             array_push($tickets,$ticket);
         }
+
+        foreach($securitytickets as $ticket){
+            $ticket->type = $ticket->type()." Security";
+            array_push($tickets,$ticket);
+        }
         return view('Operational.po', compact('tickets'));
     }
 
@@ -57,7 +68,8 @@ class POController extends Controller
         try {
             $ticket = Ticket::where('code',$ticket_code)->first();
             $armadaticket = ArmadaTicket::where('code',$ticket_code)->first();
-            if($ticket ==  null && $armadaticket == null){
+            $securityticket = SecurityTicket::where('code',$ticket_code)->first();
+            if($ticket ==  null && $armadaticket == null && $securityticket == null){
                 throw new \Exception("Ticket tidak ditemukan");
             }
             if($ticket != null){
@@ -83,6 +95,15 @@ class POController extends Controller
                     return view('Operational.Armada.poitemselection',compact('armadaticket','armada_vendors','armada_types'));
                 }
             }
+            
+            if($securityticket != null){
+                if($securityticket->po->count() > 0){
+                    $authorization_list = Authorization::where('form_type',3)->get();
+                    return view('Operational.podetail',compact('securityticket','authorization_list'));
+                }else{
+                    return view('Operational.Security.poitemselection',compact('securityticket'));
+                }
+            }
         } catch (\Exception $ex) {
             return back()->with('error',$ex->getMessage());
         }
@@ -93,6 +114,7 @@ class POController extends Controller
             DB::beginTransaction();
             $ticket = Ticket::find($request->ticket_id);
             $armadaticket = ArmadaTicket::find($request->armada_ticket_id);
+            $securityticket = SecurityTicket::find($request->security_ticket_id);
             if($ticket != null){
                 // sudah di setup po sebelumnnya
                 if($ticket->po->count() > 0){
@@ -292,6 +314,63 @@ class POController extends Controller
                 $monitor->message               = 'Melakukan Setup PO';
                 $monitor->save();
             }
+            
+            if($securityticket != null){
+                // sudah di setup po sebelumnnya
+                if($securityticket->po->count() > 0){
+                    throw new \Exception('PO sudah di setup sebelumnya');
+                }
+                switch ($securityticket->type()) {
+                    case 'Pengadaan Baru':
+                        $securityticket->vendor_name = $request->new_vendor;
+                        $selected_vendor             = $request->new_vendor;
+                        break;
+                        
+                    case 'Perpanjangan':
+                        $securityticket->vendor_name = $request->old_vendor;
+                        $selected_vendor             = $request->old_vendor;
+                        break;
+                        
+                    case 'Replace':
+                        $securityticket->vendor_name = $request->new_vendor;
+                        $selected_vendor             = $request->new_vendor;
+                        break;
+                        
+                }
+                $securityticket->save();
+
+                $newPo                     = new Po;
+                $newPo->security_ticket_id = $securityticket->id;
+                $newPo->sender_name        = $selected_vendor;
+                $newPo->send_name          = $securityticket->salespoint->name;
+                $newPo->has_ppn            = true;
+                $newPo->ppn_percentage     = 10;
+                $newPo->save();
+
+                // sewa
+                if($request->sewa_value < 10000){
+                    throw new \Exception('Minimal biaya sewa Rp 10.000,-');
+                }
+                $notes = $request->sewa_notes;
+                $value = $request->sewa_value;
+
+                // biaya sewa
+                $newPoDetail = new PoDetail;
+                $newPoDetail->po_id            = $newPo->id;
+                $newPoDetail->item_name        = $request->sewa_name;
+                $newPoDetail->item_description = $notes;
+                $newPoDetail->uom              = 'AU';
+                $newPoDetail->qty              = $request->sewa_count;
+                $newPoDetail->item_price       = $value;
+                $newPoDetail->save();
+                
+                $monitor                        = new SecurityTicketMonitoring;
+                $monitor->security_ticket_id    = $securityticket->id;
+                $monitor->employee_id           = Auth::user()->id;
+                $monitor->employee_name         = Auth::user()->name;
+                $monitor->message               = 'Melakukan Setup PO';
+                $monitor->save();
+            }
 
             DB::commit();
             return back()->with('success', 'Berhasil melakukan setting PO. Silahkan melanjutkan penerbitan PO');
@@ -370,6 +449,14 @@ class POController extends Controller
                 $monitor->message        = 'Menerbitkan PO '.$po->no_po_sap;
                 $monitor->save();
             }
+            if($po->security_ticket_id != null){
+                $monitor = new SecurityTicketMonitoring;
+                $monitor->security_ticket_id      = $po->security_ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Menerbitkan PO '.$po->no_po_sap;
+                $monitor->save();
+            }
             DB::commit();
             return back()->with('success','Berhasil Menerbitkan PO');
         } catch (\Exception $ex) {
@@ -404,6 +491,10 @@ class POController extends Controller
                 $ticket = $po->armada_ticket;
                 $type = 'armada';
             }
+            if($po->security_ticket_id != null){
+                $ticket = $po->security_ticket;
+                $type = 'security';
+            }
             $salespointname = str_replace(' ','_',$ticket->salespoint->name);
             $ext = pathinfo($request->file('internal_signed_file')->getClientOriginalName(), PATHINFO_EXTENSION);
             $name = $po->no_po_sap."_INTERNAL_SIGNED_".$salespointname.'.'.$ext;
@@ -419,7 +510,7 @@ class POController extends Controller
             if($po->ticket_id != null){
                 $po_upload_request->vendor_pic   = $po->ticket_vendor->salesperson;
             }
-            if($po->armada_ticket_id != null){
+            if($po->armada_ticket_id != null || $po->security_ticket_id != null){
                 $po_upload_request->vendor_pic   = $po->sender_name;
             }
             $po_upload_request->save();
@@ -456,6 +547,14 @@ class POController extends Controller
                 $monitor->message               = 'Upload Internal Signed PO '.$po->no_po_sap;
                 $monitor->save();
             }
+            if($po->security_ticket_id != null){
+                $monitor = new SecurityTicketMonitoring;
+                $monitor->security_ticket_id      = $po->security_ticket->id;
+                $monitor->employee_id             = Auth::user()->id;
+                $monitor->employee_name           = Auth::user()->name;
+                $monitor->message                 = 'Upload Internal Signed PO '.$po->no_po_sap;
+                $monitor->save();
+            }
             DB::commit();
             if($po->status == 1){
                 return back()->with('success','Berhasil Upload File Intenal Signed untuk PO '.$po->no_po_sap.' File sudah dikirimkan ke email supplier ('.$mail.') untuk ditandatangan');
@@ -489,6 +588,9 @@ class POController extends Controller
             }
             if($po->armada_ticket_id != null){
                 $salespoint_id = $po->armada_ticket->salespoint_id;
+            }
+            if($po->security_ticket_id != null){
+                $salespoint_id = $po->security_ticket->salespoint_id;
             }
             $access = EmployeeLocationAccess::where('salespoint_id',$salespoint_id)->get();
             $employee_salespoint_ids = $access->pluck('employee_id')->unique();
@@ -526,6 +628,19 @@ class POController extends Controller
                 $monitor->employee_id    = Auth::user()->id;
                 $monitor->employee_name  = Auth::user()->name;
                 $monitor->message        = 'Konfirmasi tanda tangan supplier PO '.$po->no_po_sap;
+                $monitor->save();
+            }
+            if ($po->security_ticket_id != null) {
+                $security_ticket              = $po->security_ticket;
+                $security_ticket->po_number   = $po->no_po_sap;
+                $security_ticket->status      = 5;
+                $security_ticket->save();
+                
+                $monitor                          = new SecurityTicketMonitoring;
+                $monitor->security_ticket_id      = $po->security_ticket->id;
+                $monitor->employee_id             = Auth::user()->id;
+                $monitor->employee_name           = Auth::user()->name;
+                $monitor->message                 = 'Konfirmasi tanda tangan supplier PO '.$po->no_po_sap;
                 $monitor->save();
             }
 
@@ -570,12 +685,31 @@ class POController extends Controller
             );
             Mail::to($mail)->send(new POMail($data, 'posignedreject'));
             
-            $monitor = new TicketMonitoring;
-            $monitor->ticket_id      = $po->ticket->id;
-            $monitor->employee_id    = Auth::user()->id;
-            $monitor->employee_name  = Auth::user()->name;
-            $monitor->message        = 'Menolak tanda tangan Supplier PO '.$po->no_po_sap;
-            $monitor->save();
+            if ($po->ticket_id != null) {
+                $monitor = new TicketMonitoring;
+                $monitor->ticket_id      = $po->ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Menolak tanda tangan Supplier PO '.$po->no_po_sap;
+                $monitor->save();
+            }
+            if ($po->armada_ticket_id != null) {
+                $monitor                 = new ArmadaTicketMonitoring;
+                $monitor->ticket_id      = $po->armada_ticket->id;
+                $monitor->employee_id    = Auth::user()->id;
+                $monitor->employee_name  = Auth::user()->name;
+                $monitor->message        = 'Menolak tanda tangan Supplier PO '.$po->no_po_sap;
+                $monitor->save();
+            }
+            if ($po->security_ticket_id != null) {
+                $monitor                    = new SecurityTicketMonitoring;
+                $monitor->ticket_id         = $po->security_ticket->id;
+                $monitor->employee_id       = Auth::user()->id;
+                $monitor->employee_name     = Auth::user()->name;
+                $monitor->message           = 'Menolak tanda tangan Supplier PO '.$po->no_po_sap;
+                $monitor->save();
+            }
+    
             DB::commit();
             return back()->with('success','Berhasil melakukan penolakan tanda tangan PO '.$po->no_po_sap.' link baru telah dikirim ke email '.$mail);
         } catch (\Exception $ex) {

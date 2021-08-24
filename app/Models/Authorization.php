@@ -43,6 +43,9 @@ class Authorization extends Model
             case 7:
                 return 'Form Pengadaan Armada';
                 break;
+            case 8:
+                return 'Form Pengadaan Security';
+                break;
             default:
                 return 'form_type_undefined';
                 break;

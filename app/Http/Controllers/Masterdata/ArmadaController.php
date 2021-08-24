@@ -158,4 +158,18 @@ class ArmadaController extends Controller
             'data' => $armada_authorizations,
         ]);
     }
+
+    public function getSecurityAuthorizationbySalespoint($salespoint_id){
+        $armada_authorizations = Authorization::where('salespoint_id',$salespoint_id)->where('form_type',8)->get();
+
+        foreach($armada_authorizations as $authorizations){
+            $authorizations->list = $authorizations->authorization_detail;
+            foreach($authorizations->list as $item){
+                $item->employee_name = $item->employee->name;
+            }
+        }
+        return response()->json([
+            'data' => $armada_authorizations,
+        ]);
+    }
 }

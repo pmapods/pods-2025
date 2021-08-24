@@ -19,6 +19,7 @@ class PoMigration extends Migration
             $table->integer('ticket_id')->nullable();
             $table->integer('ticket_vendor_id')->nullable();
             $table->integer('armada_ticket_id')->nullable();
+            $table->integer('security_ticket_id')->nullable();
 
             $table->string('sender_name')->default('unset');
             $table->string('sender_address')->default('unset');
