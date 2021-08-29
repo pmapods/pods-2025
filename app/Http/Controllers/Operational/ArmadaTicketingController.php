@@ -11,6 +11,7 @@ use DB;
 use App\Models\Ticket;
 use App\Models\Armada;
 use App\Models\ArmadaTicket;
+use App\Models\SecurityTicket;
 use App\Models\ArmadaTicketMonitoring;
 use App\Models\FacilityForm;
 use App\Models\FacilityFormAuthorization;

@@ -13,6 +13,9 @@ use App\Models\SecurityTicketAuthorization;
 use App\Models\EmployeePosition;
 use App\Models\EmployeeLocationAccess;
 use App\Models\SalesPoint;
+use App\Models\EvaluasiForm;
+use App\Models\EvaluasiFormAuthorization;
+use App\Models\Po;
 
 use DB;
 use Carbon\Carbon;
@@ -45,8 +48,6 @@ class SecurityTicketingController extends Controller
             ->withTrashed()
             ->count();
 
-            
-
             $total_count = $armada_ticket_count + $barang_ticket_count + $security_ticket_count;
             do {
                 $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($total_count+1)).($total_count+1);
@@ -61,6 +62,9 @@ class SecurityTicketingController extends Controller
             $newTicket->code                         = $code;
             $newTicket->salespoint_id                = $request->salespoint_id;
             $newTicket->ticketing_type               = $request->ticketing_type;
+            if(in_array($request->ticketing_type,[1,2,3])){
+                $newTicket->po_reference_number      = $request->po_number;
+            }
             $newTicket->requirement_date             = $request->requirement_date;
             $newTicket->created_by                   = Auth::user()->id;
             $newTicket->save();
@@ -94,14 +98,14 @@ class SecurityTicketingController extends Controller
         $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
         $available_salespoints = $available_salespoints->groupBy('region');
 
-        // $formperpanjangan_authorizations = Authorization::where('salespoint_id',$armadaticket->salespoint_id)->where('form_type',6)->get();
-        // $po = Po::where('no_po_sap',$armadaticket->po_reference_number)->first();
+        $evaluasiform_authorizations = Authorization::where('salespoint_id',$securityticket->salespoint_id)->where('form_type',9)->get();
+
         $salespoints = SalesPoint::all();
         try { 
             if(!$securityticket){
                 throw new \Exception('Ticket security dengan kode '.$code.'tidak ditemukan');
             }
-            return view('Operational.Security.securityticketdetail',compact('securityticket','employee_positions','salespoints'));
+            return view('Operational.Security.securityticketdetail',compact('securityticket','employee_positions','salespoints','evaluasiform_authorizations'));
         } catch (\Exception $ex) {
             return redirect('/ticketing?menu=Security')->with('error','Gagal membukan detail ticket security '.$ex->getMessage());
         }
@@ -151,7 +155,7 @@ class SecurityTicketingController extends Controller
                         $message = "Silahkan melanjutkan ke Menu PO.";
                         break;
                     case 'End Sewa':
-                        $armadaticket->status = 5;
+                        $securityticket->status = 5;
                         $message = "Silahkan melanjutkan upload surat Pemutusan kontrak.";
                         break;
                 }
@@ -230,6 +234,146 @@ class SecurityTicketingController extends Controller
             DB::rollback();
             dd($ex);
             return back()->with('error','Gagal melakukan upload berkas LPB '.$ex->getMessage());
+        }
+    }
+    
+    public function uploadSecurityEndKontrak(Request $request){
+        try{
+            DB::beginTransaction();
+            $securityticket = SecurityTicket::findOrFail($request->security_ticket_id);
+
+            $salespointname = str_replace(' ','_',$securityticket->salespoint->name);
+            $ext = pathinfo($request->file('endkontrak_file')->getClientOriginalName(), PATHINFO_EXTENSION);
+            $name = "EndSewa_".$salespointname.'.'.$ext;
+            $path = "/attachments/ticketing/security/".$securityticket->code.'/'.$name;
+            $file = pathinfo($path);
+            $path = $request->file('endkontrak_file')->storeAs($file['dirname'],$file['basename'],'public');
+            $securityticket->endkontrak_path = $path;
+
+            $old_po = $securityticket->po_reference;
+            $old_po->status = 4;
+            $old_po->save();
+
+            $securityticket->finished_date = date('Y-m-d');
+            $securityticket->status = 6;
+            $securityticket->save();
+
+            DB::commit();
+            return back()->with('success','Berhasil melakukan upload berkas End Sewa Security. Pengadaan Selesai.');
+        }catch(\Exception $ex){
+            DB::rollback();
+            dd($ex);
+            return back()->with('error','Gagal melakukan upload berkas End Sewa Security '.$ex->getMessage());
+        }
+    }
+
+    public function getActivePO(Request $request){
+        $pos = Po::join('security_ticket','Po.security_ticket_id','=','security_ticket.id')
+                 ->where('Po.status',3)
+                 ->where('security_ticket.salespoint_id',$request->salespoint_id)
+                 ->select('Po.no_po_sap AS po_number','security_ticket.code AS code')
+                 ->get();
+        return response()->json([
+            "data" => $pos,
+        ]);
+    }
+
+    public function addEvaluasiForm(Request $request){
+        try{
+            DB::beginTransaction();
+            $securityticket = SecurityTicket::findOrFail($request->security_ticket_id);
+
+            $form                       = new EvaluasiForm;
+            $form->security_ticket_id   = $securityticket->id;
+            $form->salespoint_id        = $securityticket->salespoint_id;
+            $form->vendor_name          = $securityticket->po_reference->security_ticket->vendor_name;
+            $form->period               = date('Y-m-d');
+            $form->salespoint_name      = $securityticket->po_reference->security_ticket->salespoint->name;
+            $form->personil             = json_encode($request->personil);
+            $form->lembaga              = json_encode($request->lembaga);
+            $form->kesimpulan           = $request->kesimpulan;
+            $form->created_by           = Auth::user()->id;
+            $form->save();
+            
+            $authorization = Authorization::find($request->authorization_id);
+            foreach($authorization->authorization_detail as $detail){
+                $newAuthorization                     = new EvaluasiFormAuthorization;
+                $newAuthorization->evaluasi_form_id   = $form->id;
+                $newAuthorization->employee_id        = $detail->employee_id;
+                $newAuthorization->employee_name      = $detail->employee->name;
+                $newAuthorization->as                 = $detail->sign_as;
+                $newAuthorization->employee_position  = $detail->employee_position->name;
+                $newAuthorization->level              = $detail->level;
+                $newAuthorization->save();
+            }
+            DB::commit();
+            return back()->with('success', 'Berhasil membuat form evaluasi. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
+        }catch(\Exception $ex){
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal membuat form evaluasi');
+        }
+    }
+
+    public function approveEvaluasiForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $evaluasi_form = EvaluasiForm::findOrFail($request->evaluasi_form_id);
+            if($evaluasi_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            $authorization = $evaluasi_form->current_authorization();
+            $authorization->status = 1;
+            $authorization->save();
+
+            // recall the new one
+            $authorization = $evaluasi_form->current_authorization();
+            if($authorization == null){
+                $evaluasi_form->status = 1;
+                $evaluasi_form->save();
+            }
+            DB::commit();
+            if($authorization == null){
+                return back()->with('success','Seluruh Otorisasi Form evaluasi telah selesai');
+            }else{
+                return back()->with('success','Berhasil melakukan otorisasi form evaluasi, Otorisasi selanjutnya oleh '.$authorization->employee_name);
+            }
+        } catch (Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form evaluasi');
+        }
+    }
+
+    public function rejectEvaluasiForm(Request $request){
+        try {
+            DB::beginTransaction();
+            $evaluasi_form = EvaluasiForm::findOrFail($request->evaluasi_form_id);
+            if($evaluasi_form->current_authorization()->employee_id != Auth::user()->id){
+                return back()->with('error','Login tidak sesuai dengan otorisasi');
+            }
+            
+            $authorization = $evaluasi_form->current_authorization();
+            $authorization->status = -1;
+            $authorization->save();
+
+            $evaluasi_form->status              = -1;
+            $evaluasi_form->terminated_by       = Auth::user()->id;
+            $evaluasi_form->termination_reason  = $request->reason;
+            $evaluasi_form->save();
+            $evaluasi_form->delete();
+            DB::commit();
+
+            $authorization = $evaluasi_form->current_authorization();
+            if($authorization == null){
+                return back()->with('success','Formulir evaluasi berhasil dibatalkan. Silahkan membuat formulir evaluasi baru');
+            }else{
+                return back()->with('success','Gagal membatalkan formulir evaluasi');
+            }
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error', 'Gagal melakukan otorisasi form evaluasi');
         }
     }
 }

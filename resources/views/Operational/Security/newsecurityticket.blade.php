@@ -69,7 +69,7 @@
             <div class="col">
                 <div class="form-group">
                     <label class="required_field">Pilihan Area / SalesPoint</label>
-                    <select class="form-control select2 salespoint_select2" name="salespoint_id" required>
+                    <select class="form-control select2 salespoint_select2" name="salespoint_id" id="salespoint_select" required>
                         <option value="" data-isjawasumatra="-1">-- Pilih SalesPoint --</option>
                         @foreach ($available_salespoints as $region)
                         <optgroup label="{{$region->first()->region_name()}}">
@@ -150,8 +150,10 @@ $(document).ready(function () {
     $('#ticketing_type').change(function(){
         $('#po_select').val("");
         $('#po_select').trigger('change');
+        $('#po_field label').removeClass('required_field');
         $('#po_select').find('option[value!=""]').remove();
         $('#po_select').prop('disabled',true);
+        $('#po_select').prop('required',false);
         switch ($(this).val()) {
             case '0':
                 // Pengadaan
@@ -159,17 +161,23 @@ $(document).ready(function () {
                 
             case '1':
                 // Perpanjangan
-                $('#po_select').prop('disabled',false);
+                $('#po_select').prop('required',true);
+                $('#po_field label').addClass('required_field');
+                refreshPO();
                 break;
                 
             case '2':
                 // Replace
-                $('#po_select').prop('disabled',false);
+                $('#po_select').prop('required',true);
+                $('#po_field label').addClass('required_field');
+                refreshPO();
                 break;
                 
             case '3':
                 // End Sewa
-                $('#po_select').prop('disabled',false);
+                $('#po_select').prop('required',true);
+                $('#po_field label').addClass('required_field');
+                refreshPO();
                 break;
         
             default:
@@ -190,7 +198,6 @@ $(document).ready(function () {
         }
     });
 });
-
 
 function loadAuthorizationbySalespoint(salespoint_id){
     $('#authorization').find('option[value!=""]').remove();
@@ -225,6 +232,33 @@ function loadAuthorizationbySalespoint(salespoint_id){
             $('#authorization').val("");
             $('#authorization').trigger('change');
             $('#authorization').prop('disabled', false);
+        }
+    });
+}
+
+function refreshPO(){
+    let salespoint_id = $('#salespoint_select').val();
+    $('#po_select').find('option[value!=""]').remove();
+    $.ajax({
+        type: "get",
+        url: '/getActivePO/security?salespoint_id='+salespoint_id,
+        success: function (response) {
+            let data = response.data;
+            data.forEach(item => {
+                let option_text = '<option value="'+item.po_number+'">'+item.po_number+' ('+item.code+')</option>';
+                $('#po_select').append(option_text);
+            });
+            $('#po_select').val("");
+            $('#po_select').trigger('change');
+            $('#po_select').prop('disabled', false);
+        },
+        error: function (response) {
+            $('#po_select').prop('disabled',true);
+            alert('load data failed. Please refresh browser or contact admin');
+        },
+        complete: function () {
+            $('#po_select').prop('disabled',false);
+            $('#po_select').trigger('change');
         }
     });
 }

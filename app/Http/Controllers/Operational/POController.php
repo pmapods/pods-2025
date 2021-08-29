@@ -97,7 +97,7 @@ class POController extends Controller
             }
             
             if($securityticket != null){
-                if($securityticket->po->count() > 0){
+                if($securityticket->po != null){
                     $authorization_list = Authorization::where('form_type',3)->get();
                     return view('Operational.podetail',compact('securityticket','authorization_list'));
                 }else{
@@ -317,7 +317,7 @@ class POController extends Controller
             
             if($securityticket != null){
                 // sudah di setup po sebelumnnya
-                if($securityticket->po->count() > 0){
+                if($securityticket->po != null){
                     throw new \Exception('PO sudah di setup sebelumnya');
                 }
                 switch ($securityticket->type()) {
@@ -829,11 +829,13 @@ class POController extends Controller
             return back()->with('error',$ex->getMessage());
         }
     }
-    function replace_extension($filename, $new_extension) {
+
+    public function replace_extension($filename, $new_extension) {
         $info = pathinfo($filename);
         return $info['dirname'].'/'.$info['filename'] . '.' . $new_extension;
     }
-    function getActivePO(Request $request){
+    
+    public function getActivePO(Request $request){
         $pos = Po::join('armada_ticket','Po.armada_ticket_id','=','armada_ticket.id')
                  ->join('armada','armada_ticket.armada_id','=','armada.id')
                  ->where('Po.status',3)

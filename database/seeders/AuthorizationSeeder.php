@@ -176,5 +176,23 @@ class AuthorizationSeeder extends Seeder
             $detail->level                  = $key+1;
             $detail->save();
         }
+
+        // formulir mutasi
+        $newAuthorization                 = new Authorization;
+        $newAuthorization->salespoint_id  = 1;
+        $newAuthorization->form_type      = 9;
+        $newAuthorization->save();
+        $employee_ids = [2,3,4,5];
+        $position_ids = [2,3,4,5];
+        $as = ['Disiapkan Oleh', 'Diperiksa Oleh', 'Diperiksa Oleh', 'Diperiksa Oleh','Disetujui Oleh'];
+        foreach ($employee_ids as $key=>$id){
+            $detail                         = new AuthorizationDetail;
+            $detail->authorization_id       = $newAuthorization->id;
+            $detail->employee_id            = $id;
+            $detail->employee_position_id   = $position_ids[$key];
+            $detail->sign_as                = $as[$key];
+            $detail->level                  = $key+1;
+            $detail->save();
+        }
     }
 }

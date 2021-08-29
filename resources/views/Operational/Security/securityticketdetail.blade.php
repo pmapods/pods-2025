@@ -82,7 +82,7 @@
             @if ($securityticket->po_reference_number)
                 <div class="form-group">
                     <label>Pilihan PO Sebelumnya</label>
-                    <input type="text" class="form-control" value="{{ $securityticket->po_reference_number }}">
+                    <input type="text" class="form-control" value="{{ $securityticket->po_reference_number }}" readonly>
                 </div>
             @endif
         </div>
@@ -113,9 +113,11 @@
         @endphp
         @if ($securityevaluationform)
             @php
-                // TODO
+                if(($securityticket->evaluasi_form->status ?? -1) != 1){
+                    $isRequirementFinished = false;
+                }
             @endphp
-            <div class="col-8">
+            <div class="col-12">
                 @include('Operational.Security.formevaluasi')
             </div>
         @endif
@@ -127,7 +129,7 @@
                         <input type="hidden" name="security_ticket_id" value="{{ $securityticket->id }}">
                         <h5>Upload Berkas Penerimaan Security</h5>
                         <div>
-                            <b>PO terkait : </b>{{ $securityticket->po->no_po_sap }} <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $securityticket->po->external_signed_filepath }}')">Tampilkan PO</a>
+                            <b>PO {{ $securityticket->po->no_po_sap }} </b> <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $securityticket->po->external_signed_filepath }}')">Tampilkan PO</a>
                         </div>
                         <div class="form-group">
                             <label class="required_field">Pilih File LPB lengkap dengan ttd</label>
@@ -143,8 +145,13 @@
                 
             @if ($securityticket->status == 6)  
                 <div class="col-6 d-flex flex-column">
-                    <h5>Dokumen penerimaan LPB</h5>
-                    <a href="#" class="font-weight-bold" onclick="window.open('/storage/{{ $securityticket->lpb_path }}')">Tampilkan</a>
+                    <h5>Dokumen penerimaan</h5>
+                    <div>
+                        <b>Dokumen penerimaan LPB </b> <a href="#" class="font-weight-bold" onclick="window.open('/storage/{{ $securityticket->lpb_path }}')">Tampilkan</a>
+                    </div>
+                    <div>
+                        <b>PO {{ $securityticket->po->no_po_sap }}</b> <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $securityticket->po->external_signed_filepath }}')">Tampilkan</a>
+                    </div>
                 </div>
             @endif
         @endif
@@ -155,17 +162,17 @@
                     <form action="/uploadsecurityendkontrak" method="post" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="security_ticket_id" value="{{ $securityticket->id }}">
-                        <h5>Upload Berkas End Kontrak</h5> Security</h5>
+                        <h5>Surat Pemutusan Kerjasama</h5>
                         <div>
-                            <b>PO terkait : </b>{{ $securityticket->po->no_po_sap }} <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $securityticket->po->external_signed_filepath }}')">Tampilkan PO</a>
+                            <b>PO sebelumnya {{ $securityticket->po_reference->no_po_sap }} </b><a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $securityticket->po_reference->external_signed_filepath }}')">Tampilkan PO</a>
                         </div>
                         <div class="form-group">
                             <label class="required_field">Pilih File End Kontrak lengkap dengan ttd</label>
-                            <input type="file" class="form-control-file validatefilesize" name="lpb_file" accept="image/*,application/pdf" required>
+                            <input type="file" class="form-control-file validatefilesize" name="endkontrak_file" accept="image/*,application/pdf" required>
                             <small class="text-danger">*jpg, jpeg, pdf (MAX 5MB)</small>
                         </div>
                         <div>
-                            <button type="submit" class="btn btn-primary">Upload Dokumen End Kontrak</button>
+                            <button type="submit" class="btn btn-primary">Upload Surat Pemutusan Kerjasama</button>
                         </div>
                     </form>
                 </div>
@@ -173,8 +180,10 @@
                 
             @if ($securityticket->status == 6)  
                 <div class="col-6 d-flex flex-column">
-                    <h5>Dokumen End Kontrak</h5>
-                    <a href="#" class="font-weight-bold" onclick="window.open('/storage/{{ $securityticket->endkontrak_path }}')">Tampilkan</a>
+                    <h5>Dokumen Upload</h5>
+                    <div>
+                        <b>Surat Pemutusan Kerjasama </b> <a href="#" class="font-weight-bold" onclick="window.open('/storage/{{ $securityticket->endkontrak_path }}')">Tampilkan</a>
+                    </div>
                 </div>
             @endif
         @endif
@@ -230,41 +239,43 @@
 
 @endsection
 @section('local-js')
-<script>
-$(document).ready(function () {
-});
+    <script>
+        $(document).ready(function () {
+        });
 
-function startAuthorization(security_ticket_id,updated_at){
-    $('#submitform').prop('action', '/startsecurityauthorization');
-    $('#submitform').prop('method', 'POST');
-    $('#submitform').find('div').append('<input type="hidden" name="security_ticket_id" value="'+security_ticket_id+'">');
-    $('#submitform').find('div').append('<input type="hidden" name="updated_at" value="'+updated_at+'">');
-    $('#submitform').submit();
-}
-
-function approveAuthorization(security_ticket_id){
-    $('#submitform').prop('action', '/approvesecurityauthorization');
-    $('#submitform').find('div').append('<input type="hidden" name="security_ticket_id" value="'+security_ticket_id+'">');
-    $('#submitform').prop('method', 'POST');
-    $('#submitform').submit();
-}
-
-function terminateTicketing(security_ticket_id,updated_at){
-    var reason = prompt("Pengadaan yang dibatalkan tidak dapat diajukan kembali. Masukkan alasan pembatalan");
-    $('#submitform').find('div').empty();
-    if (reason != null) {
-        if(reason.trim() == ''){
-            alert("Alasan Harus diisi");
-            return
+        function startAuthorization(security_ticket_id,updated_at){
+            $('#submitform').prop('action', '/startsecurityauthorization');
+            $('#submitform').prop('method', 'POST');
+            $('#submitform').find('div').append('<input type="hidden" name="security_ticket_id" value="'+security_ticket_id+'">');
+            $('#submitform').find('div').append('<input type="hidden" name="updated_at" value="'+updated_at+'">');
+            $('#submitform').submit();
         }
-        $('#submitform').prop('action', '/terminatesecurityticketing');
-        $('#submitform').prop('method', 'POST');
-        $('#submitform').find('div').append('<input type="hidden" name="security_ticket_id" value="'+security_ticket_id+'">');
-        $('#submitform').find('div').append('<input type="hidden" name="updated_at" value="'+updated_at+'">');
-        $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
-        $('#submitform').submit();
-    }
-}
 
-</script>
+        function approveAuthorization(security_ticket_id){
+            $('#submitform').prop('action', '/approvesecurityauthorization');
+            $('#submitform').find('div').append('<input type="hidden" name="security_ticket_id" value="'+security_ticket_id+'">');
+            $('#submitform').prop('method', 'POST');
+            $('#submitform').submit();
+        }
+
+        function terminateTicketing(security_ticket_id,updated_at){
+            var reason = prompt("Pengadaan yang dibatalkan tidak dapat diajukan kembali. Masukkan alasan pembatalan");
+            $('#submitform').find('div').empty();
+            if (reason != null) {
+                if(reason.trim() == ''){
+                    alert("Alasan Harus diisi");
+                    return
+                }
+                $('#submitform').prop('action', '/terminatesecurityticketing');
+                $('#submitform').prop('method', 'POST');
+                $('#submitform').find('div').append('<input type="hidden" name="security_ticket_id" value="'+security_ticket_id+'">');
+                $('#submitform').find('div').append('<input type="hidden" name="updated_at" value="'+updated_at+'">');
+                $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
+                $('#submitform').submit();
+            }
+        }
+    </script>
+    
+    @yield('evaluasi-js')
 @endsection
+

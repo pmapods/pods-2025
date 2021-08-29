@@ -71,6 +71,11 @@ class AuthorizationController extends Controller
                     $detail_counts = [3];
                     $errMessage = "Form Pengadaan Security membutuhkan 3 pilihan otorisasi";
                     break;
+                case '9':
+                    // 9 form evaluasi
+                    $detail_counts = [4];
+                    $errMessage = "Form Evaluasi membutuhkan 4 pilihan otorisasi";
+                    break;
             }
             if(!in_array(count($request->authorization),$detail_counts)){
                 return back()->with('error',$errMessage);

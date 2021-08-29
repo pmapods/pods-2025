@@ -33,7 +33,7 @@ class EmployeeSeeder extends Seeder
         }
 
         // AREA EMPLOYEE
-        $area_employees = ['Kevin','Julian','Hafid Fauzi'];
+        $area_employees = ['Kevin','Julian','Freddy'];
         $usernames = ['area1','area2','area3'];
         foreach ($area_employees as $key => $area_employee){
             $count_employee = Employee::withTrashed()->count() + 1;

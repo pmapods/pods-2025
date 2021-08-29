@@ -46,6 +46,9 @@ class Authorization extends Model
             case 8:
                 return 'Form Pengadaan Security';
                 break;
+            case 9:
+                return 'Form Evaluasi';
+                break;
             default:
                 return 'form_type_undefined';
                 break;

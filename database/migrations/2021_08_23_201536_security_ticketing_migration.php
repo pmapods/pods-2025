@@ -68,6 +68,43 @@ class SecurityTicketingMigration extends Migration
             $table->foreign('employee_id')->references('id')->on('employee');
             $table->timestamps();
         });
+
+        Schema::create('evaluasi_form', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('security_ticket_id')->unsigned();
+            $table->integer('salespoint_id')->nullable();
+            $table->string('vendor_name');
+            $table->date('period');
+            $table->string('salespoint_name');
+            $table->json('personil');
+            $table->json('lembaga');
+            $table->tinyInteger('kesimpulan');
+            $table->integer('created_by')->nullable();
+            $table->integer('terminated_by')->nullable();
+            $table->string('termination_reason')->nullable();
+            $table->tinyInteger('status')->default(0);
+            $table->foreign('security_ticket_id')->references('id')->on('security_ticket');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('evaluasi_form_authorization', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('evaluasi_form_id')->unsigned();
+            $table->integer('employee_id')->unsigned();
+            $table->string('employee_name');
+            $table->string('as');
+            $table->string('employee_position');
+            $table->tinyInteger('level');
+            $table->tinyInteger('status')->default(0);
+            // 0 pending
+            // 1 approved
+            // -1 reject
+            $table->foreign('evaluasi_form_id')->references('id')->on('evaluasi_form');
+            $table->foreign('employee_id')->references('id')->on('employee');
+            $table->softDeletes();
+            $table->timestamps();
+        });
     }
 
     /**

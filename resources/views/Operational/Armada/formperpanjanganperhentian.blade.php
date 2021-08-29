@@ -427,16 +427,6 @@
 <script>
     let formperpanjangan = $('#formperpanjangan');
     $(document).ready(function () {
-        // formperpanjangan.find('.vendor').change(function(){
-        //     formperpanjangan.find('.localvendor').val('');
-        //     if($(this).val() == 'lokal'){
-        //         formperpanjangan.find('.localvendor').prop('disabled',false);
-        //         formperpanjangan.find('.localvendor').prop('required',true);
-        //     }else{
-        //         formperpanjangan.find('.localvendor').prop('disabled',true);
-        //         formperpanjangan.find('.localvendor').prop('required',false);
-        //     }
-        // });
 
         formperpanjangan.find('.authorization').change(function(){
             let list = $(this).find('option:selected').data('list');

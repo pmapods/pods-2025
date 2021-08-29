@@ -190,6 +190,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </ul>
             </li>
             @endif
+
+            
+            {{-- BUDGET --}}
+            <li class="nav-item has-treeview menu-close">
+              <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-calculator"></i>
+                  <p>
+                      Budget
+                      <i class="right fas fa-angle-left"></i>
+                  </p>
+              </a>
+              <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                      <a href="/inventorybudget" class="nav-link">
+                          <i class="fad fa-inventory nav-icon"></i>
+                          <p>Inventory</p>
+                      </a>
+                  </li>
+              </ul>
+            </li>
+
             {{-- OPERATIONAL --}}
             <li class="nav-item has-treeview menu-close">
               <a href="#" class="nav-link">

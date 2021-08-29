@@ -47,13 +47,13 @@
                         case 'Perpanjangan':
                             $edit_vendor = false;
                             $show_old_vendor = true;
-                            $sewa_notes .= $securityticket->type().' untuk PO'.$securityticket->po_reference."\r\n";
+                            $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
                             break;
 
                         case 'Replace':
                             $edit_vendor = true;
                             $show_old_vendor = true;
-                            $sewa_notes .= $securityticket->type().' untuk PO'.$securityticket->po_reference."\r\n";
+                            $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
                             break;
 
                         case 'End Kontrak':
@@ -65,7 +65,7 @@
                         <div class="form-group">
                           <label>Vendor Lama</label>
                           <input type="text" class="form-control" 
-                          value="{{ $securityticket->po_reference->no_po_sap }}"
+                          value="{{ $securityticket->po_reference->security_ticket->vendor_name }}"
                           name="old_vendor" readonly>
                         </div>
                     </div>
@@ -83,7 +83,7 @@
             <div class="col-3 d-flex flex-column align-items-end justify-content-center">
                 @if (in_array($securityticket->type(),['Perpanjangan','Replace']))
                     <a href="modalInfo" class="font-weight-bold text-primary" data-toggle="modal" data-target="#modalInfo">
-                        Tampilkan Form {{ $securityticket->type() }}
+                        Tampilkan Form Evaluasi
                     </a>
                 @endif
                 @if ($securityticket->po_reference != null)
@@ -136,7 +136,7 @@
 </div>
 
 <div class="modal fade" id="modalInfo" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-body">
                 @switch($securityticket->type())

@@ -64,7 +64,7 @@ class SecurityTicket extends Model
                 return 'Menunggu Upload Berkas dari Area';
 
             case '6':
-                return 'Pengadaan Armada Selesai';
+                return 'Pengadaan Security Selesai';
                 break;
 
             case '-1':
@@ -97,11 +97,19 @@ class SecurityTicket extends Model
         }
     }
 
+    public function po_reference(){
+        return $this->belongsTo(Po::class, 'po_reference_number','no_po_sap');
+    }
+
     public function created_by_employee(){
         return $this->belongsTo(Employee::class,'created_by','id')->withTrashed();
     }
 
     public function terminated_by_employee(){
         return $this->belongsTo(Employee::class,'terminated_by','id')->withTrashed();
+    }
+
+    public function evaluasi_form(){
+        return $this->hasOne(EvaluasiForm::class);
     }
 }

@@ -100,9 +100,10 @@
                                 <option value="0">Pengadaan Barang Jasa</option>
                                 <option value="7">Pengadaan Armada</option>
                                 <option value="8">Pengadaan Security</option>
-                                <option value="1">Bidding</option>
-                                <option value="4">Fasilitas</option>
-                                <option value="5">Mutasi</option>
+                                <option value="1">Form Bidding</option>
+                                <option value="4">Form Fasilitas</option>
+                                <option value="5">Form Mutasi</option>
+                                <option value="9">Form Evaluasi</option>
                                 <option value="6">Perpanjangan / Perhentian</option>
                                 <option value="2">PR</option>
                                 <option value="3">PO</option>
@@ -236,9 +237,10 @@
                                 <option value="0">Pengadaan Barang Jasa</option>
                                 <option value="7">Pengadaan Armada</option>
                                 <option value="8">Pengadaan Security</option>
-                                <option value="1">Bidding</option>
-                                <option value="4">Fasilitas</option>
-                                <option value="5">Mutasi</option>
+                                <option value="1">Form Bidding</option>
+                                <option value="4">Form Fasilitas</option>
+                                <option value="5">Form Mutasi</option>
+                                <option value="9">Form Evaluasi</option>
                                 <option value="6">Perpanjangan / Perhentian</option>
                                 <option value="2">PR</option>
                                 <option value="3">PO</option>
@@ -347,6 +349,7 @@
     let formperpanjangan = ['Yang Mengajukan','Diketahui Oleh','Disetujui'];
     let formpengadaanarmada = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     let formpengadaansecurity = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
+    let formevaluasi = ['Disiapkan Oleh', 'Diperiksa Oleh', 'Disetujui Oleh'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -428,6 +431,9 @@
                     break;
                 case "8":
                     value_array = formpengadaansecurity;
+                    break;
+                case "9":
+                    value_array = formevaluasi;
                     break;
                 default:
                     return;

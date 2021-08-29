@@ -17,6 +17,9 @@ use App\Http\Controllers\Masterdata\BudgetPricingController;
 use App\Http\Controllers\Masterdata\FileCompletementController;
 use App\Http\Controllers\Masterdata\ArmadaController;
 
+// Budget
+use App\Http\Controllers\Budget\BudgetUploadController;
+
 // Operational
 use App\Http\Controllers\Operational\TicketingController;
 use App\Http\Controllers\Operational\ArmadaTicketingController;
@@ -169,11 +172,20 @@ Route::middleware(['auth'])->group(function () {
         // Security
         Route::post('/createsecurityticket',[SecurityTicketingController::class, 'createSecurityTicket']);
         Route::get('/securityticketing/{code}',[SecurityTicketingController::class, 'securityTicketDetail']);
+        Route::get('/getActivePO/security',[SecurityTicketingController::class, 'getActivePO']);
         Route::post('/terminatesecurityticketing',[SecurityTicketingController::class, 'terminateSecurityTicketing']);
         Route::post('/startsecurityauthorization',[SecurityTicketingController::class, 'startSecurityAuthorization']);
+        Route::post('/addevaluasiform',[SecurityTicketingController::class, 'addEvaluasiForm']);
+        Route::post('/approveevaluasiform',[SecurityTicketingController::class, 'approveEvaluasiForm']);
+        Route::post('/rejectevaluasiform',[SecurityTicketingController::class, 'rejectEvaluasiForm']);
         Route::post('/approvesecurityauthorization',[SecurityTicketingController::class, 'approveSecurityAuthorization']);
         Route::post('/uploadsecuritylpb',[SecurityTicketingController::class, 'uploadSecurityLPB']);
+        Route::post('/uploadsecurityendkontrak',[SecurityTicketingController::class, 'uploadSecurityEndKontrak']);
     });
+
+    // BUDGET
+    Route::get('/inventorybudget',[BudgetUploadController::class, 'inventoryBudgetView']);
+    Route::get('/addinventorybudget',[BudgetUploadController::class, 'addInventoryBudgetView']);
 
     // Bidding
     Route::middleware(['menu_access:operational:2'])->group(function () {
