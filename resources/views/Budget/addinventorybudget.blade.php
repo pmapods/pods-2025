@@ -23,10 +23,10 @@
 </div>
 <div class="content-body px-4">
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-3 mr-3">
             <div class="form-group">
                 <label class="required_field">Pilihan Area / SalesPoint</label>
-                <select class="form-control select2" name="salespoint_id">
+                <select class="form-control select2" name="salespoint_id" id="salespoint_select">
                     <option value="" data-isjawasumatra="-1">-- Pilih SalesPoint --</option>
                     @foreach ($available_salespoints as $region)
                     <optgroup label="{{$region->first()->region_name()}}">
@@ -40,12 +40,18 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
+        <div class="col-6 d-flex align-items-center">
+            <div class="form-group mr-2">
               <label class="required_field">Pilih File Template</label>
               <input type="file" class="form-control-file" 
                 placeholder="Pilih File Template Inventory" id="file_template"
                 accept=".xls, .xlsx"/>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary mr-2" onclick="listToTable()">Refresh Data</button>
+            </div>
+            <div>
+                <a class="btn btn-info mr-2" href="/template/inventory_budget_template.xlsx">Download Template</a>
             </div>
         </div>
     </div>
@@ -66,12 +72,31 @@
             </table>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                <label class="required_field">Pilih Otorisasi</label>
+                <select class="form-control" id="authorization" name="authorization_id" disabled required>
+                  <option value="">-- Pilih Otorisasi --</option>
+                </select>
+                <small class="text-danger">*otorisasi yang muncul berdasarkan pilihan salespoint</small>
+              </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center text-center mt-1">
+        <button type="button" class="btn btn-primary" onclick="submitBudget()">Buat Pengajuan Budget</button>
+    </div>
 </div>
+<form action="/createBudgetRequest" method="post" id="submitform">
+    @csrf
+    <div></div>
+</form>
 
 @endsection
 @section('local-js')
-    <script lang="javascript" src="js/xlsx.full.min.js"></script>
+    <script lang="javascript" src="/js/xlsx.full.min.js"></script>
     <script>
+        var fileobject;
         $(document).ready(function() {
             $('#file_template').change(function(evt) {
                 var selectedFile = evt.target.files[0];
@@ -82,22 +107,26 @@
                         type: 'binary'
                     });
                     workbook.SheetNames.forEach(function(sheetName){
-                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                        listToTable(XL_row_object);
+                        fileobject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                        $('#refreshbutton').prop('disabled',true);  
                     });
                 }
                 reader.onerror = function(event) {
-                    console.error('File could not be read! Code '+event.target.error.code)
+                    alert('Gagal membaca file');
+                    $('#refreshbutton').prop('disabled',true);
                 }
 
                 reader.readAsBinaryString(selectedFile);
             });
+            $('#salespoint_select').change(function() {
+                let salespoint_id = $(this).val();
+                loadAuthorizationbySalespoint(salespoint_id);
+            });
         });
 
-        function listToTable(objects) {
+        function listToTable() {
             $('#template_table tbody').empty();
-            let filtered_data = objects.filter(function(object){
-                console.log(object);
+            let filtered_data = fileobject.filter(function(object){
                 if(object["KODE BUDGET"] != null && object["KETERANGAN"] != null && object["QTY"] != null && object["VALUE"] != null && object["AMOUNT"] !=null){
                     return true;
                 }else{
@@ -114,6 +143,81 @@
                 $append_row += '</tr>';
                 $('#template_table tbody').append($append_row);
             });
+        }
+
+        function loadAuthorizationbySalespoint(salespoint_id){
+            $('#authorization').find('option[value!=""]').remove();
+            $('#authorization').prop('disabled', true);
+            if(salespoint_id == ""){
+                return;
+            }
+            $.ajax({
+                type: "get",
+                url: '/getBudgetAuthorizationbySalespoint/'+salespoint_id,
+                success: function (response) {
+                    let data = response.data;
+                    if(data.length == 0){
+                        alert('Otorisasi Upload Budget tidak tersedia untuk salespoint yang dipilih, silahkan mengajukan otorisasi ke admin');
+                        return;
+                    }
+                    data.forEach(item => {
+                        let namelist = item.list.map(a => a.employee_name);
+                        let option_text = '<option value="'+item.id+'">'+namelist.join(" -> ")+'</option>';
+                        $('#authorization').append(option_text);
+                    });
+                    $('#authorization').val("");
+                    $('#authorization').trigger('change');
+                    $('#authorization').prop('disabled', false);
+                },
+                error: function (response) {
+                    alert('load data failed. Please refresh browser or contact admin');
+                    $('#authorization').find('option[value!=""]').remove();
+                    $('#authorization').prop('disabled', true);
+                },
+                complete: function () {
+                    $('#authorization').val("");
+                    $('#authorization').trigger('change');
+                    $('#authorization').prop('disabled', false);
+                }
+            });
+        }
+
+        function submitBudget(){
+            // validate
+            let salespoint_id = $('#salespoint_select').val();
+            let authorization_id = $('#authorization').val();
+            let append_input_text = "";
+            if(salespoint_id == ""){
+                alert('Salespoint belum dipilih');
+                return;
+            }
+            append_input_text += "<input type='hidden' name='salespoint_id' value='"+salespoint_id+"'>";
+            if(authorization_id == ""){
+                alert('Otorisasi belum dipilih');
+                return;
+            }
+            append_input_text += "<input type='hidden' name='authorization_id' value='"+authorization_id+"'>";
+            let count =0;
+            $('#template_table tbody tr').each(function(index){
+                count++;
+                let code = $(this).find('td:eq(0)').text().trim();
+                let keterangan = $(this).find('td:eq(1)').text().trim();
+                let qty = $(this).find('td:eq(2)').text().trim();
+                let value = $(this).find('td:eq(3)').text().trim();
+                let amount = $(this).find('td:eq(4)').text().trim();
+                append_input_text += "<input type='hidden' name='item["+index+"][code]' value='"+code+"'>";
+                append_input_text += "<input type='hidden' name='item["+index+"][keterangan]' value='"+keterangan+"'>";
+                append_input_text += "<input type='hidden' name='item["+index+"][qty]' value='"+qty+"'>";
+                append_input_text += "<input type='hidden' name='item["+index+"][value]' value='"+value+"'>";
+                append_input_text += "<input type='hidden' name='item["+index+"][amount]' value='"+amount+"'>";
+            });
+            if(count == 0){
+                alert('minimal 1 data');
+                return;
+            }
+            $('#submitform div').empty();
+            $('#submitform div').append(append_input_text);
+            $('#submitform').submit()
         }
     </script>
 @endsection

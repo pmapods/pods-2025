@@ -38,6 +38,17 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach ($budgets as $key=>$budget)
+                    <tr>
+                        <td>{{ $key+1 }}</td>
+                        <td>{{ $budget->code }}</td>
+                        <td>{{ $budget->salespoint->name }}</td>
+                        <td>{{ $budget->type }}</td>
+                        <td>{{ $budget->created_at->format('Y-m-d') }}</td>
+                        <td>{{ $budget->created_by_employee->name }}</td>
+                        <td>{{ $budget->status() }}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -50,7 +61,7 @@
             var table = $('#budgetDT').DataTable(datatable_settings);
             $('#budgetDT tbody').on('click', 'tr', function () {
                 let code = $(this).find('td').eq(1).text().trim();
-                window.location.href="/bidding/"+code;
+                window.location.href="/inventorybudget/"+code;
             });
         })
     </script>

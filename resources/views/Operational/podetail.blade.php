@@ -196,21 +196,21 @@
                             <div class="form-group">
                             <label class="required_field">Pilih Otorisasi</label>
                             <select class="form-control authorization_select2" name="authorization_id" required>
-                                    <option value="">Pilih Otorisasi</option>
-                                    @foreach ($authorization_list as $auth_select)
-                                        @php
-                                            $list = $auth_select->authorization_detail;
-                                            $string = "";
-                                            foreach ($list as $key=>$author){
-                                                $string = $string.$author->employee->name;
-                                                $open = $author->employee_position;
-                                                if(count($list)-1 != $key){
-                                                    $string = $string.' -> ';
-                                                }
+                                <option value="">Pilih Otorisasi</option>
+                                @foreach ($authorization_list as $auth_select)
+                                    @php
+                                        $list = $auth_select->authorization_detail;
+                                        $string = "";
+                                        foreach ($list as $key=>$author){
+                                            $string = $string.$author->employee->name;
+                                            $open = $author->employee_position;
+                                            if(count($list)-1 != $key){
+                                                $string = $string.' -> ';
                                             }
-                                        @endphp
-                                        <option value="{{ $auth_select->id}}" data-list="{{ $auth_select->list()}}">{{$string}}</option>
-                                    @endforeach
+                                        }
+                                    @endphp
+                                    <option value="{{ $auth_select->id}}" data-list="{{ $auth_select->list()}}">{{$string}}</option>
+                                @endforeach
                             </select>
                             </div>
                             <div class="authorization_select_field row">

@@ -16,6 +16,54 @@ class BudgetUpload extends Model
     }
 
     public function inventory_budgets(){
-        return $this->hasMany(InventoryBudget::class,'inventory_budget_id','id');
+        return $this->hasMany(InventoryBudget::class);
+    }
+
+    public function salespoint(){
+        return $this->belongsTo(SalesPoint::class);
+    }
+
+    public function created_by_employee(){
+        return $this->belongsTo(Employee::class,'created_by','id');
+    }
+
+    public function rejected_by_employee(){
+        return $this->belongsTo(Employee::class,'rejected_by','id');
+    }
+
+    public function current_authorization(){
+        $queue = $this->authorizations->where('status',0)->sortBy('level');
+        $current = $queue->first();
+        if($this->status == 1){
+            // authorization done
+            return null;
+        }else{
+            return $current;
+        }
+    }
+
+    public function status(){
+        // dd($this->status);
+        switch ($this->status) {
+            case '0':
+                return 'Menunggu Otorisasi '.$this->current_authorization()->employee_name;
+                break;
+            
+            case '1':
+                return 'Aktif';
+                break;
+            
+            case '2':
+                return 'Non Aktif / Expired';
+                break;
+                
+            case '-1':
+                return 'Ditolak Oleh '.$this->rejected_by_employee->name;
+                break;
+            
+            default:
+                return 'item_type_undefined';
+                break;
+        }
     }
 }

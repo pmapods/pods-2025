@@ -182,10 +182,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/uploadsecuritylpb',[SecurityTicketingController::class, 'uploadSecurityLPB']);
         Route::post('/uploadsecurityendkontrak',[SecurityTicketingController::class, 'uploadSecurityEndKontrak']);
     });
-
-    // BUDGET
+    
+    // BUDGET UPLOAD
     Route::get('/inventorybudget',[BudgetUploadController::class, 'inventoryBudgetView']);
+    Route::get('/inventorybudget/{budget_upload_code}',[BudgetUploadController::class, 'inventoryBudgetDetailView']);
     Route::get('/addinventorybudget',[BudgetUploadController::class, 'addInventoryBudgetView']);
+    Route::post('/approvebudgetauthorization',[BudgetUploadController::class, 'approveBudgetAuthorization']);
+    Route::post('/rejectbudgetauthorization',[BudgetUploadController::class, 'rejectBudgetAuthorization']);
+    Route::post('/reviseBudget',[BudgetUploadController::class, 'reviseBudget']);
+    Route::post('/terminateBudget',[BudgetUploadController::class, 'terminateBudget']);
+    Route::get('/getBudgetAuthorizationbySalespoint/{salespoint_id}',[BudgetUploadController::class, 'getBudgetAuthorizationbySalespoint']);
+    Route::post('/createBudgetRequest',[BudgetUploadController::class, 'createBudgetRequest']);
 
     // Bidding
     Route::middleware(['menu_access:operational:2'])->group(function () {

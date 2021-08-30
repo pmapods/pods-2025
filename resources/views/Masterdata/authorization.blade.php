@@ -107,6 +107,7 @@
                                 <option value="6">Perpanjangan / Perhentian</option>
                                 <option value="2">PR</option>
                                 <option value="3">PO</option>
+                                <option value="10">Upload Budget</option>
                             </select>
                         </div>
                     </div>
@@ -244,6 +245,7 @@
                                 <option value="6">Perpanjangan / Perhentian</option>
                                 <option value="2">PR</option>
                                 <option value="3">PO</option>
+                                <option value="10">Upload Budget</option>
                             </select>
                         </div>
                     </div>
@@ -350,6 +352,7 @@
     let formpengadaanarmada = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     let formpengadaansecurity = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     let formevaluasi = ['Disiapkan Oleh', 'Diperiksa Oleh', 'Disetujui Oleh'];
+    let uploadbudget = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {
@@ -434,6 +437,9 @@
                     break;
                 case "9":
                     value_array = formevaluasi;
+                    break;
+                case "10":
+                    value_array = uploadbudget;
                     break;
                 default:
                     return;

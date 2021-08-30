@@ -5,14 +5,35 @@ namespace App\Http\Controllers\Budget;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
+use DB;
+use Carbon\Carbon;
 
 use App\Models\EmployeeLocationAccess;
 use App\Models\SalesPoint;
+use App\Models\Authorization;
+use App\Models\InventoryBudget;
+use App\Models\BudgetUpload;
+use App\Models\BudgetUploadAuthorization;
 
 class BudgetUploadController extends Controller
 {
     public function inventoryBudgetView(){
-        return view('Budget.inventorybudget');
+        
+        $user_location_access  = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
+        $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
+        $available_salespoints = $available_salespoints->groupBy('region');
+
+        $budgets = BudgetUpload::whereIn('salespoint_id',$user_locakwtion_access)->get();
+        return view('Budget.inventorybudget',compact('budgets'));
+    }
+
+    public function inventoryBudgetDetailView($budget_upload_code){
+        $budget = BudgetUpload::where('code', $budget_upload_code)->first();
+        if($budget == null){
+            return redirect('/inventorybudget')->with('error','Kode budget tidak tersedia.');
+        }else{
+            return view('Budget.inventorybudgetdetail',compact('budget'));
+        }
     }
 
     public function addInventoryBudgetView(){
@@ -20,5 +41,196 @@ class BudgetUploadController extends Controller
         $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
         $available_salespoints = $available_salespoints->groupBy('region');
         return view('Budget.addinventorybudget',compact('available_salespoints'));
+    }
+
+    public function createBudgetRequest(Request $request){
+        try {
+            DB::beginTransaction();
+
+            // check apakah ada request budget inventory yang masih pending request
+            $is_pending_request = BudgetUpload::where('status',0)->where('type','inventory')->first();
+            if($is_pending_request){
+                return back()->with('error','Harap menyelesaikan request budget inventory sebelumnya terlebih dahulu. dengan kode request '.$is_pending_request->code);
+            }
+            $budget_request_count = BudgetUpload::whereBetween('created_at', [
+                Carbon::now()->startOfYear(),
+                Carbon::now()->endOfYear(),
+            ])
+            ->where('salespoint_id',$request->salespoint_id)
+            ->withTrashed()
+            ->count();
+            $salespoint = Salespoint::find($request->salespoint_id)->first();
+            do {
+                $code = "BUDGET-".$salespoint->initial."-".now()->translatedFormat('ymd').'-'.str_repeat("0", 3-strlen($budget_request_count+1)).($budget_request_count+1);
+                $checkbudget = BudgetUpload::where('code',$code)->first();
+                ($checkbudget != null) ? $flag = false : $flag = true;
+            } while (!$flag);
+
+            $newBudget                       = new BudgetUpload;
+            $newBudget->salespoint_id        = $request->salespoint_id;
+            $newBudget->type                 = 'inventory';
+            $newBudget->code                 = $code;
+            $newBudget->status               = 0;
+            $newBudget->created_by           = Auth::user()->id;
+            $newBudget->save();
+
+            foreach($request->item as $item){
+                $newInventoryBudget                    = new InventoryBudget;
+                $newInventoryBudget->budget_upload_id  = $newBudget->id;
+                $newInventoryBudget->code              = $item['code'];
+                $newInventoryBudget->keterangan        = $item['keterangan'];
+                $newInventoryBudget->qty               = $item['qty'];
+                $newInventoryBudget->value             = $item['value'];
+                $newInventoryBudget->amount            = $item['amount'];
+                $newInventoryBudget->save();
+            }
+
+            $authorization = Authorization::findOrFail($request->authorization_id);
+            foreach ($authorization->authorization_detail as $key => $authorization) {
+                $newAuthorization                    = new BudgetUploadAuthorization;
+                $newAuthorization->budget_upload_id  = $newBudget->id;
+                $newAuthorization->employee_id       = $authorization->employee_id;
+                $newAuthorization->employee_name     = $authorization->employee->name;
+                $newAuthorization->as                = $authorization->sign_as;
+                $newAuthorization->employee_position = $authorization->employee_position->name;
+                $newAuthorization->level             = $key+1;
+                $newAuthorization->save();
+            }
+
+            // recall the new one
+            $authorization = $newBudget->current_authorization();
+            DB::commit();
+            return redirect('/inventorybudget/'.$code)->with('success','Berhasil membuat request upload budget, otorisasi saat ini oleh '.$authorization->employee_name);
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+        }
+    }
+
+    public function reviseBudget(Request $request){
+        try {
+            DB::beginTransaction();
+
+            $budget                 = BudgetUpload::findOrFail($request->upload_budget_id);
+            $budget->status         = 0;
+            $budget->created_by     = Auth::user()->id;
+            $budget->created_at     = now();
+            $budget->save();
+
+            foreach ($budget->inventory_budgets as $b){
+                $b->delete();
+            }
+
+            foreach($request->item as $item){
+                $newInventoryBudget                    = new InventoryBudget;
+                $newInventoryBudget->budget_upload_id  = $budget->id;
+                $newInventoryBudget->code              = $item['code'];
+                $newInventoryBudget->keterangan        = $item['keterangan'];
+                $newInventoryBudget->qty               = $item['qty'];
+                $newInventoryBudget->value             = $item['value'];
+                $newInventoryBudget->amount            = $item['amount'];
+                $newInventoryBudget->save();
+            }
+            $current_authorization = $budget->current_authorization();
+            DB::commit();
+            return redirect('/inventorybudget/'.$budget->code)->with('success','Berhasil membuat revisi upload budget, otorisasi saat ini oleh '.$current_authorization->employee_name);
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+        }
+    }
+
+    public function terminateBudget(Request $request){
+        try {
+            DB::beginTransaction();
+
+            $budget                 = BudgetUpload::findOrFail($request->budget_upload_id);
+            $budget->status         = -1;
+            $budget->reject_notes   = $request->reason;
+            $budget->rejected_by    = Auth::user()->id;
+            $budget->save();
+            $budget->delete();
+
+            foreach ($budget->inventory_budgets as $b){
+                $b->delete();
+            }
+
+            DB::commit();
+            return redirect('/inventorybudget')->with('success','Berhasil membatalkan pengadaan upload budget');
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+        }
+    }
+
+    public function approveBudgetAuthorization(Request $request){
+        try {
+            DB::beginTransaction();
+            $budget = BudgetUpload::findOrFail($request->budget_upload_id);
+            $current_authorization = $budget->current_authorization();
+            if($current_authorization->employee_id != Auth::user()->id){
+                return back()->with('error','Otorisasi saat ini tidak sesuai dengan akun login.');
+            }else{
+                $current_authorization->status += 1;
+                $current_authorization->save();
+            }
+
+            $current_authorization = $budget->current_authorization();
+            if($current_authorization == null){
+                $budget->status = 1;
+                $budget->save();
+                DB::commit();
+                return back()->with('success','Otorisasi request budget '.$budget->code.' telah selesai. Status Budget sudah aktif');
+            }else{
+                DB::commit();
+                return back()->with('success','Berhasil melakukan approval otorisasi request budget '.$budget->code.'. Otorisasi selanjutnya oleh '.$current_authorization->employee_name);
+            }
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex);
+            return back()->with('error','Gagal melakukan otorisasi '.$ex->getMessage());
+        }
+    }
+
+    public function rejectBudgetAuthorization(Request $request){
+        try {
+            DB::beginTransaction();
+            $budget = BudgetUpload::findOrFail($request->budget_upload_id);
+            $current_authorization = $budget->current_authorization();
+            if($current_authorization->employee_id != Auth::user()->id){
+                return back()->with('error','Otorisasi saat ini tidak sesuai dengan akun login.');
+            }
+            
+            $budget->status = -1;
+            $budget->rejected_by = Auth::user()->id;
+            $budget->reject_notes = $request->reason;
+            $budget->save();
+
+            // reset all authorization
+            foreach($budget->authorizations as $authorization){
+                $authorization->status = 0;
+                $authorization->save();
+            }
+
+            DB::commit();
+            return back()->with('success','Berhasil menolak request budget '.$budget->code.' dengan alasan '.$request->reason);
+        } catch (\Exception $ex) {
+            DB::rollback();
+            return back()->with('error','Gagal menolak request budget '.$ex->getMessage());
+        }
+    }
+
+    public function getBudgetAuthorizationbySalespoint($salespoint_id){
+        $budget_authorizations = Authorization::where('salespoint_id',$salespoint_id)->where('form_type',10)->get();
+
+        foreach($budget_authorizations as $authorizations){
+            $authorizations->list = $authorizations->authorization_detail;
+            foreach($authorizations->list as $item){
+                $item->employee_name = $item->employee->name;
+            }
+        }
+        return response()->json([
+            'data' => $budget_authorizations,
+        ]);
     }
 }

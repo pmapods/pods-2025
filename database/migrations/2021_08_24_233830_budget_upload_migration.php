@@ -16,15 +16,16 @@ class BudgetUploadMigration extends Migration
         Schema::create('budget_upload', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('salespoint_id')->unsigned();
-            $table->integer('inventory_budget_id')->nullable();
             $table->string('code')->unique();
+            $table->enum('type',['inventory','armada','security','assumption']);
             $table->tinyInteger('status')->default(0);
             // -1 reject
             // 0 pending
             // 1 active
+            // 2 inactive
             $table->integer('created_by')->nullable();
             $table->integer('rejected_by')->nullable();
-            $table->integer('reject_notes')->nullable();
+            $table->text('reject_notes')->nullable();
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->softDeletes();
             $table->timestamps();
@@ -56,6 +57,8 @@ class BudgetUploadMigration extends Migration
             $table->integer('qty');
             $table->double('value');
             $table->double('amount');
+            $table->integer('pending_amount')->default(0);
+            $table->integer('used_amount')->default(0);
             $table->foreign('budget_upload_id')->references('id')->on('budget_upload');
             $table->softDeletes();
             $table->timestamps();
