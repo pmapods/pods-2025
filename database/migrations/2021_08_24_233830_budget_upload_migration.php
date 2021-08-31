@@ -57,8 +57,8 @@ class BudgetUploadMigration extends Migration
             $table->integer('qty');
             $table->double('value');
             $table->double('amount');
-            $table->integer('pending_amount')->default(0);
-            $table->integer('used_amount')->default(0);
+            $table->integer('pending_quota')->default(0);
+            $table->integer('used_quota')->default(0);
             $table->foreign('budget_upload_id')->references('id')->on('budget_upload');
             $table->softDeletes();
             $table->timestamps();

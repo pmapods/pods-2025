@@ -400,6 +400,16 @@ class BiddingController extends Controller
             $ticket->termination_reason = $request->reason;
             $ticket->save();
 
+            // hapus tambahan item besangkutan dari kuota pending budgets
+            $budget = BudgetUpload::where('salespoint_id',$ticket->salespoint_id)->where('status',1)->where('type','inventory')->first();
+                
+            foreach($ticket->ticket_item as $item){
+                $code                           = $item->budget_pricing->code;
+                $selectedbudget                 = $budget->inventory_budgets->where('code',$code)->first();
+                $selectedbudget->pending_quota -= $item->count;
+                $selectedbudget->save();
+            }
+
             $monitor = new TicketMonitoring;
             $monitor->ticket_id      = $ticket->id;
             $monitor->employee_id    = Auth::user()->id;

@@ -120,13 +120,17 @@ class Ticket extends Model
                 break;
 
             case '6':
-                foreach ($this->po as $po){
-                    if($po->status != 3){
-                        return 'PR selesai. Menunggu proses PO';
+                if(count($this->po) == 0){
+                    return 'Menunggu Setup PO';
+                }else{
+                    foreach ($this->po as $po){
+                        if($po->status != 3){
+                            return 'PR selesai. Menunggu proses PO';
+                        }
                     }
+                    return 'Menunggu Penerimaan Barang di Area';
+                    break;
                 }
-                return 'Menunggu Penerimaan Barang di Area';
-                break;
                 
             case '7':
                 return 'Closed PO';

@@ -23,7 +23,7 @@ class BudgetUploadController extends Controller
         $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
         $available_salespoints = $available_salespoints->groupBy('region');
 
-        $budgets = BudgetUpload::whereIn('salespoint_id',$user_locakwtion_access)->get();
+        $budgets = BudgetUpload::whereIn('salespoint_id',$user_location_access)->get();
         return view('Budget.inventorybudget',compact('budgets'));
     }
 

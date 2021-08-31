@@ -56,6 +56,9 @@
                         <th>Qty</th>
                         <th>Value</th>
                         <th>Amount</th>
+                        <th>Kuota Pending</th>
+                        <th>Kuota Terpakai</th>
+                        <th>Kuota Sisa</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,6 +69,9 @@
                             <td>{{ $b->qty }}</td>
                             <td class="rupiah_text">{{ $b->value }}</td>
                             <td class="rupiah_text">{{ $b->amount }}</td>
+                            <td>{{ $b->pending_quota }}</td>
+                            <td>{{ $b->used_quota }}</td>
+                            <td>{{ $b->qty-$b->pending_quota-$b->used_quota }}</td>
                         </tr>
                     @endforeach
                 </tbody>

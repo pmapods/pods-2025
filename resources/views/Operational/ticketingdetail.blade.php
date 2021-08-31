@@ -181,7 +181,7 @@
                                         data-minjs="{{$pricing->injs_min_price}}"
                                         data-maxjs="{{$pricing->injs_max_price}}"
                                         data-minoutjs="{{$pricing->outjs_min_price}}"
-                                        data-maxoutjs="{{$pricing->outjs_max_price}}">{{$pricing->name}}</option>
+                                        data-maxoutjs="{{$pricing->outjs_max_price}}">{{$pricing->name}} ({{$pricing->code}})</option>
                                     @endforeach
                                 </optgroup>
                                 @endforeach
