@@ -110,6 +110,6 @@ class SecurityTicket extends Model
     }
 
     public function evaluasi_form(){
-        return $this->hasOne(EvaluasiForm::class);
+        return $this->hasMany(EvaluasiForm::class);
     }
 }

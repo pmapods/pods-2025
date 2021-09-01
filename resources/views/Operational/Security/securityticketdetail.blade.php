@@ -113,12 +113,57 @@
         @endphp
         @if ($securityevaluationform)
             @php
-                if(($securityticket->evaluasi_form->status ?? -1) != 1){
+                if(count($securityticket->evaluasi_form) > 0){
+                    foreach ($securityticket->evaluasi_form as $evaluasiform){
+                        if($evaluasiform->status != 1){
+                            $isRequirementFinished = false;
+                        }
+                    }
+                }else{
                     $isRequirementFinished = false;
                 }
             @endphp
-            <div class="col-12">
-                @include('Operational.Security.formevaluasi')
+            {{-- new evaluasi modal --}}
+            <div class="modal fade" id="newEvaluasiFormModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Form Evaluasi Baru</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                        </div>
+                        <div class="modal-body">
+                            @include('Operational.Security.newformevaluasi')
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-between">
+                @if ($securityticket->status <1)
+                    <a class="font-weight-bold text-primary" style="cursor: pointer" data-toggle="modal" data-target="#newEvaluasiFormModal">
+                        + Tambah Form Evaluasi
+                    </a>
+                @else
+                    <div></div>
+                @endif
+                <div>
+                    <a href="#carousel" class="" role="button" data-slide="prev">
+                        <span>Previous</span>
+                    </a>
+                    <a  href="#carousel" class="ml-2" role="button" data-slide="next">
+                        <span>Next</span>
+                    </a>
+                </div>
+            </div>
+            <div id="carousel" class="carousel slide col-12" data-ride="carousel">
+                <div class="carousel-inner">
+                    @foreach ($securityticket->evaluasi_form as $key=>$evaluasiform)
+                        <div class="carousel-item @if ($key == 0) active @endif">
+                            @include('Operational.Security.formevaluasi')
+                        </div>
+                    @endforeach
+                </div>
             </div>
         @endif
         @if (in_array($securityticket->type(),["Pengadaan Baru","Perpanjangan","Replace"]))
@@ -236,6 +281,7 @@
     @csrf
     <div></div>
 </form>
+
 
 @endsection
 @section('local-js')
