@@ -184,6 +184,7 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // BUDGET UPLOAD
+    // inventory
     Route::get('/inventorybudget',[BudgetUploadController::class, 'inventoryBudgetView']);
     Route::get('/inventorybudget/{budget_upload_code}',[BudgetUploadController::class, 'inventoryBudgetDetailView']);
     Route::get('/addinventorybudget',[BudgetUploadController::class, 'addInventoryBudgetView']);
@@ -191,6 +192,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/rejectbudgetauthorization',[BudgetUploadController::class, 'rejectBudgetAuthorization']);
     Route::post('/reviseBudget',[BudgetUploadController::class, 'reviseBudget']);
     Route::post('/terminateBudget',[BudgetUploadController::class, 'terminateBudget']);
+    Route::get('/getActiveSalespointBudget',[BudgetUploadController::class, 'getActiveSalespointBudget']);
     Route::get('/getBudgetAuthorizationbySalespoint/{salespoint_id}',[BudgetUploadController::class, 'getBudgetAuthorizationbySalespoint']);
     Route::post('/createBudgetRequest',[BudgetUploadController::class, 'createBudgetRequest']);
 

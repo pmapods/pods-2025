@@ -15,8 +15,15 @@ class BudgetUpload extends Model
         return $this->hasMany(BudgetUploadAuthorization::class);
     }
 
-    public function inventory_budgets(){
-        return $this->hasMany(InventoryBudget::class);
+    public function budget_detail(){
+        switch ($this->type) {
+            case 'inventory':
+                return $this->hasMany(InventoryBudget::class);
+                break;
+            
+            default:
+                break;
+        }
     }
 
     public function salespoint(){

@@ -352,7 +352,7 @@
     let formpengadaanarmada = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     let formpengadaansecurity = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
     let formevaluasi = ['Disiapkan Oleh', 'Diperiksa Oleh', 'Disetujui Oleh'];
-    let uploadbudget = ['Pengaju', 'Atasan Langsung', 'Atasan Tidak Langsung'];
+    let uploadbudget = ['Dibuat Oleh','Disetujui Oleh'];
     $(document).ready(function () {
         var table = $('#authorDT').DataTable(datatable_settings);
         $('#authorDT tbody').on('click', 'tr', function () {

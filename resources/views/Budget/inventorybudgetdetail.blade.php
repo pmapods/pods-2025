@@ -62,7 +62,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($budget->inventory_budgets as $b)
+                    @foreach ($budget->budget_detail as $b)
                         <tr>
                             <td>{{ $b->code }}</td>
                             <td>{{ $b->keterangan }}</td>
@@ -78,9 +78,35 @@
             </table>
         </div>
     </div>
-    @if ($budget->status == -1)
-    <div><h3>Upload Revisi</h3></div>
-    <div class="text-danger"><b>Alasan penolakan :&nbsp;</b>{{ $budget->reject_notes }}</div>
+    <div class="row mt-3">
+        <div class="col-md-12 d-flex flex-row justify-content-center align-items-center">
+            @foreach ($budget->authorizations as $authorization)
+                <div class="d-flex text-center flex-column mr-3">
+                    <div class="font-weight-bold">{{ $authorization->as }}</div>
+                    @if (($budget->current_authorization()->employee_id ?? -1) == $authorization->employee_id)
+                    <div class="text-warning">Pending</div>
+                    @endif
+                    
+                    @if ($authorization->status == 1)
+                    <div class="text-success">Approved {{ $authorization->updated_at->format('Y-m-d (H:i)') }}</div>
+                    @endif
+                    <div>{{ $authorization->employee_name }} ({{ $authorization->employee_position }})</div>
+                </div>
+                @if (!$loop->last)
+                <div class="mr-3">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+    
+    @if ($budget->status == -1 || $budget->status == 1)
+    <div id="revise_section" @if ($budget->status == 1) style="display: none" @endif>
+        <div><h3>Upload Revisi</h3></div>
+        @if ($budget->status == -1)
+            <div class="text-danger"><b>Alasan penolakan :&nbsp;</b>{{ $budget->reject_notes }}</div>
+        @endif
         <div class="row">
             <div class="col-6 d-flex align-items-center">
                 <div class="form-group mr-2">
@@ -114,29 +140,8 @@
                 </table>
             </div>
         </div>
-    @endif
-    <div class="row mt-3">
-        <div class="col-md-12 d-flex flex-row justify-content-center align-items-center">
-            @foreach ($budget->authorizations as $authorization)
-                <div class="d-flex text-center flex-column mr-3">
-                    <div class="font-weight-bold">{{ $authorization->as }}</div>
-                    @if (($budget->current_authorization()->employee_id ?? -1) == $authorization->employee_id)
-                    <div class="text-warning">Pending</div>
-                    @endif
-                    
-                    @if ($authorization->status == 1)
-                    <div class="text-success">Approved {{ $authorization->updated_at->format('Y-m-d (H:i)') }}</div>
-                    @endif
-                    <div>{{ $authorization->employee_name }} ({{ $authorization->employee_position }})</div>
-                </div>
-                @if (!$loop->last)
-                <div class="mr-3">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                </div>
-                @endif
-            @endforeach
-        </div>
     </div>
+    @endif
     @if ($budget->status == 0 && ($budget->current_authorization()->employee_id ?? -1) == Auth::user()->id)
     <div class="text-center mt-3 d-flex flex-row justify-content-center">
         <button type="button" class="btn btn-success mr-2" onclick="approveAuthorization('{{ $budget->id }}')">Approve</button>
@@ -147,6 +152,12 @@
     <div class="text-center mt-3 d-flex flex-row justify-content-center">
         <button type="button" class="btn btn-primary mr-2" onclick="reviseBudgetUpload('{{ $budget->id }}')">Revise</button>
         <button type="button" class="btn btn-danger mr-2" onclick="popupTerminateModal()">Batalkan Pengajuan</button>
+    </div> 
+    @endif
+    @if ($budget->status == 1)
+    <div class="text-center mt-3 d-flex flex-row justify-content-center">
+        <button type="button" id="revise_trigger" class="btn btn-primary mr-2">Ajukan Revisi</button>
+        <button type="button" id="revise_button" class="btn btn-primary mr-2" style="display: none" onclick="reviseBudgetUpload('{{ $budget->id }}')">Revise</button>
     </div> 
     @endif
 </div>
@@ -243,6 +254,12 @@
                 }
 
                 reader.readAsBinaryString(selectedFile);
+            });
+
+            $('#revise_trigger').click(function(){
+                $(this).hide();
+                $('#revise_button').show();
+                $('#revise_section').show();
             });
         });
         

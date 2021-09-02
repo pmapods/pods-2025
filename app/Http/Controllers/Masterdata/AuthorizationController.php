@@ -78,7 +78,8 @@ class AuthorizationController extends Controller
                     break;
                 case '10':
                     // 10 upload budget
-                    $detail_counts = -1;
+                    $detail_counts = [2,3,4,5];
+                    $errMessage = "Form Evaluasi membutuhkan minimal 1 pilihan otorisasi";
                     break;
             }
             if($detail_counts != -1){
@@ -165,7 +166,8 @@ class AuthorizationController extends Controller
                     break;
                 case '10':
                     // 10 upload budget
-                    $detail_counts = -1;
+                    $detail_counts = [2,3,4,5];
+                    $errMessage = "Form Evaluasi membutuhkan minimal 1 pilihan otorisasi";
                     break;
             }
             

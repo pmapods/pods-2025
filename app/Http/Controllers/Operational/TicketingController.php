@@ -518,11 +518,16 @@ class TicketingController extends Controller
 
             // tambahan item besangkutan ke kuota pending budgets
             $budget = BudgetUpload::where('salespoint_id',$ticket->salespoint_id)->where('status',1)->where('type','inventory')->first();
+            if($budget == null){
+                return back()->with('error','Budget untuk salespoint '.$ticket->salespoint->name.' belum tersedia atau dalam proses otorisasi. harap melakukan request budget atau menyelesaikan otorisasi budget');
+            }
             foreach($ticket->ticket_item as $item){
                 $code                           = $item->budget_pricing->code;
-                $selectedbudget                 = $budget->inventory_budgets->where('code',$code)->first();
-                $selectedbudget->pending_quota += $item->count;
-                $selectedbudget->save();
+                $selectedbudget                 = $budget->budget_detail->where('code',$code)->first();
+                if($selectedbudget){
+                    $selectedbudget->pending_quota += $item->count;
+                    $selectedbudget->save();
+                }
             }
 
             // TICKET MONITOR_LOG
@@ -588,7 +593,7 @@ class TicketingController extends Controller
                 foreach($ticket_items as $item){
                     $code  = $item->code;
                     $name  = $item->name;
-                    $selectedbudget = $budget->inventory_budgets->where('code',$code)->first();
+                    $selectedbudget = $budget->budget_detail->where('code',$code)->first();
                     if($selectedbudget != null){
                         $available_quota = $selectedbudget->qty - $selectedbudget->pending_quota - $selectedbudget->used_quota;
                         $min_price = $selectedbudget->value;
@@ -606,7 +611,7 @@ class TicketingController extends Controller
                 foreach($ticket->ticket_item as $item){
                     $name  = $item->name;
                     $code = $item->budget_pricing->code;
-                    $selectedbudget = $budget->inventory_budgets->where('code',$code)->first();
+                    $selectedbudget = $budget->budget_detail->where('code',$code)->first();
                     if($selectedbudget != null){
                         $available_quota = $selectedbudget->qty - $selectedbudget->pending_quota - $selectedbudget->used_quota;
                         $max_price = $selectedbudget->value;
@@ -706,12 +711,18 @@ class TicketingController extends Controller
                 
                 // hapus tambahan item besangkutan dari kuota pending budgets
                 $budget = BudgetUpload::where('salespoint_id',$ticket->salespoint_id)->where('status',1)->where('type','inventory')->first();
+                
+                if($budget == null){
+                    return back()->with('error','Budget untuk salespoint '.$ticket->salespoint->name.' belum tersedia atau dalam proses otorisasi. harap melakukan request budget atau menyelesaikan otorisasi budget');
+                }
 
                 foreach($ticket->ticket_item as $item){
                     $code                           = $item->budget_pricing->code;
-                    $selectedbudget                 = $budget->inventory_budgets->where('code',$code)->first();
-                    $selectedbudget->pending_quota -= $item->count;
-                    $selectedbudget->save();
+                    $selectedbudget                 = $budget->budget_detail->where('code',$code)->first();
+                    if($selectedbudget){
+                        $selectedbudget->pending_quota -= $item->count;
+                        $selectedbudget->save();
+                    }
                 }
 
                 // TICKET MONITOR_LOG
@@ -823,9 +834,11 @@ class TicketingController extends Controller
             $budget = BudgetUpload::where('salespoint_id',$ticket_item->ticket->salespoint_id)->where('status',1)->where('type','inventory')->first();
                 
             $code                           = $ticket_item->budget_pricing->code;
-            $selectedbudget                 = $budget->inventory_budgets->where('code',$code)->first();
-            $selectedbudget->pending_quota  -= $ticket_item->count;
-            $selectedbudget->used_quota     += $ticket_item->count;
+            $selectedbudget                 = $budget->budget_detail->where('code',$code)->first();
+            if($selectedbudget){
+                $selectedbudget->pending_quota  -= $ticket_item->count;
+                $selectedbudget->used_quota     += $ticket_item->count;
+            }
             $selectedbudget->save();    
 
             $monitor = new TicketMonitoring;

@@ -26,10 +26,17 @@ class DatabaseSeeder extends Seeder
             ArmadaSeeder::class,
         ];
         $dev_array = [
+            EmployeeDevSeeder::class,
+            AuthorizationDevSeeder::class,
+        ];
+        $local_array = [
             EmployeeSeeder::class,
             AuthorizationSeeder::class,
         ];
         if(App::environment('local')) {
+            $seeder_array = array_merge($seeder_array,$local_array);
+        }
+        if(App::environment('development')) {
             $seeder_array = array_merge($seeder_array,$dev_array);
         }
         $this->call($seeder_array);

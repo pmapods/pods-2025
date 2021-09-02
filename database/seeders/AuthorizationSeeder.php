@@ -8,7 +8,7 @@ use App\Models\AuthorizationDetail;
 
 class AuthorizationSeeder extends Seeder
 {
-    /**
+    /**d
      * Run the database seeds.
      *
      * @return void

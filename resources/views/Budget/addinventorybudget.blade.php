@@ -23,7 +23,7 @@
 </div>
 <div class="content-body px-4">
     <div class="row">
-        <div class="col-3 mr-3">
+        <div class="col-3">
             <div class="form-group">
                 <label class="required_field">Pilihan Area / SalesPoint</label>
                 <select class="form-control select2" name="salespoint_id" id="salespoint_select">
@@ -53,6 +53,11 @@
             <div>
                 <a class="btn btn-info mr-2" href="/template/inventory_budget_template.xlsx">Download Template</a>
             </div>
+        </div>
+        <div class="col-3 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-warning" id="oldbudget_button" data-toggle="modal" data-target="#oldbudget_modal" style="display: none">
+                Tampilkan Budget Lama
+            </button>
         </div>
     </div>
     <div class="row">
@@ -92,6 +97,61 @@
     <div></div>
 </form>
 
+<!-- Modal -->
+<div class="modal fade" id="oldbudget_modal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-4">
+                        <table class="table table-borderless table-sm">
+                            <tbody>
+                                <tr>
+                                    <td class="font-weight-bold">Status</td>
+                                    <td class="status"></td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bold">Periode</td>
+                                    <td class="period"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12">
+                        <table class="table table-bordered list_table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Kode</th>
+                                    <th>Keterangan</th>
+                                    <th>Qty</th>
+                                    <th>Value</th>
+                                    <th>Amount</th>
+                                    <th>Kuota Pending</th>
+                                    <th>Kuota Terpakai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 text-danger">
+                        * Status budget lama akan menjadi non aktif saat melakukan pengajuan budget baru di salespoint yang sama
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 @section('local-js')
     <script lang="javascript" src="/js/xlsx.full.min.js"></script>
@@ -121,6 +181,7 @@
             $('#salespoint_select').change(function() {
                 let salespoint_id = $(this).val();
                 loadAuthorizationbySalespoint(salespoint_id);
+                checkifBudgetExist(salespoint_id);
             });
         });
 
@@ -218,6 +279,51 @@
             $('#submitform div').empty();
             $('#submitform div').append(append_input_text);
             $('#submitform').submit()
+        }
+
+        function checkifBudgetExist(salespoint_id){
+            $('#oldbudget_button').hide();
+            $('#oldbudget_modal .list_table tbody').empty();
+
+            if(salespoint_id == ""){
+                return;
+            }else{
+                let requestdata = {
+                    salespoint_id: salespoint_id,
+                    type: "inventory"
+                };
+                $.ajax({
+                    type: "GET",
+                    url: "/getActiveSalespointBudget",
+                    data: requestdata,
+                    success: function (response) {
+                        let data = response.data;
+                        if(data.budget != null){
+                            $('#oldbudget_button').show();
+                            $('#oldbudget_modal .modal_title').text(data.budget.code);
+                            $('#oldbudget_modal .status').text(':'+data.budget.status);
+                            $('#oldbudget_modal .period').text(':'+data.budget.period);
+                            data.lists.forEach(function(item,index){
+                                console.log(item);
+                                let append_row_text = '<tr>';
+                                append_row_text += '<td>'+item.code+'</td>';
+                                append_row_text += '<td>'+item.keterangan+'</td>';
+                                append_row_text += '<td>'+item.qty+'</td>';
+                                append_row_text += '<td>'+setRupiah(item.value)+'</td>';
+                                append_row_text += '<td>'+setRupiah(item.amount)+'</td>';
+                                append_row_text += '<td>'+item.pending_quota+'</td>';
+                                append_row_text += '<td>'+item.used_quota+'</td>';
+                                append_row_text += '</tr>';
+                                $('#oldbudget_modal .list_table tbody').append(append_row_text);
+                            });
+                        }
+
+                    },
+                    error: function (response){
+                        console.log(response);
+                    }
+                });
+            }
         }
     </script>
 @endsection
