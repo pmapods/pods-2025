@@ -10,6 +10,7 @@ use DB;
 
 use App\Models\Ticket;
 use App\Models\Armada;
+use App\Models\ArmadaType;
 use App\Models\ArmadaTicket;
 use App\Models\SecurityTicket;
 use App\Models\ArmadaTicketMonitoring;
@@ -25,6 +26,7 @@ use App\Models\EmployeePosition;
 use App\Models\EmployeeLocationAccess;
 use App\Models\SalesPoint;
 use App\Models\Po;
+use App\Models\BudgetUpload;
 
 class ArmadaTicketingController extends Controller
 {
@@ -53,8 +55,6 @@ class ArmadaTicketingController extends Controller
             ->withTrashed()
             ->count();
 
-            
-
             $total_count = $armada_ticket_count + $security_ticket_count + $barang_ticket_count;
             do {
                 $code = "PCD-".now()->translatedFormat('ymd').'-'.str_repeat("0", 4-strlen($total_count+1)).($total_count+1);
@@ -64,6 +64,22 @@ class ArmadaTicketingController extends Controller
                 $checksecurity = SecurityTicket::where('code',$code)->first();
                 ($checkbarang != null || $checkarmada != null || $checksecurity != null) ? $flag = false : $flag = true;
             } while (!$flag);
+
+            // check apakah budget aramda salespoint sudah tersedia
+            $budget = BudgetUpload::where('salespoint_id',$request->salespoint_id)->where('status',1)->where('type','armada')->first();
+            if($budget == null){
+                return back()->with('error','Budget belum tersedia. harap melakukan request budget terlebih dahulu');
+            }
+            // validasi budget untuk pengadaan berdasarkan vendor dan tipe armada
+            $armadatype = ArmadaType::find($request->armada_type_id);
+            $checkBudget = $budget->budget_detail->where('type_armada',$armadatype->name)
+            ->where('vendor',$request->vendor_recommendation_name)->first();
+            if($checkBudget != null && $checkBudget->qty-$checkBudget->pending_quota-$checkBudget->used_quota > 0){
+                $checkBudget->pending_quota += 1;
+                $checkBudget->save();
+            }else{
+                return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$armadaticketing->vendor_recommendation_name);
+            }
 
             $newTicket                   = new ArmadaTicket;
             $newTicket->code             = $code;
@@ -616,6 +632,24 @@ class ArmadaTicketingController extends Controller
             $armadaticket->gt_plate = str_replace(' ', '', strtoupper($request->gt_plate));
             $armadaticket->gt_received_date = date('Y-m-d');
             $armadaticket->save();
+
+            // set pending quota to used quota
+            $budget = BudgetUpload::where('salespoint_id',$request->salespoint_id)->where('status',1)->where('type','armada')->first();
+            if($budget == null){
+                $flag = false;
+                array_push($messages,'Budget belum tersedia. harap melakukan request budget terlebih dahulu');
+            }
+            // validasi budget untuk pengadaan berdasarkan vendor dan tipe armada
+            $armadatype = ArmadaType::find($request->armada_type_id);
+            $checkBudget = $budget->budget_detail->where('type_armada',$armadatype->name)
+            ->where('vendor',$request->vendor_recommendation_name)->first();
+            if($checkBudget != null){
+                $checkBudget->pending_quota -= 1;
+                $checkBudget->used_quota += 1;
+                $checkBudget->save();
+            }else{
+                return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$vendor->name);
+            }
             DB::commit();
             return back()->with('success','Berhasil update armada dan upload bastk');
         } catch (\Exception $ex) {
@@ -654,6 +688,26 @@ class ArmadaTicketingController extends Controller
             $armadaticketing->status = -1;
             $armadaticketing->termination_reason = $request->reason;
             $armadaticketing->save();
+
+            // check apakah budget aramda salespoint sudah tersedia
+            $budget = BudgetUpload::where('salespoint_id',$armadaticketing->salespoint_id)->where('status',1)->where('type','armada')->first();
+            if($budget == null){
+                $flag = false;
+                array_push($messages,'Budget belum tersedia. harap melakukan request budget terlebih dahulu');
+            }
+            // validasi budget untuk pengadaan berdasarkan vendor dan tipe armada
+            $armadatype = ArmadaType::find($armadaticketing->armada_type_id);
+            $checkBudget = $budget->budget_detail->where('type_armada',$armadatype->name)
+            ->where('vendor',$armadaticketing->vendor_recommendation_name)->first();
+            if($checkBudget != null){
+                $checkBudget->pending_quota -= 1;
+                if($checkBudget->pending_quota<0){
+                    $checkBudget->pending_quota = 0;
+                }
+                $checkBudget->save();
+            }else{
+                return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$armadaticketing->vendor_recommendation_name);
+            }
             DB::commit();
             return redirect('/ticketing?menu=Armada')->with('success', 'Berhasil melakukan pembatalan ticketing');
         } catch (\Exception $ex) {

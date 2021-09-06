@@ -63,6 +63,37 @@ class BudgetUploadMigration extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+        Schema::create('armada_budget', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('budget_upload_id')->unsigned();
+            $table->string('type_armada');
+            $table->string('vendor');
+            $table->integer('qty');
+            $table->double('value');
+            $table->double('amount');
+            $table->integer('pending_quota')->default(0);
+            $table->integer('used_quota')->default(0);
+            $table->foreign('budget_upload_id')->references('id')->on('budget_upload');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('assumption_budget', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('budget_upload_id')->unsigned();
+            $table->string('code');
+            $table->string('group');
+            $table->string('name');
+            $table->integer('qty');
+            $table->double('value');
+            $table->double('amount');
+            $table->integer('pending_quota')->default(0);
+            $table->integer('used_quota')->default(0);
+            $table->foreign('budget_upload_id')->references('id')->on('budget_upload');
+            $table->softDeletes();
+            $table->timestamps();
+        });
     }
 
     /**

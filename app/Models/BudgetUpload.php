@@ -21,6 +21,13 @@ class BudgetUpload extends Model
                 return $this->hasMany(InventoryBudget::class);
                 break;
             
+            case 'armada':
+                return $this->hasMany(ArmadaBudget::class);
+                break;
+            
+            case 'assumption':
+                return $this->hasMany(AssumptionBudget::class);
+                break;
             default:
                 break;
         }

@@ -217,6 +217,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       </a>
                   </li>
               </ul>
+              <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                      <a href="/assumptionbudget" class="nav-link">
+                          <i class="fad fa-th nav-icon"></i>
+                          <p>Assumption</p>
+                      </a>
+                  </li>
+              </ul>
             </li>
 
             {{-- OPERATIONAL --}}

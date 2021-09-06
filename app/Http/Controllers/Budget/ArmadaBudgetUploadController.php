@@ -11,47 +11,47 @@ use Carbon\Carbon;
 use App\Models\EmployeeLocationAccess;
 use App\Models\SalesPoint;
 use App\Models\Authorization;
-use App\Models\InventoryBudget;
+use App\Models\ArmadaBudget;
 use App\Models\BudgetUpload;
 use App\Models\BudgetUploadAuthorization;
 
-class BudgetUploadController extends Controller
+class ArmadaBudgetUploadController extends Controller
 {
-    public function inventoryBudgetView(){
+    public function armadaBudgetView(){
         
         $user_location_access  = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
         $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
         $available_salespoints = $available_salespoints->groupBy('region');
 
-        $budgets = BudgetUpload::whereIn('salespoint_id',$user_location_access)->where('type','inventory')->get();
-        return view('Budget.Inventory.inventorybudget',compact('budgets'));
+        $budgets = BudgetUpload::whereIn('salespoint_id',$user_location_access)->where('type','armada')->get();
+        return view('Budget.Armada.armadabudget',compact('budgets'));
     }
 
-    public function inventoryBudgetDetailView($budget_upload_code){
+    public function armadaBudgetDetailView($budget_upload_code){
         $budget = BudgetUpload::where('code', $budget_upload_code)->first();
         if($budget == null){
-            return redirect('/inventorybudget')->with('error','Kode budget tidak tersedia.');
+            return redirect('/armadabudget')->with('error','Kode budget tidak tersedia.');
         }else{
-            return view('Budget.Inventory.inventorybudgetdetail',compact('budget'));
+            return view('Budget.Armada.armadabudgetdetail',compact('budget'));
         }
     }
 
-    public function addInventoryBudgetView(){
+    public function addArmadaBudgetView(){
         $user_location_access  = EmployeeLocationAccess::where('employee_id',Auth::user()->id)->get()->pluck('salespoint_id');
         $available_salespoints = SalesPoint::whereIn('id',$user_location_access)->get();
         $available_salespoints = $available_salespoints->groupBy('region');
-        return view('Budget.Inventory.addinventorybudget',compact('available_salespoints'));
+        return view('Budget.Armada.addarmadabudget',compact('available_salespoints'));
     }
 
     public function createBudgetRequest(Request $request){
         try {
             DB::beginTransaction();
 
-            // check apakah ada request budget inventory yang masih pending request
+            // check apakah ada request budget armada yang masih pending request
             
-            $is_pending_request = BudgetUpload::where('status',0)->where('type','inventory')->first();
+            $is_pending_request = BudgetUpload::where('status',0)->where('type','armada')->first();
             if($is_pending_request){
-                return back()->with('error','Harap menyelesaikan request budget inventory sebelumnya terlebih dahulu. dengan kode request '.$is_pending_request->code);
+                return back()->with('error','Harap menyelesaikan request budget armada sebelumnya terlebih dahulu. dengan kode request '.$is_pending_request->code);
             }
             $budget_request_count = BudgetUpload::whereBetween('created_at', [
                 Carbon::now()->startOfYear(),
@@ -63,13 +63,13 @@ class BudgetUploadController extends Controller
             $salespoint = Salespoint::find($request->salespoint_id)->first();
             
             do {
-                $code = "BUDGET-INV-".$salespoint->initial."-".now()->translatedFormat('ymd').'-'.str_repeat("0", 3-strlen($budget_request_count+1)).($budget_request_count+1);
+                $code = "BUDGET-ARM-".$salespoint->initial."-".now()->translatedFormat('ymd').'-'.str_repeat("0", 3-strlen($budget_request_count+1)).($budget_request_count+1);
                 $checkbudget = BudgetUpload::where('code',$code)->first();
                 ($checkbudget != null) ? $flag = false : $flag = true;
             } while (!$flag);
 
             // set old budget status to non active
-            $oldbudget = BudgetUpload::where('type','inventory')
+            $oldbudget = BudgetUpload::where('type','armada')
                 ->where('salespoint_id',$request->salespoint_id)
                 ->whereIn('status',[-1,0,1])
                 ->first();
@@ -83,21 +83,21 @@ class BudgetUploadController extends Controller
 
             $newBudget                       = new BudgetUpload;
             $newBudget->salespoint_id        = $request->salespoint_id;
-            $newBudget->type                 = 'inventory';
+            $newBudget->type                 = 'armada';
             $newBudget->code                 = $code;
             $newBudget->status               = 0;
             $newBudget->created_by           = Auth::user()->id;
             $newBudget->save();
 
             foreach($request->item as $item){
-                $newInventoryBudget                    = new InventoryBudget;
-                $newInventoryBudget->budget_upload_id  = $newBudget->id;
-                $newInventoryBudget->code              = $item['code'];
-                $newInventoryBudget->keterangan        = $item['keterangan'];
-                $newInventoryBudget->qty               = $item['qty'];
-                $newInventoryBudget->value             = $item['value'];
-                $newInventoryBudget->amount            = $item['amount'];
-                $newInventoryBudget->save();
+                $newArmadaBudget                   = new ArmadaBudget;
+                $newArmadaBudget->budget_upload_id = $newBudget->id;
+                $newArmadaBudget->type_armada      = $item['type_armada'];
+                $newArmadaBudget->vendor           = $item['vendor'];
+                $newArmadaBudget->qty              = $item['qty'];
+                $newArmadaBudget->value            = $item['value'];
+                $newArmadaBudget->amount           = $item['amount'];
+                $newArmadaBudget->save();
             }
 
             $authorization = Authorization::findOrFail($request->authorization_id);
@@ -115,7 +115,7 @@ class BudgetUploadController extends Controller
             // recall the new one
             $authorization = $newBudget->current_authorization();
             DB::commit();
-            return redirect('/inventorybudget/'.$code)->with('success','Berhasil membuat request upload budget, otorisasi saat ini oleh '.$authorization->employee_name);
+            return redirect('/armadabudget/'.$code)->with('success','Berhasil membuat request upload budget, otorisasi saat ini oleh '.$authorization->employee_name);
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -136,8 +136,8 @@ class BudgetUploadController extends Controller
             foreach($budget->budget_detail as $b){
                 if($b->pending_quota > 0){
                     $pendingitem  = new \stdClass();
-                    $pendingitem->code = $b->code;
-                    $pendingitem->keterangan = $b->keterangan;
+                    $pendingitem->type_armada = $b->type_armada;
+                    $pendingitem->vendor = $b->vendor;
                     $pendingitem->pending_quota = $b->pending_quota;
                     $pendingitem->isSelected = false;
                     array_push($pendingitems,$pendingitem);
@@ -150,28 +150,28 @@ class BudgetUploadController extends Controller
 
             // masukin budget baru dari request
             foreach($request->item as $item){
-                $newInventoryBudget                    = new InventoryBudget;
-                $newInventoryBudget->budget_upload_id  = $budget->id;
-                $newInventoryBudget->code              = $item['code'];
-                $newInventoryBudget->keterangan        = $item['keterangan'];
-                $newInventoryBudget->qty               = $item['qty'];
-                $newInventoryBudget->value             = $item['value'];
-                $newInventoryBudget->amount            = $item['amount'];
+                $newArmadaBudget                   = new ArmadaBudget;
+                $newArmadaBudget->budget_upload_id = $budget->id;
+                $newArmadaBudget->type_armada      = $item['type_armada'];
+                $newArmadaBudget->vendor           = $item['vendor'];
+                $newArmadaBudget->qty              = $item['qty'];
+                $newArmadaBudget->value            = $item['value'];
+                $newArmadaBudget->amount           = $item['amount'];
 
                 // check apakah di budget sebelumnya ada pending Amount
-                $olditem = $pendingitems->where('code',$newInventoryBudget->code)->first();
+                $olditem = $pendingitems->where('type_armada',$newArmadaBudget->type_armada)->where('vendor',$newArmadaBudget->vendor)->first();
                 if($olditem != null){
                     // check apakah jumlah budget baru lebih besar dari pada pending
-                    if($newInventoryBudget->qty < $olditem->pending_quota){
+                    if($newArmadaBudget->qty < $olditem->pending_quota){
                         // reject
-                        return back()->with('error','Item '.$newInventoryBudget->keterangan.' memiliki '.$olditem->pending_quota.' dalam status Pending. Budget baru harus lebih besar dari jumlah item yang sedang pending');
+                        return back()->with('error','Armada '.$newArmadaBudget->type_armada.'dengan vendor '.$newArmadaBudget->vendor.' memiliki '.$olditem->pending_quota.' dalam status Pending. Budget baru harus lebih besar dari jumlah item yang sedang pending');
                     }else{
                         // accept
-                        $newInventoryBudget->pending_quota = $olditem->pending_quota;
+                        $newArmadaBudget->pending_quota = $olditem->pending_quota;
                         $olditem->isSelected = true;
                     }
                 }
-                $newInventoryBudget->save();
+                $newArmadaBudget->save();
             }
 
             // reset otorisasi
@@ -183,13 +183,13 @@ class BudgetUploadController extends Controller
             // check apakah semua pending items sudah ke select, kalo ada yang tidak ke select return error
             foreach($pendingitems as $pendingitem){
                 if($pendingitem->isSelected == false){
-                    return back()->with('error','item '.$pendingitem->keterangan.' memiliki pending kuota yang sedang dalam proses. Silahkan menambahkan item '.$pendingitem->keterangan.' sejumlah minimal'.$pendingitem->pending_quota.' ke dalam revisi budget');
+                    return back()->with('error','Armada '.$pendingitem->type_armada.' dengan memiliki pending kuota yang sedang dalam proses. Silahkan menambahkan Armada '.$pendingitem->type_armada.' dengan vendor '.$pendingitem->vendor.' sejumlah minimal'.$pendingitem->pending_quota.' ke dalam revisi budget');
                 }
             }
 
             $current_authorization = $budget->current_authorization();
             DB::commit();
-            return redirect('/inventorybudget/'.$budget->code)->with('success','Berhasil membuat revisi upload budget, otorisasi saat ini oleh '.$current_authorization->employee_name);
+            return redirect('/armadabudget/'.$budget->code)->with('success','Berhasil membuat revisi upload budget, otorisasi saat ini oleh '.$current_authorization->employee_name);
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -212,7 +212,7 @@ class BudgetUploadController extends Controller
             }
 
             DB::commit();
-            return redirect('/inventorybudget')->with('success','Berhasil membatalkan pengadaan upload budget');
+            return redirect('/armadabudget')->with('success','Berhasil membatalkan pengadaan upload budget');
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -295,13 +295,11 @@ class BudgetUploadController extends Controller
                 ->where('salespoint_id',$request->salespoint_id)
                 ->whereIn('status',[-1,0,1])
                 ->first();
-        if($budget != null){
-            $budget->status = $budget->status();
-            $budget->period = $budget->created_at->translatedFormat('F Y');
-        }
+        $budget->status = $budget->status();
+        $budget->period = $budget->created_at->translatedFormat('F Y');
         $data = [
             "budget" => $budget,
-            "lists" => $budget->budget_detail ?? null,
+            "lists" => $budget->budget_detail,
         ];
         return response()->json([
             "data" => $data

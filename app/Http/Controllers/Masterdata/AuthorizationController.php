@@ -38,8 +38,8 @@ class AuthorizationController extends Controller
                     break;
                 case '2':
                     // 2 form pr
-                    $detail_counts = [3,4];
-                    $errMessage = "Form PR membutuhkan 3 atau 4 pilihan otorisasi";
+                    $detail_counts = [4,5];
+                    $errMessage = "Form PR membutuhkan 4 atau 5 pilihan otorisasi";
                     break;
                 case '3':
                     // 3 form po
@@ -126,8 +126,8 @@ class AuthorizationController extends Controller
                     break;
                 case '2':
                     // 2 form pr
-                    $detail_counts = [3,4];
-                    $errMessage = "Form PR membutuhkan 3 atau 4 pilihan otorisasi";
+                    $detail_counts = [4,5];
+                    $errMessage = "Form PR membutuhkan 4 atau 5 pilihan otorisasi";
                     break;
                 case '3':
                     // 3 form po

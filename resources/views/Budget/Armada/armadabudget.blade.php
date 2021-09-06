@@ -9,17 +9,17 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Inventory Budget</h1>
+                <h1 class="m-0 text-dark">Armada Budget</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Budget</li>
-                    <li class="breadcrumb-item active">Inventory Budget</li>
+                    <li class="breadcrumb-item active">Armada Budget</li>
                 </ol>
             </div>
         </div>
         <div class="d-flex justify-content-end mt-4">
-            <a href="/addinventorybudget" class="btn btn-primary">Tambah Budget Baru</a>
+            <a href="/armadabudget/create" class="btn btn-primary">Tambah Budget Baru</a>
         </div>
     </div>
 </div>
@@ -31,7 +31,6 @@
                     <th>#</th>
                     <th>Kode Upload</th>
                     <th>Nama Salespoint</th>
-                    <th>Tipe Budgeting</th>
                     <th>Tanggal Permintaan</th>
                     <th>Nama Pengaju</th>
                     <th>Status</th>
@@ -43,7 +42,6 @@
                         <td>{{ $key+1 }}</td>
                         <td>{{ $budget->code }}</td>
                         <td>{{ $budget->salespoint->name }}</td>
-                        <td>{{ $budget->type }}</td>
                         <td>{{ $budget->created_at->format('Y-m-d') }}</td>
                         <td>{{ $budget->created_by_employee->name }}</td>
                         <td>{{ $budget->status() }}</td>
@@ -61,7 +59,7 @@
             var table = $('#budgetDT').DataTable(datatable_settings);
             $('#budgetDT tbody').on('click', 'tr', function () {
                 let code = $(this).find('td').eq(1).text().trim();
-                window.location.href="/inventorybudget/"+code;
+                window.location.href="/armadabudget/"+code;
             });
         })
     </script>

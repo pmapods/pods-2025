@@ -14,7 +14,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">Budget</li>
-                    <li class="breadcrumb-item">Inventory Budget</li>
+                    <li class="breadcrumb-item">Assumption Budget</li>
                     <li class="breadcrumb-item active">{{ $budget->code }}</li>
                 </ol>
             </div>
@@ -51,8 +51,9 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Kode Budget</th>
-                        <th>Keterangan</th>
+                        <th>Kode</th>
+                        <th>Group</th>
+                        <th>Nama</th>
                         <th>Qty</th>
                         <th>Value</th>
                         <th>Amount</th>
@@ -65,7 +66,8 @@
                     @foreach ($budget->budget_detail as $b)
                         <tr>
                             <td>{{ $b->code }}</td>
-                            <td>{{ $b->keterangan }}</td>
+                            <td>{{ $b->group }}</td>
+                            <td>{{ $b->name }}</td>
                             <td>{{ $b->qty }}</td>
                             <td class="rupiah_text">{{ $b->value }}</td>
                             <td class="rupiah_text">{{ $b->amount }}</td>
@@ -112,14 +114,14 @@
                 <div class="form-group mr-2">
                   <label class="required_field">Pilih File Template</label>
                   <input type="file" class="form-control-file" 
-                    placeholder="Pilih File Template Inventory" id="file_template"
+                    placeholder="Pilih File Template Assumption" id="file_template"
                     accept=".xls, .xlsx"/>
                 </div>
                 <div>
                     <button type="button" class="btn btn-primary mr-2" onclick="listToTable()">Refresh Data</button>
                 </div>
                 <div>
-                    <a class="btn btn-info mr-2" href="/template/inventory_budget_template.xlsx">Download Template</a>
+                    <a class="btn btn-info mr-2" href="/template/assumption_budget_template.xlsx">Download Template</a>
                 </div>
             </div>
         </div>
@@ -128,8 +130,9 @@
                 <table class="table" id="template_table">
                     <thead>
                         <tr>
-                            <th>Kode Budget</th>
-                            <th>Keterangan</th>
+                            <th>Kode</th>
+                            <th>Group</th>
+                            <th>Name</th>
                             <th>Qty</th>
                             <th>Value</th>
                             <th>Amount</th>
@@ -266,7 +269,8 @@
         function listToTable() {
             $('#template_table tbody').empty();
             let filtered_data = fileobject.filter(function(object){
-                if(object["KODE BUDGET"] != null && object["KETERANGAN"] != null && object["QTY"] != null && object["VALUE"] != null && object["AMOUNT"] !=null){
+                console.log(object);
+                if(object["CODE"] != null && object["GROUP"] != null && object["NAME"] != null && object["QTY"] != null && object["VALUE"] != null && object["AMOUNT"] != null){
                     return true;
                 }else{
                     return false;
@@ -274,8 +278,9 @@
             });
             filtered_data.forEach(function(data){
                 $append_row = '<tr>';
-                $append_row += '<td>'+data["KODE BUDGET"]+'</td>';
-                $append_row += '<td>'+data["KETERANGAN"]+'</td>';
+                $append_row += '<td>'+data["CODE"]+'</td>';
+                $append_row += '<td>'+data["GROUP"]+'</td>';
+                $append_row += '<td>'+data["NAME"]+'</td>';
                 $append_row += '<td>'+data["QTY"]+'</td>';
                 $append_row += '<td>'+data["VALUE"]+'</td>';
                 $append_row += '<td>'+data["AMOUNT"]+'</td>';
@@ -291,12 +296,14 @@
             $('#template_table tbody tr').each(function(index){
                 count++;
                 let code = $(this).find('td:eq(0)').text().trim();
-                let keterangan = $(this).find('td:eq(1)').text().trim();
-                let qty = $(this).find('td:eq(2)').text().trim();
-                let value = $(this).find('td:eq(3)').text().trim();
-                let amount = $(this).find('td:eq(4)').text().trim();
+                let group = $(this).find('td:eq(1)').text().trim();
+                let name = $(this).find('td:eq(2)').text().trim();
+                let qty = $(this).find('td:eq(3)').text().trim();
+                let value = $(this).find('td:eq(4)').text().trim();
+                let amount = $(this).find('td:eq(5)').text().trim();
                 append_input_text += "<input type='hidden' name='item["+index+"][code]' value='"+code+"'>";
-                append_input_text += "<input type='hidden' name='item["+index+"][keterangan]' value='"+keterangan+"'>";
+                append_input_text += "<input type='hidden' name='item["+index+"][group]' value='"+group+"'>";
+                append_input_text += "<input type='hidden' name='item["+index+"][name]' value='"+name+"'>";
                 append_input_text += "<input type='hidden' name='item["+index+"][qty]' value='"+qty+"'>";
                 append_input_text += "<input type='hidden' name='item["+index+"][value]' value='"+value+"'>";
                 append_input_text += "<input type='hidden' name='item["+index+"][amount]' value='"+amount+"'>";
@@ -307,13 +314,13 @@
             }
             $('#submitform div').empty();
             $('#submitform div').append(append_input_text);
-            $('#submitform').prop('action', '/reviseBudget');
+            $('#submitform').prop('action', '/assumptionbudget/reviseBudget');
             $('#submitform').prop('method', 'POST');
             $('#submitform').submit()
         }
 
         function approveAuthorization(upload_budget_id){
-            $('#submitform').prop('action', '/approvebudgetauthorization');
+            $('#submitform').prop('action', '/assumptionbudget/approvebudgetauthorization');
             $('#submitform').find('div').empty();
             $('#submitform').find('div').append('<input type="hidden" name="budget_upload_id" value="'+upload_budget_id+'">');
             $('#submitform').prop('method', 'POST');
@@ -331,7 +338,7 @@
         }
 
         function rejectAuthorization(upload_budget_id,reason){
-            $('#submitform').prop('action', '/rejectbudgetauthorization');
+            $('#submitform').prop('action', '/assumptionbudget/rejectbudgetauthorization');
             $('#submitform').find('div').append('<input type="hidden" name="budget_upload_id" value="'+upload_budget_id+'">');
             $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
             $('#submitform').prop('method', 'POST');
@@ -339,7 +346,7 @@
         }
 
         function terminateBudgetUpload(upload_budget_id,reason){
-            $('#submitform').prop('action', '/terminateBudget');
+            $('#submitform').prop('action', '/assumptionbudget/terminateBudget');
             $('#submitform').find('div').append('<input type="hidden" name="budget_upload_id" value="'+upload_budget_id+'">');
             $('#submitform').find('div').append('<input type="hidden" name="reason" value="'+reason+'">');
             $('#submitform').prop('method', 'POST');

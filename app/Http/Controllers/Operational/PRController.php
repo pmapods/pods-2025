@@ -18,6 +18,7 @@ use App\Models\TicketMonitoring;
 use App\Models\ArmadaTicketMonitoring;
 use App\Models\SecurityTicketMonitoring;
 use App\Models\Authorization;
+use App\Models\TicketAuthorization;
 use App\Models\Pr;
 use App\Models\PrAuthorization;
 use App\Models\PrDetail;
@@ -130,20 +131,17 @@ class PRController extends Controller
                 $pr->created_by   = Auth::user()->id;   
                 $pr->save(); 
     
-                $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
-                $collection = $ticket->ticket_authorization->slice(1)->all();
-                $values = collect($collection)->values();
-                $count = $values->count();
-                foreach($values->all() as $key => $author){
-                    $authorization                     = new PrAuthorization;
-                    $authorization->pr_id              = $pr->id;         
-                    $authorization->employee_id        = $author->employee->id;             
-                    $authorization->employee_name      = $author->employee->name;                 
-                    $authorization->as                 = $default_as[$key];     
-                    $authorization->employee_position  = $author->employee_position;                     
-                    $authorization->level              = $key+1;
-                    $authorization->save();
-                }
+                $dibuatoleh = TicketAuthorization::find($request->dibuat_oleh_ticketauthorization_id);
+
+                // tambahkan otorisasi dari area
+                $authorization                     = new PrAuthorization;
+                $authorization->pr_id              = $pr->id;
+                $authorization->employee_id        = $dibuatoleh->employee->id;
+                $authorization->employee_name      = $dibuatoleh->employee_name;
+                $authorization->as                 = 'Dibuat Oleh (min gol 5A)';
+                $authorization->employee_position  = $dibuatoleh->employee_position;      
+                $authorization->level              = 1;
+                $authorization->save();
 
                 $authorization = Authorization::find($request->pr_authorization_id);
                 foreach($authorization->authorization_detail as $author){
@@ -153,7 +151,7 @@ class PRController extends Controller
                     $authorization->employee_name      = $author->employee->name;                 
                     $authorization->as                 = $author->sign_as;     
                     $authorization->employee_position  = $author->employee_position->name;                     
-                    $authorization->level              = $count+$author->level;
+                    $authorization->level              = 1+$author->level;
                     $authorization->save();
                 }
     
