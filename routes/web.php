@@ -267,9 +267,14 @@ Route::middleware(['auth'])->group(function () {
     // MONITORING
     Route::get('/ticketmonitoring',[MonitoringController::class, 'ticketMonitoringView']);
     Route::get('/ticketmonitoringlogs/{ticket_id}',[MonitoringController::class, 'ticketMonitoringLogs']);
+    
     Route::get('/armadamonitoring',[MonitoringController::class, 'armadaMonitoringView']);
     Route::get('/armadamonitoringpologs/{po_number}',[MonitoringController::class, 'armadaMonitoringPOLogs']);
     Route::get('/armadamonitoringticketlogs/{armada_ticket_id}',[MonitoringController::class, 'armadaMonitoringTicketLogs']);
+
+    Route::get('/securitymonitoring',[MonitoringController::class, 'securityMonitoringView']);
+    Route::get('/securitymonitoringpologs/{po_number}',[MonitoringController::class, 'securityMonitoringPOLogs']);
+    Route::get('/securitymonitoringticketlogs/{security_ticket_id}',[MonitoringController::class, 'securityMonitoringTicketLogs']);
 });
     // Purchase Order
     Route::get('/signpo/{po_upload_request_id}',[POController::class,'poUploadRequestView']);
