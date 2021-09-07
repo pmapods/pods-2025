@@ -7,13 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\ArmadaTicket;
 use App\Models\TicketMonitoring;
+use App\Models\ArmadaTicketMonitoring;
 use App\Models\Po;
 
 class MonitoringController extends Controller
 {
     public function ticketMonitoringView(){
         $tickets = Ticket::whereNotIn('status',[-1])->get();
-        // dd($tickets);
         return view('Monitoring.ticketmonitoring',compact('tickets'));
     }
     
@@ -37,17 +37,39 @@ class MonitoringController extends Controller
     }
 
     public function armadaMonitoringView(){
+        $tickets = ArmadaTicket::whereNotIn('status',[-1])->get();
         // cari po yang statusnya sedang aktif saat ini
-        $pos = Po::whereIn('status',[3])->get();
+        $pos = Po::whereIn('status',[3])
+        ->where('armada_ticket_id','!=',null)
+        ->get();
         $end_kontrak_tickets = ArmadaTicket::join('perpanjangan_form','armada_ticket.id','=','perpanjangan_form.armada_ticket_id')
-                            ->where('perpanjangan_form.stopsewa_reason',"end")
-                            ->where('armada_ticket.status',6)
-                            ->get();
+            ->where('perpanjangan_form.stopsewa_reason',"end")
+            ->where('armada_ticket.status',6)
+            ->get();
         
-        return view('Monitoring.armadamonitoring',compact('pos','end_kontrak_tickets'));
+        return view('Monitoring.armadamonitoring',compact('pos','end_kontrak_tickets','tickets'));
     }
 
-    public function armadaMonitoringLogs($po_number){
+    public function armadaMonitoringTicketLogs($armada_ticket_id){
+        $logs = ArmadaTicketMonitoring::where('armada_ticket_id',$armada_ticket_id)
+        ->get()
+        ->sortBy('created_at');
+        $armadaticket = ArmadaTicket::find($armada_ticket_id);
+        $data = [];
+        foreach($logs as $log){
+            $item = new \stdClass();
+            $item->message = $log->message;
+            $item->employee_name = $log->employee_name;
+            $item->date = $log->created_at->translatedFormat('d F Y (H:i)');
+            array_push($data, $item);
+        }
+        return response()->json([
+            'data' => $data,
+            'status' =>  $armadaticket->status(),
+        ]);
+    }
+
+    public function armadaMonitoringPOLogs($po_number){
         $po = Po::where('no_po_sap',$po_number)->first();
         $pos = [$po->no_po_sap];
         $flag = true;
