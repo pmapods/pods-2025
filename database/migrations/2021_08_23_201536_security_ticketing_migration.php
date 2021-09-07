@@ -44,6 +44,7 @@ class SecurityTicketingMigration extends Migration
             $table->date('requirement_date');
             $table->date('finished_date')->nullable();
 
+            $table->string('ba_path')->nullable();
             $table->string('lpb_path')->nullable();
             $table->string('endkontrak_path')->nullable();
 

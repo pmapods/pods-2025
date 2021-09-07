@@ -24,7 +24,7 @@ class SecurityTicket extends Model
     }
 
     public function po(){
-        return $this->hasOne(Po::class);
+        return $this->hasMany(Po::class);
     }
 
     public function current_authorization(){
@@ -90,6 +90,9 @@ class SecurityTicket extends Model
                 break;
             case 3:
                 return 'End Sewa';
+                break;
+            case 4:
+                return 'Pengadaan Lembur';
                 break;
             default:
                 return 'undefined_security_type';

@@ -718,9 +718,7 @@
         @endisset
 
         @isset($securityticket)
-            @php
-                $po = $securityticket->po;
-            @endphp
+            @foreach ($securityticket->po as $po)
             <div class="col-md-6 col-12 p-2">
                 <form action="/submitPO" method="post" enctype="multipart/form-data">
                     @method('post')
@@ -1053,6 +1051,7 @@
                     </div>
                 </form>
             </div>
+            @endforeach
         @endisset
     </div>
     <div class="row d-flex justify-content-center">

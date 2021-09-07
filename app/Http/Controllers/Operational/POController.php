@@ -325,6 +325,11 @@ class POController extends Controller
                         $securityticket->vendor_name = $request->new_vendor;
                         $selected_vendor             = $request->new_vendor;
                         break;
+
+                    case 'Pengadaan Lembur':
+                        $securityticket->vendor_name = $request->new_vendor;
+                        $selected_vendor             = $request->new_vendor;
+                        break;
                         
                     case 'Perpanjangan':
                         $securityticket->vendor_name = $request->old_vendor;
@@ -339,31 +344,48 @@ class POController extends Controller
                 }
                 $securityticket->save();
 
-                $newPo                     = new Po;
-                $newPo->security_ticket_id = $securityticket->id;
-                $newPo->sender_name        = $selected_vendor;
-                $newPo->send_name          = $securityticket->salespoint->name;
-                $newPo->has_ppn            = true;
-                $newPo->ppn_percentage     = 10;
-                $newPo->save();
-
-                // sewa
-                if($request->sewa_value < 10000){
-                    throw new \Exception('Minimal biaya sewa Rp 10.000,-');
+                // untuk item ppn
+                if(isset($request->item_ppn)){
+                    $newPo                     = new Po;
+                    $newPo->security_ticket_id = $securityticket->id;
+                    $newPo->sender_name        = $selected_vendor;
+                    $newPo->send_name          = $securityticket->salespoint->name;
+                    $newPo->has_ppn            = true;
+                    $newPo->ppn_percentage     = 10;
+                    $newPo->save();
+    
+                    foreach($request->item_ppn as $item){
+                        $newPoDetail = new PoDetail;
+                        $newPoDetail->po_id            = $newPo->id;
+                        $newPoDetail->item_name        = $item['name'];
+                        $newPoDetail->item_description = $item['notes'];
+                        $newPoDetail->uom              = 'AU';
+                        $newPoDetail->qty              = $item['count'];
+                        $newPoDetail->item_price       = $item['value'];
+                        $newPoDetail->save();
+                    }
                 }
-                $notes = $request->sewa_notes;
-                $value = $request->sewa_value;
 
-                // biaya sewa
-                $newPoDetail = new PoDetail;
-                $newPoDetail->po_id            = $newPo->id;
-                $newPoDetail->item_name        = $request->sewa_name;
-                $newPoDetail->item_description = $notes;
-                $newPoDetail->uom              = 'AU';
-                $newPoDetail->qty              = $request->sewa_count;
-                $newPoDetail->item_price       = $value;
-                $newPoDetail->save();
-                
+                // untuk item non ppn
+                if(isset($request->item_nonppn)){
+                    $newPo                     = new Po;
+                    $newPo->security_ticket_id = $securityticket->id;
+                    $newPo->sender_name        = $selected_vendor;
+                    $newPo->send_name          = $securityticket->salespoint->name;
+                    $newPo->has_ppn            = false;
+                    $newPo->save();
+    
+                    foreach($request->item_ppn as $item){
+                        $newPoDetail = new PoDetail;
+                        $newPoDetail->po_id            = $newPo->id;
+                        $newPoDetail->item_name        = $item['name'];
+                        $newPoDetail->item_description = $item['notes'];
+                        $newPoDetail->uom              = 'AU';
+                        $newPoDetail->qty              = $item['count'];
+                        $newPoDetail->item_price       = $item['value'];
+                        $newPoDetail->save();
+                    }
+                }
                 $monitor                        = new SecurityTicketMonitoring;
                 $monitor->security_ticket_id    = $securityticket->id;
                 $monitor->employee_id           = Auth::user()->id;
@@ -633,8 +655,11 @@ class POController extends Controller
             if ($po->security_ticket_id != null) {
                 $security_ticket              = $po->security_ticket;
                 $security_ticket->po_number   = $po->no_po_sap;
-                $security_ticket->status      = 5;
-                $security_ticket->save();
+                // cek status seluruh po apakah sudah selesai
+                if ($security_ticket->po->where('status', '!=', 3)->count()==0) {
+                    $security_ticket->status      = 5;
+                    $security_ticket->save();
+                }
                 
                 $monitor                          = new SecurityTicketMonitoring;
                 $monitor->security_ticket_id      = $po->security_ticket->id;
@@ -642,10 +667,17 @@ class POController extends Controller
                 $monitor->employee_name           = Auth::user()->name;
                 $monitor->message                 = 'Konfirmasi tanda tangan supplier PO '.$po->no_po_sap;
                 $monitor->save();
+
+                DB::commit();
+                if($security_ticket->po->where('status','!=',3)->count()>0){
+                    return back()->with('success','Berhasil melakukan konfirmasi tanda tangan Supplier untuk PO '.$po->no_po_sap);
+                }else{
+                    return back()->with('success','Berhasil melakukan konfirmasi tanda tangan Supplier untuk PO '.$po->no_po_sap.' dilanjutkan dengan penerimaan di salespoint/area bersangkutan');
+                }
             }
 
             DB::commit();
-            return back()->with('success','Berhasil melakukan konfirmasi tanda tangan Supplier untuk PO '.$po->no_po_sap.' dilanjutkan dengan penerimaan barang di salespoint/area bersangkutan');
+            return back()->with('success','Berhasil melakukan konfirmasi tanda tangan Supplier untuk PO '.$po->no_po_sap.' dilanjutkan dengan penerimaan di salespoint/area bersangkutan');
         } catch (\Exception $ex) {
             DB::rollback();
             return back()->with('error','Gagal Confirm Signed PO '.$ex->getMessage().' - line '.$ex->getLine());

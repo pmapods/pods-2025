@@ -125,45 +125,53 @@
                 </tbody>
             </table>
             @if ($securityticket->status < 3)
-            <div class="form-group">
-                <label for="">Pilih Otorisasi</label>
-                <select class="form-control select2 authorization_select2" required name="pr_authorization_id">
-                    <option value="">Pilih Otorisasi</option>
-                    @foreach ($authorizations as $authorization)
-                        @php
-                            $list= $authorization->authorization_detail;
-                            $string = "";
-                            foreach ($list as $key=>$author){
-                                $string = $string.$author->employee->name;
-                                $open = $author->employee_position;
-                                if(count($list)-1 != $key){
-                                    $string = $string.' -> ';
-                                }
-                            }
-                        @endphp
-                        <option value="{{ $authorization->id }}" data-list="{{ $list }}">{{$string}}</option>
-                    @endforeach
-                </select>
+            <div class="row">
+                @php
+                    $collection = $securityticket->authorizations->slice(1)->all();
+                    $values = collect($collection)->values();
+                @endphp
+                <div class="col-3">
+                    <div class="form-group">
+                        <label class="required_field">Dibuat Oleh</label>
+                        <select class="form-control" name="dibuat_oleh_ticketauthorization_id" id="dibuat_select" required>
+                            <option value="">-- Pilih Otorisasi -- </option>
+                            @foreach ($values as $author)
+                                <option value="{{$author->id}}" data-authorization="{{$author}}">
+                                  {{$author->employee_name}} -- {{$author->employee_position}}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-danger">* Minimal Golongan 5A</small>
+                      </div>
+                </div>
+                <div class="col-9">    
+                    <div class="form-group">
+                        <label for="">Pilih Otorisasi</label>
+                        <select class="form-control select2 authorization_select2" required name="pr_authorization_id">
+                            <option value="">Pilih Otorisasi</option>
+                            @foreach ($authorizations as $authorization)
+                                @php
+                                    $list= $authorization->authorization_detail;
+                                    $string = "";
+                                    foreach ($list as $key=>$author){
+                                        $string = $string.$author->employee->name;
+                                        $open = $author->employee_position;
+                                        if(count($list)-1 != $key){
+                                            $string = $string.' -> ';
+                                        }
+                                    }
+                                @endphp
+                                <option value="{{ $authorization->id }}" data-list="{{ $list }}">{{$string}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
             @endif
             <center><h4>Otorisasi</h4><center>
-            @php
-                $default_as = ['Dibuat Oleh', 'Diperiksa Oleh'];
-                $collection = $securityticket->authorizations->slice(1)->all();
-                $values = collect($collection)->values();
-            @endphp
             <div class="d-flex justify-content-center">
                 @if ($securityticket->status < 3)
-                <div class="d-flex align-items-center justify-content-center">
-                    @foreach ($values->all() as $key =>$author)
-                        <div class="mr-3">
-                            <span class="font-weight-bold">{{$author->employee_name}} -- {{$author->employee_position}}</span><br>
-                            <span>{{$default_as[$key]}}</span>
-                        </div>
-                        @if($key < $values->count()-1)
-                        <i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>
-                        @endif
-                    @endforeach
+                <div class="d-flex align-items-center justify-content-center" id="dibuat_oleh_field">
+                    
                 </div>
                 @endif
                 <div class="d-flex align-items-center justify-content-center" id="authorization_field">
@@ -230,6 +238,18 @@
                         $('#authorization_field').append('<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>');
                     }
                 });
+            }
+        });
+        
+        $('#dibuat_select').change(function(){
+            let author = $(this).find('option:selected').data('authorization');
+            $('#dibuat_oleh_field').empty();
+            if(author !== undefined){
+                $('#dibuat_oleh_field').append('<div class="mr-3"><span class="font-weight-bold">'+author.employee_name+' -- '+author.employee_position+'</span><br><span>Dibuat Oleh</span></div>');
+                if(index != list.length -1){
+                    $('#dibuat_oleh_field').append('<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>');
+                }
+                $('#dibuat_oleh_field').append('<i class="fa fa-chevron-right mr-3" aria-hidden="true"></i>')
             }
         });
     });

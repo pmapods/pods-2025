@@ -277,7 +277,7 @@ class ArmadaSeeder extends Seeder
             array('id' => '5','name' => 'FE 71 LC','brand_name' => 'Mitsubishi','alias' => 'Engkle LC','isNiaga' => '1','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),
             array('id' => '6','name' => 'FE 73','brand_name' => 'Mitsubishi','alias' => 'Double','isNiaga' => '1','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),
             array('id' => '7','name' => 'FE 74','brand_name' => 'Mitsubishi','alias' => 'Double LC','isNiaga' => '1','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),
-            array('id' => '8','name' => 'GM Mini Bus','brand_name' => 'Daihatsu','alias' => NULL,'isNiaga' => '0','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),
+            array('id' => '8','name' => 'GM Passanger','brand_name' => 'Daihatsu','alias' => NULL,'isNiaga' => '0','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),
             array('id' => '9','name' => 'Xenia','brand_name' => 'Daihatsu','alias' => NULL,'isNiaga' => '0','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),
             array('id' => '10','name' => 'Avanza E','brand_name' => 'Toyota','alias' => NULL,'isNiaga' => '0','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),
             array('id' => '11','name' => 'Avanza G','brand_name' => 'Toyota','alias' => NULL,'isNiaga' => '0','deleted_at' => NULL,'created_at' => NULL,'updated_at' => NULL),

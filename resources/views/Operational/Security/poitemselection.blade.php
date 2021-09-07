@@ -27,112 +27,252 @@
     </div>
 </div>
 <div class="content-body">
-    <form action="/setupPO" method="post" id="setupForm">
-        @csrf
-        @php
-            $item_name = "Sewa Jasa Security";
-        @endphp
-        <input type="hidden" name="security_ticket_id" value="{{$securityticket->id}}">
-        <div class="row mb-3">
-            <div class="col-9 row">
-                @php
-                    $sewa_notes = '';
-                    switch ($securityticket->type()) {
-                        case 'Pengadaan Baru':
-                            $edit_vendor = true;
-                            $show_old_vendor = false;
-                            $sewa_notes .= $securityticket->type().' untuk '.$securityticket->salespoint->name."\r\n";
-                            break;
+    @php
+        $item_name = "Sewa Jasa Security";
+    @endphp
+    <div class="row mb-3">
+        <div class="col-9 row">
+            @php
+                $sewa_notes = '';
+                switch ($securityticket->type()) {
+                    case 'Pengadaan Baru':
+                        $edit_vendor = true;
+                        $show_old_vendor = false;
+                        $sewa_notes .= $securityticket->type().' untuk '.$securityticket->salespoint->name."\r\n";
+                        break;
 
-                        case 'Perpanjangan':
-                            $edit_vendor = false;
-                            $show_old_vendor = true;
-                            $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
-                            break;
+                    case 'Pengadaan Lembur':
+                        $edit_vendor = true;
+                        $show_old_vendor = false;
+                        $sewa_notes .= $securityticket->type().' untuk '.$securityticket->salespoint->name."\r\n";
+                        break;
 
-                        case 'Replace':
-                            $edit_vendor = true;
-                            $show_old_vendor = true;
-                            $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
-                            break;
+                    case 'Perpanjangan':
+                        $edit_vendor = false;
+                        $show_old_vendor = true;
+                        $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
+                        break;
 
-                        case 'End Kontrak':
-                            break;
-                    }
-                @endphp
-                @if ($show_old_vendor)
-                    <div class="col">
-                        <div class="form-group">
-                          <label>Vendor Lama</label>
-                          <input type="text" class="form-control" 
-                          value="{{ $securityticket->po_reference->security_ticket->vendor_name }}"
-                          name="old_vendor" readonly>
-                        </div>
+                    case 'Replace':
+                        $edit_vendor = true;
+                        $show_old_vendor = true;
+                        $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
+                        break;
+
+                    case 'End Kontrak':
+                        break;
+                }
+            @endphp
+            @if ($show_old_vendor)
+                <div class="col">
+                    <div class="form-group">
+                        <label>Vendor Lama</label>
+                        <input type="text" class="form-control" 
+                        value="{{ $securityticket->po_reference->security_ticket->vendor_name }}"
+                        name="old_vendor" readonly>
                     </div>
-                @endif
-                @if ($edit_vendor)
-                    <div class="col">
-                        <div class="form-group">
-                          <label class="required_field">Vendor Baru / Pilihan</label>
-                          <input type="text" class="form-control" 
-                          name="new_vendor" required>
-                        </div>
+                </div>
+            @endif
+            @if ($edit_vendor)
+                <div class="col">
+                    <div class="form-group">
+                        <label class="required_field">Vendor Baru / Pilihan</label>
+                        <input type="text" class="form-control" 
+                        name="new_vendor" required>
                     </div>
-                @endif
-            </div>
-            <div class="col-3 d-flex flex-column align-items-end justify-content-center">
-                @if (in_array($securityticket->type(),['Perpanjangan','Replace']))
-                    <a href="modalInfo" class="font-weight-bold text-primary" data-toggle="modal" data-target="#modalInfo">
-                        Tampilkan Form Evaluasi
-                    </a>
-                @endif
-                @if ($securityticket->po_reference != null)
-                <a class="font-weight-bold text-info"
-                    onclick="window.open('/storage/{{ $securityticket->po_reference->external_signed_filepath }}')">
-                    Tampilkan PO Sebelumnya ({{ $securityticket->po_reference->no_po_sap }})</a>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
-        <div class="row">
-            <table class="table table-bordered" id="table_list">
-                <thead>
-                    <tr class="thead-dark">
-                        <th>Nama Barang</th>
-                        <th width="8%">Qty</th>
-                        <th width="30%">Harga Satuan (Rp)</th>
-                        <th width="30%">Total Harga</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <input type="hidden" id="unit_name_input" name="sewa_name"
-                                value="{{ $item_name }}">
-                            {{ $item_name }}
-                            <div class="form-group mt-1">
-                                <textarea class="form-control form-control-sm" rows="2" style="resize: none"
-                                    placeholder="notes" name="sewa_notes">{{ $sewa_notes }}</textarea>
-                            </div>
-                        </td>
-                        <td>
-                            <input class="form-control autonumber count" onchange="sumRow(this)" type="number"
-                                name="sewa_count" value="1" min="1">
-                        </td>
-                        <td>
-                            <input type="text" class="form-control rupiah value" name="sewa_value" onchange="sumRow(this)">
-                        </td>
-                        <td class="rupiah_text total">0</td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="col-3 d-flex flex-column align-items-end justify-content-center">
+            @if (in_array($securityticket->type(),['Perpanjangan','Replace']))
+                <a href="modalInfo" class="font-weight-bold text-primary" data-toggle="modal" data-target="#modalInfo">
+                    Tampilkan Form Evaluasi
+                </a>
+            @endif
+            @if ($securityticket->po_reference != null)
+            <a class="font-weight-bold text-info"
+                onclick="window.open('/storage/{{ $securityticket->po_reference->external_signed_filepath }}')">
+                Tampilkan PO Sebelumnya ({{ $securityticket->po_reference->no_po_sap }})</a>
+            @endif
         </div>
-        <center>
-            <button type="button" class="btn btn-primary" onclick="doSubmit()">Submit</button>
-            <button type="submit" class="btn btn-primary d-none">Submit</button>
-        </center>
-    </form>
+    </div>
+    <h5>NON PPN</h5>
+    <div class="row">
+        <table class="table table-bordered" id="table_list">
+            <thead>
+                <tr class="thead-dark">
+                    <th width="1%"></th>
+                    <th>Nama Barang</th>
+                    <th width="8%">Qty</th>
+                    <th width="30%">Harga Satuan (Rp)</th>
+                    <th width="30%">Total Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="data_row_nonppn">
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input row_check" checked="checked" disabled="disabled">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="hidden" name="item_name" value="{{ $item_name }}">
+                        {{ $item_name }}
+                        <div class="form-group mt-1">
+                            <textarea class="form-control form-control-sm" rows="2" style="resize: none"
+                                placeholder="notes" name="sewa_notes">{{ $sewa_notes }}</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="form-control autonumber count" onchange="sumRow(this)" type="number"
+                            name="sewa_count" value="1" min="1">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control rupiah value" onchange="sumRow(this)">
+                    </td>
+                    <td class="rupiah_text total">0</td>
+                </tr>
+                <tr class="data_row_nonppn">
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input row_check">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="hidden" name="item_name" value="Prorate Awal Jasa Security">
+                            Prorate Awal Jasa Security
+                        <div class="form-group mt-1">
+                            <textarea class="form-control form-control-sm" rows="2" style="resize: none"
+                                placeholder="notes" name="sewa_notes" disabled>{{ $sewa_notes }}</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="form-control autonumber count" onchange="sumRow(this)" type="number"
+                            name="sewa_count" value="1" min="1" max="1" disabled>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control rupiah value" disabled onchange="sumRow(this)">
+                    </td>
+                    <td class="rupiah_text total">0</td>
+                </tr>
+                <tr class="data_row_nonppn">
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input row_check">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="hidden" name="item_name"
+                            value="Prorate Akhir Jasa Security">
+                        Prorate Akhir Jasa Security
+                        <div class="form-group mt-1">
+                            <textarea class="form-control form-control-sm" rows="2" style="resize: none"
+                                placeholder="notes" name="sewa_notes" disabled>{{ $sewa_notes }}</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="form-control autonumber count" onchange="sumRow(this)" type="number"
+                            name="sewa_count" value="1" min="1" max="1" disabled>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control rupiah value" disabled onchange="sumRow(this)">
+                    </td>
+                    <td class="rupiah_text total">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <h5>PPN</h5>
+    <div class="row">
+        <table class="table table-bordered">
+            <thead>
+                <tr class="thead-dark">
+                    <th width="1%"></th>
+                    <th>Nama Barang</th>
+                    <th width="8%">Qty</th>
+                    <th width="30%">Harga Satuan (Rp)</th>
+                    <th width="30%">Total Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="data_row_ppn">
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input row_check">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="hidden" name="item_name" value="Fee {{ $item_name }}">
+                        Fee {{ $item_name }}
+                        <div class="form-group mt-1">
+                            <textarea class="form-control form-control-sm" rows="2" style="resize: none"
+                                placeholder="notes" name="sewa_notes" disabled>{{ $sewa_notes }}</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="form-control autonumber count" onchange="sumRow(this)" type="number"
+                            name="sewa_count" value="1" min="1" disabled>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control rupiah value" onchange="sumRow(this)" disabled>
+                    </td>
+                    <td class="rupiah_text total">0</td>
+                </tr>
+                <tr class="data_row_ppn">
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input row_check">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="hidden" name="item_name"
+                            value="Fee Prorate Awal Jasa Security">
+                        Fee Prorate Awal Jasa Security
+                        <div class="form-group mt-1">
+                            <textarea class="form-control form-control-sm" rows="2" style="resize: none"
+                                placeholder="notes" name="sewa_notes" disabled>{{ $sewa_notes }}</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="form-control autonumber count" onchange="sumRow(this)" type="number"
+                            name="sewa_count" value="1" min="1" max="1" disabled>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control rupiah value" disabled onchange="sumRow(this)">
+                    </td>
+                    <td class="rupiah_text total">0</td>
+                </tr>
+                <tr class="data_row_ppn">
+                    <td>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input row_check">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="hidden" name="item_name"
+                            value="Fee Prorate Akhir Jasa Security">
+                        Fee Prorate Akhir Jasa Security
+                        <div class="form-group mt-1">
+                            <textarea class="form-control form-control-sm" rows="2" style="resize: none"
+                                placeholder="notes" name="sewa_notes" disabled>{{ $sewa_notes }}</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="form-control autonumber count" onchange="sumRow(this)" type="number"
+                            name="sewa_count" value="1" min="1" max="1"disabled>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control rupiah value" disabled onchange="sumRow(this)">
+                    </td>
+                    <td class="rupiah_text total">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <center>
+        <button type="button" class="btn btn-primary" onclick="doSubmit()">Submit</button>
+    </center>
 </div>
 
 <div class="modal fade" id="modalInfo" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
@@ -162,88 +302,112 @@
     </div>
 </div>
 @endsection
-<form action="" id="submitform">
+<form action="/setupPO" method="post" id="submitform">
     @csrf
+    <input type="hidden" name="security_ticket_id" value="{{$securityticket->id}}">
     <div></div>
 </form>
+
 @section('local-js')
 <script>
     $(document).ready(function () {
         $('.autonumber').change(function () {
             autonumber($(this));
         });
-        $('#unit_selection').change(function () {
-            $('#unit_name_span').text($(this).find('option:selected').text());
-            $('#unit_name_input').val($(this).find('option:selected').text());
+        $('.row_check').change(function () {
+            let notes_field = $(this).closest('tr').find('textarea');
+            let price_field = $(this).closest('tr').find('.value');
+            let count_field = $(this).closest('tr').find('.count');
+            if($(this).prop('checked')){
+                notes_field.prop('disabled', false);
+                price_field.prop('disabled', false);
+                count_field.prop('disabled', false);
+            }else{
+                notes_field.prop('disabled', true);
+                price_field.prop('disabled', true);
+                count_field.prop('disabled', true);
+            }
         });
-    });
-    $(document).on('click', '.removelist', function () {
-        let tr = $(this).closest('tr');
-        let className = tr.prop('class');
-        $('#additional_cost_select').find('option[value="' + className + '"]').prop('disabled', false);
-
-        tr.remove();
     });
 
     function doSubmit() {
-        if (confirm('Pastikan semua nilai telah terinput dengan benar !. Lanjutkan?')) {
-            $('#setupForm').find('button[type="submit"]').trigger('click');
-        }
-    }
+        let data = [];
+        let err_messages = [];
+        let input_text_append = "";
+        let flag = true;
+        let count = 0;
 
-    function addAdditionalCost() {
-        let selection = $('#additional_cost_select').val();
-        let text = $('#additional_cost_select').find('option:selected').text();
-        let append_text = "";
-        if (selection == "") {
-            alert('Tambahan biaya belum dipilih');
+        $('.data_row_nonppn').each(function() {
+            if($(this).find('input[type="checkbox"]').prop('checked')) {
+                let name = $(this).find('input[name="item_name"]').val();
+                let notes = $(this).find('textarea[name="sewa_notes"]').val();
+                let count = $(this).find('input[name="sewa_count"]').val();
+                let value = AutoNumeric.unformat($(this).find('.value').val(), autonum_setting);
+                if(value<100){
+                    err_messages.push('Minimal Rp 100,- untuk biaya '+name);
+                    flag = false;
+                }else{
+                    input_text_append += '<input type="hidden" name="item_nonppn['+count+'][name]" value="'+name+'">';
+                    input_text_append += '<input type="hidden" name="item_nonppn['+count+'][notes]" value="'+notes+'">';
+                    input_text_append += '<input type="hidden" name="item_nonppn['+count+'][count]" value="'+count+'">';
+                    input_text_append += '<input type="hidden" name="item_nonppn['+count+'][value]" value="'+value+'">';
+                    count++;
+                }
+            }
+        });
+
+        $('.data_row_ppn').each(function() {
+            if($(this).find('input[type="checkbox"]').prop('checked')) {
+                let name = $(this).find('input[name="item_name"]').val();
+                let notes = $(this).find('textarea[name="sewa_notes"]').val();
+                let count = $(this).find('input[name="sewa_count"]').val();
+                let value = AutoNumeric.unformat($(this).find('.value').val(),autonum_setting);
+                if(value<100){
+                    err_messages.push('Minimal Rp 100,- untuk biaya '+name);
+                    flag = false;
+                }else{
+                    input_text_append += '<input type="hidden" name="item_ppn['+count+'][name]" value="'+name+'">';
+                    input_text_append += '<input type="hidden" name="item_ppn['+count+'][notes]" value="'+notes+'">';
+                    input_text_append += '<input type="hidden" name="item_ppn['+count+'][count]" value="'+count+'">';
+                    input_text_append += '<input type="hidden" name="item_ppn['+count+'][value]" value="'+value+'">';
+                    count++;
+                }
+            }
+        });
+
+        let new_vendor = $('input[name="new_vendor"]').val();
+        if(new_vendor !== undefined){
+            if(new_vendor == ''){
+                err_messages.push('Vendor baru harus diisi');
+                flag = false;
+            }else{
+                input_text_append += '<input type="hidden" name="new_vendor" value="'+new_vendor+'">';
+            }
+        }
+
+        let old_vendor = $('input[name="old_vendor"]').val();
+        if(old_vendor !== undefined){
+            if(old_vendor == ''){
+                err_messages.push('Vendor baru harus diisi');
+                flag = false;
+            }else{
+                input_text_append += '<input type="hidden" name="old_vendor" value="'+old_vendor+'">';
+            }
+        }
+
+        if(!flag){
+            alert(err_messages.join('\n'));
             return;
         }
-        $('#additional_cost_select option:selected').prop('disabled', true);
-        $('#additional_cost_select').val("");
-        $('#additional_cost_select').trigger('change');
-        switch (selection) {
-            case 'prorate':
-                append_text += '<tr class="prorate"><td>' + text;
-                append_text += '<div class="form-group">';
-                append_text +=
-                    '<textarea class="form-control form-control-sm" rows="2" name="prorate_notes" style="resize: none" placeholder="notes"></textarea>';
-                append_text += '</div></td>';
-                append_text +=
-                    '<td><input class="form-control autonumber count" onchange="sumRow(this)" name="prorate_count" type="number" value="1" min="1"></td>';
-                append_text +=
-                    '<td><input type="text" name="prorate_value" onchange="sumRow(this)" class="form-control rupiah value" data-a-sign="Rp " data-a-dec="," data-a-sep="." value="0"></td>';
-                append_text += '<td class="rupiah_text total">Rp 0,00</td>';
-                append_text +=
-                    '<td class="text-center removelist"><i class="fa fa-times text-danger fa-2x" aria-hidden="true"></i></td></tr>';
-                break;
 
-            case 'ekspedisi':
-                append_text += '<tr class="ekspedisi"><td>' + text;
-                append_text += '<div class="form-group">';
-                append_text +=
-                    '<textarea class="form-control form-control-sm" rows="2" name="ekspedisi_notes" style="resize: none" placeholder="notes"></textarea>';
-                append_text += '</div></td>';
-                append_text += '<td>1<input type="hidden" class="count" value="1" name="ekspedisi_count"></td>';
-                append_text +=
-                    '<td><input type="text" class="form-control rupiah value" onchange="sumRow(this)" name="ekspedisi_value" data-a-sign="Rp " data-a-dec="," data-a-sep="." value="0">';
-                append_text +=
-                    '<small class="text-danger">Total Biaya Ekspedisi akan dibagi berdasarkan jumlah (Qty) biaya sewa</small></td>';
-                append_text += '<td class="rupiah_text total">Rp 0,00</td>';
-                append_text +=
-                    '<td class="text-center removelist"><i class="fa fa-times text-danger fa-2x" aria-hidden="true"></i></td></tr>';
-                break;
+        $('#submitform div').empty();
+        $('#submitform div').append(input_text_append);
 
-            default:
-                break;
+        if (confirm('Pastikan semua nilai telah terinput dengan benar ! Lanjutkan ?')) {
+            $('#submitform').submit();
         }
-        $('#table_list tbody').append(append_text);
-        let tr = $('#table_list tbody tr').last();
-        tr.find('.autonumber').change(function () {
-            autonumber($(this));
-        });
-        new AutoNumeric("#table_list tbody tr:last-child .rupiah", autonum_setting);
     }
+
 
     function sumRow(el) {
         let tr = $(el).closest('tr');

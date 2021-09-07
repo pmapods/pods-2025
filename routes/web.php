@@ -181,6 +181,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/approveevaluasiform',[SecurityTicketingController::class, 'approveEvaluasiForm']);
         Route::post('/rejectevaluasiform',[SecurityTicketingController::class, 'rejectEvaluasiForm']);
         Route::post('/approvesecurityauthorization',[SecurityTicketingController::class, 'approveSecurityAuthorization']);
+        Route::post('/uploadsecurityba',[SecurityTicketingController::class, 'uploadSecurityBA']);
         Route::post('/uploadsecuritylpb',[SecurityTicketingController::class, 'uploadSecurityLPB']);
         Route::post('/uploadsecurityendkontrak',[SecurityTicketingController::class, 'uploadSecurityEndKontrak']);
     });

@@ -158,6 +158,10 @@ class SecurityTicketingController extends Controller
                         $securityticket->status = 5;
                         $message = "Silahkan melanjutkan upload surat Pemutusan kontrak.";
                         break;
+                    case 'Pengadaan Lembur':
+                        $securityticket->status = 2;
+                        $message = "Silahkan melanjutkan ke Menu PR untuk Upload BA";
+                        break;
                 }
                 $securityticket->save();
                 DB::commit();
@@ -201,6 +205,32 @@ class SecurityTicketingController extends Controller
             DB::rollback();
             dd($ex);
             return redirect('/ticketing?menu=Security')->with('error','Gagal Membatalkan Pengadaan "'.$ex->getMessage().'"');
+        }
+    }
+
+    public function uploadSecurityBA(Request $request){
+        
+        try{
+            DB::beginTransaction();
+            $securityticket = SecurityTicket::findOrFail($request->security_ticket_id);
+
+            $salespointname = str_replace(' ','_',$securityticket->salespoint->name);
+            $ext = pathinfo($request->file('ba_file')->getClientOriginalName(), PATHINFO_EXTENSION);
+            $name = "BA_".$salespointname.'.'.$ext;
+            $path = "/attachments/ticketing/security/".$securityticket->code.'/'.$name;
+            $file = pathinfo($path);
+            $path = $request->file('ba_file')->storeAs($file['dirname'],$file['basename'],'public');
+            $securityticket->ba_path = $path;
+            
+            $securityticket->status = 4;
+            $securityticket->save();
+
+            DB::commit();
+            return redirect('/pr')->with('success','Berhasil melakukan upload berkas BA. Silahkan melanjutkan ke proses PO.');
+        }catch(\Exception $ex){
+            DB::rollback();
+            dd($ex);
+            return back()->with('error','Gagal melakukan upload berkas LPB '.$ex->getMessage());
         }
     }
 

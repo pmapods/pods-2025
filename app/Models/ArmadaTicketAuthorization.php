@@ -12,4 +12,8 @@ class ArmadaTicketAuthorization extends Model
     public function ArmadaTicket(){
         return $this->belongsTo(ArmadaTicket::class);
     }
+
+    public function employee(){
+        return $this->belongsTo(Employee::class);
+    }
 }

@@ -95,6 +95,7 @@
                     <option value="1">Perpanjangan</option>
                     <option value="2">Replace</option>
                     <option value="3">End Sewa</option>
+                    <option value="4">Pengadaan Lembur</option>
                   </select>
                 </div>
             </div>

@@ -12,4 +12,8 @@ class SecurityTicketAuthorization extends Model
     public function security_ticket(){
         return $this->belongsTo(SecurityTicket::class);
     }
+
+    public function employee(){
+        return $this->belongsTo(Employee::class);
+    }
 }

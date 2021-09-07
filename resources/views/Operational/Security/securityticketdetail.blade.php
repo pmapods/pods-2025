@@ -107,6 +107,10 @@
                     $securityevaluationform = true;
                     $uploadendkontrak = true;
                     break;
+                case 4:
+                    $securityevaluationform = false;
+                    $uploadendkontrak = false;
+                    break;
                 default:
                     break;
             }
@@ -166,16 +170,18 @@
                 </div>
             </div>
         @endif
-        @if (in_array($securityticket->type(),["Pengadaan Baru","Perpanjangan","Replace"]))
+        @if (in_array($securityticket->type(),["Pengadaan Lembur","Pengadaan Baru","Perpanjangan","Replace"]))
             @if ($securityticket->status == 5)    
                 <div class="col-6 d-flex flex-column">
                     <form action="/uploadsecuritylpb" method="post" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="security_ticket_id" value="{{ $securityticket->id }}">
                         <h5>Upload Berkas Penerimaan Security</h5>
-                        <div>
-                            <b>PO {{ $securityticket->po->no_po_sap }} </b> <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $securityticket->po->external_signed_filepath }}')">Tampilkan PO</a>
-                        </div>
+                        @foreach ($securityticket->po as $po)
+                            <div>
+                                <b>PO {{ $po->no_po_sap }} </b> <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $po->external_signed_filepath }}')">Tampilkan PO</a>
+                            </div>
+                        @endforeach
                         <div class="form-group">
                             <label class="required_field">Pilih File LPB lengkap dengan ttd</label>
                             <input type="file" class="form-control-file validatefilesize" name="lpb_file" accept="image/*,application/pdf" required>
@@ -194,9 +200,11 @@
                     <div>
                         <b>Dokumen penerimaan LPB </b> <a href="#" class="font-weight-bold" onclick="window.open('/storage/{{ $securityticket->lpb_path }}')">Tampilkan</a>
                     </div>
-                    <div>
-                        <b>PO {{ $securityticket->po->no_po_sap }}</b> <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $securityticket->po->external_signed_filepath }}')">Tampilkan</a>
-                    </div>
+                    @foreach ($securityticket->po as $po)
+                        <div>
+                            <b>PO {{ $po->no_po_sap }} </b> <a class="font-weight-bold" href="#" onclick="window.open('/storage/{{  $po->external_signed_filepath }}')">Tampilkan PO</a>
+                        </div>
+                    @endforeach
                 </div>
             @endif
         @endif

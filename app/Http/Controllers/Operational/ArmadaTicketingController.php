@@ -78,7 +78,7 @@ class ArmadaTicketingController extends Controller
                 $checkBudget->pending_quota += 1;
                 $checkBudget->save();
             }else{
-                return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$armadaticketing->vendor_recommendation_name);
+                return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$request->vendor_recommendation_name);
             }
 
             $newTicket                   = new ArmadaTicket;
