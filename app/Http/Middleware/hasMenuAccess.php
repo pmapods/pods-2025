@@ -28,7 +28,25 @@ class hasMenuAccess
             }
         }
         
+        if($access[0] == 'budget'){
+            $emp_access = intval(Auth::user()->menu_access->budget ?? 0);
+            if(($emp_access & $menu_access) != 0){
+                return $next($request);
+            }else{
+                return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi developer untuk mendapatkan akses');
+            }
+        }
+        
         if($access[0] == 'operational'){
+            $emp_access = intval(Auth::user()->menu_access->operational ?? 0);
+            if(($emp_access & $menu_access) != 0){
+                return $next($request);
+            }else{
+                return redirect('/dashboard')->with('error','Anda tidak memiliki access ke menu bersangkutan. Silahkan hubungi developer untuk mendapatkan akses');
+            }
+        }
+
+        if($access[0] == 'monitoring'){
             $emp_access = intval(Auth::user()->menu_access->operational ?? 0);
             if(($emp_access & $menu_access) != 0){
                 return $next($request);

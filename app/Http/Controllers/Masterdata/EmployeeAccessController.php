@@ -51,7 +51,9 @@ class EmployeeAccessController extends Controller
             }
             // dd( array_sum($request->masterdata));
             $old_menu_access->masterdata = array_sum($request->masterdata ?? []);
+            $old_menu_access->budget = array_sum($request->budget ?? []);
             $old_menu_access->operational = array_sum($request->operational ?? []);
+            $old_menu_access->monitoring = array_sum($request->monitoring ?? []);
             $old_menu_access->save();
             DB::commit();
             return redirect('/employeeaccess')->with('success','Berhasil update data akses karyawan');

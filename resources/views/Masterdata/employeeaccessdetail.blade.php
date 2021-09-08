@@ -52,10 +52,10 @@
         </div>
         <hr>
         <h3>Akses Menu</h3>
-        @php
-            $masterdata_accesses = ['Jabatan','Karyawan','SalesPoint','Akses Karyawan','Matriks Otorisasi','Vendor','Budget Pricing','Kelengkapan Berkas'];
-        @endphp
         <div class="row">
+            @php
+                $masterdata_accesses = ['Jabatan','Karyawan','SalesPoint','Akses Karyawan','Matriks Otorisasi','Vendor','Budget Pricing','Kelengkapan Berkas','Master Armada'];
+            @endphp
             <div class="col-6 col-md-4 mb-3 group_check">
                 <div class="form-check form-check-inline mb-2">
                     <label class="form-check-label">
@@ -68,6 +68,26 @@
                             <input type="checkbox" class="form-check-input child_check" name="masterdata[]" 
                             value="{{pow(2,$key)}}"
                             @if((($employee->menu_access->masterdata ?? 0) & pow(2,$key)) != 0) checked @endif>{{$access}}
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+
+            @php
+                $budget_accesses = ['Inventory','Armada','Assumption'];
+            @endphp
+            <div class="col-6 col-md-4 mb-3 group_check">
+                <div class="form-check form-check-inline mb-2">
+                    <label class="form-check-label">
+                        <span class="h4 mr-2">Budget</span> <input class="form-check-input head_check" type="checkbox">
+                    </label>
+                </div>
+                @foreach ($budget_accesses as $key=>$access)
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input child_check" name="budget[]" 
+                            value="{{pow(2,$key)}}"
+                            @if((($employee->menu_access->budget ?? 0) & pow(2,$key)) != 0) checked @endif>{{$access}}
                         </label>
                     </div>
                 @endforeach
@@ -88,6 +108,26 @@
                             <input type="checkbox" class="form-check-input child_check" name="operational[]" 
                             value="{{pow(2,$key)}}"
                             @if((($employee->menu_access->operational ?? 0) & pow(2,$key)) != 0) checked @endif>{{$access}}
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+
+            @php
+                $monitoring_accesses = ['Monitor Pengadaan', 'Monitor Security', 'Monitor Armada'];
+            @endphp
+            <div class="col-6 col-md-4 mb-3 group_check">
+                <div class="form-check form-check-inline mb-2">
+                    <label class="form-check-label">
+                        <span class="h4 mr-2">Monitoring</span> <input class="form-check-input head_check" type="checkbox">
+                    </label>
+                </div>
+                @foreach ($monitoring_accesses as $key=>$access)
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input child_check" name="monitoring[]" 
+                            value="{{pow(2,$key)}}"
+                            @if((($employee->menu_access->monitoring ?? 0) & pow(2,$key)) != 0) checked @endif>{{$access}}
                         </label>
                     </div>
                 @endforeach

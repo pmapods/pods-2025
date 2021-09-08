@@ -105,203 +105,222 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
             {{-- MASTERDATA --}}
-            @if(Auth::user()->code == 'EMP-00001')
-            <li class="nav-item has-treeview menu-close">
+            @if (Auth::user()->menu_access->masterdata != 0) 
+                <li class="nav-item has-treeview menu-close">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-database"></i>
+                        <p>
+                            Masterdata
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 1) != 0)
+                        <li class="nav-item">
+                            <a href="/employeeposition" class="nav-link">
+                                <i class="fad fa-user-cowboy nav-icon"></i>
+                                <p>Jabatan</p>
+                            </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 2) != 0)
+                        <li class="nav-item">
+                            <a href="/employee" class="nav-link">
+                                <i class="fad fa-users nav-icon"></i>
+                                <p>Karyawan</p>
+                            </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 4) != 0)
+                        <li class="nav-item">
+                            <a href="/salespoint" class="nav-link">
+                                <i class="fad fa-globe-asia nav-icon"></i>
+                                <p>Sales Point</p>
+                            </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 8) != 0)
+                        <li class="nav-item">
+                            <a href="/employeeaccess" class="nav-link">
+                                <i class="fad fa-user-unlock nav-icon"></i>
+                                <p>Akses Karyawan</p>
+                            </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 16) != 0)
+                        <li class="nav-item">
+                            <a href="/authorization" class="nav-link">
+                                <i class="fad fa-signature nav-icon"></i>
+                                <p>Matriks Otorisasi Form</p>
+                            </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 32) != 0)
+                        <li class="nav-item">
+                            <a href="/vendor" class="nav-link">
+                                <i class="fad fa-handshake nav-icon"></i>
+                                <p>Vendor</p>
+                            </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 64) != 0)
+                        <li class="nav-item">
+                            <a href="/budgetpricing" class="nav-link">
+                                <i class="fad fa-calculator nav-icon"></i>
+                                <p>Budget Pricing</p>
+                            </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 128) != 0)
+                        <li class="nav-item">
+                        <a href="/filecompletement" class="nav-link">
+                            <i class="fad fa-folders nav-icon"></i>
+                            <p>Kelengkapan Berkas</p>
+                        </a>
+                        </li>
+                        @endif
+                        @if(((Auth::user()->menu_access->masterdata ?? 0) & 256) != 0)
+                        <li class="nav-item">
+                        <a href="/armada" class="nav-link">
+                            <i class="fad fa-garage-car nav-icon"></i>
+                            <p>Master Armada</p>
+                        </a>
+                        </li>
+                        @endif
+                    </ul>
+                </li>
+            @endif
+
+            {{-- BUDGET --}}
+            @if (Auth::user()->menu_access->budget != 0) 
+                <li class="nav-item has-treeview menu-close">
                 <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-database"></i>
+                    <i class="nav-icon fas fa-calculator"></i>
                     <p>
-                        Masterdata
+                        Budget
                         <i class="right fas fa-angle-left"></i>
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 1) != 0)
+                        @if(((Auth::user()->menu_access->budget ?? 0) & 1) != 0)
+                            <li class="nav-item">
+                                <a href="/inventorybudget" class="nav-link">
+                                    <i class="fad fa-inventory nav-icon"></i>
+                                    <p>Inventory</p>
+                                </a>
+                            </li>
+                        @endif
+                </ul>
+                <ul class="nav nav-treeview">
+                        @if(((Auth::user()->menu_access->budget ?? 0) & 2) != 0)
+                            <li class="nav-item">
+                                <a href="/armadabudget" class="nav-link">
+                                    <i class="fad fa-truck nav-icon"></i>
+                                    <p>Armada</p>
+                                </a>
+                            </li>
+                        @endif
+                </ul>
+                <ul class="nav nav-treeview">
+                        @if(((Auth::user()->menu_access->budget ?? 0) & 4) != 0)
+                            <li class="nav-item">
+                                <a href="/assumptionbudget" class="nav-link">
+                                    <i class="fad fa-th nav-icon"></i>
+                                    <p>Assumption</p>
+                                </a>
+                            </li>
+                        @endif
+                </ul>
+                </li>
+            @endif
+
+            {{-- OPERATIONAL --}}
+            @if (Auth::user()->menu_access->operational != 0) 
+                <li class="nav-item has-treeview menu-close">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-briefcase"></i>
+                    <p>
+                        Operasional
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    @if(((Auth::user()->menu_access->operational ?? 0) & 1) != 0)
                     <li class="nav-item">
-                        <a href="/employeeposition" class="nav-link">
-                            <i class="fad fa-user-cowboy nav-icon"></i>
-                            <p>Jabatan</p>
+                        <a href="/ticketing" class="nav-link">
+                            <i class="fad fa-ticket nav-icon"></i>
+                            <p>Pengadaan</p>
                         </a>
                     </li>
                     @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 2) != 0)
+                    @if(((Auth::user()->menu_access->operational ?? 0) & 2) != 0)
                     <li class="nav-item">
-                        <a href="/employee" class="nav-link">
-                            <i class="fad fa-users nav-icon"></i>
-                            <p>Karyawan</p>
+                        <a href="/bidding" class="nav-link">
+                            <i class="fad fa-less-than-equal nav-icon"></i>
+                            <p>Bidding</p>
                         </a>
                     </li>
                     @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 4) != 0)
+                    @if(((Auth::user()->menu_access->operational ?? 0) & 4) != 0)
                     <li class="nav-item">
-                        <a href="/salespoint" class="nav-link">
-                            <i class="fad fa-globe-asia nav-icon"></i>
-                            <p>Sales Point</p>
+                        <a href="/pr" class="nav-link">
+                            <i class="fad fa-shopping-bag nav-icon"></i>
+                            <p>Purchase Requisition</p>
                         </a>
                     </li>
                     @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 8) != 0)
+                    @if(((Auth::user()->menu_access->operational ?? 0) & 8) != 0)
                     <li class="nav-item">
-                        <a href="/employeeaccess" class="nav-link">
-                            <i class="fad fa-user-unlock nav-icon"></i>
-                            <p>Akses Karyawan</p>
+                        <a href="/po" class="nav-link">
+                            <i class="fad fa-shopping-cart nav-icon"></i>
+                            <p>Purchase Order</p>
                         </a>
-                    </li>
-                    @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 16) != 0)
-                    <li class="nav-item">
-                        <a href="/authorization" class="nav-link">
-                            <i class="fad fa-signature nav-icon"></i>
-                            <p>Matriks Otorisasi Form</p>
-                        </a>
-                    </li>
-                    @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 32) != 0)
-                    <li class="nav-item">
-                        <a href="/vendor" class="nav-link">
-                            <i class="fad fa-handshake nav-icon"></i>
-                            <p>Vendor</p>
-                        </a>
-                    </li>
-                    @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 64) != 0)
-                    <li class="nav-item">
-                        <a href="/budgetpricing" class="nav-link">
-                            <i class="fad fa-calculator nav-icon"></i>
-                            <p>Budget Pricing</p>
-                        </a>
-                    </li>
-                    @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 128) != 0)
-                    <li class="nav-item">
-                      <a href="/filecompletement" class="nav-link">
-                          <i class="fad fa-folders nav-icon"></i>
-                          <p>Kelengkapan Berkas</p>
-                      </a>
-                    </li>
-                    @endif
-                    @if(((Auth::user()->menu_access->masterdata ?? 0) & 256) != 0)
-                    <li class="nav-item">
-                      <a href="/armada" class="nav-link">
-                          <i class="fad fa-garage-car nav-icon"></i>
-                          <p>Master Armada</p>
-                      </a>
                     </li>
                     @endif
                 </ul>
-            </li>
+                </li>
             @endif
-
             
-            {{-- BUDGET --}}
-            <li class="nav-item has-treeview menu-close">
-              <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-calculator"></i>
-                  <p>
-                      Budget
-                      <i class="right fas fa-angle-left"></i>
-                  </p>
-              </a>
-              <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                      <a href="/inventorybudget" class="nav-link">
-                          <i class="fad fa-inventory nav-icon"></i>
-                          <p>Inventory</p>
-                      </a>
-                  </li>
-              </ul>
-              <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                      <a href="/armadabudget" class="nav-link">
-                          <i class="fad fa-truck nav-icon"></i>
-                          <p>Armada</p>
-                      </a>
-                  </li>
-              </ul>
-              <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                      <a href="/assumptionbudget" class="nav-link">
-                          <i class="fad fa-th nav-icon"></i>
-                          <p>Assumption</p>
-                      </a>
-                  </li>
-              </ul>
-            </li>
-
-            {{-- OPERATIONAL --}}
-            <li class="nav-item has-treeview menu-close">
-              <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-briefcase"></i>
-                  <p>
-                      Operasional
-                      <i class="right fas fa-angle-left"></i>
-                  </p>
-              </a>
-              <ul class="nav nav-treeview">
-                  @if(((Auth::user()->menu_access->operational ?? 0) & 1) != 0)
-                  <li class="nav-item">
-                      <a href="/ticketing" class="nav-link">
-                          <i class="fad fa-ticket nav-icon"></i>
-                          <p>Pengadaan</p>
-                      </a>
-                  </li>
-                  @endif
-                  @if(((Auth::user()->menu_access->operational ?? 0) & 2) != 0)
-                  <li class="nav-item">
-                      <a href="/bidding" class="nav-link">
-                          <i class="fad fa-less-than-equal nav-icon"></i>
-                          <p>Bidding</p>
-                      </a>
-                  </li>
-                  @endif
-                  @if(((Auth::user()->menu_access->operational ?? 0) & 4) != 0)
-                  <li class="nav-item">
-                      <a href="/pr" class="nav-link">
-                          <i class="fad fa-shopping-bag nav-icon"></i>
-                          <p>Purchase Requisition</p>
-                      </a>
-                  </li>
-                  @endif
-                  @if(((Auth::user()->menu_access->operational ?? 0) & 8) != 0)
-                  <li class="nav-item">
-                      <a href="/po" class="nav-link">
-                          <i class="fad fa-shopping-cart nav-icon"></i>
-                          <p>Purchase Order</p>
-                      </a>
-                  </li>
-                  @endif
-              </ul>
-            </li>
-            
-            {{-- Monitoring --}}
-            <li class="nav-item has-treeview menu-close">
-              <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-eye"></i>
-                  <p>
-                      Monitoring
-                      <i class="right fas fa-angle-left"></i>
-                  </p>
-              </a>
-              <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                      <a href="/ticketmonitoring" class="nav-link">
-                          <i class="fad fa-ticket nav-icon"></i>
-                          <p>Monitor Pengadaan</p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="/securitymonitoring" class="nav-link">
-                          <i class="fad fa-shield nav-icon"></i>
-                          <p>Monitor Security</p>
-                      </a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="/armadamonitoring" class="nav-link">
-                          <i class="fad fa-truck-container nav-icon"></i>
-                          <p>Monitor Armada</p>
-                      </a>
-                  </li>
-              </ul>
-            </li>
+            {{-- MONITORING --}}
+            @if (Auth::user()->menu_access->monitoring != 0) 
+                <li class="nav-item has-treeview menu-close">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-eye"></i>
+                    <p>
+                        Monitoring
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                        @if(((Auth::user()->menu_access->monitoring ?? 0) & 1) != 0)
+                            <li class="nav-item">
+                                <a href="/ticketmonitoring" class="nav-link">
+                                    <i class="fad fa-ticket nav-icon"></i>
+                                    <p>Monitor Pengadaan</p>
+                                </a>
+                            </li>
+                        @endif
+                        
+                        @if(((Auth::user()->menu_access->monitoring ?? 0) & 2) != 0)
+                            <li class="nav-item">
+                                <a href="/securitymonitoring" class="nav-link">
+                                    <i class="fad fa-shield nav-icon"></i>
+                                    <p>Monitor Security</p>
+                                </a>
+                            </li>
+                        @endif
+                        
+                        @if(((Auth::user()->menu_access->monitoring ?? 0) & 4) != 0)
+                            <li class="nav-item">
+                                <a href="/armadamonitoring" class="nav-link">
+                                    <i class="fad fa-truck-container nav-icon"></i>
+                                    <p>Monitor Armada</p>
+                                </a>
+                            </li>
+                        @endif
+                </ul>
+                </li>
+            @endif
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

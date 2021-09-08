@@ -49,8 +49,10 @@ class EmployeeMigration extends Migration
         Schema::create('employee_menu_access', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
-            $table->integer('masterdata');
-            $table->integer('operational');
+            $table->integer('masterdata')->default(0);
+            $table->integer('budget')->default(0);
+            $table->integer('operational')->default(0);
+            $table->integer('monitoring')->default(0);
             $table->foreign('employee_id')->references('id')->on('employee');
             $table->timestamps();
         });
