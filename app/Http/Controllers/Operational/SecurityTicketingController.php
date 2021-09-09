@@ -297,17 +297,6 @@ class SecurityTicketingController extends Controller
         }
     }
 
-    public function getActivePO(Request $request){
-        $pos = Po::join('security_ticket','Po.security_ticket_id','=','security_ticket.id')
-                 ->where('Po.status',3)
-                 ->where('security_ticket.salespoint_id',$request->salespoint_id)
-                 ->select('Po.no_po_sap AS po_number','security_ticket.code AS code')
-                 ->get();
-        return response()->json([
-            "data" => $pos,
-        ]);
-    }
-
     public function addEvaluasiForm(Request $request){
         try{
             DB::beginTransaction();

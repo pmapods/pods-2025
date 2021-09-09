@@ -868,15 +868,30 @@ class POController extends Controller
     }
     
     public function getActivePO(Request $request){
-        $pos = Po::join('armada_ticket','Po.armada_ticket_id','=','armada_ticket.id')
-                 ->join('armada','armada_ticket.armada_id','=','armada.id')
-                 ->where('Po.status',3)
-                 ->where('armada_ticket.salespoint_id',$request->salespoint_id)
-                 ->where('armada_ticket.isNiaga',$request->isNiaga)
-                 ->select('Po.no_po_sap AS po_number','armada.plate AS plate')
-                 ->get();
-        return response()->json([
-            "data" => $pos,
-        ]);
+        // armada
+        if($request->type == 'armada'){
+            $pos = Po::join('armada_ticket','po.armada_ticket_id','=','armada_ticket.id')
+                     ->join('armada','armada_ticket.armada_id','=','armada.id')
+                     ->where('po.status',3)
+                     ->where('armada_ticket.salespoint_id',$request->salespoint_id)
+                     ->where('armada_ticket.isNiaga',$request->isNiaga)
+                     ->select('po.no_po_sap AS po_number','armada.plate AS plate')
+                     ->get();
+            return response()->json([
+                "data" => $pos,
+            ]);
+        }
+
+        // security
+        if($request->type == 'security'){
+            $pos = Po::join('security_ticket','po.security_ticket_id','=','security_ticket.id')
+                     ->where('po.status',3)
+                     ->where('security_ticket.salespoint_id',$request->salespoint_id)
+                     ->select('po.no_po_sap AS po_number','security_ticket.code AS code')
+                     ->get();
+            return response()->json([
+                "data" => $pos,
+            ]);
+        }
     }
 }

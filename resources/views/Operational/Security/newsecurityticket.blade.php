@@ -240,9 +240,14 @@ function loadAuthorizationbySalespoint(salespoint_id){
 function refreshPO(){
     let salespoint_id = $('#salespoint_select').val();
     $('#po_select').find('option[value!=""]').remove();
+    let requestdata = {
+        salespoint_id: salespoint_id,
+        type: 'security',
+    };
     $.ajax({
         type: "get",
-        url: '/getActivePO/security?salespoint_id='+salespoint_id,
+        url: '/getActivePO',
+        data: requestdata,
         success: function (response) {
             let data = response.data;
             data.forEach(item => {

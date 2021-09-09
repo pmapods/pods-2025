@@ -118,6 +118,7 @@
                   <select class="form-control po select2" name="po_id">
                       <option value="">-- Pilih PO --</option>
                   </select>
+                  <small class="text-danger">* PO aktif yang muncul berdasarkan tipe niaga dan salespoint terpilih</small>
                 </div>
             </div>
         </div>
@@ -233,9 +234,15 @@ $(document).ready(function () {
             $('.po_field').show();
             $('.po').prop('disabled', true).prop('required',true);
             $('.po').find('option[value!=""]').remove();
+            let requestdata = {
+                    salespoint_id: salespoint_id,
+                    isNiaga: isNiaga,
+                    type: 'armada'
+            };
             $.ajax({
                 type: "get",
-                url: '/getActivePO?isNiaga='+isNiaga+'&salespoint_id='+salespoint_id,
+                url: '/getActivePO',
+                data: requestdata,
                 success: function (response) {
                     let data = response.data;
                     data.forEach(item => {
@@ -248,6 +255,7 @@ $(document).ready(function () {
                 },
                 error: function (response) {
                     alert('load data failed. Please refresh browser or contact admin');
+                    console.log(response);
                 },
                 complete: function () {
                     $('.po').trigger('change');

@@ -164,7 +164,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/uploadbastk',[ArmadaTicketingController::class, 'uploadBASTK']);
         Route::post('/uploadbastkgt',[ArmadaTicketingController::class, 'uploadBASTKGT']);
         Route::post('/verifyPO',[ArmadaTicketingController::class, 'verifyPO']);
-        Route::get('/getActivePO',[POController::class, 'getActivePO']);
         Route::get('/getarmadatypebyniaga/{isNiaga}',[ArmadaController::class, 'getArmadaTypebyNiaga']);
         Route::get('/getArmadaAuthorizationbySalespoint/{salespoint_id}',[ArmadaController::class, 'getArmadaAuthorizationbySalespoint']);
         Route::get('/getSecurityAuthorizationbySalespoint/{salespoint_id}',[ArmadaController::class, 'getSecurityAuthorizationbySalespoint']);
@@ -174,7 +173,6 @@ Route::middleware(['auth'])->group(function () {
         // Security
         Route::post('/createsecurityticket',[SecurityTicketingController::class, 'createSecurityTicket']);
         Route::get('/securityticketing/{code}',[SecurityTicketingController::class, 'securityTicketDetail']);
-        Route::get('/getActivePO/security',[SecurityTicketingController::class, 'getActivePO']);
         Route::post('/terminatesecurityticketing',[SecurityTicketingController::class, 'terminateSecurityTicketing']);
         Route::post('/startsecurityauthorization',[SecurityTicketingController::class, 'startSecurityAuthorization']);
         Route::post('/addevaluasiform',[SecurityTicketingController::class, 'addEvaluasiForm']);
@@ -184,6 +182,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/uploadsecurityba',[SecurityTicketingController::class, 'uploadSecurityBA']);
         Route::post('/uploadsecuritylpb',[SecurityTicketingController::class, 'uploadSecurityLPB']);
         Route::post('/uploadsecurityendkontrak',[SecurityTicketingController::class, 'uploadSecurityEndKontrak']);
+
+        // AJAX
+        Route::get('/getActivePO',[POController::class, 'getActivePO']);
     });
     
     // BUDGET UPLOAD
