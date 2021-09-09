@@ -72,13 +72,20 @@ class ArmadaTicketingController extends Controller
             }
             // validasi budget untuk pengadaan berdasarkan vendor dan tipe armada
             $armadatype = ArmadaType::find($request->armada_type_id);
-            $checkBudget = $budget->budget_detail->where('type_armada',$armadatype->name)
-            ->where('vendor',$request->vendor_recommendation_name)->first();
+            $vendorname = $request->vendor_recommendation_name;
+            $checkBudget = $budget->budget_detail->filter(function($item) use ($armadatype,$vendorname){
+                if(trim($item->type_armada) == trim($armadatype->name) && trim($item->vendor) == trim($vendorname)){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+            $checkBudget = $checkBudget->first();
             if($checkBudget != null && $checkBudget->qty-$checkBudget->pending_quota-$checkBudget->used_quota > 0){
                 $checkBudget->pending_quota += 1;
                 $checkBudget->save();
             }else{
-                return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$request->vendor_recommendation_name);
+                return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$vendorname);
             }
 
             $newTicket                   = new ArmadaTicket;
@@ -111,9 +118,15 @@ class ArmadaTicketingController extends Controller
                 $newAuthorization->level             = $key+1;
                 $newAuthorization->save();
             }
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $newTicket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Pengadaan Armada Baru Dibuat';
+            $monitor->save();
             DB::commit();
             return redirect('/ticketing?menu=Armada')->with('success','Berhasil membuat ticketing armada');
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             DB::rollback();
             dd($ex);
             return back()->with('error','Gagal membuat ticketing armada ('.$ex->getMessage().')');
@@ -136,9 +149,9 @@ class ArmadaTicketingController extends Controller
         $salespoints = SalesPoint::all();
 
         $available_armadas = Armada::where('salespoint_id',$armadaticket->salespoint_id)
-                                ->where('armada_type_id',$armadaticket->armada_type_id)
-                                ->where('status',0)
-                                ->get();
+            ->where('armada_type_id',$armadaticket->armada_type_id)
+            ->where('status',0)
+            ->get();
         try { 
             if(!$armadaticket){
                 throw new \Exception('Ticket armada dengan kode '.$code.'tidak ditemukan');
@@ -201,6 +214,12 @@ class ArmadaTicketingController extends Controller
                 $newAuthorization->level              = $detail->level;
                 $newAuthorization->save();
             }
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Form Fasilitas Baru Dibuat';
+            $monitor->save();
             DB::commit();
             return back()->with('success', 'Berhasil membuat form fasilitas. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
         }catch(\Exception $ex){
@@ -249,6 +268,13 @@ class ArmadaTicketingController extends Controller
                 $newAuthorization->level                    = $detail->level;
                 $newAuthorization->save();
             }
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $request->armada_ticket_id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Membuat Form Perpanjangan';
+            $monitor->save();
+
             DB::commit();
             return back()->with('success', 'Berhasil membuat form perpanjangan perhentian. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
         }catch(\Exception $ex){
@@ -324,6 +350,13 @@ class ArmadaTicketingController extends Controller
                 $newAuthorization->level                    = $detail->level;
                 $newAuthorization->save();
             }
+
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $request->armada_ticket_id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Membuat Form Mutasi';
+            $monitor->save();
             DB::commit();
             return back()->with('success', 'Berhasil membuat form mutasi. Menunggu Otorisasi oleh '.$authorization->authorization_detail->first()->employee->name);
         }catch(\Exception $ex){
@@ -342,7 +375,15 @@ class ArmadaTicketingController extends Controller
                 $available_armada->status       = 1;
                 $available_armada->save();
             }
+            
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $request->armada_ticket_id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Melengkapi data available armada dengan nomor polisi '.$available_armada->plate;
+            $monitor->save();
             DB::commit();
+
             return back()->with('success', 'Berhasil Melengkapi data available armada');
         } catch (\Exception $ex) {
             DB::rollback();
@@ -368,6 +409,15 @@ class ArmadaTicketingController extends Controller
                 $facility_form->status = 1;
                 $facility_form->save();
             }
+            
+            $armadaticket = $facility_form->armada_ticket;
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Membatalkan Pengadaan Armada';
+            $monitor->save();
+
             DB::commit();
             if($authorization == null){
                 return back()->with('success','Seluruh Otorisasi Form fasilitas telah selesai');
@@ -399,6 +449,14 @@ class ArmadaTicketingController extends Controller
             $facility_form->save();
             $facility_form->delete();
 
+            $armadaticket = $facility_form->armada_ticket;
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Membatalkan Pengadaan Armada';
+            $monitor->save();
+
             DB::commit();
             if($authorization == null){
                 return back()->with('success','Formulir fasilitas berhasil dibatalkan. Silahkan membuat formulir fasilitas baru');
@@ -429,6 +487,14 @@ class ArmadaTicketingController extends Controller
                 $perpanjangan_form->status = 1;
                 $perpanjangan_form->save();
             }
+
+            $armadaticket = $perpanjangan_form->armada_ticket;
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Menyelesaikan otorisasi form perpanjangan';
+            $monitor->save();
             DB::commit();
             if($authorization == null){
                 return back()->with('success','Seluruh Otorisasi Form Perpanjangan telah selesai');
@@ -460,6 +526,13 @@ class ArmadaTicketingController extends Controller
             $perpanjangan_form->save();
             $perpanjangan_form->delete();
 
+            $armadaticket = $perpanjangan_form->armada_ticket;
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Membatalkan Formulir Perpanjangan';
+            $monitor->save();
             DB::commit();
             if($authorization == null){
                 return back()->with('success','Formulir perpanjangan berhasil dibatalkan. Silahkan membuat formulir perpanjangan baru');
@@ -490,6 +563,14 @@ class ArmadaTicketingController extends Controller
                 $mutasi_form->status = 1;
                 $mutasi_form->save();
             }
+
+            $armadaticket = $mutasi_form->armada_ticket;
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Menyelesaikan Otorisasi Form Mutasi';
+            $monitor->save();
             DB::commit();
             if($authorization == null){
                 return back()->with('success','Seluruh Otorisasi Form Mutasi telah selesai');
@@ -521,6 +602,13 @@ class ArmadaTicketingController extends Controller
             $mutasi_form->save();
             $mutasi_form->delete();
 
+            $armadaticket = $mutasi_form->armada_ticket;
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Membatalkan Formulir Mutasi';
+            $monitor->save();
             DB::commit();
             if($authorization == null){
                 return back()->with('success','Formulir mutasi berhasil dibatalkan. Silahkan membuat formulir mutasi baru');
@@ -604,6 +692,13 @@ class ArmadaTicketingController extends Controller
                 $armada->salespoint_id = $armadaticket->mutasi_form->receiver_salespoint_id;
                 $armada->save();
             }
+
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Mengupload dokumen kelengkapan';
+            $monitor->save();
             DB::commit();
             return back()->with('success','Berhasil melakukan upload dokumen kelengkapan, armada dengan nomor pelat '.str_replace(' ', '', strtoupper($request->plate)).' telah diupdate di master armada');
         }catch(\Exception $ex){
@@ -670,6 +765,12 @@ class ArmadaTicketingController extends Controller
             $armadaticket->status = 6;
             $armadaticket->save();
 
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Melakukan Verifikasi PO';
+            $monitor->save();
             DB::commit();
             return back()->with('success','Berhasil melakukan verifikasi PO.');
         }catch(\Exception $ex){
@@ -708,8 +809,14 @@ class ArmadaTicketingController extends Controller
             }else{
                 return back()->with('error',"Budget tidak tersedia untuk tipe ".$armadatype->name." dengan vendor ".$armadaticketing->vendor_recommendation_name);
             }
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticketing->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Melakukan Pembatalan Ticket';
+            $monitor->save();
             DB::commit();
-            return redirect('/ticketing?menu=Armada')->with('success', 'Berhasil melakukan pembatalan ticketing');
+            return redirect('/ticketing?menu=Armada')->with('success', 'Berhasil melakukan pembatalan ticket');
         } catch (\Exception $ex) {
             DB::rollback();
             dd($ex);
@@ -727,6 +834,13 @@ class ArmadaTicketingController extends Controller
                 $armadaticket->status += 1;
                 $armadaticket->save();
             }
+
+            $monitor                        = new ArmadaTicketMonitoring;
+            $monitor->armada_ticket_id      = $armadaticket->id;
+            $monitor->employee_id           = Auth::user()->id;
+            $monitor->employee_name         = Auth::user()->name;
+            $monitor->message               = 'Memulai Otorisasi Armada';
+            $monitor->save();
             return back()->with('success','Berhasil memulai otorisasi pengadaan armada '.$armadaticket->code.'. Otorisasi selanjutnya oleh '.$armadaticket->current_authorization()->employee_name);
         } catch (\Exception $ex) {
             dd($ex);
@@ -775,9 +889,22 @@ class ArmadaTicketingController extends Controller
                         break;
                 }
                 $armadaticket->save();
+                $monitor                        = new ArmadaTicketMonitoring;
+                $monitor->armada_ticket_id      = $armadaticket->id;
+                $monitor->employee_id           = Auth::user()->id;
+                $monitor->employee_name         = Auth::user()->name;
+                $monitor->message               = 'Menyelesaikan Otorisasi Ticket Armada';
+                $monitor->save();
                 DB::commit();
                 return back()->with('success','Otorisasi pengadaan armada '.$armadaticket->code.' telah selesai. '.$message);
             }else{
+                $armadaticket->save();
+                $monitor                        = new ArmadaTicketMonitoring;
+                $monitor->armada_ticket_id      = $armadaticket->id;
+                $monitor->employee_id           = Auth::user()->id;
+                $monitor->employee_name         = Auth::user()->name;
+                $monitor->message               = 'Approve Otorisasi Ticket Armada';
+                $monitor->save();
                 DB::commit();
                 return back()->with('success','Berhasil melakukan approval otorisasi pengadaan armada '.$armadaticket->code.'. Otorisasi selanjutnya oleh '.$armadaticket->current_authorization()->employee_name);
             }

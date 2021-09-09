@@ -97,7 +97,7 @@ class POController extends Controller
             }
             
             if($securityticket != null){
-                if($securityticket->po != null){
+                if(count($securityticket->po) > 0){
                     $authorization_list = Authorization::where('form_type',3)->get();
                     return view('Operational.podetail',compact('securityticket','authorization_list'));
                 }else{
@@ -317,7 +317,7 @@ class POController extends Controller
             
             if($securityticket != null){
                 // sudah di setup po sebelumnnya
-                if($securityticket->po != null){
+                if(count($securityticket->po) > 0){
                     throw new \Exception('PO sudah di setup sebelumnya');
                 }
                 switch ($securityticket->type()) {
@@ -375,7 +375,7 @@ class POController extends Controller
                     $newPo->has_ppn            = false;
                     $newPo->save();
     
-                    foreach($request->item_ppn as $item){
+                    foreach($request->item_nonppn as $item){
                         $newPoDetail = new PoDetail;
                         $newPoDetail->po_id            = $newPo->id;
                         $newPoDetail->item_name        = $item['name'];

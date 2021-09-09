@@ -197,7 +197,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inventorybudget/terminateBudget',[BudgetUploadController::class, 'terminateBudget']);
     Route::get('/getActiveSalespointBudget',[BudgetUploadController::class, 'getActiveSalespointBudget']);
     Route::get('/getBudgetAuthorizationbySalespoint/{salespoint_id}',[BudgetUploadController::class, 'getBudgetAuthorizationbySalespoint']);
-    Route::post('/createBudgetRequest',[BudgetUploadController::class, 'createBudgetRequest']);
+    Route::post('/createBudgetRequest/inventory',[BudgetUploadController::class, 'createBudgetRequest']);
 
     // armada budget upload
     Route::get('/armadabudget',[ArmadaBudgetUploadController::class, 'armadaBudgetView']);
@@ -209,7 +209,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/armadabudget/terminateBudget',[ArmadaBudgetUploadController::class, 'terminateBudget']);
     // Route::get('/getActiveSalespointBudget',[ArmadaBudgetUploadController::class, 'getActiveSalespointBudget']);
     // Route::get('/getBudgetAuthorizationbySalespoint/{salespoint_id}',[ArmadaBudgetUploadController::class, 'getBudgetAuthorizationbySalespoint']);
-    Route::post('/createBudgetRequest',[ArmadaBudgetUploadController::class, 'createBudgetRequest']);
+    Route::post('/createBudgetRequest/armada',[ArmadaBudgetUploadController::class, 'createBudgetRequest']);
 
     // assumption budget upload
     Route::get('/assumptionbudget',[AssumptionBudgetUploadController::class, 'assumptionBudgetView']);
@@ -221,7 +221,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/assumptionbudget/terminateBudget',[AssumptionBudgetUploadController::class, 'terminateBudget']);
     // Route::get('/getActiveSalespointBudget',[AssumptionBudgetUploadController::class, 'getActiveSalespointBudget']);
     // Route::get('/getBudgetAuthorizationbySalespoint/{salespoint_id}',[AssumptionBudgetUploadController::class, 'getBudgetAuthorizationbySalespoint']);
-    Route::post('/createBudgetRequest',[AssumptionBudgetUploadController::class, 'createBudgetRequest']);
+    Route::post('/createBudgetRequest/assumption',[AssumptionBudgetUploadController::class, 'createBudgetRequest']);
 
     // Bidding
     Route::middleware(['menu_access:operational:2'])->group(function () {

@@ -42,6 +42,7 @@ class LocationMigration extends Migration
             // 2 cellpoint
             // 3 subdist
             // 4 nasional
+            // 5 HO
             $table->tinyInteger('trade_type');
             // 0 MT Modern Trade
             // 1 GT General Trade

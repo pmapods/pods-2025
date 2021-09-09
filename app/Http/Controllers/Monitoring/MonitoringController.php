@@ -34,7 +34,7 @@ class MonitoringController extends Controller
         }
         return response()->json([
             'data' => $data,
-            'status' =>  $ticket->status(),
+            'status' =>  $ticket->status() ?? null,
         ]);
     }
 
@@ -52,11 +52,11 @@ class MonitoringController extends Controller
         return view('Monitoring.armadamonitoring',compact('pos','end_kontrak_tickets','tickets'));
     }
 
-    public function armadaMonitoringTicketLogs($armada_ticket_id){
-        $logs = ArmadaTicketMonitoring::where('armada_ticket_id',$armada_ticket_id)
+    public function armadaMonitoringTicketLogs($code){
+        $armadaticket = ArmadaTicket::where('code',$code)->first();
+        $logs = ArmadaTicketMonitoring::where('armada_ticket_id',$armadaticket->id)
         ->get()
         ->sortBy('created_at');
-        $armadaticket = ArmadaTicket::find($armada_ticket_id);
         $data = [];
         foreach($logs as $log){
             $item = new \stdClass();
@@ -120,11 +120,11 @@ class MonitoringController extends Controller
         return view('Monitoring.securitymonitoring',compact('pos','end_kontrak_tickets','tickets'));
     }
 
-    public function securityMonitoringTicketLogs($security_ticket_id){
-        $logs = SecurityTicketMonitoring::where('security_ticket_id',$security_ticket_id)
+    public function securityMonitoringTicketLogs($code){
+        $securityticket = SecurityTicket::where('code',$code)->first();
+        $logs = SecurityTicketMonitoring::where('security_ticket_id',$securityticket->id)
         ->get()
         ->sortBy('created_at');
-        $securityticket = SecurityTicket::find($security_ticket_id);
         $data = [];
         foreach($logs as $log){
             $item = new \stdClass();
@@ -135,7 +135,7 @@ class MonitoringController extends Controller
         }
         return response()->json([
             'data' => $data,
-            'status' =>  $securityticket->status(),
+            'status' =>  $securityticket->status() ?? null,
         ]);
     }
 

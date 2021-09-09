@@ -274,17 +274,19 @@
         <div class="modal-content">
             <div class="modal-body">
                 @switch($armadaticket->ticketing_type)
-                @case(0)
-                @include('Operational.Armada.formfasilitas')
-                @break
-                @case(1)
-                @include('Operational.Armada.formperpanjanganperhentian')
-                @break
-                @case(2)
-                @include('Operational.Armada.formmutasi')
-                @break
-                @default
-                @break
+                    @case(0)
+                        @if ($armadaticket->isNiaga == false)
+                            @include('Operational.Armada.formfasilitas')
+                        @endif
+                        @break
+                    @case(1)
+                        @include('Operational.Armada.formperpanjanganperhentian')
+                        @break
+                    @case(2)
+                        @include('Operational.Armada.formmutasi')
+                        @break
+                    @default
+                        @break
                 @endswitch
             </div>
             <div class="modal-footer">

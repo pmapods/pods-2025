@@ -91,6 +91,9 @@ class SalesPoint extends Model
             case 4:
                 return 'NATIONAL';
                 break;
+            case 5:
+                return 'HEAD OFFICE';
+                break;
             default:
                 return 'status_undefined';
                 break;

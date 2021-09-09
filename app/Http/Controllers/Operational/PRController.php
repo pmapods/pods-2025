@@ -292,7 +292,7 @@ class PRController extends Controller
                 $authorization->level              = 1;
                 $authorization->save();
 
-                $authorization = Authorization::find($rkwequest->pr_authorization_id);
+                $authorization = Authorization::find($request->pr_authorization_id);
                 foreach($authorization->authorization_detail as $author){
                     $authorization                     = new PrAuthorization;
                     $authorization->pr_id              = $pr->id;         

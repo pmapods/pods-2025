@@ -5,6 +5,7 @@
 <div class="text-secondary">Harap melengkapi data berikut untuk melanjutkan proses pengadaan</div>
 <form action="/completearmadabookedby" method="post" enctype="multipart/form-data">
     @csrf
+    <input type="hidden" name="armada_ticket_id" value="{{ $armadaticket->id }}">
     <table class="table">
         <thead class="table-secondary">
             <tr>

@@ -92,7 +92,7 @@
         <button type="button" class="btn btn-primary" onclick="submitBudget()">Buat Pengajuan Budget</button>
     </div>
 </div>
-<form action="/createBudgetRequest" method="post" id="submitform">
+<form action="/createBudgetRequest/armada" method="post" id="submitform">
     @csrf
     <div></div>
 </form>

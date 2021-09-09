@@ -193,10 +193,9 @@
             $('#security_monitoring_table tbody').empty();
             $.ajax({
                 type: "get",
-                url: "/securitymonitoringticketlogs/" + po_number,
+                url: "/securitymonitoringpologs/" + po_number,
                 success: function (response) {
                     let data = response.data;
-                    console.log(data);
                     data.forEach(log => {
                         let row_element = '<tr>';
                         row_element += '<td>'+log.po_number+'</td>';
@@ -217,7 +216,7 @@
             let status_column_el = $(this).find('td:eq(5)');
             $.ajax({
                 type: "get",
-                url: "/securitymonitoringticketlogs/" + security_ticket_id,
+                url: "/securitymonitoringticketlogs/" + code,
                 success: function (response) {
                     let logs = []
                     $('#monitormodal').find('table tbody tr').remove();
@@ -232,7 +231,6 @@
                         $('#monitormodal').find('table tbody').append(row_element);
                     });
                     $('#monitormodal').find('.status').text(status);
-                    console.log(status_column_el.text());
                     status_column_el.text(status);
                 },
                 error: function (response) {
