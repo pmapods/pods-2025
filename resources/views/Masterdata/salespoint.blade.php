@@ -30,13 +30,12 @@
         <table id="salespointDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
-                    <th>#</th>
-                    <th width="12%">{{__('Kode Sales Point')}}</th>
-                    <th>{{__('Nama Area')}}</th>
-                    <th>Inisial</th>
+                    <th width="5%">#</th>
+                    <th width="7%">{{__('Kode')}}</th>
+                    <th width="15%">{{__('Nama Area')}}</th>
                     <th width="10%">{{__('Region')}}</th>
-                    <th>{{__('Status')}}</th>
-                    <th>Jawa Sumatra</th>
+                    <th width="8%">{{__('Status')}}</th>
+                    <th width="8%">Jawa Sumatra</th>
                     <th width="20%">Alamat</th>
                 </tr>
             </thead>
@@ -45,12 +44,11 @@
                 <tr data-salespoint="{{$salespoint}}">
                     <td>{{$key+1}}</td>
                     <td>{{$salespoint->code}}</td>
-                    <td>{{$salespoint->name}}</td>
-                    <td class="text-uppercase">{{$salespoint->initial}}</td>
-                    <td>{{$salespoint->region_name()}}</td>
+                    <td>{{$salespoint->name}} (<span class="text-uppercase">{{$salespoint->initial}}</span>)</td>
+                    <td>{{$salespoint->region_name()}} ({{ $salespoint->region_type }})</td>
                     <td>{{$salespoint->status_name()}}</td>
                     <td>{{$salespoint->jawasumatra()}}</td>
-                    <td>{{$salespoint->address}}</td>
+                    <td class="small">{{$salespoint->address}}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -104,6 +102,7 @@
                                 <select class="form-control select2" name="region" required>
                                     <option value="">-- Pilih Region --</option>
                                     <option value="0">MT CENTRAL 1</option>
+                                    <option value="17">HO</option>
                                     <option value="1">SUMATERA 1</option>
                                     <option value="2">SUMATERA 2</option>
                                     <option value="3">SUMATERA 3</option>
@@ -115,11 +114,13 @@
                                     <option value="9">JABAR 3</option>
                                     <option value="10">JATENG 1</option>
                                     <option value="11">JATENG 2</option>
+                                    <option value="18">JATENG 3</option>
                                     <option value="12">JATIM 1</option>
                                     <option value="13">JATIM 2</option>
                                     <option value="14">BALINUSRA</option>
                                     <option value="15">KALIMANTAN</option>
                                     <option value="16">SULAWESI</option>
+                                    <option value="19">INDIRECT</option>
                                 </select>
                             </div>
                         </div>
@@ -221,10 +222,11 @@
                                 <select class="form-control select2" name="region" required>
                                     <option value="">-- Pilih Region --</option>
                                     <option value="0">MT CENTRAL 1</option>
+                                    <option value="17">HO</option>
                                     <option value="1">SUMATERA 1</option>
                                     <option value="2">SUMATERA 2</option>
                                     <option value="3">SUMATERA 3</option>
-                                    {{-- <option value="4">SUMATERA 4</option> --}}
+                                    <option value="4">SUMATERA 4</option>
                                     <option value="5">BANTEN</option>
                                     <option value="6">DKI</option>
                                     <option value="7">JABAR 1</option>
@@ -232,11 +234,13 @@
                                     <option value="9">JABAR 3</option>
                                     <option value="10">JATENG 1</option>
                                     <option value="11">JATENG 2</option>
+                                    <option value="18">JATENG 3</option>
                                     <option value="12">JATIM 1</option>
                                     <option value="13">JATIM 2</option>
                                     <option value="14">BALINUSRA</option>
                                     <option value="15">KALIMANTAN</option>
                                     <option value="16">SULAWESI</option>
+                                    <option value="19">INDIRECT</option>
                                 </select>
                             </div>
                         </div>

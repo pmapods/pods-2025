@@ -15,13 +15,15 @@ class isSuperAdmin
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, $menu)
+    public function handle(Request $request, Closure $next)
     {
         // check if its superadmin
-        if(Auth::user()->id == 1){
+        if (Auth::user()->id == 1) {
             return $next($request);
-        }else{
-            return back()->with('error','Access denied');
+        } elseif (Auth::user()->id == 115 || Auth::user()->name == 'Tirani Susanti') {
+            return $next($request);
+        } else {
+            return back()->with('error', 'Access denied');
         }
     }
 }

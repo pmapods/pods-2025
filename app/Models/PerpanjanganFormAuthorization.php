@@ -12,4 +12,8 @@ class PerpanjanganFormAuthorization extends Model
     public function perpanjangan_form(){
         return $this->belongsTo(PerpanjanganForm::class);
     }
+    
+    public function employee(){
+        return $this->belongsTo(Employee::class);
+    }
 }

@@ -15,8 +15,8 @@ class AuthorizationMigration extends Migration
     {
         Schema::create('authorization', function (Blueprint $table) {
             $table->increments('id');
-            // salespoint_id untuk form pengadaan
-            $table->integer('salespoint_id')->nullable();
+            // salespoint_id untuk form pengadaan bisa west/east/all/salespoint_id
+            $table->string('salespoint_id')->nullable();
             $table->tinyInteger('form_type')->default(0);
             // 0 form pengadaan barang jasa
             // 1 form bidding
@@ -28,6 +28,10 @@ class AuthorizationMigration extends Migration
             // 7 form pengadaan armada
             // 8 form pengadaan security
             // 9 form evaluasi
+            // 10 Upload Budget (baru)
+            // 11 Upload Budget (revisi)
+            // 12 Form FRI
+            $table->string('notes')->nullable();
             $table->timestamps();
         });
 

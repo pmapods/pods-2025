@@ -34,6 +34,8 @@ class BudgetMigration extends Migration
             $table->double('outjs_min_price')->nullable();
             $table->double('outjs_max_price')->nullable();
             $table->boolean('isAsset');
+            $table->boolean('isIT')->default(false);
+            $table->string('IT_alias')->nullable();
             $table->foreign('budget_pricing_category_id')->references('id')->on('budget_pricing_category');
             $table->SoftDeletes();
             $table->timestamps();
@@ -53,6 +55,49 @@ class BudgetMigration extends Migration
             $table->string('name');
             $table->timestamps();
         });
+
+        //  Armada Maintenance budget
+       Schema::create('maintenance_budget_category', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('code')->unique();
+            $table->SoftDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('maintenance_budget', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('maintenance_budget_category_id')->unsigned();
+            $table->string('code')->unique();
+            $table->string('name');
+            $table->string('uom');
+            $table->boolean('isIT')->default(false);
+            $table->string('IT_alias')->nullable();
+            $table->foreign('maintenance_budget_category_id')->references('id')->on('maintenance_budget_category');
+            $table->SoftDeletes();
+            $table->timestamps();
+        });
+
+         //  HO budget
+       Schema::create('ho_budget_category', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->SoftDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('ho_budget', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('ho_budget_category_id')->unsigned();
+            $table->string('code')->unique();
+            $table->string('name');
+            $table->boolean('isIT')->default(false);
+            $table->string('IT_alias')->nullable();
+            $table->foreign('ho_budget_category_id')->references('id')->on('ho_budget_category');
+            $table->SoftDeletes();
+            $table->timestamps();
+        });
+
     }
 
     /**

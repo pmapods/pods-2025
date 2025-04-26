@@ -25,6 +25,7 @@ class FileMigration extends Migration
             $table->string('name');
             $table->string('filename');
             $table->foreign('file_category_id')->references('id')->on('file_category');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

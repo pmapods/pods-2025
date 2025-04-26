@@ -1,3 +1,4 @@
+
 <?php
 
 return [
@@ -93,7 +94,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'id',
 
     /*
     |--------------------------------------------------------------------------
@@ -230,5 +231,8 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],
+
+    'bearer_token' => env('BEARER_TOKEN', null),
+    'api_sap_token' => env('API_SAP_TOKEN', null),
 
 ];

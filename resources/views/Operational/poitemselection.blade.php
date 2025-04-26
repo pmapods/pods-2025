@@ -121,7 +121,7 @@
     $(document).ready(function(){
         $('.autonumber').change(function(){
             autonumber($(this));
-        })
+        });
         $('.percent_checker').change(function(){
             if($(this).prop('checked')){
                 $(this).closest('tr').find('.percent_field').removeClass('d-none');

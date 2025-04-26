@@ -18,6 +18,7 @@ class LocationMigration extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->string('initial',7);
+            $table->enum('region_type',['east','west']);
             $table->tinyInteger('region');
             //  0 MT CENTRAL 1
             //  1 SUMATERA 1
@@ -36,16 +37,21 @@ class LocationMigration extends Migration
             //  14 BALINUSRA
             //  15 KALIMANTAN
             //  16 SULAWESI
+            //  17 HO
+            //  18 JATENG 3
+            //  19 INDIRECT
             $table->tinyInteger('status');
             // 0 depo
             // 1 cabang
             // 2 cellpoint
-            // 3 subdist
+            // 3 subdist / indirect
             // 4 nasional
             // 5 HO
+            // 6 cellpoint+
             $table->tinyInteger('trade_type');
             // 0 MT Modern Trade
             // 1 GT General Trade
+            // 2 INDIRECT
             $table->boolean('isJawaSumatra');
             $table->string('address')->nullable();
             $table->timestamps();

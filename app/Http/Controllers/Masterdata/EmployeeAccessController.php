@@ -11,11 +11,12 @@ use App\Models\EmployeeLocationAccess;
 use App\Models\EmployeeMenuAccess;
 
 use DB;
+use Auth;
 
 class EmployeeAccessController extends Controller
 {
     public function employeeAccessView(){
-        $employees = Employee::whereNotIn('id',[1])->get();
+        $employees = Employee::whereNotIn('id',[1,Auth::user()->id])->get();
         return view('Masterdata.employeeaccess',compact('employees'));
     }
 
@@ -49,19 +50,33 @@ class EmployeeAccessController extends Controller
                 $old_menu_access =  new EmployeeMenuAccess;
                 $old_menu_access->employee_id = $request->employee_id;
             }
-            // dd( array_sum($request->masterdata));
             $old_menu_access->masterdata = array_sum($request->masterdata ?? []);
             $old_menu_access->budget = array_sum($request->budget ?? []);
             $old_menu_access->operational = array_sum($request->operational ?? []);
             $old_menu_access->monitoring = array_sum($request->monitoring ?? []);
+
+            // reporting access validation
+            // akses 2 always 
+            $reporting_access = $request->reporting ?? [];
+            if(in_array(2,$reporting_access)){
+                array_push($reporting_access,1);
+            };
+            $reporting_access = array_unique($reporting_access);
+            
+            $old_menu_access->reporting = array_sum($reporting_access);
+            $old_menu_access->feature   = array_sum($request->feature ?? []);
             $old_menu_access->save();
             DB::commit();
             return redirect('/employeeaccess')->with('success','Berhasil update data akses karyawan');
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             DB::rollback();
-            return redirect('/employeeaccess')->with('error','Gagal update data akses karyawan "'.$ex->getMessage().'"');
+            return redirect('/employeeaccess')->with('error','Gagal update data akses karyawan "'.$ex->getMessage().$ex->getLine().'"');
         }
-        
+    }
 
+    public function myAccessView(){
+        $current_account_location_access =  Auth::user()->location_access->pluck('salespoint_id');
+        $current_account_location_access =  SalesPoint::whereIn('id',$current_account_location_access)->get()->groupBy('region');
+        return view('Dashboard.myaccess',compact('current_account_location_access'));
     }
 }

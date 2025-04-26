@@ -24,7 +24,8 @@ class EmployeeMigration extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->string('name');
-            $table->string('username');
+            $table->string('username')->unique();
+            $table->string('nik')->unique();
             $table->string('email');
             $table->string('password');
             $table->string('phone')->nullable();
@@ -32,6 +33,7 @@ class EmployeeMigration extends Migration
             // 0 Active
             // 1 Non Active
             $table->boolean('is_password_changed')->default(0);
+            $table->text('signature_filepath')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
         });
@@ -53,6 +55,7 @@ class EmployeeMigration extends Migration
             $table->integer('budget')->default(0);
             $table->integer('operational')->default(0);
             $table->integer('monitoring')->default(0);
+            $table->integer('reporting')->default(0);
             $table->foreign('employee_id')->references('id')->on('employee');
             $table->timestamps();
         });

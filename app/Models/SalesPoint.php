@@ -11,11 +11,24 @@ class SalesPoint extends Model
     protected $table = 'salespoint';
     protected $primaryKey = 'id';
 
-    public function authorization(){
+    public function authorization()
+    {
         $this->hasMany(Authorization::class);
     }
 
-    public function region_name(){
+    public function salespoint_id_list()
+    {
+        $salespoint_id_list = [$this->id];
+        array_push($salespoint_id_list, "all");
+        array_push($salespoint_id_list, strtolower($this->region_name()));
+        // if(strtolower($this->region_name()) != "indirect"){
+        array_push($salespoint_id_list, $this->region_type);
+        // }
+        return $salespoint_id_list;
+    }
+
+    public function region_name()
+    {
         switch ($this->region) {
             case 0:
                 return 'MT CENTRAL 1';
@@ -68,13 +81,23 @@ class SalesPoint extends Model
             case 16:
                 return 'SULAWESI';
                 break;
+            case 17:
+                return 'HO';
+                break;
+            case 18:
+                return 'JATENG 3';
+                break;
+            case 19:
+                return 'INDIRECT';
+                break;
             default:
                 return 'region_undefined';
                 break;
         }
     }
 
-    public function status_name(){
+    public function status_name()
+    {
         switch ($this->status) {
             case 0:
                 return 'DEPO';
@@ -94,19 +117,26 @@ class SalesPoint extends Model
             case 5:
                 return 'HEAD OFFICE';
                 break;
+            case 6:
+                return 'CELLPOINT+';
+                break;
             default:
                 return 'status_undefined';
                 break;
         }
     }
 
-    public function trade_type_name(){
+    public function trade_type_name()
+    {
         switch ($this->trade_type) {
             case 0:
-                return 'MT';
+                return 'GT';
                 break;
             case 1:
-                return 'GT';
+                return 'MT';
+                break;
+            case 2:
+                return 'INDIRECT';
                 break;
             default:
                 return 'trade_type_undefined';
@@ -114,10 +144,11 @@ class SalesPoint extends Model
         }
     }
 
-    public function jawasumatra(){
-        if($this->isJawaSumatra){
+    public function jawasumatra()
+    {
+        if ($this->isJawaSumatra) {
             return 'Dalam';
-        }else{
+        } else {
             return 'Luar';
         }
     }

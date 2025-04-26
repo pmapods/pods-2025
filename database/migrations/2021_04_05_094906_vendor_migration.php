@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,24 +17,19 @@ class VendorMigration extends Migration
         Schema::create('vendor', function (Blueprint $table) {
             $table->increments('id');
             $table->string('code')->unique();
+            $table->enum('type',['barangjasa','armada','security']);
             $table->string('name');
+            $table->string('alias');
             $table->string('address');
             $table->char('city_id');
             $table->string('salesperson')->nullable();
             $table->string('phone')->nullable();
-            $table->string('email')->nullable();
+            $table->json('email')->nullable();
             $table->tinyInteger('status')->default(0);
             // 0 active
             // 1 non active
             $table->foreign('city_id')->references('id')->on('regencies');
             $table->SoftDeletes();
-            $table->timestamps();
-        });
-
-        // vendor armada
-        Schema::create('armada_vendor', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
             $table->timestamps();
         });
     }
@@ -46,6 +41,6 @@ class VendorMigration extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('vendor');
     }
 }

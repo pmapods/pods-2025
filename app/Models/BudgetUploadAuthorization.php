@@ -14,4 +14,8 @@ class BudgetUploadAuthorization extends Model
     public function budget_upload(){
         return $this->belongsTo(BudgetUpload::class);
     }
+    
+    public function employee(){
+        return $this->belongsTo(Employee::class)->withTrashed();
+    }
 }

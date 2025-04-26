@@ -12,4 +12,8 @@ class MutasiFormAuthorization extends Model
     public function mutasi_form(){
         return $this->belongsTo(MutasiForm::class);
     }
+    
+    public function employee(){
+        return $this->belongsTo(Employee::class);
+    }
 }

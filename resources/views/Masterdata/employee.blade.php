@@ -19,6 +19,21 @@
             </div>
         </div>
         <div class="d-flex justify-content-end mt-4">
+
+            <a href="/orgcharts" class="btn btn-success ml-2">Organization Chart</a>
+            
+            <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#resetPasswordModal">
+                Reset Password
+            </button>
+
+            <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#migrateEmployeeModal">
+                Migrasi Karyawan
+            </button>
+
+            <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#jobtitleEmployeeModal">
+                Change Job Title Karyawan
+            </button>
+
             <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#addEmployeeModal">
                 Tambah Karyawan
             </button>
@@ -30,24 +45,13 @@
         <table id="employeeDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
-                    <th>
-                        #
-                    </th>
-                    <th>
-                        Kode
-                    </th>
-                    <th>
-                        Nama
-                    </th>
-                    <th>
-                        Username
-                    </th>
-                    <th>
-                        Email
-                    </th>
-                    <th>
-                        Status
-                    </th>
+                    <th>#</th>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th>NIK</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +60,7 @@
                         <td>{{$key+1}}</td>
                         <td>{{$employee->code}}</td>
                         <td>{{$employee->name}}</td>
+                        <td>{{$employee->nik}}</td>
                         <td>{{$employee->username}}</td>
                         <td>{{$employee->email}}</td>
                         <td>{{$employee->statusName()}}</td>
@@ -66,7 +71,6 @@
     </div>
 </div>
 
-<!-- Add Modal -->
 <div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <form action="/addEmployee" method="post" id="addemployeeform">
@@ -94,21 +98,28 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label class="required_field">Email Karyawan</label>
-                              <input type="email" class="form-control" name="email" placeholder="Masukkan nama karyawan" required>
+                              <label class="required_field">NIK</label>
+                              <input type="text" class="form-control" name="nik" placeholder="Masukkan NIK" required>
+                              <small class="text-info">NIK bersifat unik dan dapat digunakan untuk melakukan login.</small>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                               <label class="required_field">username</label>
                               <input type="text" class="form-control" name="username" placeholder="Masukkan username (ex: userhobandung1)" required>
-                              <small class="text-info">username dan email bersifat unik dan dapat digunakan untuk melakukan login. <b>Usename dan Email tidak dapat diubah setelah dibuat !</b></small>
+                              <small class="text-info">Username bersifat unik</small>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                              <label class="required_field">Email Karyawan</label>
+                              <input type="email" class="form-control" name="email" placeholder="Masukkan email karyawan" required>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                               <label class="required_field">Kata Sandi</label>
-                              <input type="password" class="form-control" oninput="validatepassword()" value="12345678" name="password" placeholder="Masukkan kata sandi" id="password" required>
+                              <input type="password" class="form-control" oninput="validatepassword()" value="pma123" name="password" placeholder="Masukkan kata sandi" id="password" required>
                               <small class="text-danger">* karyawan akan melakukan pergantian password saat pertama kali melakukan login. Kata sandi ini merupakan kata sandi untuk pertama kali / sementara</small>
                             </div>
                         </div>
@@ -127,6 +138,145 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<div class="modal fade" id="migrateEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Migrasi Karyawan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <form action="/migrateemployeeconfirmation" method="get">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="required_field">Pilih Karyawan yang di migrasikan</label>
+                                <select class="form-control select2" id="source_employee" name="source_employee_id" required>
+                                    <option value="">-- Pilih Karyawan --</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-danger">* Karyawan terpilih akan dipindahkan seluruh approval nya ke karyawan terpilih di tujuan migrasi karyawan terpilih</small>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                              <label class="required_field">Pilih Tujuan Karyawan</label>
+                              <select class="form-control select2" id="target_employee" name="target_employee_id" required>
+                                  <option value="">-- Pilih Karyawan --</option>
+                                  @foreach ($employees as $employee)
+                                      <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                  @endforeach
+                              </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Pilih</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{{-- Job Position Migrate --}}
+<div class="modal fade" id="jobtitleEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Migrasi Job Position Karyawan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <form action="/jobtitleemployeeconfirmation" method="get">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="required_field">Pilih Karyawan</label>
+                                <select class="form-control select2" id="employee_id" name="employee_id" required>
+                                    <option value="">-- Pilih Karyawan --</option>
+                                    @foreach ($employee_pst as $employee_pst)
+                                        <option value="{{ $employee_pst->id }}">{{ $employee_pst->name }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-danger">* Karyawan terpilih akan berubah job position nya sesuai dengan job title yang dipilih</small>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                              <label class="required_field">Job Title Karyawan Sebelumnya</label>
+                              <input type="text" class="form-control" id="job_title_id_bfr" name="job_title_id_bfr" disabled>
+                              </select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                              <label class="required_field">Pilih Job Title Karyawan Baru</label>
+                              <select class="form-control select2" id="job_title_id" name="job_title_id" required>
+                                  <option value="">-- Pilih Job Title --</option>
+                                  @foreach ($employee_positions as $employee_positions)
+                                      <option value="{{ $employee_positions->id }}">{{ $employee_positions->name }}</option>
+                                  @endforeach
+                              </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Pilih</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reset Password Karyawan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <form action="/resetemployeepassword" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                              <label class="required_field">Pilih Karyawan yang di dilakukan reset password</label>
+                              <select class="form-control select2" name="employee_id" required>
+                                  <option value="">-- Pilih Karyawan --</option>
+                                  @foreach ($employees as $employee)
+                                      <option value="{{ $employee->id }}">{{ $employee->name }} || {{ $employee->nik}}</option>
+                                  @endforeach
+                              </select>
+                              <small class="text-danger">* Password karyawan secara otomatis akan menjadi password default "pma123"</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -160,21 +310,33 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
+                              <label class="required_field">NIK</label>
+                              <input type="text" class="form-control" name="nik" placeholder="Masukkan NIK" readonly>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                              <label class="required_field">username</label>
+                              <input type="text" class="form-control" name="username" placeholder="Masukkan username (ex: userhobandung1)" required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
                               <label class="required_field">Email Karyawan</label>
                               <input type="email" class="form-control" name="email" placeholder="Masukkan nama karyawan">
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                              <label class="required_field">username</label>
-                              <input type="text" class="form-control" name="username" placeholder="Masukkan username (ex: userhobandung1)" readonly>
+                              <label class="optional_field">Signature Image</label>
+                              <div class="signature_image">Tidak ada Signature</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-danger delete-button" onclick="deleteemployee()">Hapus</button>
+                    {{-- <button type="submit" class="btn btn-danger delete-button" onclick="deleteemployee()">Hapus</button> --}}
                     <button type="submit" class="btn btn-danger nonactive-button" onclick="nonactive()">Non Aktifkan</button>
                     <button type="submit" class="btn btn-success active-button" onclick="active()">Aktifkan</button>
                     <button type="submit" class="btn btn-info">Update Karyawan</button>
@@ -277,8 +439,15 @@
             modal.find('select[name="position"]').val(data['employee_position_id']);
             modal.find('select[name="position"]').trigger('change');
             modal.find('input[name="phone"]').val(data['phone']);
-            modal.find('input[name="email"]').val(data['email']);
+            modal.find('input[name="nik"]').val(data['nik']);
             modal.find('input[name="username"]').val(data['username']);
+            modal.find('input[name="email"]').val(data['email']);
+            modal.find('.signature_image').empty();
+            if(data['signature_filepath']){
+                modal.find('.signature_image').append("<img class='img-fluid' src='/storage"+data['signature_filepath']+"'>");
+            }else{
+                modal.find('.signature_image').append("Tidak ada Signature");
+            }
             if(data['status'] == 0){
                 modal.find('.active-button').hide();
                 modal.find('.nonactive-button').show();
@@ -287,6 +456,43 @@
                 modal.find('.nonactive-button').hide();
             }
             modal.modal('show');
+        });
+
+        $('#target_employee, #source_employee').change(function(){
+            if($('#source_employee').val() != "" && $('#target_employee').val() != ""){
+                if($('#target_employee').val() == $('#source_employee').val()){
+                    alert('Pilihan karyawan asal dan target karyawan tidak boleh sama');
+                    $(this).val("");
+                    $(this).trigger('change');
+                }
+            }
+        });
+
+        $('#employee_id').change(function () { 
+            let requestdata = {
+                employee_id: $(this).val()
+            }; 
+            
+            $.ajax({
+                type: "get",
+                url: '/getEmployeePosition',
+                data: requestdata,
+                success: function(response) {
+                    let data = response.data;
+                    data.forEach(item => {
+                        $('#job_title_id_bfr').val(item.emp_position)
+                    });
+                    $('.job_title_id_bfr').val("");
+                    $('.job_title_id_bfr').trigger('change');
+                },
+                error: function(response) {
+                    alert('load data failed. Please refresh browser or contact admin');
+                    console.log(response);
+                },
+                complete: function() {
+                    $('.job_title_id_bfr').trigger('change');
+                }
+            });
         });
     })
     function validatepassword(){

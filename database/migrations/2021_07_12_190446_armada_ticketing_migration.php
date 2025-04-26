@@ -15,8 +15,10 @@ class ArmadaTicketingMigration extends Migration
     {
         Schema::create('armada_ticket', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('budget_upload_id')->unsigned()->nullable();
             $table->string('code')->unique();
             $table->integer('salespoint_id')->unsigned();
+            $table->integer('mutation_salespoint_id')->nullable();
             $table->integer('armada_type_id')->nullable();
             $table->integer('armada_id')->nullable();
             $table->string('po_reference_number')->nullable();
@@ -26,6 +28,10 @@ class ArmadaTicketingMigration extends Migration
             $table->string('vendor_name')->nullable();
             $table->string('vendor_recommendation_name')->nullable();
             $table->boolean('isNiaga');
+            
+            // hanya untuk pengadaan baru
+            $table->boolean('isBudget')->nullable();
+            
             $table->tinyInteger('ticketing_type');
             // 0 Pengadaan Baru                
             // 1 Perpanjangan/Replace/Renewal/Stop Sewa
@@ -68,6 +74,7 @@ class ArmadaTicketingMigration extends Migration
             // 0 pending
             // 1 approved
             // -1 reject
+            $table->text('reject_notes')->nullable();
             $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');
             $table->foreign('employee_id')->references('id')->on('employee');
             $table->timestamps();
@@ -93,6 +100,9 @@ class ArmadaTicketingMigration extends Migration
             $table->tinyInteger('status')->default(0);
             // -1 terminated
             // 0 new / waiting for approval
+            $table->boolean('is_form_validated')->default(false);
+            $table->integer('validated_by')->nullable();
+            $table->timestamp('validated_at')->nullable();
             $table->foreign('salespoint_id')->references('id')->on('salespoint');
             $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');
             $table->softDeletes();
@@ -135,13 +145,16 @@ class ArmadaTicketingMigration extends Migration
             $table->integer('perpanjangan_length')->nullable();
             $table->date('stopsewa_date')->nullable();     
             $table->enum('stopsewa_reason',['replace','renewal','end'])->nullable();  
-
+            $table->boolean('is_percepatan')->default(false);
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
             $table->tinyInteger('status')->default(0);
             // 0 new / waiting for approval
             // -1 terminated
+            $table->boolean('is_form_validated')->default(false);
+            $table->integer('validated_by')->nullable();
+            $table->timestamp('validated_at')->nullable();
             $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');
             $table->softDeletes();
             $table->timestamps();
@@ -179,8 +192,8 @@ class ArmadaTicketingMigration extends Migration
             $table->string('vendor_name');
             $table->string('brand_name');
             $table->string('jenis_kendaraan');
-            $table->string('nomor_rangka');
-            $table->string('nomor_mesin');
+            $table->string('nomor_rangka')->nullable();
+            $table->string('nomor_mesin')->nullable();
             $table->smallInteger('tahun_pembuatan');
             $table->date('stnk_date');
 
@@ -201,6 +214,9 @@ class ArmadaTicketingMigration extends Migration
             $table->tinyInteger('status')->default(0);
             // 0 new / waiting for approval
             // -1 terminated
+            $table->boolean('is_form_validated')->default(false);
+            $table->integer('validated_by')->nullable();
+            $table->timestamp('validated_at')->nullable();
             $table->foreign('armada_ticket_id')->references('id')->on('armada_ticket');
             $table->softDeletes();
             $table->timestamps();

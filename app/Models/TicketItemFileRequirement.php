@@ -14,7 +14,7 @@ class TicketItemFileRequirement extends Model
         return $this->belongsTo(TicketItem::class);
     }
     public function file_completement(){
-        return $this->belongsTo(FileCompletement::class);
+        return $this->belongsTo(FileCompletement::class)->withTrashed();;
     }
     public function rejected_by_employee(){
         if($this->rejected_by != null){

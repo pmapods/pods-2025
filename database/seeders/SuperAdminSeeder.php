@@ -19,21 +19,8 @@ class SuperAdminSeeder extends Seeder
      */
     public function run()
     {
-        // tambah kategori SuperAdmin
-        $employeeposition           = new EmployeePosition;
-        $employeeposition->name     = 'Super Admin';
-        $employeeposition->save();
 
-        // tambah satu user super admin
-        $employee                         = new Employee;
-        $employee->code                   = 'EMP-00001';
-        $employee->name                   = 'Admin';
-        $employee->username               = 'superadmin';
-        $employee->password               =  Hash::make('superadmin');
-        $employee->email                  = 'pma_purchasing@pinusmerahabadi.co.id';
-        $employee->phone                  = '08123456789';
-        $employee->save();
-
+        $employee = Employee::find(1);
         // kasih full akses untuk ke seluruh area
         foreach(SalesPoint::all() as $salespoint){
             $newAccess = new EmployeeLocationAccess;
@@ -41,11 +28,27 @@ class SuperAdminSeeder extends Seeder
             $newAccess->salespoint_id = $salespoint->id;
             $newAccess->save();
         }
-        
+
+        $masterdata_accesses = config('customvariable.masterdata_accesses');
+        $budget_accesses = config('customvariable.budget_accesses');
+        $operational_accesses = config('customvariable.operational_accesses');
+        $monitoring_accesses = config('customvariable.monitoring_accesses');
+        $reporting_accesses = config('customvariable.reporting_accesses');
+
         $access = new EmployeeMenuAccess;
         $access->employee_id = $employee->id;
-        $access->masterdata = 1+2+4+8+16+32+64+128+256;
-        $access->operational = 15;
+        $access->masterdata  = $this->sumArrayGeometry($masterdata_accesses);
+        $access->budget      = $this->sumArrayGeometry($budget_accesses);
+        $access->operational = $this->sumArrayGeometry($operational_accesses);
+        $access->monitoring  = $this->sumArrayGeometry($monitoring_accesses);
+        $access->reporting   = $this->sumArrayGeometry($reporting_accesses);
         $access->save();
+    }
+    private function sumArrayGeometry($array){
+        $value = 0;
+        for($i = 0; $i < count($array); $i++){
+            $value += pow(2,$i);
+        }
+        return $value;
     }
 }

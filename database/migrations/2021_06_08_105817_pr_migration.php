@@ -19,14 +19,22 @@ class PrMigration extends Migration
             $table->integer('armada_ticket_id')->nullable();
             $table->integer('security_ticket_id')->nullable();
             $table->integer('created_by');
+            $table->boolean('isBudget')->nullable();
             $table->tinyInteger('status')->default(0);
             // 0 Menunggu proses otorisasi
-            // 1 proses otorisasi selesai
+            // 1 proses otorisasi selesai / menunggu nomor asset
             // 2 nomor asset sudah di update / ready for po
             // -1 rejected
             $table->integer('assetnumber_by')->nullable();
+            // -1 system / web asset
             $table->integer('rejected_by')->nullable();
             $table->string('reject_reason')->nullable();
+            
+            // informasi revisi yang tanpa approval ulang
+            $table->integer('revised_by')->nullable();
+            $table->timestamp('revised_at')->nullable();
+            $table->string('revise_ba_filepath')->nullable();
+            $table->text('revise_reason')->nullable();
             $table->SoftDeletes();
             $table->timestamps();
         });
@@ -38,15 +46,17 @@ class PrMigration extends Migration
             $table->string('name');
             $table->integer('qty');
             $table->double('price')->nullable();
+            $table->double('ongkir_price')->nullable();
+            $table->double('ongpas_price')->nullable();
             $table->string('uom')->nullable();
             $table->date('setup_date')->nullable();
             $table->text('notes')->nullable();
             $table->boolean('isAsset')->nullable();
             
-            $table->string('asset_number')->nullable();
+            $table->json('asset_number')->nullable();
+            $table->string('asset_number_filepath')->nullable();
             $table->uuid('asset_number_token')->unique();
             $table->string('asset_number_by')->nullable();
-            $table->datetime('asset_number_at')->nullable();
 
             $table->foreign('pr_id')->references('id')->on('pr');
             $table->SoftDeletes();

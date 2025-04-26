@@ -28,13 +28,13 @@ class BudgetPricing extends Model
             $array = $this->budget_brand->pluck('name')->toArray();
             return implode(" / ", $array);
         }
-        return '-';
+        return '';
     }
     public function type_list_text(){
         if(count($this->budget_type) > 0){
             $array = $this->budget_type->pluck('name')->toArray();
             return implode(" / ", $array);
         }
-        return '-';
+        return '';
     }
 }

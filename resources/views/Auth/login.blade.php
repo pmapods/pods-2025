@@ -63,7 +63,7 @@
         <form action="/doLogin" method="post">
           {{ csrf_field() }}
           <div class="input-group mb-3">
-            <input type="text" class="form-control" name="username" placeholder="Email / Username" required>
+            <input type="text" class="form-control" name="nik" placeholder="NIK" required>
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fad fa-user"></span>

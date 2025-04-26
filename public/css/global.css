@@ -48,3 +48,12 @@ html{
     color: brown;
     font-weight: bold;
 }
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
+/* set semua datatable td jadi pointer */
+.dataTable td:not(.dataTables_empty) {
+    cursor:pointer;
+}

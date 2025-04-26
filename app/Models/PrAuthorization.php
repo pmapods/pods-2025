@@ -11,11 +11,13 @@ class PrAuthorization extends Model
     protected $table = 'pr_authorization';
     protected $primaryKey = 'id';
 
-    public function pr(){
+    public function pr()
+    {
         return $this->belongsTo(Pr::class);
     }
 
-    public function employee(){
+    public function employee()
+    {
         return $this->belongsTo(Employee::class)->withTrashed();
     }
 }

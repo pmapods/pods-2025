@@ -9,7 +9,7 @@ class ArmadaTicketAuthorization extends Model
     protected $table = 'armada_ticket_authorization';
     protected $primaryKey = 'id';
 
-    public function ArmadaTicket(){
+    public function armada_ticket(){
         return $this->belongsTo(ArmadaTicket::class);
     }
 

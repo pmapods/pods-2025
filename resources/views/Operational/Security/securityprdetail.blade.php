@@ -13,7 +13,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">PR Manual ({{$securityticket->code}})</h1>
+                <h1 class="m-0 text-dark">PR Manual <a href="#" onclick="window.open('/securityticketing/{{ $securityticket->code }}')">({{ $securityticket->code }})</a></h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -28,14 +28,30 @@
 @php
     $isReadonly ='readonly';
     if($securityticket->status == 3){
-        if(($securityticket->pr->current_authorization()->employee_id ?? -1) == Auth::user()->id){
+        // cek jika saat ini otorisasi sesuai akun login dan yang bisa edit adalah last author
+        $isCurrentAuthorization = ($securityticket->pr->current_authorization()->employee_id ?? -1) == Auth::user()->id;
+        $lastAuthor = $securityticket->pr->pr_authorizations->sortByDesc('level')->first();
+        $isLastAuthor = ($lastAuthor->employee_id ?? -1) == Auth::user()->id;
+        
+        if($isCurrentAuthorization && $isLastAuthor){
             $isReadonly ='';
         }
     }else{
         $isReadonly ='';
     }
+    
+    if($securityticket->pr == null){
+        $isBudget = true;
+        // pengadaan lembur
+        if($securityticket->ticketing_type == 4){
+            $isBudget = false;
+        }
+    }else{
+        $isBudget = $securityticket->pr->isBudget();
+    }
+
 @endphp
-<form action="">
+<form action="" id="fieldform">
     @csrf
     <input type="hidden" name="updated_at" value="{{$securityticket->updated_at}}">
     <input type="hidden" name="security_ticket_id" value="{{$securityticket->id}}">
@@ -46,11 +62,16 @@
             <span>PT. PINUS MERAH ABADI</span>
             <span>CABANG / DEPO : {{$securityticket->salespoint->name}}</span>
             <h4 class="align-self-center font-weight-bold">PURCHASE REQUISITION (PR) - MANUAL</h4>
+            <div class="text-danger text-right small">* budget : pengadaan baru/perpanjangan/replace, non budget: pengadaan lembur</div>
             <div class="align-self-end">
-                <i class="fal fa-check-square mr-1" aria-hidden="true"></i>Budget
-                <i class="fal fa-square ml-5 mr-1" aria-hidden="true"></i>Non Budget
+                <i class="fal 
+                @if ($isBudget) fa-check-square @else fa-square @endif
+                mr-1" aria-hidden="true"></i>Budget
+                <i class="fal 
+                @if (!$isBudget) fa-check-square @else fa-square @endif
+                ml-5 mr-1" aria-hidden="true"></i>Non Budget
             </div>
-            <span>Tanggal : {{($securityticket->pr) ? $securityticket->pr->created_at->format('Y-m-d') : now()->translatedFormat('Y-m-d')}}</span>
+            <span class="mb-1">Tanggal : {{($securityticket->pr) ? $securityticket->pr->created_at->format('Y-m-d') : now()->translatedFormat('Y-m-d')}}</span>
             <table class="table table-bordered">
                 <thead class="text-center">
                     <tr>
@@ -94,13 +115,13 @@
                             </td>
                         </tr>
                     @endforeach
-                    @empty ($securityticket->pr->pr_detail)    
+                    @if (empty($securityticket->pr))    
                     <tr>
                         <td>1</td>
                         <td>Security {{ $securityticket->salespoint->name }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>-</td>
+                        <td>1</td>
+                        <td>-</td>
                         <td></td>
                         <td>
                             <input class="form-control" type="date" 
@@ -111,12 +132,11 @@
                                 <label class="optional_field">Keterangan</label>
                                 <textarea class="form-control" rows="3" 
                                 placeholder="keterangan tambahan" 
-                                name="notes"
-                                {{$isReadonly}}></textarea>
+                                name="notes" {{$isReadonly}}></textarea>
                             </div>
                         </td>
                     </tr>
-                    @endempty
+                    @endif
                     <tr>
                         <td colspan="5"><b>Total</b></td>
                         <td class="grandtotal">-</td>
@@ -127,14 +147,13 @@
             @if ($securityticket->status < 3)
             <div class="row">
                 @php
-                    $collection = $securityticket->authorizations->slice(1)->all();
+                    $collection = $securityticket->authorizations->sortByDesc('level')->take(2);
                     $values = collect($collection)->values();
                 @endphp
                 <div class="col-3">
                     <div class="form-group">
                         <label class="required_field">Dibuat Oleh</label>
                         <select class="form-control" name="dibuat_oleh_ticketauthorization_id" id="dibuat_select" required>
-                            <option value="">-- Pilih Otorisasi -- </option>
                             @foreach ($values as $author)
                                 <option value="{{$author->id}}" data-authorization="{{$author}}">
                                   {{$author->employee_name}} -- {{$author->employee_position}}</option>
@@ -145,9 +164,9 @@
                 </div>
                 <div class="col-9">    
                     <div class="form-group">
-                        <label for="">Pilih Otorisasi</label>
+                        <label for="">Pilih Matriks Approval</label>
                         <select class="form-control select2 authorization_select2" required name="pr_authorization_id">
-                            <option value="">Pilih Otorisasi</option>
+                            <option value="">Pilih Matriks Approval</option>
                             @foreach ($authorizations as $authorization)
                                 @php
                                     $list= $authorization->authorization_detail;
@@ -184,8 +203,8 @@
                                     <span class="text-success">Approved</span><br>
                                     <span class="text-success">{{$author->updated_at->translatedFormat('d F Y (H:i)')}}</span><br>
                                 @endif
-                                @if(($securityticket->pr->current_authorization()->employee_id ?? -1) == $author->employee_id)
-                                    <span class="text-warning">Menunggu Otorisasi</span><br>
+                                @if(($securityticket->pr->current_authorization()->id ?? -1) == $author->id)
+                                    <span class="text-warning">Menunggu Matriks Approval</span><br>
                                 @endif
                                 <span>{{$author->as}}</span>
                             </div>
@@ -199,7 +218,7 @@
             <div class="d-flex justify-content-center mt-3">
                 <button type="submit" class="d-none">hidden_submit_button</button>
                 @if ($securityticket->status == 2)
-                    <button type="button" class="btn btn-primary" onclick="startAuthorization()">Mulai Otorisasi Form PR</button>
+                    <button type="button" class="btn btn-primary" onclick="startAuthorization()">Mulai Approval Form PR</button>
                 @else
                     @if(($securityticket->pr->current_authorization()->employee_id ?? -1) == Auth::user()->id)
                         <button type="button" class="btn btn-success" onclick="approve()">Approve</button>
@@ -207,12 +226,17 @@
                     @endif
                 @endif
             </div>
-            @if ($securityticket->status >= 4)
+            @if (($securityticket->pr->status ?? -1)== 2)
                 <div class="d-flex justify-content-center mt-3">
-                    <button onclick="window.open('/printPR/{{$securityticket->code}}')" class="btn btn-info">Cetak</button>
+                    <button onclick="window.open('/printPR/{{$securityticket->code}}')" class="btn btn-info mx-1">Cetak</button>
+                    <button type="button" onclick="revisePR({{ $securityticket->pr->id }})" class="btn btn-secondary mx-1">Revisi PR</button>
                 </div>
             @endif
     </div>
+</form>
+<form method="post" id="submitform">
+    @csrf
+    <div></div>
 </form>
 @endsection
 @section('local-js')
@@ -255,22 +279,22 @@
     });
 
     function startAuthorization(){
-        $('form').prop('action','/addnewpr');
-        $('form').prop('method','POST');
-        $('form input[name="_method"]').val('POST');
+        $('#fieldform').prop('action','/addnewpr');
+        $('#fieldform').prop('method','POST');
+        $('#fieldform input[name="_method"]').val('POST');
         $('button[type="submit"]').trigger('click');
     }
 
     function approve(){
-        $('form').prop('action','/approvepr');
-        $('form').prop('method','POST');
-        $('form input[name="_method"]').val('PATCH');
+        $('#fieldform').prop('action','/approvepr');
+        $('#fieldform').prop('method','POST');
+        $('#fieldform input[name="_method"]').val('PATCH');
         $('.rupiah').each(function(){
             let index = $('.rupiah').index($(this));
             let rupiahElement  = autoNumeric_field[index];
             rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
         });
-        $('form').submit();
+        $('#fieldform').submit();
     }
 
     function reject(){
@@ -280,16 +304,33 @@
                 alert("Alasan Harus diisi");
                 return;
             }
-            $('form').append('<input type="hidden" name="reason" value="' + reason + '">');
-            $('form').prop('action','/rejectpr');
-            $('form').prop('method','POST');
-            $('form input[name="_method"]').val('PATCH');
+            $('#fieldform').append('<input type="hidden" name="reason" value="' + reason + '">');
+            $('#fieldform').prop('action','/rejectpr');
+            $('#fieldform').prop('method','POST');
+            $('#fieldform input[name="_method"]').val('PATCH');
             $('.rupiah').each(function(){
                 let index = $('.rupiah').index($(this));
                 let rupiahElement  = autoNumeric_field[index];
                 rupiahElement.update({"aSign": '', "aDec": '.', "aSep": ''});
             });
-            $('form').submit();
+            $('#fieldform').submit();
+        }
+    }
+
+    function revisePR(pr_id){
+        var reason = prompt("Status PR saat ini akan menjadi rejected dan harus melakukan pembuatan pr dari awal .Harap memasukan alasan revisi");
+        $('#submitform div').empty();
+        if (reason != null) {
+            if(reason.trim() == ''){
+                alert("Alasan Harus diisi");
+                return
+            }
+            $('#submitform').prop('action','/revisePR');
+            $('#submitform').prop('method','POST');
+            $('#submitform div').append('<input type="hidden" name="pr_id" value="' + pr_id + '">');
+            $('#submitform div').append('<input type="hidden" name="type" value="security">');
+            $('#submitform div').append('<input type="hidden" name="reason" value="' + reason + '">');
+            $('#submitform').submit();
         }
     }
 

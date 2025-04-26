@@ -15,6 +15,7 @@ class SecurityTicketingMigration extends Migration
     {
         Schema::create('security_ticket', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('budget_upload_id')->unsigned()->nullable();
             $table->string('code')->unique();
             $table->integer('salespoint_id')->unsigned();
             $table->string('po_reference_number')->nullable();
@@ -24,10 +25,11 @@ class SecurityTicketingMigration extends Migration
             $table->string('vendor_name')->nullable();
             $table->string('vendor_recommendation_name')->nullable();
             $table->tinyInteger('ticketing_type');
-            // 0 Pengadaan Baru                
+            // 0 Pengadaan                
             // 1 Perpanjangan
             // 2 Replace
-            // 3 End Sewa
+            // 3 End Kontrak
+            // 4 Pengadaan Lembur
             $table->tinyInteger('status')->default(0);
             // -1 Terminated
             // 0 New
@@ -37,11 +39,13 @@ class SecurityTicketingMigration extends Migration
             // 4 Dalam Proses PO
             // 5 Menunggu Upload Berkas Penerimaan
             // 6 Selesai / sudah diterima
+            $table->text('reason')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('terminated_by')->nullable();
             $table->string('termination_reason')->nullable();
 
             $table->date('requirement_date');
+            $table->integer('personil_count')->nullable();
             $table->date('finished_date')->nullable();
 
             $table->string('ba_path')->nullable();
@@ -62,6 +66,7 @@ class SecurityTicketingMigration extends Migration
             $table->string('employee_position');
             $table->tinyInteger('level');
             $table->tinyInteger('status')->default(0);
+            $table->text('reject_notes')->nullable();
             // 0 pending
             // 1 approved
             // -1 reject

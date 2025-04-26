@@ -12,4 +12,8 @@ class FacilityFormAuthorization extends Model
     public function facility_form(){
         return $this->belongsTo(FacilityForm::class);
     }
+    
+    public function employee(){
+        return $this->belongsTo(Employee::class);
+    }
 }

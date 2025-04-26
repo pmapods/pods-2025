@@ -182,7 +182,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td width="20%" class="table-secondary">
+                        <td style="height:100px;" width="20%" class="table-secondary">
                             <label class="small">Catatan</label>
                         </td>
                         <td colspan="3">
@@ -209,7 +209,7 @@
                             <tr>
                                 @foreach ($facility_form->facility_form_authorizations as $authorization)
                                     <td width="50%" class="align-bottom small" style="height: 80px">
-                                        @if (($facility_form->current_authorization()->employee_id ?? -1) == $authorization->employee_id)
+                                        @if (($facility_form->current_authorization()->id ?? -1) == $authorization->id)
                                             <span class="text-warning">Pending approval</span><br>
                                         @endif
                                         @if ($authorization->status == 1)
@@ -229,12 +229,16 @@
                     @endif
                 </div>
             </div>
-            <span>FRM-HCD-114 REV 00</span>
+            @if ($facility_form->status == 1)
+            <div class="col-12 d-flex justify-content-center">
+                <a class="btn btn-primary btn-sm" href="/printfacilityform/{{ $armadaticket->code }}" role="button">Cetak</a>
+            </div>
+            @endif
         </div>
     @else
         @isset($armadaticket->last_rejected_facility_form)
-            Formulir terakhir yang di reject : {{ $armadaticket->last_rejected_facility_form->code }}<br>
-            Alasan Reject : <span class="text-danger">{{ $armadaticket->last_rejected_facility_form->termination_reason }}</span>
+            Di Reject Oleh : <span class="text-danger">{{ $armadaticket->last_rejected_facility_form->terminated_by_employee->name ?? "-" }}</span><br>
+            Alasan Reject : <span class="text-danger">{{ $armadaticket->last_rejected_facility_form->termination_reason ?? "-" }}</span>
         @endisset
         <form id="formfasilitas" method="post" action="/addfacilityform">
             @csrf
@@ -395,9 +399,9 @@
                         <small>* Jenis Fasilitas yang disiapkan adalah standar yang berdasarkan Surat keputusan Direksi mengenai Standar Kompetensi dan Benefit</small>
                     </div>
                     <div class="form-group">
-                    <label class="required_field">Pilih Otorisasi</label>
+                    <label class="required_field">Pilih Matriks Approval</label>
                     <select class="form-control authorization" name="authorization_id" required>
-                        <option value="">-- Pilih Otorisasi --</option>
+                        <option value="">-- Pilih Matriks Approval --</option>
                         @foreach ($formfasilitas_authorizations as $authorization)
                             @php
                             $list= $authorization->authorization_detail;
@@ -423,7 +427,7 @@
                         </table>
                     </div>
                 </div>
-                <span>FRM-HCD-114 REV 00</span>
+                <br><span>FRM-HCD-114 REV 00</span>
                 @if ($armadaticket->status != -1)
                 <div class="col-12">
                     <center>

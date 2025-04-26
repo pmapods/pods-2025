@@ -25,23 +25,21 @@
         <table id="employeeaccessDT" class="table table-bordered table-striped dataTable" role="grid">
             <thead>
                 <tr role="row">
-                    <th width="5%">
-                        #
-                    </th>
-                    <th width="10%">
-                        Kode
-                    </th>
-                    <th>
-                        Nama
-                    </th>
+                    <th>#</th>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th width="42%">Akses Lokasi</th>
+                    <th width="42%">Akses Menu</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($employees as $key=>$employee)
                     <tr data-employee="{{$employee}}">
                         <td>{{$key+1}}</td>
-                        <td>{{$employee->code}}</td>
-                        <td>{{$employee->name}}</td>
+                        <td class="text-nowrap">{{$employee->code}}</td>
+                        <td class="text-nowrap">{{$employee->name}}</td>
+                        <td class="small text-justify">{{ $employee->location_access_text() }}</td>
+                        <td>{{ ($employee->menu_access) ? $employee->menu_access->access_list_text() : "" }}</td>
                     </tr>
                 @endforeach
             </tbody>

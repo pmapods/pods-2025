@@ -40,4 +40,8 @@ class TicketVendor extends Model
                 break;
         }
     }
+
+    public function deletedBy(){
+        return $this->belongsTo(Employee::class,'deleted_by','id');
+    }
 }

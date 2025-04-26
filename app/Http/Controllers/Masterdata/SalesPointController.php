@@ -27,7 +27,12 @@ class SalesPointController extends Controller
                 $newSalesPoint->code           = $request->code;
                 $newSalesPoint->name           = $request->name;
                 $newSalesPoint->initial        = $request->initial;
-                $newSalesPoint->region         = $request->region;
+                
+                $west_region = [0,1,2,3,4,5,6,7,8,9,17];
+                $east_region = [10,11,12,13,14,15,16,18];
+                $region_type = (in_array($request->region,$west_region) == true) ? 'west' : 'east';
+                $newSalesPoint->region              = $request->region;
+                $newSalesPoint->region_type         = $region_type;
                 $newSalesPoint->status         = $request->status;
                 $newSalesPoint->trade_type     = $request->trade_type;
                 $newSalesPoint->isJawaSumatra  = $request->isJawaSumatra;
@@ -53,7 +58,11 @@ class SalesPointController extends Controller
             $salespoint->code           = $request->code;
             $salespoint->name           = $request->name;
             $salespoint->initial        = $request->initial;
+            $west_region = [0,1,2,3,4,5,6,7,8,9,17];
+            $east_region = [10,11,12,13,14,15,16,18];
+            $region_type = (in_array($request->region,$west_region) == true) ? 'west' : 'east';
             $salespoint->region         = $request->region;
+            $salespoint->region_type    = $region_type;
             $salespoint->status         = $request->status;
             $salespoint->trade_type     = $request->trade_type;
             $salespoint->isJawaSumatra  = $request->isJawaSumatra;
@@ -83,13 +92,16 @@ class SalesPointController extends Controller
     }
 
     public function getSalesAuthorization($salespoint_id) {
-        $authorizations = Authorization::where('salespoint_id',$salespoint_id)
+        $salespoint = SalesPoint::find($salespoint_id);
+        $authorizations = Authorization::whereIn('salespoint_id',$salespoint->salespoint_id_list())
         ->where('form_type',0)
         ->get();
+        // dd($authorizations);
         $data = array();
         foreach($authorizations as $authorization){
             $single_data = (object)[];
             $single_data->id = $authorization->id;
+            $single_data->notes = $authorization->notes;
             $single_data->detail = array();
             foreach($authorization->authorization_detail->sortBy('level') as $detail){
                 $single_detail = (object)[];
@@ -97,6 +109,7 @@ class SalesPointController extends Controller
                 $single_detail->position = $detail->employee_position->name;
                 $single_detail->as = $detail->sign_as;
                 $single_detail->level = $detail->level;
+                $single_detail->employee_email = $detail->employee->email;
                 array_push($single_data->detail,$single_detail);
             }
             array_push($data,$single_data);

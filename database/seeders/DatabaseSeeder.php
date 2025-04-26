@@ -16,22 +16,28 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $seeder_array = [
-            IndoRegionSeeder::class,
             SalespointSeeder::class,
+            EmployeeSeeder::class,
+            EmployeePositionSeeder::class,
+            AuthorizationSeeder::class,
+            IndoRegionSeeder::class,
+            EmployeeAccessSeeder::class,
             SuperAdminSeeder::class,
-            BudgetCategorySeeder::class,
             BudgetSeeder::class,
+            MaintenanceBudgetSeeder::class,
+            HOBudgetSeeder::class,
             FileCompletementSeeder::class,
             VendorSeeder::class,
             ArmadaSeeder::class,
+            POSeeder::class,
+            NotificationSeeder::class,
         ];
         $dev_array = [
-            EmployeeDevSeeder::class,
-            AuthorizationDevSeeder::class,
+            // EmployeeSeeder::class,
         ];
         $local_array = [
-            EmployeeSeeder::class,
-            AuthorizationSeeder::class,
+            // EmployeeSeeder::class,
+            // AuthorizationSeeder::class,
         ];
         if(App::environment('local')) {
             $seeder_array = array_merge($seeder_array,$local_array);

@@ -19,7 +19,7 @@ class SimpleToken
         
         $token = $request->bearerToken();
         try {
-            if($token == env('BEARER_TOKEN')){
+            if($token == config('app.bearer_token')){
                 return $next($request);
             }
             return response()->json([

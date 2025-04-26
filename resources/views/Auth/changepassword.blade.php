@@ -63,6 +63,7 @@
         <form action="/updatepassword" method="post" id="form">
           @method('patch')
           {{ csrf_field() }}
+          <h5>Nama Akun : {{ Auth::user()->name }}</h5>
           <div class="input-group mb-3">
             <input type="password" class="form-control" name="newpassword" placeholder="Masukan Kata Sandi Baru" required>
             <div class="input-group-append">

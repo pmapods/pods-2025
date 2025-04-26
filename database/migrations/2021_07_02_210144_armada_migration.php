@@ -1,4 +1,4 @@
-<?php
+7<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -29,6 +29,7 @@ class ArmadaMigration extends Migration
             $table->integer('armada_type_id')->unsigned();
             $table->string('plate')->unique();
             $table->tinyInteger('status')->default('0');
+            $table->date('vehicle_year')->nullable();
             // 0 available
             // 1 booked
             $table->string('booked_by')->nullable();

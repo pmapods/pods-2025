@@ -13,6 +13,22 @@ class BiddingMigration extends Migration
      */
     public function up()
     {
+        Schema::create('custom_bidding', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer("ticket_id")->unsigned();
+            $table->integer("ticket_item_id")->unsigned();
+            $table->json("vendors");
+            $table->tinyInteger("status")->default(0);
+            $table->string("filepath");
+            $table->integer("created_by")->nullable();
+            $table->integer("deleted_by")->nullable();
+            $table->string("delete_reason")->nullable();
+            $table->foreign('ticket_id')->references('id')->on('ticket');
+            $table->foreign('ticket_item_id')->references('id')->on('ticket_item');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+        
         Schema::create('bidding', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('ticket_id')->unsigned();
@@ -22,7 +38,7 @@ class BiddingMigration extends Migration
             $table->enum('group', ['asset', 'inventory', 'others']);
             $table->string('other_name')->nullable();
 
-            $table->string('price_notes')->nullable();
+            $table->text('price_notes')->nullable();
             $table->string('ketersediaan_barang_notes')->nullable();
             $table->string('ketentuan_bayar_notes')->nullable();
             $table->string('others_notes')->nullable();
@@ -40,6 +56,9 @@ class BiddingMigration extends Migration
 
             $table->string('signed_filename')->nullable();
             $table->string('signed_filepath')->nullable();
+
+            // kosong untuk pengadaan HO
+            $table->date('expired_date')->nullable();
 
             $table->text('notes')->nullable();
             $table->foreign('ticket_id')->references('id')->on('ticket');

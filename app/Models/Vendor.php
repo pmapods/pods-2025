@@ -28,4 +28,26 @@ class Vendor extends Model
                 break;
         }
     }
+
+    public function type_name() {
+        switch ($this->type) {
+            case 'barangjasa':
+                return 'Barang Jasa';
+                break;
+            case 'armada':
+                return 'Armada';
+                break;
+            case 'security':
+                return 'Security';
+                break;
+            default:
+                return "";
+                break;
+        }
+    }
+
+    public function emails() {
+        $emails = json_decode($this->email);
+        return $emails;
+    }
 }

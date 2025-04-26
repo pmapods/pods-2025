@@ -35,6 +35,8 @@
         <center>
             <h5>FORM SELEKSI VENDOR</h5>
         </center>
+        <span class="text-danger small text-nowrap">* bidding expired date :
+            {{ \Carbon\Carbon::parse($bidding->expired_date)->format('d-m-Y') }}</span>
         <div class="row">
             <div class="col-md-2 mt-3">Jenis Produk</div>
             <div class="col-md-4 mt-3">
@@ -54,21 +56,19 @@
             <div class="col-md-2 mt-3">Kelompok</div>
             <div class="col-md-4 mt-3">
                 <div class="form-group">
-                    <select class="form-control" id="select_kelompok" name="group" value="{{$bidding->group}}" readonly>
-                        <option value="asset">Asset</option>
-                        <option value="inventory">Inventaris</option>
-                        <option value="others">Lain-Lain</option>
+                    <select class="form-control" id="select_kelompok" name="group" value="{{ $bidding->group }}" disabled>
+                        <option value="asset" @if ($bidding->group == 'asset') selected @endif>Asset</option>
+                        <option value="inventory" @if ($bidding->group == 'inventory') selected @endif>Inventaris</option>
+                        <option value="others" @if ($bidding->group == 'others') selected @endif>Lain-Lain</option>
                     </select>
-                    @if($bidding->group == 'others')
-                        <input type="text" class="form-control mt-2" name="others_name" id="input_kelompok_lain" value="{{$bidding->other_name}}" readonly>
+                    @if ($bidding->group == 'others')
+                        <input type="text" class="form-control mt-2" name="others_name" id="input_kelompok_lain"
+                            value="{{ $bidding->other_name }}" disabled>
                     @endif
                 </div>
             </div>
         </div>
-        @php
-            $vendors = $ticket->ticket_vendor;
-        @endphp
-        <table class="table table-bordered" id="form_table">
+        <table class="table table-sm table-bordered small" id="form_table">
             <thead>
                 <tr>
                     <th class="text-center" rowspan="5" class="text-center">No</th>
@@ -125,17 +125,20 @@
                     @endif
                 </tr>
                 <tr>
+                    
+                    @for ($i = 0; $i < (($bidding->bidding_detail->count() == 1) ? 2 : $bidding->bidding_detail->count()); $i++)
                     <th>Proposal Awal</th>
                     <th>Proposal Akhir</th>
                     <th width="80">Nilai</th>
-                    <th>Proposal Awal</th>
-                    <th>Proposal Akhir</th>
-                    <th width="80">Nilai</th>
+                    @endfor
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $title_colspan = 3*(($bidding->bidding_detail->count() == 1) ? 2 : $bidding->bidding_detail->count())+4;
+                @endphp
                 {{-- price --}}
-                <tr class="table-success"><td colspan="10"><b>Price</b></td></tr>
+                <tr class="table-success"><td colspan="{{ $title_colspan }}"><b>Price</b></td></tr>
                 <tr>
                     <td>1</td>
                     <td>Harga</td>
@@ -156,8 +159,8 @@
                         <td>-</td>
                         <td class="text-center" rowspan="4">-</td>
                     @endif
-                    <td class="text-center" rowspan="4">
-                    {{$bidding->price_notes}}
+                    <td style="white-space: pre-line; !important" rowspan="4">
+                        {{$bidding->price_notes}}
                     </td>
                 </tr>
                 <tr>
@@ -213,7 +216,7 @@
                 </tr>
 
                 {{-- Ketersediaan  Barang --}}
-                <tr class="table-success"><td colspan="10"><b>Ketersediaan Barang</b></td></tr>
+                <tr class="table-success"><td colspan="{{ $title_colspan }}"><b>Ketersediaan Barang</b></td></tr>
                 <tr>
                     <td>5</td>
                     <td>Spesifikasi (merk/type)</td>
@@ -230,7 +233,7 @@
                         <td colspan="2">-</td>
                         <td rowspan="5">-</td>
                     @endif
-                    <td class="text-center" rowspan="5">
+                    <td rowspan="5" style="white-space: pre-line; !important">
                         {{$bidding->ketersediaan_barang_notes}}
                     </td>
                 </tr>
@@ -285,7 +288,7 @@
                 </tr>
 
                 {{-- Ketentuan Pembayaran --}}
-                <tr class="table-success"><td colspan="10"><b>Ketentuan Pembayaran</b></td></tr>
+                <tr class="table-success"><td colspan="{{ $title_colspan }}"><b>Ketentuan Pembayaran</b></td></tr>
                 <tr>
                     <td>10</td>
                     <td>Credit / Cash</td>
@@ -302,7 +305,7 @@
                         <td colspan="2">-</td>
                         <td rowspan="2">-</td>
                     @endif
-                    <td class="text-center" rowspan="2">
+                    <td style="white-space: pre-line; !important" rowspan="2">
                         {{$bidding->ketentuan_bayar_notes}}
                     </td>
                 </tr>
@@ -320,7 +323,7 @@
                 </tr>
             
                 {{-- Informasi lain-Lain --}}
-                <tr class="table-success"><td colspan="10"><b>Informasi Lain-lain</b></td></tr>
+                <tr class="table-success"><td colspan="{{ $title_colspan }}"><b>Informasi Lain-lain</b></td></tr>
                 <tr>
                     <td>12</td>
                     <td>Masa berlaku penawaran</td>
@@ -337,7 +340,7 @@
                         <td colspan="2">-</td>
                         <td rowspan="4">-</td>
                     @endif
-                    <td class="text-center" rowspan="4">
+                    <td style="white-space: pre-line; !important" rowspan="4">
                         {{$bidding->others_notes}}
                     </td>
                 </tr>
@@ -397,20 +400,20 @@
                 </tr>
                 <tr>
                     @php
-                        $score = [];
+                        $scores = [];
                         foreach ($bidding->bidding_detail as $key =>$detail){
-                            $score[$key] = 0;
-                            $score[$key] += $detail->price_score * 5;
-                            $score[$key] += $detail->ketersediaan_barang_score * 3;
-                            $score[$key] += $detail->ketentuan_bayar_score * 2;
-                            $score[$key] += $detail->others_score * 2;
+                            $scores[$key] = 0;
+                            $scores[$key] += $detail->price_score * 5;
+                            $scores[$key] += $detail->ketersediaan_barang_score * 3;
+                            $scores[$key] += $detail->ketentuan_bayar_score * 2;
+                            $scores[$key] += $detail->others_score * 2;
                         }
                     @endphp
                     <td class="empty_column" colspan="3"></td>
-                    <td colspan="2" class="table-success">Total Nilai</td>
-                    <td id="total_0">{{$score[0]}}</td>
-                    <td colspan="2" class="table-success">Total Nilai</td>
-                    <td id="total_1">{{$score[1] ?? '-'}}</td>
+                    @foreach ($scores as $score)
+                        <td colspan="2" class="table-success">Total Nilai</td>
+                        <td>{{$score}}</td>
+                    @endforeach
                 </tr>
             </tbody>
         </table>
@@ -450,7 +453,7 @@
                 }
             @endphp
         </div>
-        <span>FRM-PCD-001 REV 00</span>
+        <br><span>FRM-PCD-001 REV 00</span>
     </div>
 
     <!-- jQuery -->
@@ -469,7 +472,7 @@
     {{-- moment --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
-    <script src="/js/layout.js"></script>
+    <script src="/js/layout.js?ver={{ now()->format('Ymdhi') }}"></script>
   </body>
 </html>
 

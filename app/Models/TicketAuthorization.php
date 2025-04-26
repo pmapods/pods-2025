@@ -9,15 +9,18 @@ class TicketAuthorization extends Model
     protected $table = 'ticket_authorization';
     protected $primaryKey = 'id';
 
-    public function ticket(){
+    public function ticket()
+    {
         return $this->belongsTo(Ticket::class);
     }
 
-    public function employee(){
+    public function employee()
+    {
         return $this->belongsTo(Employee::class)->withTrashed();
     }
 
-    public function status(){
+    public function status()
+    {
         switch ($this->status) {
             case '0':
                 return 'Pending';
@@ -28,7 +31,7 @@ class TicketAuthorization extends Model
             case '2':
                 return 'Terminated';
                 break;
-            
+
             default:
                 return 'undefined_authorization_status';
                 break;

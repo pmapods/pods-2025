@@ -1,5 +1,14 @@
 let autoNumeric_field;
 $(document).ready(function(){
+    let pageURL = $(location).attr("href");
+    // matikan tanggal bisa diketik / harus pilih
+    // menu dikecualikan (po)
+    if(!pageURL.includes("/po/")){
+        $("input[type='date']").keypress(function(event) {
+            event.preventDefault();
+        });
+    }
+
     $('.sidebar .active').removeClass('active');
 
     var a = location.pathname.split("/");
@@ -14,16 +23,38 @@ $(document).ready(function(){
     autoNumeric_field = new AutoNumeric.multiple('.rupiah', {
         currencySymbol: "Rp ",
         decimalCharacter: ",",
+        decimalPlaces: 0,
         digitGroupSeparator: ".",
         emptyInputBehavior: "zero",
         minimumValue: 0,
         unformatOnSubmit: true,
+        modifyValueOnWheel: false
+    });
+
+    // rupiah desimal formatter
+    autoNumericDecimal_field = new AutoNumeric.multiple('.rupiahDecimal', {
+        currencySymbol: "Rp ",
+        decimalCharacter: ",",
+        decimalPlaces: 3,
+        digitGroupSeparator: ".",
+        emptyInputBehavior: "zero",
+        minimumValue: 0,
+        unformatOnSubmit: true,
+        modifyValueOnWheel: false,
+        alwaysAllowDecimalCharacter:true,
+        allowDecimalPadding: 'floats',
+    });
+
+    // rupiahDecimaltext formatter
+    $('.rupiahDecimal_text').each(function(){
+        let value = parseFloat($(this).text().trim());
+        $(this).text(AutoNumeric.multiple.format(parseFloat(value), autonum_setting));
     });
 
     // rupiahtext formatter
     $('.rupiah_text').each(function(){
         let value = parseFloat($(this).text().trim());
-        $(this).text(setRupiah(value));
+        $(this).text(AutoNumeric.format(parseFloat(value), autonum_setting));
     });
 
     // Selection search with select2
@@ -34,10 +65,14 @@ $(document).ready(function(){
         $('.select2').css('width', "100%");
     });
 
-    $("form[method='post']").on('submit', function(){
-        $('button').prop('disabled',true);
-        $(this).find('button[type = "submit"]').append('<i class="fad ml-2 fa-spinner-third fa-spin"></i>');
+    $(document).ready(function() {
+        $("form[method='post'], form[method='get']").on('submit', function(e){
+            $('button[type="submit"]').prop('disabled',true);
+            $('.modal:not("#loading_modal")').modal('hide');
+            $('#loading_modal').modal('show');
+        });
     });
+
 
 });
 
@@ -125,6 +160,9 @@ var datatable_settings = {
         "sortAscending": ": aktifkan untuk mengurutkan keatas",
         "sortDescending": ": aktifkan untuk mengurutkan kebawah"
     },
+    "search": {
+        "search": ""
+    },
     "ordering": false
 };
 
@@ -152,6 +190,7 @@ var language_setting = {
 var autonum_setting = {
     currencySymbol: "Rp ",
     decimalCharacter: ",",
+    decimalPlaces: 0,
     digitGroupSeparator: ".",
     emptyInputBehavior: "zero",
     minimumValue: 0,

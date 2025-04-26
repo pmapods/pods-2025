@@ -35,28 +35,28 @@
             @php
                 $sewa_notes = '';
                 switch ($securityticket->type()) {
-                    case 'Pengadaan Baru':
+                    case 'Pengadaan':
                         $edit_vendor = true;
                         $show_old_vendor = false;
-                        $sewa_notes .= $securityticket->type().' untuk '.$securityticket->salespoint->name."\r\n";
+                        $sewa_notes .= 'PO '.$securityticket->type().' '.$securityticket->salespoint->name."\r\n";
                         break;
 
                     case 'Pengadaan Lembur':
                         $edit_vendor = true;
                         $show_old_vendor = false;
-                        $sewa_notes .= $securityticket->type().' untuk '.$securityticket->salespoint->name."\r\n";
+                        $sewa_notes .= 'PO '.$securityticket->type().' '.$securityticket->salespoint->name."\r\n";
                         break;
 
                     case 'Perpanjangan':
                         $edit_vendor = false;
                         $show_old_vendor = true;
-                        $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
+                        $sewa_notes .= 'PO '.$securityticket->type().' '.($po->no_po_sap ?? $pomanual->po_number)."\r\n";
                         break;
 
                     case 'Replace':
                         $edit_vendor = true;
                         $show_old_vendor = true;
-                        $sewa_notes .= $securityticket->type().' untuk PO '.$securityticket->po_reference->no_po_sap."\r\n";
+                        $sewa_notes .= 'PO '.$securityticket->type().' '.($po->no_po_sap ?? $pomanual->po_number)."\r\n";
                         break;
 
                     case 'End Kontrak':
@@ -68,7 +68,7 @@
                     <div class="form-group">
                         <label>Vendor Lama</label>
                         <input type="text" class="form-control" 
-                        value="{{ $securityticket->po_reference->security_ticket->vendor_name }}"
+                        value="{{ $po->security_ticket->vendor_name ?? $pomanual->vendor_name }}"
                         name="old_vendor" readonly>
                     </div>
                 </div>
@@ -89,10 +89,10 @@
                     Tampilkan Form Evaluasi
                 </a>
             @endif
-            @if ($securityticket->po_reference != null)
+            @if ($po != null)
             <a class="font-weight-bold text-info"
-                onclick="window.open('/storage/{{ $securityticket->po_reference->external_signed_filepath }}')">
-                Tampilkan PO Sebelumnya ({{ $securityticket->po_reference->no_po_sap }})</a>
+                onclick="window.open('/storage/{{ $po->external_signed_filepath }}')">
+                Tampilkan PO Sebelumnya ({{ $po->no_po_sap }})</a>
             @endif
         </div>
     </div>
@@ -280,16 +280,22 @@
         <div class="modal-content">
             <div class="modal-body">
                 @switch($securityticket->type())
-                    @case('Pengadaan Baru')
+                    @case('Pengadaan')
                         @break
                     @case('Perpanjangan')
-                        @include('Operational.Security.formevaluasi')
+                        @foreach ($securityticket->evaluasi_form as $evaluasiform)
+                            @include('Operational.Security.formevaluasi')
+                        @endforeach
                         @break
                     @case('Replace')
-                        @include('Operational.Security.formevaluasi')
+                        @foreach ($securityticket->evaluasi_form as $evaluasiform)
+                            @include('Operational.Security.formevaluasi')
+                        @endforeach
                         @break
-                    @case('End Sewa')
-                        @include('Operational.Security.formevaluasi')
+                    @case('End Kontrak')
+                        @foreach ($securityticket->evaluasi_form as $evaluasiform)
+                            @include('Operational.Security.formevaluasi')
+                        @endforeach
                         @break
                     @default
                         @break

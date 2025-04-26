@@ -22,6 +22,7 @@ $(document).ready(function () {
         let loading = $('.loading_salespoint_select2');
 
         let isjawasumatra = salespoint_select.find('option:selected').data('isjawasumatra');
+        let region = salespoint_select.find('option:selected').data('region');
 
         // initial state
         if (isjawasumatra == 1) {
@@ -41,6 +42,14 @@ $(document).ready(function () {
             return;
         }
 
+        $('.division_field').addClass('d-none');
+        $('.indirect_salespoint_field').addClass('d-none');
+        if(region == 17){
+            // jika region HO munculkan pilih division field
+            $('.division_field').removeClass('d-none');
+            $('.indirect_salespoint_field').removeClass('d-none');
+        }
+
         loading.show();
         $.ajax({
             type: "get",
@@ -48,7 +57,15 @@ $(document).ready(function () {
             success: function (response) {
                 let data = response.data;
                 data.forEach(item => {
-                    let option_text = item.detail[0].name + ' -- ' + item.detail[0].position + ' ( ' + item.detail[0].as + ' )';
+                    let option_text = "";
+                    let names = [];
+                    item.detail.forEach(detail=>{
+                        names.push(detail.name);
+                    });
+                    option_text += names.join(" -- ");
+                    if(item.notes){
+                        option_text += " (" + item.notes + ")";
+                    }
                     var newOption = new Option(option_text, item.id, false, true);
                     authorization_select.append(newOption);
                     authorization_select.find('option:selected').data('item', item);
@@ -68,7 +85,6 @@ $(document).ready(function () {
 
     $('.authorization_select2').on('change', function () {
         let field = $('.authorization_list_field');
-        let item_type = $('.item_type');
         // initial state
         field.empty();
         let selected_data = $(this).find('option:selected').data('item');
@@ -76,89 +92,162 @@ $(document).ready(function () {
             selected_data.detail.forEach(item => {
                 field.append('<div class="mb-3"><span class="font-weight-bold">' + item.name + ' -- ' + item.position + '</span><br><span>' + item.as + '</span></div>');
             });
-            item_type.prop('disabled',false);
         } else {
             field.append('<div>Belum memilih otorisasi</div>');
-            item_type.val("");
-            item_type.prop('disabled',true);
         }
-        item_type.trigger('change');
     });
 
     $('.item_type').on('change', function () {
         let request_select = $('.request_type');
-        let budget_item = $('.select_budget_item');
         let type = $(this).val();
         // 0 barang
         // 1 jasa
+        request_select.val("");
+        request_select.trigger('change');
         request_select.prop('disabled',false);
-        // filter di budget item
-        let options = budget_item.find('option');
         switch (type) {
             case "0":
-                // barang (hide option jasa)
-                options.each((index,el)=>{
-                    if($(el).data('categorycode')=="JS"){
-                        $(el).prop('disabled',true);
-                    }else{
-                        $(el).prop('disabled',false);
-                    }
-                });
                 break;
             case "1":
-                // jasa (hide selain jasa)
-                options.each((index,el)=>{
-                    if($(el).data('categorycode')=="JS"){
-                        $(el).prop('disabled',false);
-                    }else{
-                        $(el).prop('disabled',true);
-                    }
-                });
+                break;
+            case "2":
+                // maintenance (Jenis Pengadaan set ke baru, jenis budget ke budget munculin list item maintenance)
+                $('.request_type').val(0);
+                $('.request_type').prop('disabled',true);
+                $('.request_type').trigger('change');
+                $('.budget_type').val(0);
+                $('.budget_type').prop('disabled',true);
+                $('.budget_type').trigger('change');
+                break;
+            case "3":
                 break;
             default:
                 // not selected
                 request_select.prop('disabled',true);
-                request_select.val("");
                 break;
         }
-        request_select.trigger('change');
 
     });
 
     $('.request_type').on('change', function () {
-        let budget_type = $('.budget_type');
-        budget_type.prop('disabled',true);
+        // cek kalo maintenance = do nothin ke budget select
+        let is_it = $('.is_it');
+        is_it.prop('disabled',true);
+        is_it.val('');
         if($(this).val()!=""){
-            budget_type.val('');
-            budget_type.prop('disabled',false);
+            is_it.prop('disabled',false);
         }
-        budget_type.trigger('change');
+        is_it.trigger('change');
+        if($('.item_type').val() == 2){
+            return;
+        }
+
         if($(this).val()==1){
-            $('.budget_olditem_field').show();
-            $('.nonbudget_olditem_field').show();
+            $('.budget_olditem_field').removeClass('d-none');
+            $('.nonbudget_olditem_field').removeClass('d-none');
         }else{
-            $('.budget_olditem_field').hide();
-            $('.nonbudget_olditem_field').hide();
+            $('.budget_olditem_field').addClass('d-none');
+            $('.nonbudget_olditem_field').addClass('d-none');
         }
     });
+
+    $('.is_it').on('change', function(){
+        let budget_type = $('.budget_type');
+        if($('.item_type').val() == 2){
+        }else{
+            budget_type.prop('disabled',true);
+            budget_type.val('');
+            if($(this).val()!=""){
+                budget_type.prop('disabled',false);
+            }
+        }
+        budget_type.trigger('change');
+    })
 
     $('.budget_type').on('change', function () {
         let type = $(this).val();
 
         $('.budget_item_adder').addClass('d-none');
         $('.nonbudget_item_adder').addClass('d-none');
+        $('.maintenance_item_adder').addClass('d-none');
+        $('.indirect_salespoint_field').addClass('d-none');
         if (type === '0') {
             // budget
-            $('.budget_item_adder').removeClass('d-none');
-            $('.budget_item_adder').find('input textarea').val('');
-            $('.budget_item_adder').find('select').val("");
-            $('.budget_item_adder').find('select').trigger('change');
+            if($('.item_type').val() == 0 || $('.item_type').val() == 1){
+                // Barang / Jasa
+                $('.budget_item_adder').removeClass('d-none');
+                $('.budget_item_adder').find('input textarea').val('');
+                $('.budget_item_adder').find('select').val("");
+                $('.budget_item_adder').find('select').trigger('change');
+            }else if($('.item_type').val() == 2){
+                $('.maintenance_item_adder').removeClass('d-none');
+                $('.maintenance_item_adder').find('input').val('');
+                $('.maintenance_item_adder').find('select').val("");
+                $('.maintenance_item_adder').find('select').trigger('change');
+            }else{
+                $('.ho_item_adder').removeClass('d-none');
+                $('.ho_item_adder').find('input').val('');
+                $('.ho_item_adder').find('select').val("");
+                $('.ho_item_adder').find('select').trigger('change');
+            }
 
         } else if (type === '1') {
             // non budget
             $('.nonbudget_item_adder').removeClass('d-none');
             $('.budget_item_adder').find('input textarea').val('');
+        }else{
+
         }
+
+        // filter item berdasarkan Jenis Item dan Jenis IT
+        let is_it = $(".is_it").val();
+        if($('.item_type').val() == 0){
+            // Barang
+            $('.select_budget_item').find('option').each((index,el)=>{
+                if($(el).data('categorycode')!="JS" && $(el).data('is_it') == is_it){
+                    $(el).prop('disabled',false);
+                }else{
+                    $(el).prop('disabled',true);
+                }
+            });
+        }else if($('.item_type').val() == 1){
+            // Jasa
+            $('.select_budget_item').find('option').each((index,el)=>{
+                if($(el).data('categorycode')=="JS" && $(el).data('is_it') == is_it){
+                    $(el).prop('disabled',false);
+                }else{
+                    $(el).prop('disabled',true);
+                }
+            });
+        }else if($('.item_type').val() == 2){
+            // Maintenance
+            $('#maintenance_item_select').find('option').each((index,el)=>{
+                if($(el).data('is_it') == is_it){
+                    $(el).prop('disabled',false);
+                }else{
+                    $(el).prop('disabled',true);
+                }
+            });
+        }else if($('.item_type').val() == 3){
+            // HO
+            $('#ho_item_select').find('option').each((index,el)=>{
+                if($(el).data('is_it') == is_it){
+                    $(el).prop('disabled',false);
+                }else{
+                    $(el).prop('disabled',true);
+                }
+            });
+        }else{}
+    });
+
+    $('.division_select').change(function() {
+        if($(this).val() === "Indirect"){
+            $('.indirect_salespoint').prop('disabled',false);
+        }else{
+            $('.indirect_salespoint').prop('disabled',true);
+        }
+        $('.indirect_salespoint').val("");
+        $('.indirect_salespoint').trigger("change");
     });
 
     $('.select_budget_item').on('change', function () {
@@ -181,17 +270,19 @@ $(document).ready(function () {
         if (isjawasumatra == 1) {
             item_min_price.text((Number.isInteger(minjs)) ? setRupiah(minjs) : '-');
             item_max_price.text((Number.isInteger(maxjs)) ? setRupiah(maxjs) : '-');
-            // price_field.options.maximumValue(maxjs);
+            item_max_price.attr("data-max",maxjs);
             price.prop('disabled', false)
         } else if (isjawasumatra == 0) {
             item_min_price.text((Number.isInteger(minoutjs)) ? setRupiah(minoutjs) : '-');
             item_max_price.text((Number.isInteger(maxoutjs)) ? setRupiah(maxoutjs) : '-');
-            // price_field.options.maximumValue(maxoutjs);
+            item_max_price.attr("data-max",maxoutjs);
+
             price.prop('disabled', false)
         } else {
             item_min_price.text('-');
             item_max_price.text('-');
-            // price_field.options.maximumValue(0);
+            item_max_price.attr("data-max",0);
+
             price.prop('disabled', true)
         }
 
@@ -282,7 +373,7 @@ $(document).ready(function () {
             $(this).val('');
         }
     });
-    
+
     $('.nonbudget_olditem_file').on('change', function (event) {
         var reader = new FileReader();
         let value = $(this).val();
@@ -349,9 +440,9 @@ $(document).ready(function () {
                 });
             });
         }else{
-            console.log('files empty');
         }
         $('#filesmodal').find('.itempos').val(item_position);
+        $('#file_row_filter').val('').trigger('change');
         $('#filesmodal').modal('show');
     });
 
@@ -412,10 +503,10 @@ $(document).ready(function () {
                 count++;
             }
         });
-        if(count<1){
-            alert('Pilih kelengkapan berkas minimal 1');
-            return;
-        }
+        // if(count<1){
+        //     alert('Pilih kelengkapan berkas minimal 1');
+        //     return;
+        // }
         let position = parent.find('.itempos').val();
         $('.item_list').eq(position).data('files',data_files);
         let attachment_string ="<table class='other_attachments small table table-sm table-borderless'><tbody>";
@@ -480,12 +571,17 @@ function addBudgetItem(el) {
     let budget_expired_date = $('.budget_expired_date');
     let count_item = $('.count_budget_item');
     let table_item = $('.table_item');
-    
+    let item_max_price = $('.item_max_price').data("max");
+
+    // console.log(item_max_price.data("max"));
+
     let id = select_item.find('option:selected').val();
     let name = select_item.find('option:selected').text().trim();
     let price = price_item.get();
     let price_text = price_item.domElement.value;
     let count = count_item.val();
+    let is_it = select_item.find('option:selected').data('is_it');
+    let it_alias = select_item.find('option:selected').data('it_alias');
 
     let brand = select_budget_brand.val();
     let type = select_budget_type.val();
@@ -543,8 +639,8 @@ function addBudgetItem(el) {
         naming = name+'<br>(expired : '+budget_expired_date.val()+')';
     }
     // tbody eq(0) supaya ga nyasar ke table other attachment
-    table_item.find('tbody:eq(0)').append('<tr class="item_list" data-budget_pricing_id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-expired="'+budget_expired_date.val()+'"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
-    
+    table_item.find('tbody:eq(0)').append('<tr class="item_list" data-budget_pricing_id="' + id + '" data-name="' + name + '" data-price="' + price + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-max="' + item_max_price + '" data-expired="'+budget_expired_date.val()+'" data-is_it="' + is_it + '" data-it_alias="' + it_alias + '"><td>'+naming+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+
     select_item.val("");
     select_item.trigger('change');
     price_item.set(0);
@@ -579,6 +675,11 @@ function addAttachment() {
 
 // add non budget
 function addNonBudgetItem(){
+    const it_default_items = ['PC Desktop', 'Server', 'Notebook', 'Monitor', 'UPS', 'Printer INK Copy Scan',
+        'Printer Dot Matriks', 'HandHelt / Handset', 'Finger Scan', 'Dvd Eksternal', 'Hdd Eksternal',
+        'Memory', 'Etc'
+    ];
+    let is_it = $('.is_it').val();
     let name = $('.input_nonbudget_name').val().trim();
     let brand = $('.input_nonbudget_brand').val().trim();
     let type = $('.input_nonbudget_type').val().trim();
@@ -604,8 +705,11 @@ function addNonBudgetItem(){
     } else if (count < 1) {
         alert("Jumlah Item minimal 1");
         return;
+    } else if (is_it == true && it_default_items.includes(name)) {
+        alert("Nama Item IT non budget harus berbeda dengan nama item default (FORM FRI");
+        return;
     } else {
-         
+
     let attachments_link = "";
     if($('.nonbudget_olditem_field').is(':visible')){
         attachments_link  += '<a class="attachment" href="'+temp_nonbudget_olditem_file+'" download="old_item.'+temp_nonbudget_olditem_extension+'">old_item.'+temp_nonbudget_olditem_extension+'</a><br>';
@@ -614,7 +718,7 @@ function addNonBudgetItem(){
         attachments_link = '-';
     }
     $('.table_item tbody:eq(0)').append('<tr class="item_list" data-name="' + name + '" data-brand="' + brand + '" data-type="' + type + '" data-price="' + price.get() + '" data-count="' + count + '"><td>' + name + '</td><td>' + brand + '</td><td>' + type + '</td><td>' + price_text + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td>' + attachments_link + '</td><td><i class="fa fa-trash text-danger remove_list" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
-  
+
     $('.input_nonbudget_name').val('');
     $('.input_nonbudget_brand').val('');
     $('.input_nonbudget_type').val('');
@@ -626,6 +730,75 @@ function addNonBudgetItem(){
 
     tableRefreshed();
     }
+}
+
+// add maintenance item
+function addMaintenanceItem(el) {
+    if ($('#maintenance_item_select').val() == "") {
+        alert("Item harus dipilih");
+        return;
+    }
+    let price = AutoNumeric.getAutoNumericElement('#maintenance_price_input');
+    if (price.get() < 1000) {
+        alert("Harga harus lebih besar dari Rp 1.000");
+        return;
+    }
+    if ($('#maintenance_count_input').val() < 1) {
+        alert("Jumlah Item minimal 1");
+        return;
+    }
+    // tbody eq(0) supaya ga nyasar ke table other attachment
+    let name = $('#maintenance_item_select option:selected').text().trim();
+    let count = $('#maintenance_count_input').val();
+    let brand = $('#maintenance_brand_input').val();
+    let type = $('#maintenance_type_input').val();
+    let is_it = $('#maintenance_item_select option:selected').data('is_it');
+    let it_alias = $('#maintenance_item_select option:selected').data('it_alias');
+
+    $('.table_item tbody:eq(0)').append('<tr class="item_list" data-maintenance_budget_id="'+$('#maintenance_item_select').val()+'" data-name="' + name + '" data-price="' + price.get() + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-is_it="' + is_it + '" data-it_alias="' + it_alias + '"><td>'+name+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + setRupiah(price.get()) + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td></td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+
+    $('#maintenance_item_select').val('');
+    $('#maintenance_item_select').trigger('change');
+    $('#maintenance_brand_input').val('');
+    $('#maintenance_type_input').val('');
+    $('#maintenance_price_input').val('');
+    $('#maintenance_count_input').val('');
+    tableRefreshed(el);
+}
+
+// add ho item
+function addHOItem(el) {
+
+    if ($('#ho_item_select').val() == "") {
+        alert("Item harus dipilih");
+        return;
+    }
+    let price = AutoNumeric.getAutoNumericElement('#ho_price_input');
+    if (price.get() < 1000) {
+        alert("Harga harus lebih besar dari Rp 1.000");
+        return;
+    }
+    if ($('#ho_count_input').val() < 1) {
+        alert("Jumlah Item minimal 1");
+        return;
+    }
+    // tbody eq(0) supaya ga nyasar ke table other attachment
+    let name = $('#ho_item_select option:selected').text().trim();
+    let count = $('#ho_count_input').val();
+    let brand = $('#ho_brand_input').val();
+    let type = $('#ho_type_input').val();
+    let is_it = $('#ho_item_select option:selected').data('is_it');
+    let it_alias = $('#ho_item_select option:selected').data('it_alias');
+
+    $('.table_item tbody:eq(0)').append('<tr class="item_list" data-ho_budget_id="'+$('#ho_item_select').val()+'" data-name="' + name + '" data-price="' + price.get() + '" data-count="' + count + '" data-brand="' + brand + '" data-type="' + type + '" data-is_it="' + is_it + '" data-it_alias="' + it_alias + '"><td>'+name+'</td><td>' + brand + '</td><td>' + type + '</td><td>' + setRupiah(price.get()) + '</td><td>' + count + '</td><td>' + setRupiah(count * price.get()) + '</td><td></td><td><i class="fa fa-trash text-danger remove_list mr-3" onclick="removeList(this)" aria-hidden="true"></i><button type="button" class="btn btn-primary btn-sm filesbutton">kelengkapan berkas</button></td></tr>');
+
+    $('#ho_item_select').val('');
+    $('#ho_item_select').trigger('change');
+    $('#ho_brand_input').val('');
+    $('#ho_type_input').val('');
+    $('#ho_price_input').val('');
+    $('#ho_count_input').val('');
+    tableRefreshed(el);
 }
 // remove button
 function removeList(el) {
@@ -649,18 +822,25 @@ function tableRefreshed() {
     });
     if (row_count > 0) {
         salespoint_select.prop('disabled',true);
-        authorization_select.prop('disabled',true);
+        // authorization_select.prop('disabled',true);
         item_select.prop('disabled',true);
         request_select.prop('disabled',true);
         budget_select.prop('disabled',true);
+        $('.is_it').prop('disabled',true);
         table_item.find('.empty_row').remove();
     } else {
         salespoint_select.prop('disabled',false);
-        authorization_select.prop('disabled',false);
+        // authorization_select.prop('disabled',false);
         item_select.prop('disabled',false);
         request_select.prop('disabled',false);
         budget_select.prop('disabled',false);
+        $('.is_it').prop('disabled',false);
         table_item.find('tbody:eq(0)').append('<tr class="empty_row text-center"><td colspan="8">Item belum dipilih</td></tr>');
+        if(item_select.val() == 2){
+            // maintenance
+            request_select.prop('disabled',true);
+            budget_select.prop('disabled',true);
+        }
     }
 }
 
@@ -676,8 +856,20 @@ function addVendor(el){
         alert('Harap pilih vendor terlebih dulu');
         return;
     }
-    if($('.vendor_item_list').length>1){
-        alert('Maksimal 2 vendor');
+    if($('.vendor_item_list').length>2){
+        alert('Maksimal 3 vendor');
+        return;
+    }
+
+    $flag_exists = false;
+    $('.vendor_item_list').each(function(){
+        let existing_name = $(this).find('td:eq(1)').text().trim();
+        if(name.toLowerCase()==existing_name.toLowerCase()){
+            alert('Vendor sudah dipilih sebelumnya');
+            $flag_exists = true;
+        }
+    });
+    if($flag_exists){
         return;
     }
     table_vendor.find('tbody').append('<tr class="vendor_item_list" data-vendor_id="'+id+'"><td>'+code+'</td><td>'+name+'</td><td>'+salesperson+'</td><td>-</td><td>Terdaftar</td><td><i class="fa fa-trash text-danger" onclick="removeVendor(this)" aria-hidden="true"></i></td></tr>');
@@ -742,7 +934,65 @@ function tableVendorRefreshed(current_element) {
     }
 }
 
+function overBudget() {
+    $('#overBudgetModal').modal('show');
+
+    hideMatriksApprovalOverBudget();
+}
+
+function notifOverBudget() {
+    $('#notifOverBudgetModal').modal('show');
+}
+
+function overBudgetPopUp() {
+    $('#modalOverBudgetCountainer').children().not(':first').remove();
+
+    let is_over_budget = 0;
+
+    $('.item_list').each(function() {
+        let total = $(this).data("price");
+        let over_budget = $(this).data("max");
+        let selisih = over_budget - total;
+        let nama_barang = $(this).data("name");
+
+        if (total > over_budget) {
+            let html = $('#template_over_budget').clone();
+            $('#modalOverBudgetCountainer').append(html.show());
+            html.find('.nama_barang').val(nama_barang)
+            html.find('.nilai_ajuan').val((Number.isInteger(total)) ? setRupiah(total) : '-')
+            html.find('.selisih').val((Number.isInteger(selisih)) ? setRupiah(selisih) : '-')
+            html.find('.nilai_budget').val(Number.isInteger(over_budget) ? setRupiah(over_budget) : '-')
+
+            is_over_budget++;
+
+            notifOverBudget();
+        }
+    });
+
+    console.log(is_over_budget);
+
+    return is_over_budget;
+}
+
+function hideMatriksApprovalOverBudget() {
+    let salespoint_over_budget = $('.salespoint_select2').val();
+
+    if(salespoint_over_budget != 251 || salespoint_over_budget != 252){
+        $('#approval_over_budget_area').show();
+    } else {
+        $('#approval_over_budget_area').hide();
+    }
+}
+
 function addRequest(type){
+    let hasil = overBudgetPopUp();
+
+    if(type == 3){
+        type = 1;
+    } else if (hasil > 0) {
+    return false;
+    }
+
     let item_list = $('.item_list');
     let vendor_item_list = $('.vendor_item_list');
 
@@ -757,18 +1007,30 @@ function addRequest(type){
     input_field.append('<input type="hidden" name="authorization" value="'+$('.authorization_select2').val()+'">');
     input_field.append('<input type="hidden" name="item_type" value="'+$('.item_type').val()+'">');
     input_field.append('<input type="hidden" name="request_type" value="'+$('.request_type').val()+'">');
+    input_field.append('<input type="hidden" name="is_it" value="'+$('.is_it').val()+'">');
     input_field.append('<input type="hidden" name="budget_type" value="'+$('.budget_type').val()+'">');
+    input_field.append('<input type="hidden" name="division" value="'+$('.division_select').val()+'">');
+    input_field.append('<input type="hidden" name="indirect_salespoint_id" value="'+$('.indirect_salespoint').val()+'">');
     input_field.append('<input type="hidden" name="reason" value="'+$('.reason').val()+'">');
+    input_field.append('<input type="hidden" name="is_over_budget" value="'+hasil+'">');
+    input_field.append('<input type="hidden" name="is_over_budget_hidden" value="'+$('.is_over_budget_hidden').val()+'">');
+
+    let reason_over_budget = $('.reason_over_budget').val();
+    input_field.append('<input type="hidden" name="reason_over_budget" value="'+reason_over_budget+'">');
 
     item_list.each(function(index,el){
         input_field.append('<input type="hidden" name="item['+index+'][id]" value="'+$(el).data('id')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][budget_pricing_id]" value="'+$(el).data('budget_pricing_id')+'">');
+        input_field.append('<input type="hidden" name="item['+index+'][maintenance_budget_id]" value="'+$(el).data('maintenance_budget_id')+'">');
+        input_field.append('<input type="hidden" name="item['+index+'][ho_budget_id]" value="'+$(el).data('ho_budget_id')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][name]" value="'+$(el).data('name')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][price]" value="'+$(el).data('price')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][count]" value="'+$(el).data('count')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][brand]" value="'+$(el).data('brand')+'">');
         input_field.append('<input type="hidden" name="item['+index+'][type]" value="'+$(el).data('type')+'">');
-        input_field.append('<input type="hidden" name="item['+index+'][expired_date]" value="'+$(el).data('expired')+'">');
+
+        input_field.append('<input type="hidden" name="item['+index+'][item_max_price]" value="'+$(el).data('max')+'">');
+
         $(el).find('.attachment').each(function(att_index,att_el){
             let filename = $(att_el).prop('download');
             let file = $(att_el).prop('href');
@@ -785,6 +1047,7 @@ function addRequest(type){
             });
         }
     });
+
     vendor_item_list.each(function(index, el) {
         input_field.append('<input type="hidden" name="vendor['+index+'][id]" value="'+$(el).data('id')+'">');
         input_field.append('<input type="hidden" name="vendor['+index+'][vendor_id]" value="'+$(el).data('vendor_id')+'">');
@@ -808,6 +1071,11 @@ function addRequest(type){
         input_field.append('<input type="hidden" name="opt_attach['+index+'][file]" value="'+file+'">');
         input_field.append('<input type="hidden" name="opt_attach['+index+'][name]" value="'+filename+'">');
     });
+
+    // FRI FORM
+    if($('.is_it').val() == true){
+        input_field.append($('#fri_form_create input').clone());
+    }
     $('#addform').submit();
 }
 

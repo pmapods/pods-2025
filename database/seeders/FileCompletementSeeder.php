@@ -78,7 +78,6 @@ class FileCompletementSeeder extends Seeder
             "Buffer Stok ART",
             "Vendor Nasional / 2 vendor lokal",
             "Form IO",
-            "Form FRI",
             "BA Kerusakan dari Area (Foto Kerusakan)",
             "Surat Keterangan Kerusakan/hasil pemerikasaan dari vendor",
             "Dokumentasi Kerusakan (Jika menganti barang IT yang rusak)",

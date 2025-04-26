@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3",
+        "ext-gd": "*",
         "almasaeed2010/adminlte": "~3.0",
         "azishapidin/indoregion": "^3.0",
         "barryvdh/laravel-dompdf": "^0.9.0",
@@ -16,7 +17,8 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.0",
-        "laravel/tinker": "^2.0"
+        "laravel/tinker": "^2.0",
+        "phpoffice/phpspreadsheet": "^1.20"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",
