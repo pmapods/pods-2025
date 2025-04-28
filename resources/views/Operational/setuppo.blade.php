@@ -108,6 +108,12 @@
 
     <div class="d-flex align-items-center">
         <button type="button" class="btn btn-primary mr-3" id="refresh_button">Quick Refresh</button>
+        <button type="button" class="btn btn-warning mr-3" data-toggle="modal" data-target="#refreshDataPR">
+            Refresh Data PR
+        </button>
+        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#refreshDataPO">
+            Refresh Data PO
+        </button>
     </div>
     <div class="d-flex flex-column align-items-center">
         <h5>Data PR</h5>
@@ -156,6 +162,68 @@
             <span class="sr-only">Loading...</span>
         </div>
     </div>
+
+    <div class="modal fade" id="refreshDataPR" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="/refreshDataPR" method="post" id="refreshDataPR">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Refresh Data PR & PO</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                <label class="required_field">Nomor PR</label>
+                                <input type="number" class="form-control" name="pr_number" placeholder="ex 1011xxxxxx" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Get PR Data</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="refreshDataPO" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="/refreshDataPO" method="post" id="refreshDataPO">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Refresh Data PO</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                <label class="required_field">Nomor PO</label>
+                                <input type="number" class="form-control" name="po_number" placeholder="ex 3011xxxxxx" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Get PO Data</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <form action="/po/setuppo" method="post" id="create_po_form">
         @csrf
         <input type="hidden" name="ticket_code" value="{{ $ticket_code }}">

@@ -8,6 +8,7 @@ use Auth;
 use Form;
 use Mail;
 use Storage;
+use DateTimeImmutable;
 use App\Models\Po;
 use Carbon\Carbon;
 use App\Mail\POMail;
@@ -32,6 +33,7 @@ use Illuminate\Http\Request;
 use App\Models\Authorization;
 use App\Models\SecurityTicket;
 use App\Models\PoAuthorization;
+use App\Models\RefreshDataPrPo;
 use App\Models\POUploadRequest;
 use App\Models\TicketMonitoring;
 use App\Http\Controllers\Controller;
@@ -759,6 +761,306 @@ class POController extends Controller
         } catch (\Exception $ex) {
             DB::rollback();
             return back()->with('error', 'Gagal melakukan setting PO. Silahkan hubungi developer atau coba kembali');
+        }
+    }
+
+    public function refreshDataPR(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $prs = $request->pr_number;
+            $current_time = Carbon::now()->translatedFormat('Y-m-d H:i:s');
+
+            $getLogRefresh = RefreshDataPrPo::where('pr_number', $prs)->latest()->first();
+
+            if ($getLogRefresh) {
+                $current_time1 = new DateTimeImmutable($current_time);
+                $created_date = new DateTimeImmutable($getLogRefresh->updated_at);
+    
+                $interval = $getLogRefresh->updated_at->diffInMinutes($current_time);
+                
+                if ($interval <= 10) {
+                    return back()->with('error','Mohon tunggu 10 menit untuk dapat menjalankan sync data kembali');
+                }
+            }
+
+            $curl = curl_init();
+                switch (config('app.env')) {
+                    case 'local':
+                        // Development
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0001&s_banfn=" . $prs;
+                        break;
+                    case 'development':
+                        //  QAS
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0001&s_banfn=" . $prs;
+                        break;
+                    case 'production':
+                        // Production
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0001&s_banfn=" . $prs;
+                        break;
+                    default:
+                        $pr_url = "";
+                        break;
+                }
+
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $pr_url,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_FAILONERROR => true,
+                    CURLOPT_HTTPHEADER => array(
+                        'Cookie: sap-usercontext=sap-client=110'
+                    ),
+                ));
+
+                $response = curl_exec($curl);
+                if (curl_errno($curl)) {
+                    $error_msg = curl_error($curl);
+                }
+                curl_close($curl);
+
+                if (isset($error_msg)) {
+                    throw new \Exception($error_msg);
+                } else {
+                    if (!json_decode($response)) {
+                        return back()->with('error','Nomor PR tidak ditemukan, mohon untuk cek data di SAP');
+                    } else {
+                        $pr_data = DB::table('pr_sap')
+                            ->where("data", "like", '%' . $prs . '%')
+                            ->delete();
+
+                        if ($getLogRefresh) {
+                            $getLogRefresh->updated_at = $current_time;
+                            $getLogRefresh->save();
+                        } else {
+                            $newLogRefresh = new RefreshDataPrPo;
+                            $newLogRefresh->pr_number = $prs;
+                            $newLogRefresh->created_at = $current_time;
+                            $newLogRefresh->updated_at = $current_time;
+                            $newLogRefresh->save();
+                        }
+
+                        $response = json_decode($response);
+
+                        foreach ($response as $key => $item) {
+                            DB::table('pr_sap')->insert([
+                                [
+                                    'data' => json_encode($item),
+                                    'created_at' => $current_time,
+                                    'updated_at' => $current_time,
+                                ]
+                            ]);
+
+                            $po_number = $item->ebeln;
+                        }
+                    }
+                }
+                DB::commit();
+                if ($po_number) {
+                    return $this->getDataPO($po_number);
+                } else {
+                    return back()->with('success', 'Berhasil melakukan refresh data PR');
+                }
+        } catch (\Exception $ex) {
+            return back()->with('error', 'Gagal melakukan refresh data PR. (' . $ex->getMessage() . ')[' . $ex->getLine() . '])');
+            DB::rollback();
+        }
+    }
+
+    public function getDataPO($po_number)
+    {
+        try {
+            DB::beginTransaction();
+            $pos = $po_number;
+            $current_time = Carbon::now()->translatedFormat('Y-m-d H:i:s');
+
+            $getLogRefresh = RefreshDataPrPo::where('po_number', $pos)->latest()->first();
+
+            $curl = curl_init();
+                switch (config('app.env')) {
+                    case 'local':
+                        // Development
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0002&s_ebeln=" . $pos;
+                        break;
+                    case 'development':
+                        //  QAS
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0002&s_ebeln=" . $pos;
+                        break;
+                    case 'production':
+                        // Production
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0002&s_ebeln=" . $pos;
+                        break;
+                    default:
+                        $pr_url = "";
+                        break;
+                }
+
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $pr_url,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_FAILONERROR => true,
+                    CURLOPT_HTTPHEADER => array(
+                        'Cookie: sap-usercontext=sap-client=110'
+                    ),
+                ));
+
+                $response = curl_exec($curl);
+                if (curl_errno($curl)) {
+                    $error_msg = curl_error($curl);
+                }
+                curl_close($curl);
+
+                if (isset($error_msg)) {
+                    throw new \Exception($error_msg);
+                } else {
+                    if (!json_decode($response)) {
+                        return back()->with('error','Nomor PO tidak ditemukan, mohon untuk cek data di SAP');
+                    } else {
+                        $po_data = DB::table('po_sap')
+                            ->where("data", "like", '%' . $pos . '%')
+                            ->delete();
+                        $response = json_decode($response);
+                        foreach ($response as $key => $item) {
+                            DB::table('po_sap')->insert([
+                                [
+                                    'data' => json_encode($item),
+                                    'created_at' => $current_time,
+                                    'updated_at' => $current_time,
+                                ]
+                            ]);
+                        }
+    
+                        if ($getLogRefresh) {
+                            $getLogRefresh->updated_at = $current_time;
+                            $getLogRefresh->save();
+                        } else {
+                            $newLogRefresh = new RefreshDataPrPo;
+                            $newLogRefresh->po_number  = $pos;
+                            $newLogRefresh->created_at = $current_time;
+                            $newLogRefresh->updated_at = $current_time;
+                            $newLogRefresh->save();
+                        }
+                    }
+                }
+                DB::commit();
+                return back()->with('success', 'Berhasil melakukan refresh data PR & PO');
+        } catch (\Exception $ex) {
+            return back()->with('error', 'Gagal melakukan refresh data PR & PO. (' . $ex->getMessage() . ')[' . $ex->getLine() . '])');
+            DB::rollback();
+        }
+    }
+
+    public function refreshDataPO(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $pos = $request->po_number;
+            $current_time = Carbon::now()->translatedFormat('Y-m-d H:i:s');
+
+            $getLogRefresh = RefreshDataPrPo::where('po_number', $pos)->latest()->first();
+
+            if ($getLogRefresh) {
+                $current_time1 = new DateTimeImmutable($current_time);
+                $created_date = new DateTimeImmutable($getLogRefresh->updated_at);
+    
+                $interval = $getLogRefresh->updated_at->diffInMinutes($current_time);
+                
+                if ($interval <= 10) {
+                    return back()->with('error','Mohon tunggu 10 menit untuk dapat menjalankan sync data kembali');
+                }
+            }
+
+            $curl = curl_init();
+                switch (config('app.env')) {
+                    case 'local':
+                        // Development
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0002&s_ebeln=" . $pos;
+                        break;
+                    case 'development':
+                        //  QAS
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0002&s_ebeln=" . $pos;
+                        break;
+                    case 'production':
+                        // Production
+                        $pr_url = "http://103.111.82.21:8000/sap/bc/zrvpods?sap-client=300&pgmna=zmmr0002&s_ebeln=" . $pos;
+                        break;
+                    default:
+                        $pr_url = "";
+                        break;
+                }
+
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $pr_url,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'GET',
+                    CURLOPT_FAILONERROR => true,
+                    CURLOPT_HTTPHEADER => array(
+                        'Cookie: sap-usercontext=sap-client=110'
+                    ),
+                ));
+
+                $response = curl_exec($curl);
+                if (curl_errno($curl)) {
+                    $error_msg = curl_error($curl);
+                }
+                curl_close($curl);
+
+                if (isset($error_msg)) {
+                    throw new \Exception($error_msg);
+                } else {
+                    if (!json_decode($response)) {
+                        return back()->with('error','Nomor PO tidak ditemukan, mohon untuk cek data di SAP');
+                    } else {
+                        $po_data = DB::table('po_sap')
+                            ->where("data", "like", '%' . $pos . '%')
+                            ->delete();
+                        $response = json_decode($response);
+                        foreach ($response as $key => $item) {
+                            DB::table('po_sap')->insert([
+                                [
+                                    'data' => json_encode($item),
+                                    'created_at' => $current_time,
+                                    'updated_at' => $current_time,
+                                ]
+                            ]);
+                        }
+    
+                        if ($getLogRefresh) {
+                            $getLogRefresh->updated_at = $current_time;
+                            $getLogRefresh->save();
+                        } else {
+                            $newLogRefresh = new RefreshDataPrPo;
+                            $newLogRefresh->po_number  = $pos;
+                            $newLogRefresh->created_at = $current_time;
+                            $newLogRefresh->updated_at = $current_time;
+                            $newLogRefresh->save();
+                        }
+                    }
+                }
+                DB::commit();
+                return back()->with('success', 'Berhasil melakukan refresh data PO');
+        } catch (\Exception $ex) {
+            return back()->with('error', 'Gagal melakukan refresh data PO. (' . $ex->getMessage() . ')[' . $ex->getLine() . '])');
+            DB::rollback();
         }
     }
 

@@ -694,6 +694,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/po/setuppo', [POController::class, 'newSetupPO']);
             Route::post('/po/quickrefresh', [POController::class, 'quickRefresh']);
             Route::post('/setupPO', [POController::class, 'setupPO']);
+            Route::post('/refreshDataPR', [POController::class, 'refreshDataPR']);
+            Route::post('/refreshDataPO', [POController::class, 'refreshDataPO']);
         });
         Route::middleware(['menu_access:operational:16'])->group(function () {
             Route::post('/revisepodata', [POController::class, 'revisePOData']);
