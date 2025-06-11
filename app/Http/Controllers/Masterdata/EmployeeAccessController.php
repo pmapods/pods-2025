@@ -16,7 +16,7 @@ use Auth;
 class EmployeeAccessController extends Controller
 {
     public function employeeAccessView(){
-        $employees = Employee::whereNotIn('id',[1,Auth::user()->id])->get();
+        $employees = Employee::whereIn('id',[1,Auth::user()->id])->get();
         return view('Masterdata.employeeaccess',compact('employees'));
     }
 

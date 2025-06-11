@@ -38,6 +38,7 @@ use App\Http\Controllers\Masterdata\CustomTicketingController;
 use App\Http\Controllers\Masterdata\MasterDataTicketingBlockController;
 use App\Http\Controllers\Masterdata\CcEmailController;
 use App\Http\Controllers\Masterdata\PoManualController;
+use App\Http\Controllers\Masterdata\HolidayCalController;
 
 // Budget
 use App\Http\Controllers\Budget\BudgetUploadController;
@@ -400,6 +401,17 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['menu_access:masterdata:16384'])->group(function () {
         Route::get('/pomanual', [PoManualController::class, 'pomanualView']);
         Route::post('/addpomanual', [PoManualController::class, 'addPoManual'])->name('upload.excel');
+    });
+
+    // Holiday Calendar
+    Route::middleware(['menu_access:masterdata:32768'])->group(function () {
+        Route::get('/holidaycal', [HolidayCalController::class, 'holidayCalView']);
+        Route::post('/addholidaycal', [HolidayCalController::class, 'addHolidayCal']);
+        Route::patch('/updateholidaycal', [HolidayCalController::class, 'updateHolidayCal']);
+        Route::delete('/deleteholidaycal', [HolidayCalController::class, 'deleteHolidayCal']);
+        Route::get('/holdcal/create/template', [HolidayCalController::class, 'getHolidayCalTemp']);
+        Route::post('/holdcal/create/readtemplate', [HolidayCalController::class, 'readHolidayCalTemp']);
+        Route::post('/uploadholidaycal', [HolidayCalController::class, 'uploadHolidayCal']);
     });
 
 

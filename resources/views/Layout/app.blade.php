@@ -436,6 +436,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             </a>
                                         </li>
                                     @endif
+                                    @if (((Auth::user()->menu_access->masterdata ?? 0) & 32768) != 0)
+                                        <li class="nav-item">
+                                            <a href="/holidaycal" class="nav-link">
+                                                <i class="fad fa-calendar nav-icon"></i>
+                                                <p>Holiday Calender</p>
+                                            </a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </li>
                         @endif

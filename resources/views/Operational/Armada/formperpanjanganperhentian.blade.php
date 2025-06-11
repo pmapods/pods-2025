@@ -11,19 +11,44 @@
         $old_rejected_ba = \App\Models\TicketingBlockOpenRequest::where('ticket_code', $armadaticket->code)
             ->whereIn('status', [-1])
             ->first();
-    @endphp
+            
+        @endphp
     @if (isset($ba_file_path))
         <a href="#" onclick="window.open('/storage/{{ $ba_file_path }}')">Tampilkan BA
             Perpanjangan<br>({{ $status_ba }})</a>
     @endif
-    @if (now()->day > $armada_ticketing_block->max_block_day)
+
+    @php
+        $add_day = 1;
+    @endphp
+    @if (now()->day >= $armada_ticketing_block->block_day + 1 && now()->day <= $armada_ticketing_block->max_block_day)
+        @php
+            $date = now()->year . '-' . now()->month . '-' . now()->day;
+            $date_now = date_format(date_create($date), '%Y-%m-%d');
+            $holiday_day = \App\Models\HolidayCalendar::where('holiday_date', $date_now)->first();
+
+            if ($holiday_day) {
+                return $add_day;
+            } else {
+                $date = $armada_ticketing_block->block_day + 1;
+                $date_block = now()->year . '-' . now()->month . '-' . $date;
+                $date_now = now()->year . '-' . now()->month . '-' . now()->day;
+
+                $interval = date_diff(date_create($date_block), date_create($date_now));
+
+                $diff = $interval->format('%d');
+
+                $add_day += (int)$diff;
+            }
+        @endphp
+    @endif
+
+    @if (now()->day > $armada_ticketing_block->block_day + $add_day)
         @if (!isset($armadaticket->perpanjangan_form) || $armadaticket->perpanjangan_form->status != 1)
-            @if ($armadaticket->ticketing_type != 4)
-                <span class="text-danger">Tidak dapat melanjutkan proses perpanjangan armada (telah melebihi batas
-                    waktu)</span>
-            @endif
+            <span class="text-danger">Tidak dapat melanjutkan proses perpanjangan armada (telah melebihi batas
+                waktu)</span>
         @endif
-    @elseif (now()->day > $armada_ticketing_block->block_day)
+    @elseif (now()->day > $armada_ticketing_block->block_day && now()->day <= $armada_ticketing_block->block_day + $add_day)
         {{-- munculkan link upload BA hanya pada saat sudah melebihi max day --}}
         @if (!isset($ba_file_path))
             {{-- jika sudah form perpanjangan sudah full approve tidak perlu munculkan upload perpanjangan BA --}}
@@ -562,6 +587,7 @@
                             <div class="form-group">
                                 <label>Nomor Ticket</label>
                                 <input type="text" class="form-control" name="ticket_code" readonly>
+                                <input type="hidden" class="form-control" name="ticket_type" value="armada" readonly>
                             </div>
                         </div>
                         <div class="col-12">

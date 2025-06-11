@@ -15,7 +15,8 @@ return [
         'Custom Ticketing',
         'Ticketing Block',
         'Email CC',
-        'Upload PO Manual'
+        'Upload PO Manual',
+        'Holiday Calender'
     ],
 
     'budget_accesses' => [

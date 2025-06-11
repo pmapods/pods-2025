@@ -433,20 +433,18 @@ class ArmadaTicketingController extends Controller
         $emailmessage = "";
         $armadaticket = ArmadaTicket::find($request->armada_ticket_id);
         try {
-            if ($armadaticket->ticketing_type != 4) {
-                DB::beginTransaction();
-                $armadaticket = ArmadaTicket::find($request->armada_ticket_id);
-                $newrequest = new Request;
-                $newrequest->replace([
-                    'type' => "armada",
-                    'block_type' => "block_day",
-                    'ticket_code' => $armadaticket->code,
-                ]);
-                $response = app('App\Http\Controllers\Operational\TicketingBlockController')->checkTicketingAvailable($newrequest);
-                $responseData = $response->getData();
-                if ($responseData->error) {
-                    throw new \Exception($responseData->message);
-                }
+            DB::beginTransaction();
+            $armadaticket = ArmadaTicket::find($request->armada_ticket_id);
+            $newrequest = new Request;
+            $newrequest->replace([
+                'type' => "armada",
+                'block_type' => "block_day",
+                'ticket_code' => $armadaticket->code,
+            ]);
+            $response = app('App\Http\Controllers\Operational\TicketingBlockController')->checkTicketingAvailable($newrequest);
+            $responseData = $response->getData();
+            if ($responseData->error) {
+                throw new \Exception($responseData->message);
             }
 
             if ($request->hasFile('upload_ba_renewal')){
@@ -2136,6 +2134,7 @@ class ArmadaTicketingController extends Controller
                 $new_open_request                  = new TicketingBlockOpenRequest;
                 $new_open_request->ticket_code     = $request->ticket_code;
                 $new_open_request->po_number       = $request->po_number;
+                // $new_open_request->ticket_type      = $request->ticket_type;
 
 
                 $extension = pathinfo($request->file('ba_file')->getClientOriginalName(), PATHINFO_EXTENSION);
